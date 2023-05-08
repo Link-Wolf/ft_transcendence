@@ -1,11 +1,16 @@
+import { IsString, IsNotEmpty, IsNumber, IsDate } from 'class-validator';
 
+export class BanDto {
+    @IsNumber()
+    id?: number;
 
-export class BanDto
-{
-    @IsNum
-    id: number;
+    @IsString()
+    @IsNotEmpty()
     reason: string;
+
+    @IsDate()
     date: Date;
-    user?: UserDto;
-    channel?: ChannelDto;
+
+    user: Object | string;
+    channel: Object | string;
 }

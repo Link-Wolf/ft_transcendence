@@ -18,7 +18,7 @@ export class Message extends Model<Message> {
         primaryKey: true,
         autoIncrement: true
     })
-    id: number;
+    id: number; 
 
     @Column({
         type: DataType.TEXT,

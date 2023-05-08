@@ -1,9 +1,3 @@
-import { BanDto } from "src/ban/ban.dto";
-import { MembershipDto } from "src/membership/membership.dto";
-import { MessageDto } from "src/message/message.dto";
-import { MuteDto } from "src/mute/mute.dto";
-import { UserGameDto } from "src/user-game/user-game.dto";
-
 import { IsNotEmpty, IsString, IsBoolean } from "class-validator";
 
 export class UserDto {
@@ -20,13 +14,15 @@ export class UserDto {
     @IsBoolean()
     has2AF: boolean;
 
-    userGames?: UserGameDto[];
+    userGames?: Object;
 
-    messages?: MessageDto[];
+    messages?: Object;
 
-    memberships?: MembershipDto[];
+    memberships?: Object;
 
-    mutes?: MuteDto[];
+    mutes?: Object;
 
-    bans?: BanDto[];
+    bans?: Object;
+
+    channelsOwned?: Object;
 }
