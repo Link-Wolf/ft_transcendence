@@ -1,4 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, IsDate } from 'class-validator';
+import { Channel } from 'src/channel/channel.entity';
+import { User } from 'src/user/user.entity';
 
 export class BanDto {
     @IsNumber()
@@ -11,6 +13,6 @@ export class BanDto {
     @IsDate()
     date: Date;
 
-    user: Object | string;
-    channel: Object | string;
+    user: User;
+    channel: Channel;
 }

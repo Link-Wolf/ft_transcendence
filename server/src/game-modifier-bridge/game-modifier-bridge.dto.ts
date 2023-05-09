@@ -1,5 +1,8 @@
-export class GameModifierBridgeDto {
-    game: Object | string;
+import { Game } from "src/game/game.entity";
+import { Modifier } from "src/modifier/modifier.entity";
 
-    modifier: Object | string;
+export class GameModifierBridgeDto {
+    game: Game;
+
+    modifier: Modifier;
 }

@@ -7,7 +7,7 @@ import {
 } from 'sequelize-typescript';
 import { User } from 'src/user/user.entity';
 
-@Table({ tableName: 'block' })
+@Table({ tableName: 'Block' })
 export class Block extends Model<Block> {
     @ForeignKey(() => User)
     @Column({

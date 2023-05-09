@@ -10,7 +10,7 @@ import {
 import { User } from 'src/user/user.entity';
 import { Channel } from 'src/channel/channel.entity';
 
-@Table({ tableName: 'mute' })
+@Table({ tableName: 'Mute' })
 export class Mute extends Model<Mute> {
     @Column({
         type: DataType.INTEGER,

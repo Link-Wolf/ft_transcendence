@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Game } from 'src/game/game.entity';
 
 export class ModifierDto {
     @IsNumber()
@@ -12,5 +13,5 @@ export class ModifierDto {
     @IsNotEmpty()
     desc: string;
 
-    games?: Object[];
+    games?: Game[];
 }

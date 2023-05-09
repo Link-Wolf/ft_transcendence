@@ -9,7 +9,7 @@ import {
 import { User } from 'src/user/user.entity';
 import { Game } from 'src/game/game.entity';
 
-@Table({ tableName: 'userGame' })
+@Table({ tableName: 'UserGame' })
 export class UserGame extends Model<UserGame> {
     @Column({
         type: DataType.INTEGER,

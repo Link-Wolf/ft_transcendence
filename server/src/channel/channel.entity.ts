@@ -13,7 +13,7 @@ import { Membership } from '../membership/membership.entity';
 import { Mute } from '../mute/mute.entity';
 import { Ban } from '../ban/ban.entity';
 
-@Table({ tableName: 'channel' })
+@Table({ tableName: 'Channel' })
 export class Channel extends Model<Channel> {
     @Column({
         type: DataType.STRING,

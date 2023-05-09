@@ -1,5 +1,7 @@
-export class BlockDto {
-    blocker: Object | string;
+import { User } from "src/user/user.entity";
 
-    blocked: Object | string;
+export class BlockDto {
+    blocker: User;
+
+    blocked: User;
 }

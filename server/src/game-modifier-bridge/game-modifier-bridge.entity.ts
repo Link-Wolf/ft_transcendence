@@ -9,7 +9,7 @@ import {
 import { Modifier } from '../modifier/modifier.entity';
 import { Game } from '../game/game.entity';
 
-@Table({ tableName: 'gameModifierBridge' })
+@Table({ tableName: 'GameModifierBridge' })
 export class GameModifierBridge extends Model<GameModifierBridge> {
     @ForeignKey(() => Game)
     @Column({

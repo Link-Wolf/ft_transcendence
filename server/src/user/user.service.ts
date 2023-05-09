@@ -1,4 +1,71 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
+import { UserDto } from './user.dto';
+import { User } from './user.entity';
 
 @Injectable()
-export class UserService {}
+export class UserService {
+    constructor(
+        @Inject('USER_REPOSITORY')
+        private readonly userRepository: typeof User
+    ) { }
+
+    /**
+     * @brief   Find all users with sequelize
+     * @return  {User[]}     List of users
+     * @throws  {HttpException} 500 if an error occured
+     */
+    async findAll(): Promise<User[]> {
+        try {
+            return this.userRepository.findAll<User>();
+        }
+        catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * @brief   Find a user by its login with sequelize
+     * @param   {string} login  The user's login
+     * @return  {UserDto}       The user
+     * @throws  {HttpException} 500 if an error occured
+     * @throws  {HttpException} 404 if the user was not found
+     * @throws  {HttpException} 400 if the login is missing
+     */
+    async findOne(login: string): Promise<User> {
+        try {
+            return this.userRepository
+                .findOne<User>({ where: { login: login } });
+        } catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * @brief   Create a user with sequelize
+     * @param   {User} userDto   The user to create 
+     * @return  {User}           The created user
+     * @throws  {HttpException}  500 if an error occured
+     */
+    async create(userDto: UserDto): Promise<User> {
+        try {
+            return this.userRepository.create<User>(userDto);
+        }
+        catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * @brief   Delete a user by its login with sequelize   
+     * @param   {string} login  The user's login
+     * @throws  {HttpException} 500 if an error occured
+     */
+    async delete(login: string): Promise<number> {
+        try {
+            return this.userRepository.destroy({ where: { login: login } });
+        }
+        catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}

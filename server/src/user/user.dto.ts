@@ -1,4 +1,10 @@
 import { IsNotEmpty, IsString, IsBoolean } from "class-validator";
+import { Membership } from "src/membership/membership.entity";
+import { Message } from "src/message/message.entity";
+import { UserGame } from "src/user-game/user-game.entity";
+import { Ban } from "src/ban/ban.entity";
+import { Mute } from "src/mute/mute.entity";
+import { Channel } from "src/channel/channel.entity";
 
 export class UserDto {
     @IsString()
@@ -14,15 +20,15 @@ export class UserDto {
     @IsBoolean()
     has2AF: boolean;
 
-    userGames?: Object;
+    userGames?: UserGame[];
 
-    messages?: Object;
+    messages?: Message[];
 
-    memberships?: Object;
+    memberships?: Membership[];
 
-    mutes?: Object;
+    mutes?: Mute[];
 
-    bans?: Object;
+    bans?: Ban[];
 
-    channelsOwned?: Object;
+    channelsOwned?: Channel[];
 }

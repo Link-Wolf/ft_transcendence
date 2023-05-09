@@ -11,7 +11,7 @@ import { User } from 'src/user/user.entity';
 import { Channel } from 'src/channel/channel.entity';
 
 
-@Table({ tableName: 'membership' })
+@Table({ tableName: 'Membership' })
 export class Membership extends Model<Membership> {
     @Column({
         type: DataType.INTEGER,

@@ -12,7 +12,7 @@ import {
     GameModifierBridge
 } from 'src/game-modifier-bridge/game-modifier-bridge.entity';
 
-@Table({ tableName: 'game' })
+@Table({ tableName: 'Game' })
 export class Game extends Model<Game> {
     @Column({
         type: DataType.INTEGER,

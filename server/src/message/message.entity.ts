@@ -11,14 +11,14 @@ import { User } from 'src/user/user.entity';
 import { Channel } from 'src/channel/channel.entity';
 
 
-@Table({ tableName: 'message' })
+@Table({ tableName: 'Message' })
 export class Message extends Model<Message> {
     @Column({
         type: DataType.INTEGER,
         primaryKey: true,
         autoIncrement: true
     })
-    id: number; 
+    id: number;
 
     @Column({
         type: DataType.TEXT,

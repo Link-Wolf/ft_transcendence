@@ -1,4 +1,6 @@
 import { IsNumber } from 'class-validator';
+import { Game } from 'src/game/game.entity';
+import { User } from 'src/user/user.entity';
 
 export class UserGameDto {
     @IsNumber()
@@ -7,6 +9,6 @@ export class UserGameDto {
     @IsNumber()
     score: number;
 
-    user: Object | string;
-    game: Object | string;
+    user: User;
+    game: Game;
 }

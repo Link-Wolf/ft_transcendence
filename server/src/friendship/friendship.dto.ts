@@ -1,5 +1,7 @@
-export class FriendshipDto {
-    friendA: Object | string;
+import { User } from "src/user/user.entity";
 
-    friendB: Object | string;
+export class FriendshipDto {
+    friendA: User;
+
+    friendB: User;
 }

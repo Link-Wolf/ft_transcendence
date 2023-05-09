@@ -12,7 +12,7 @@ import { Mute } from 'src/mute/mute.entity';
 import { Ban } from 'src/ban/ban.entity';
 import { Channel } from 'src/channel/channel.entity';
 
-@Table({ tableName: 'user' })
+@Table({ tableName: 'User' })
 export class User extends Model<User> {
     @Column({
         type: DataType.STRING,
@@ -37,6 +37,12 @@ export class User extends Model<User> {
         defaultValue: false
     })
     has2AF: boolean;
+
+    @Column({
+        type: DataType.INTEGER,
+        defaultValue: 0
+    })
+    clearance: number;
 
     @HasMany(() => UserGame)
     userGames: UserGame[];
