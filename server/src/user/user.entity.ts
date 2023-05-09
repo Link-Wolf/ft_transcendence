@@ -36,7 +36,7 @@ export class User extends Model<User> {
         type: DataType.BOOLEAN,
         defaultValue: false
     })
-    has2AF: boolean;
+    has2FA: boolean;
 
     @Column({
         type: DataType.INTEGER,

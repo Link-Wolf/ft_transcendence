@@ -27,6 +27,12 @@ export class Game extends Model<Game> {
     })
     isRanked: boolean;
 
+    @Column({
+        type: DataType.ENUM('ongoing', 'finished', 'aborted'),
+        allowNull: false
+    })
+    status: string;
+
     @HasMany(() => UserGame)
     userGames: UserGame[];
 

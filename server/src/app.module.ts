@@ -51,7 +51,27 @@ import { MembershipModule } from './membership/membership.module';
     FriendshipModule,
     MembershipModule,
   ],
-  controllers: [AppController, GameController, BanController, ChannelController, MessageController, ModifierController, MuteController, GameModifierBridgeController, FriendshipController],
-  providers: [AppService, MessageService, ChannelService, ModifierService, MuteService, BanService, GameService, BlockService, FriendshipService],
+  controllers: [
+    AppController,
+    GameController,
+    BanController,
+    ChannelController,
+    MessageController,
+    ModifierController,
+    MuteController,
+    GameModifierBridgeController,
+    FriendshipController
+  ],
+  providers: [
+    AppService,
+    MessageService,
+    ChannelService,
+    ModifierService,
+    MuteService,
+    BanService,
+    GameService,
+    BlockService,
+    FriendshipService
+  ],
 })
 export class AppModule { }

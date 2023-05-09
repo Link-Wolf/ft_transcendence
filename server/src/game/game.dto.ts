@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Modifier } from 'src/modifier/modifier.entity';
 import { UserGame } from 'src/user-game/user-game.entity';
 
@@ -8,6 +8,10 @@ export class GameDto {
 
     @IsBoolean()
     isRanked: boolean;
+
+    @IsString()
+    @IsNotEmpty()
+    status: string;
 
     userGames: UserGame[];
 

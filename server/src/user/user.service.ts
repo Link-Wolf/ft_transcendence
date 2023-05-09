@@ -26,12 +26,10 @@ export class UserService {
     /**
      * @brief   Find a user by its login with sequelize
      * @param   {string} login  The user's login
-     * @return  {UserDto}       The user
+     * @return  {User}          The user
      * @throws  {HttpException} 500 if an error occured
-     * @throws  {HttpException} 404 if the user was not found
-     * @throws  {HttpException} 400 if the login is missing
      */
-    async findOne(login: string): Promise<User> {
+    async findByLogin(login: string): Promise<User> {
         try {
             return this.userRepository
                 .findOne<User>({ where: { login: login } });
@@ -41,10 +39,25 @@ export class UserService {
     }
 
     /**
+     * @brief   Find a user by its name with sequelize
+     * @param   {string} name   The user's name
+     * @return  {User}          The user
+     * @throws  {HttpException} 500 if an error occured
+     */
+    async findByName(name: string): Promise<User> {
+        try {
+            return this.userRepository
+                .findOne<User>({ where: { name: name } });
+        } catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * @brief   Create a user with sequelize
-     * @param   {User} userDto   The user to create 
-     * @return  {User}           The created user
-     * @throws  {HttpException}  500 if an error occured
+     * @param   {UserDto} userDto   The user to create 
+     * @return  {User}              The created user
+     * @throws  {HttpException}     500 if an error occured
      */
     async create(userDto: UserDto): Promise<User> {
         try {
@@ -56,8 +69,27 @@ export class UserService {
     }
 
     /**
+     * @brief   Update a user by its login with sequelize
+     * @param   {UserDto} userDto   The user to update
+     * @return  {number}            The number of updated rows
+     * @throws  {HttpException}     500 if an error occured
+     */
+    async update(userDto: UserDto): Promise<number> {
+        try {
+            return this.userRepository.update<User>(
+                userDto,
+                { where: { login: userDto.login } }
+            )[0];
+        }
+        catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * @brief   Delete a user by its login with sequelize   
      * @param   {string} login  The user's login
+     * @return  {number}        The number of deleted rows
      * @throws  {HttpException} 500 if an error occured
      */
     async delete(login: string): Promise<number> {

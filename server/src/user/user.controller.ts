@@ -1,9 +1,19 @@
-import { Controller, Get, UseGuards, Post, Body, HttpException, HttpStatus, Param, Delete } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    UseGuards,
+    Post,
+    Body,
+    HttpException,
+    HttpStatus,
+    Param, Delete,
+    Patch,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './user.dto';
 import { User } from './user.entity';
 import { ClearanceGuard } from '../guards/clearance.guard';
-import { AvatarValidationPipe } from './user.pipe';
+import { AvatarValidationPipe, ParseBoolPipe } from './user.pipe';
 
 @Controller('user')
 export class UserController {
@@ -44,7 +54,7 @@ export class UserController {
                 HttpStatus.BAD_REQUEST
             );
         }
-        let ret = await this.userService.findOne(login);
+        let ret = await this.userService.findByLogin(login);
         if (!ret) {
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
@@ -55,8 +65,8 @@ export class UserController {
      * @brief Create a user
      * @param {string} login - The user's login
      * @param {string} name - The user's name
-     * @param {boolean} has2AF - The user's 2AF status
-     * @param {string} avatar - The user's avatar
+     * @param {boolean} has2FA - The user's 2AF status
+     * @param {Buffer} avatar - The user's avatar
      * @return {User} - The created user
      * @security Clearance admin
      * @response 200 - OK
@@ -69,20 +79,56 @@ export class UserController {
     async create(
         @Body('login') login: string,
         @Body('name') name: string,
-        @Body('has2AF') has2AF?: boolean,
+        @Body('has2FA', ParseBoolPipe) has2FA?: boolean,
         /* TODO: avatar from blob :) */
     ): Promise<User> {
         if (!login || !name) {
-            throw new HttpException(
-                'Missing parameters',
-                HttpStatus.BAD_REQUEST
-            );
+            throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
         }
-        if (await this.userService.findOne(login)) {
+        if (await this.userService.findByLogin(login)) {
             throw new HttpException('User already exists', HttpStatus.CONFLICT);
         }
+        if (await this.userService.findByName(name)) {
+            throw new HttpException('Name is already taken', HttpStatus.CONFLICT);
+        }
         return this.userService.create(
-            { login: login, name: name, has2AF: has2AF /* avatar: avatar */ }
+            { login: login, name: name, has2FA: has2FA /* avatar: avatar */ }
+        );
+    }
+
+    /**
+     * @brief Update a user
+     * @param {string} login - The user's login
+     * @param {string} name - The user's name
+     * @param {boolean} has2FA - The user's 2AF status
+     * @param {Buffer} avatar - The user's avatar
+     * @return {User} - The updated user
+     * @security Clearance user
+     * @response 200 - OK
+     * @response 404 - Bad Request
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 409 - Conflict
+     * @response 500 - Internal Server Error
+     */
+    @Patch(':login')
+    @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
+    async update(
+        @Param('login') login: string,
+        @Body('name') name?: string,
+        @Body('has2FA', ParseBoolPipe) has2FA?: boolean,
+        /* TODO: avatar from blob :) */
+    ): Promise<number> {
+        let user = await this.userService.findByLogin(login);
+        //TODO: check if connected with right account / admin for 403 HTTP status
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        if (name && await this.userService.findByName(name)) {
+            throw new HttpException('Name is already taken', HttpStatus.CONFLICT);
+        }
+        return this.userService.update(
+            { login: login, name: name, has2FA: has2FA /* avatar: avatar */ }
         );
     }
 
@@ -107,7 +153,7 @@ export class UserController {
                 HttpStatus.BAD_REQUEST
             );
         }
-        let user = await this.userService.findOne(login);
+        let user = await this.userService.findByLogin(login);
         if (!user) {
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }

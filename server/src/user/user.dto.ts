@@ -18,7 +18,7 @@ export class UserDto {
     avatar?: Buffer;
 
     @IsBoolean()
-    has2AF: boolean;
+    has2FA: boolean;
 
     userGames?: UserGame[];
 
