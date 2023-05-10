@@ -16,12 +16,16 @@ import { ParseBoolPipe } from 'src/user/user.pipe';
 import { UserService } from 'src/user/user.service';
 import { Game } from './game.entity';
 import { GameService } from './game.service';
+import { UserGameService } from 'src/user-game/user-game.service';
+import { ModifierService } from 'src/modifier/modifier.service';
 
 @Controller('game')
 export class GameController {
     constructor(
         private readonly gameService: GameService,
         private readonly userService: UserService,
+        private readonly userGameService: UserGameService,
+        private readonly modifierService: ModifierService,
     ) { }
 
 
@@ -96,43 +100,46 @@ export class GameController {
      * @brief Create a game
      * @param {boolean} isRanked - Ranked game
      */
-    // @Post()
-    // @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
-    // async create(
-    //     @Body('isRanked', new DefaultValuePipe(false), ParseBoolPipe) isRanked: boolean,
-    //     @Body('playerA') playerALogin: string,
-    //     @Body('playerB') playerBLogin: string,
-    //     @Body('modifiers') modifiersString?: string,
-    // ): Promise<Game> {
-    //     if (!playerALogin || !playerBLogin) {
-    //         throw new HttpException(
-    //             'Missing parameters',
-    //             HttpStatus.BAD_REQUEST
-    //         );
-    //     }
-    //     let playerA = await this.userService.findByLogin(playerALogin);
-    //     let playerB = await this.userService.findByLogin(playerBLogin);
-    //     if (!playerA || !playerB) {
-    //         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    //     }
-    //     if (modifiersString) {
-    //         let modList = JSON.parse(modifiersString);
-    //         let modifiers = [];
-    //         for (let mod of modList) {
-    //             let modObj = await this.modifierService.findById(mod);
-    //             if (!modObj) {
-    //                 throw new HttpException('Modifier not found', HttpStatus.NOT_FOUND);
-    //             }
-    //             modifiers.push(modObj);
-    //         }
-    //     }
-    //     let userGameA = await this.userGameService.create({ user: playerA, score: 0 });
-    //     let userGameB = await this.userGameService.create({ user: playerB, score: 0 });
-    //     return await this.gameService.create({
-    //         isRanked: isRanked,
-    //         userGames: [userGameA, userGameB],
-    //         modifiers: modifiers,
-    //         status: 'ongoing'
-    //     });
-    // }
+    @Post()
+    @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
+    async create(
+        @Body('isRanked', new DefaultValuePipe(false), ParseBoolPipe) isRanked: boolean,
+        @Body('playerALogin') playerALogin: string,
+        @Body('playerBLogin') playerBLogin: string,
+        @Body('modifiers') modifiersString?: string,
+    ): Promise<Game> {
+        if (!playerALogin || !playerBLogin) {
+            throw new HttpException(
+                'Missing parameters',
+                HttpStatus.BAD_REQUEST
+            );
+        }
+        let playerA = await this.userService.findByLogin(playerALogin);
+        let playerB = await this.userService.findByLogin(playerBLogin);
+        if (!playerA || !playerB) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        let modifiers = [];
+        if (modifiersString) {
+            let modList = JSON.parse(modifiersString);
+            for (let mod of modList) {
+                let modObj = await this.modifierService.findById(mod);
+                if (!modObj) {
+                    throw new HttpException('Modifier not found', HttpStatus.NOT_FOUND);
+                }
+                modifiers.push(modObj);
+            }
+        }
+        let userGameA = await this.userGameService.create({ user: playerA, score: 0 });
+        let userGameB = await this.userGameService.create({ user: playerB, score: 0 });
+        let ret = await this.gameService.create({
+            isRanked: isRanked,
+            userGames: [userGameA, userGameB],
+            modifiers: modifiers,
+            status: 'ongoing'
+        });
+        this.userGameService.update({ id: userGameA.id, game: ret });
+        this.userGameService.update({ id: userGameB.id, game: ret });
+        return ret;
+    }
 }

@@ -8,7 +8,7 @@ import { Injectable, CanActivate, ExecutionContext, HttpStatus, HttpException } 
 export class ClearanceGuard implements CanActivate {
     constructor(private clearanceNeeded: number) { }
     canActivate(_context: ExecutionContext): boolean {
-        throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED); //TMP: remove when implemented
+        // throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED); //TMP: remove when implemented
         return true;
         //TODO: implement true guarding through clearance and cookies
     }

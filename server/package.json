@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@types/connect-redis": "^0.0.20",
     "@types/express-session": "^1.17.7",
+    "cache-manager-redis-store": "^3.0.1",
     "class-validator": "^0.14.0",
     "connect-redis": "^7.0.1",
     "dotenv": "^16.0.3",

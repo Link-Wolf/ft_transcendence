@@ -7,8 +7,8 @@ export class UserGameDto {
     id?: number;
 
     @IsNumber()
-    score: number;
+    score?: number;
 
-    user: User;
-    game: Game;
+    user?: User;
+    game?: Game;
 }

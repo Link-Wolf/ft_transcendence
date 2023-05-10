@@ -35,7 +35,7 @@ export class ModifierController {
     @Get(':id')
     @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
     async findById(@Param('id', ParseIntPipe) id: number): Promise<Modifier> {
-        let modifier = this.modifierService.findById(id);
+        let modifier = await this.modifierService.findById(id);
         if (!modifier) {
             throw new HttpException('Modifier not found', HttpStatus.NOT_FOUND);
         }
@@ -64,7 +64,7 @@ export class ModifierController {
         if (!name || !desc) {
             throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
         }
-        if (this.modifierService.findByName(name)) {
+        if (await this.modifierService.findByName(name)) {
             throw new HttpException('Name is already taken', HttpStatus.CONFLICT);
         }
         return this.modifierService.create({ name: name, desc: desc });
@@ -91,11 +91,11 @@ export class ModifierController {
         @Body('name') name?: string,
         @Body('desc') desc?: string,
     ): Promise<number> {
-        let modifier = this.modifierService.findById(id);
+        let modifier = await this.modifierService.findById(id);
         if (!modifier) {
             throw new HttpException('Modifier not found', HttpStatus.NOT_FOUND);
         }
-        if (name && this.modifierService.findByName(name)) {
+        if (name && await this.modifierService.findByName(name)) {
             throw new HttpException('Name is already taken', HttpStatus.CONFLICT);
         }
         return this.modifierService.update({ id: id, name: name, desc: desc });
@@ -115,7 +115,7 @@ export class ModifierController {
     @Delete(':id')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
-        let modifier = this.modifierService.findById(id);
+        let modifier = await this.modifierService.findById(id);
         if (!modifier) {
             throw new HttpException('Modifier not found', HttpStatus.NOT_FOUND);
         }
