@@ -10,10 +10,9 @@ import {
     Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserDto } from './user.dto';
 import { User } from './user.entity';
 import { ClearanceGuard } from '../guards/clearance.guard';
-import { AvatarValidationPipe, ParseBoolPipe } from './user.pipe';
+import { ParseBoolPipe } from './user.pipe';
 
 @Controller('user')
 export class UserController {
@@ -69,7 +68,7 @@ export class UserController {
      * @param {Buffer} avatar - The user's avatar
      * @return {User} - The created user
      * @security Clearance admin
-     * @response 200 - OK
+     * @response 201 - Created
      * @response 400 - Bad Request
      * @response 409 - Conflict
      * @response 500 - Internal Server Error

@@ -28,6 +28,7 @@ export class Modifier extends Model<Modifier> {
     @Column({
         type: DataType.STRING(42),
         allowNull: false,
+        unique: true,
     })
     name: string;
 
