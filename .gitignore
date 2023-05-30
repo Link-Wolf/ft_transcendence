@@ -1,2 +1,9 @@
 .env
 dump.rdb
+
+dist/
+node_modules/
+build/
+
+.DS_Store
+*.log
