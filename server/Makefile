@@ -1,7 +1,7 @@
 NAME = server
 
 $(NAME): node_modules
-	npm run start
+	npm run start:dev
 
 node_modules: package.json
 	npm i
