@@ -3,21 +3,20 @@ import {
     Column,
     Model,
     DataType,
-    HasMany,
-    BelongsToMany
+    BelongsToMany,
+    PrimaryKey,
+    AutoIncrement
 } from 'sequelize-typescript';
+import { User } from 'src/user/user.entity';
 import { UserGame } from 'src/user-game/user-game.entity';
 import { Modifier } from 'src/modifier/modifier.entity';
-import {
-    GameModifierBridge
-} from 'src/game-modifier-bridge/game-modifier-bridge.entity';
 
 @Table({ tableName: 'Game' })
 export class Game extends Model<Game> {
+    @PrimaryKey
+    @AutoIncrement
     @Column({
         type: DataType.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
     })
     id: number;
 
@@ -33,9 +32,9 @@ export class Game extends Model<Game> {
     })
     status: string;
 
-    @HasMany(() => UserGame)
-    userGames: UserGame[];
+    @BelongsToMany(() => User, () => UserGame)
+    users: User[];
 
-    @BelongsToMany(() => Modifier, () => GameModifierBridge)
+    @BelongsToMany(() => Modifier,'GameModifierBridge', 'gameId', 'modifierId')
     modifiers: Modifier[];
 }

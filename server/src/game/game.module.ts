@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module, forwardRef, Inject } from '@nestjs/common';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
 import { gameProviders } from './game.providers';
@@ -10,8 +10,7 @@ import { ModifierModule } from 'src/modifier/modifier.module';
     controllers: [GameController],
     providers: [GameService, ...gameProviders],
     imports: [
-        forwardRef(() => UserModule),
-        UserGameModule,
+        UserModule,
         ModifierModule
     ],
     exports: [GameService, ...gameProviders]

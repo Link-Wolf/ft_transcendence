@@ -4,7 +4,8 @@ import {
     Model,
     DataType,
     BelongsTo,
-    ForeignKey
+    ForeignKey,
+    PrimaryKey
 } from 'sequelize-typescript';
 import { User } from 'src/user/user.entity';
 import { Game } from 'src/game/game.entity';
@@ -13,28 +14,17 @@ import { Game } from 'src/game/game.entity';
 export class UserGame extends Model<UserGame> {
     @Column({
         type: DataType.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    })
-    id: number;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false
+        defaultValue: 0
     })
     score: number;
 
+    @PrimaryKey
     @ForeignKey(() => User)
     @Column({})
     userLogin: string;
 
+    @PrimaryKey
     @ForeignKey(() => Game)
     @Column({})
     gameId: number;
-
-    @BelongsTo(() => User, 'userLogin')
-    user: User;
-
-    @BelongsTo(() => Game, 'gameId')
-    game: Game;
 }

@@ -143,19 +143,19 @@ export class UserController {
      * @response 404 - Not Found
      * @response 500 - Internal Server Error
      */
-    @Delete(':login')
-    @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
-    async delete(@Param('login') login: string): Promise<number> {
-        if (!login) {
-            throw new HttpException(
-                'Missing parameters',
-                HttpStatus.BAD_REQUEST
-            );
-        }
-        let user = await this.userService.findByLogin(login);
-        if (!user) {
-            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-        }
-        return this.userService.delete(login);
-    }
+    // @Delete(':login')
+    // @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+    // async delete(@Param('login') login: string): Promise<number> {
+    //     if (!login) {
+    //         throw new HttpException(
+    //             'Missing parameters',
+    //             HttpStatus.BAD_REQUEST
+    //         );
+    //     }
+    //     let user = await this.userService.findByLogin(login);
+    //     if (!user) {
+    //         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    //     }
+    //     return this.userService.delete(login);
+    // }
 }

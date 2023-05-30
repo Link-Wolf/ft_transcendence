@@ -16,7 +16,7 @@ export class GameService {
      */
     async findAll(): Promise<Game[]> {
         try {
-            return this.gameRepository.findAll<Game>();
+            return this.gameRepository.findAll<Game>({ include: [{ all: true }] });
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -32,7 +32,7 @@ export class GameService {
     async findById(id: number): Promise<Game> {
         try {
             return this.gameRepository
-                .findOne<Game>({ where: { id: id } });
+                .findOne<Game>({ where: { id: id }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -62,7 +62,9 @@ export class GameService {
      */
     async create(gameDto: GameDto): Promise<Game> {
         try {
-            return this.gameRepository.create<Game>(gameDto);
+            let ret = await this.gameRepository.create<Game>(gameDto);
+            await ret.$add('users', gameDto.users);
+            return ret;
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -6,9 +6,6 @@ import {
     BelongsToMany,
 } from 'sequelize-typescript';
 import { Game } from '../game/game.entity';
-import {
-    GameModifierBridge
-} from '../game-modifier-bridge/game-modifier-bridge.entity';
 
 @Table({ tableName: 'Modifier' })
 export class Modifier extends Model<Modifier> {
@@ -32,6 +29,6 @@ export class Modifier extends Model<Modifier> {
     })
     name: string;
 
-    @BelongsToMany(() => Game, () => GameModifierBridge)
+    @BelongsToMany(() => Game, 'GameModifierBridge', 'gameId', 'modifierId')
     games: Game[];
 }

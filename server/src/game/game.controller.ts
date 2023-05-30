@@ -16,7 +16,6 @@ import { ParseBoolPipe } from 'src/user/user.pipe';
 import { UserService } from 'src/user/user.service';
 import { Game } from './game.entity';
 import { GameService } from './game.service';
-import { UserGameService } from 'src/user-game/user-game.service';
 import { ModifierService } from 'src/modifier/modifier.service';
 
 @Controller('game')
@@ -24,7 +23,6 @@ export class GameController {
     constructor(
         private readonly gameService: GameService,
         private readonly userService: UserService,
-        private readonly userGameService: UserGameService,
         private readonly modifierService: ModifierService,
     ) { }
 
@@ -99,6 +97,16 @@ export class GameController {
     /**
      * @brief Create a game
      * @param {boolean} isRanked - Ranked game
+     * @param {string} playerALogin - Player A login
+     * @param {string} playerBLogin - Player B login
+     * @param {string} modifiersString - Modifiers ids
+     * @return {Game} Game
+     * @security Clearance user
+     * @response 200 - OK
+     * @response 400 - Bad Request
+     * @response 401 - Unauthorized
+     * @response 404 - Not Found
+     * @response 500 - Internal Server Error
      */
     @Post()
     @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
@@ -130,16 +138,11 @@ export class GameController {
                 modifiers.push(modObj);
             }
         }
-        let userGameA = await this.userGameService.create({ user: playerA, score: 0 });
-        let userGameB = await this.userGameService.create({ user: playerB, score: 0 });
-        let ret = await this.gameService.create({
+        return this.gameService.create({
             isRanked: isRanked,
-            userGames: [userGameA, userGameB],
+            users: [playerA, playerB],
             modifiers: modifiers,
             status: 'ongoing'
         });
-        this.userGameService.update({ id: userGameA.id, game: ret });
-        this.userGameService.update({ id: userGameB.id, game: ret });
-        return ret;
     }
 }

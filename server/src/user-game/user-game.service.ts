@@ -23,15 +23,15 @@ export class UserGameService {
         }
     }
 
-    /**
-     * @brief   Find a user game by its id with sequelize
-     * @param   {number} id  The user game's id
-     * @return  {UserGame}   The user game
-     * @throws  {HttpException} 500 if an error occured
-     */
-    async findById(id: number): Promise<UserGame> {
+    async findByUserAndGame(dto: UserGameDto): Promise<UserGame> {
         try {
-            return this.userGameRepository.findOne<UserGame>({ where: { id: id } });
+            console.log(dto);
+            return this.userGameRepository.findOne<UserGame>(
+                { where: {
+                    gameId: dto.game.dataValues.id,
+                    userLogin: dto.user.dataValues.login
+                }
+            });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -72,7 +72,6 @@ export class UserGameService {
      * @throws  {HttpException}             500 if an error occured
      */
     async create(userGameDto: UserGameDto): Promise<UserGame> {
-        console.log(userGameDto)
         try {
             return this.userGameRepository.create<UserGame>(userGameDto);
         } catch (error) {
@@ -88,7 +87,12 @@ export class UserGameService {
      */
     async update(userGameDto: UserGameDto): Promise<number> {
         try {
-            return this.userGameRepository.update<UserGame>(userGameDto, { where: { id: userGameDto.id } })[0];
+            return this.userGameRepository.update<UserGame>(userGameDto, {
+                where: {
+                    gameId: userGameDto.game.dataValues.id,
+                    userLogin: userGameDto.user.dataValues.login
+                } 
+        })[0];
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

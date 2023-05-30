@@ -3,7 +3,9 @@ import {
     Column,
     Model,
     DataType,
-    HasMany
+    HasMany,
+    PrimaryKey,
+    BelongsToMany
 } from 'sequelize-typescript';
 import { UserGame } from 'src/user-game/user-game.entity';
 import { Message } from 'src/message/message.entity';
@@ -11,12 +13,13 @@ import { Membership } from 'src/membership/membership.entity';
 import { Mute } from 'src/mute/mute.entity';
 import { Ban } from 'src/ban/ban.entity';
 import { Channel } from 'src/channel/channel.entity';
+import { Game } from 'src/game/game.entity';
 
 @Table({ tableName: 'User' })
 export class User extends Model<User> {
+    @PrimaryKey
     @Column({
         type: DataType.STRING,
-        primaryKey: true,
     })
     login: string;
 
@@ -44,8 +47,8 @@ export class User extends Model<User> {
     })
     clearance: number;
 
-    @HasMany(() => UserGame)
-    userGames: UserGame[];
+    @BelongsToMany(() => Game, () => UserGame)
+    games: Game[];
 
     @HasMany(() => Message)
     messages: Message[];

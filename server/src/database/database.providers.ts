@@ -1,19 +1,16 @@
 import { Sequelize } from 'sequelize-typescript';
 import * as dotenv from 'dotenv';
-import { User } from 'src/user/user.entity';
-import { Channel } from 'src/channel/channel.entity';
-import { Ban } from 'src/ban/ban.entity';
-import { Game } from 'src/game/game.entity';
-import { Message } from 'src/message/message.entity';
-import { Modifier } from 'src/modifier/modifier.entity';
-import { Mute } from 'src/mute/mute.entity';
-import { Friendship } from 'src/friendship/friendship.entity';
-import { UserGame } from 'src/user-game/user-game.entity';
-import {
-    GameModifierBridge
-} from 'src/game-modifier-bridge/game-modifier-bridge.entity';
-import { Block } from 'src/block/block.entity';
-import { Membership } from 'src/membership/membership.entity';
+import { User } from '../user/user.entity';
+import { Channel } from '../channel/channel.entity';
+import { Ban } from '../ban/ban.entity';
+import { Game } from '../game/game.entity';
+import { Message } from '../message/message.entity';
+import { Modifier } from '../modifier/modifier.entity';
+import { Mute } from '../mute/mute.entity';
+import { Friendship } from '../friendship/friendship.entity';
+import { UserGame } from '../user-game/user-game.entity';
+import { Block } from '../block/block.entity';
+import { Membership } from '../membership/membership.entity';
 
 dotenv.config();
 
@@ -34,7 +31,6 @@ export const databaseProviders = [{
             User,
             UserGame,
             Game,
-            GameModifierBridge,
             Modifier,
             Ban,
             Mute,

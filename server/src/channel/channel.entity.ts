@@ -6,6 +6,7 @@ import {
     HasMany,
     BelongsTo,
     ForeignKey,
+    PrimaryKey,
 } from 'sequelize-typescript';
 import { User } from '../user/user.entity';
 import { Message } from '../message/message.entity';
@@ -15,11 +16,10 @@ import { Ban } from '../ban/ban.entity';
 
 @Table({ tableName: 'Channel' })
 export class Channel extends Model<Channel> {
+    @PrimaryKey
     @Column({
         type: DataType.STRING,
         allowNull: false,
-        primaryKey: true,
-        unique: true,
     })
     name: string;
 

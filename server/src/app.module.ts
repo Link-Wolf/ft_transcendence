@@ -24,20 +24,19 @@ import { MessageModule } from './message/message.module';
 import { ModifierModule } from './modifier/modifier.module';
 import { MuteModule } from './mute/mute.module';
 import { UserGameModule } from './user-game/user-game.module';
-import { GameModifierBridgeController } from './game-modifier-bridge/game-modifier-bridge.controller';
-import { GameModifierBridgeModule } from './game-modifier-bridge/game-modifier-bridge.module';
 import { BlockService } from './block/block.service';
 import { BlockModule } from './block/block.module';
 import { FriendshipService } from './friendship/friendship.service';
 import { FriendshipController } from './friendship/friendship.controller';
 import { FriendshipModule } from './friendship/friendship.module';
 import { MembershipModule } from './membership/membership.module';
+import { BlockController } from './block/block.controller';
+import { blockProviders } from './block/block.providers';
 
 @Module({
   imports: [
-    UserModule,
-    DatabaseModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
     DatabaseModule,
     BanModule,
     ChannelModule,
@@ -46,7 +45,6 @@ import { MembershipModule } from './membership/membership.module';
     ModifierModule,
     MuteModule,
     UserGameModule,
-    GameModifierBridgeModule,
     BlockModule,
     FriendshipModule,
     MembershipModule,
@@ -59,8 +57,8 @@ import { MembershipModule } from './membership/membership.module';
     MessageController,
     ModifierController,
     MuteController,
-    GameModifierBridgeController,
-    FriendshipController
+    FriendshipController,
+    BlockController
   ],
   providers: [
     AppService,
@@ -71,7 +69,7 @@ import { MembershipModule } from './membership/membership.module';
     BanService,
     GameService,
     BlockService,
-    FriendshipService
+    FriendshipService,
   ],
 })
 export class AppModule { }

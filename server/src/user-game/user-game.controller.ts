@@ -28,20 +28,33 @@ export class UserGameController {
     }
 
     /**
-     * @brief Get one user game by id
+     * @brief Update a user game
      * @param {number} id - User game id
-     * @returns {UserGame} User game
+     * @param {string} userLogin - User login
+     * @param {number} gameId - Game id
+     * @param {number} score - User score
+     * @returns {number} Number of updated user games
      * @response 200 - OK
      * @response 401 - Unauthorized
+     * @response 403 - Forbidden
      * @response 404 - Not Found
      * @response 500 - Internal Server Error
      */
-    @Get(':id')
-    @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
-    async findById(@Param('id', ParseIntPipe) id: number): Promise<UserGame> {
-        let ret = await this.userGameService.findById(id);
+    @Get('game/:id/player/:login')
+    @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+    async getByUserAndGame(
+        @Param('id', ParseIntPipe) gameId: number,
+        @Param('login') userLogin: string,
+    ): Promise<UserGame> {
+        let user = await this.userService.findByLogin(userLogin);
+        if (!user)
+            throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
+        let game = await this.gameService.findById(gameId);
+        if (!game)
+            throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+        let ret = await this.userGameService.findByUserAndGame({ game: game, user: user })
         if (!ret)
-            throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+            throw new HttpException('UserGame Not Found', HttpStatus.NOT_FOUND);
         return ret;
     }
 
@@ -136,14 +149,23 @@ export class UserGameController {
      * @response 404 - Not Found
      * @response 500 - Internal Server Error
      */
-    @Patch(':id')
+    @Patch('game/:id/player/:login')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async update(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id', ParseIntPipe) gameId: number,
+        @Param('login') userLogin: string,
         @Body('score', ParseIntPipe) score: number
     ): Promise<Number> {
-        if (!await this.userGameService.findById(id))
+        if (!userLogin)
+            throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
+        let user = await this.userService.findByLogin(userLogin);
+        if (!user)
+            throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
+        let game = await this.gameService.findById(gameId);
+        if (!game)
+            throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+        if (!await this.userGameService.findByUserAndGame({ game: game, user: user }))
             throw new HttpException('UserGame Not Found', HttpStatus.NOT_FOUND);
-        return this.userGameService.update({ id: id, score: score });
+        return this.userGameService.update({ game: game, score: score, user: user });
     }
 }
