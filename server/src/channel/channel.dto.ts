@@ -8,16 +8,16 @@ import { User } from 'src/user/user.entity';
 export class ChannelDto {
     @IsString()
     @IsNotEmpty()
-    name: string;
+    name?: string;
 
     @IsString()
     @IsNotEmpty()
     password?: string;
 
     @IsBoolean()
-    isPrivate: boolean;
+    isPrivate?: boolean;
 
-    owner: User | string;
+    owner?: User;
     messages?: Message[];
     memberships?: Membership[];
     mutes?: Mute[];

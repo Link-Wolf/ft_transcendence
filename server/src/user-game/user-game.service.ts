@@ -92,7 +92,7 @@ export class UserGameService {
                     gameId: userGameDto.game.dataValues.id,
                     userLogin: userGameDto.user.dataValues.login
                 } 
-        })[0];
+            })[0];
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
