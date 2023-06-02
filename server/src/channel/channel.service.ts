@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { Channel } from './channel.entity';
 import { ChannelDto } from './channel.dto';
 
@@ -16,7 +16,7 @@ export class ChannelService {
      */
     async findAll(): Promise<Channel[]> {
         try {
-            return this.channelRepository.findAll<Channel>({ include: [{ all: true }] });
+            return await this.channelRepository.findAll<Channel>({ include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -30,7 +30,7 @@ export class ChannelService {
      */
     async findByName(name: string): Promise<Channel> {
         try {
-            return this.channelRepository.findOne<Channel>({ where: { name: name } });
+            return await this.channelRepository.findOne<Channel>({ where: { name: name }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -43,7 +43,7 @@ export class ChannelService {
      */ 
     async findPublic(): Promise<Channel[]> {
         try {
-            return this.channelRepository.findAll<Channel>({ where: { isPrivate: false } });
+            return await this.channelRepository.findAll<Channel>({ where: { isPrivate: false }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -57,7 +57,7 @@ export class ChannelService {
      */
     async findByOwner(login: string): Promise<Channel[]> {
         try {
-            return this.channelRepository.findAll<Channel>({ where: { owner: login, isPrivate: false } });
+            return await this.channelRepository.findAll<Channel>({ where: { owner: login, isPrivate: false }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -73,7 +73,7 @@ export class ChannelService {
      */
     async findByPassword(pass2check: string): Promise<Channel[]> {
         try {
-            return this.channelRepository.findAll<Channel>({ where: { password: pass2check } });
+            return await this.channelRepository.findAll<Channel>({ where: { password: pass2check }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -87,8 +87,12 @@ export class ChannelService {
      */    
     async create(channelDto: ChannelDto): Promise<Channel> {
         try {
-            return this.channelRepository.create<Channel>(channelDto);
+            let ret = await this.channelRepository.create<Channel>(channelDto);
+            console.log(channelDto)
+            await ret.$set('owner', channelDto.owner);
+            return ret;
         } catch (error) {
+            console.log(error)
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -101,7 +105,7 @@ export class ChannelService {
      */
     async update(channelDto: ChannelDto): Promise<number> {
         try {
-            return this.channelRepository.update<Channel>(channelDto, { where: { name: channelDto.name } })[0];
+            return await this.channelRepository.update<Channel>(channelDto, { where: { name: channelDto.name } })[0];
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -115,7 +119,7 @@ export class ChannelService {
      */
     async delete(name: string): Promise<number> {
         try {
-            return this.channelRepository.destroy({ where: { name: name } });
+            return await this.channelRepository.destroy({ where: { name: name } });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

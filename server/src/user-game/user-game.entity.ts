@@ -23,8 +23,14 @@ export class UserGame extends Model<UserGame> {
     @Column({})
     userLogin: string;
 
+    @BelongsTo(() => User)
+    user: User;
+
     @PrimaryKey
     @ForeignKey(() => Game)
     @Column({})
     gameId: number;
+
+    @BelongsTo(() => Game)
+    game: Game;
 }

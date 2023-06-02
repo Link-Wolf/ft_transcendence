@@ -9,17 +9,6 @@ export class MembershipDto {
     @IsBoolean()
     isAdmin?: boolean;
 
-    @IsBoolean()
-    isOwner?: boolean;
-
-    banTimeout?: Date;
-
-    muteTimeout?: Date;
-
-    banReason?: string;
-
-    muteReason?: string;
-
     user?: User;
 
     channel?: Channel;

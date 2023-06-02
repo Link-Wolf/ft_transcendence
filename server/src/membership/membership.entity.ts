@@ -20,36 +20,6 @@ export class Membership extends Model<Membership> {
     })
     id: number;
 
-    @Column({
-        type: DataType.BOOLEAN,
-        defaultValue: false
-    })
-    isOwner: boolean;
-
-    @Column({
-        type: DataType.BOOLEAN,
-        defaultValue: false
-    })
-    isAdmin: boolean;
-
-    @Column({
-        type: DataType.DATE,
-        defaultValue: null
-    })
-    banTimeout: Date;
-
-    @Column({
-        type: DataType.DATE,
-        defaultValue: null
-    })
-    muteTimeout: Date;
-
-    @Column
-    banReason: string;
-
-    @Column
-    muteReason: string;
-
     @ForeignKey(() => User)
     @Column({})
     userLogin: string;
@@ -63,4 +33,10 @@ export class Membership extends Model<Membership> {
 
     @BelongsTo(() => Channel, 'channelName')
     channel: Channel;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: false
+    })
+    isAdmin: boolean;
 }

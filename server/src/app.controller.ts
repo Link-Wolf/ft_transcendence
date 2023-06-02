@@ -10,3 +10,6 @@ export class AppController {
     return this.appService.getHello();
   }
 }
+
+//TODO: check all controller for clearance level
+//TODO: check all service for include all

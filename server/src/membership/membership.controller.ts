@@ -9,10 +9,10 @@ import {
 	Delete,
 	NotFoundException,
 	HttpException,
-	HttpStatus,
-	ParseBoolPipe
+	HttpStatus
 } from '@nestjs/common';
 import { ClearanceGuard } from '../guards/clearance.guard';
+import { ParseBoolPipe } from './membership.pipe';
 import { MembershipService } from './membership.service';
 import { UserService } from '../user/user.service';
 import { Membership } from './membership.entity';
@@ -39,7 +39,7 @@ export class MembershipController {
 	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getAll(): Promise<Membership[]>
 	{
-		return this.membershipService.getAll();
+		return this.membershipService.findAll();
 	}
 
 	/**
@@ -79,6 +79,7 @@ export class MembershipController {
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		return this.membershipService.findByChannel(chan_name);
 	}
+
 	/**
 	 * @brief Get a membership by user and channel
 	 * @return {Membership} The membership
@@ -103,24 +104,6 @@ export class MembershipController {
 		return this.membershipService.findByUserAndChannel(login, chan_name);
 	}
 
-
-
-
-	@Get('user/:login/bans')
-
-
-
-	@Get('user/:login/mutes')
-
-
-
-
-	@Get('user/:login/mutes/channel/:chan_name')
-
-
-
-
-
 	/**
 	 * @brief Create a membership
 	 * @return {Membership} The created membership
@@ -138,7 +121,6 @@ export class MembershipController {
 	async create(
 		@Body('channelName') channelName: string,
 		@Body('userLogin') userLogin: string,
-		@Body('isOwner', ParseBoolPipe) isOwner: boolean = false,
 		@Body('isAdmin', ParseBoolPipe) isAdmin: boolean = false,
 	): Promise<Membership>
 	{
@@ -148,14 +130,11 @@ export class MembershipController {
 		let channel = await this.channelService.findByName(channelName);
 		if (!channel)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		if (isOwner)
-			isAdmin = true;
 		if (this.membershipService.findByUserAndChannel(userLogin, channelName))
 			throw new HttpException('Membership already exists', HttpStatus.CONFLICT);
 		return this.membershipService.create({
 			user: user,
 			channel: channel,
-			isOwner: isOwner,
 			isAdmin: isAdmin
 		});
 	}
@@ -172,10 +151,6 @@ export class MembershipController {
 		@Param('login') userLogin: string,
 		@Param('chan_name') channelName: string,
 		@Body('isAdmin', ParseBoolPipe) isAdmin?: boolean,
-		@Body('banTimeout' /*TODO: ParseDatePipe*/) banTimeout?: Date,
-		@Body('banReason') banReason?: string,
-		@Body('muteTimeout' /*TODO: ParseDatePipe*/) muteTimeout?: Date,
-		@Body('muteReason') muteReason?: string
 	): Promise<number>
 	{
 		let user = await this.userService.findByLogin(userLogin);
@@ -186,7 +161,7 @@ export class MembershipController {
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		if (!this.membershipService.findByUserAndChannel(userLogin, channelName))
 			throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
-		
+		return this.membershipService.update({user: user, channel: channel, isAdmin: isAdmin});
 	}
 
 	@Delete('user/:login/channel/:chan_name')
@@ -199,6 +174,8 @@ export class MembershipController {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		if(!this.channelService.findByName(chan_name))
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
+		if (!this.membershipService.findByUserAndChannel(login, chan_name))
+			throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
 		return this.membershipService.delete(login, chan_name);
 	}
 }

@@ -8,11 +8,9 @@ export class BanDto {
 
     @IsString()
     @IsNotEmpty()
-    reason: string;
+    reason?: string;
 
-    @IsDate()
-    date: Date;
+    user?: User;
 
-    user: User;
-    channel: Channel;
+    channel?: Channel;
 }
