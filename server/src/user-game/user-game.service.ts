@@ -17,7 +17,7 @@ export class UserGameService {
      */
     async findAll(): Promise<UserGame[]> {
         try {
-            return this.userGameRepository.findAll<UserGame>();
+            return await this.userGameRepository.findAll<UserGame>({ include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -25,12 +25,11 @@ export class UserGameService {
 
     async findByUserAndGame(dto: UserGameDto): Promise<UserGame> {
         try {
-            console.log(dto);
-            return this.userGameRepository.findOne<UserGame>(
+            return await this.userGameRepository.findOne<UserGame>(
                 { where: {
                     gameId: dto.game.dataValues.id,
                     userLogin: dto.user.dataValues.login
-                }
+                }, include: [{ all: true }]
             });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -45,7 +44,7 @@ export class UserGameService {
      */
     async findByUser(login: string): Promise<UserGame[]> {
         try {
-            return this.userGameRepository.findAll<UserGame>({ where: { userLogin: login } });
+            return await this.userGameRepository.findAll<UserGame>({ where: { userLogin: login }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -59,7 +58,7 @@ export class UserGameService {
      */
     async findByGame(id: number): Promise<UserGame[]> {
         try {
-            return this.userGameRepository.findAll<UserGame>({ where: { gameId: id } });
+            return await this.userGameRepository.findAll<UserGame>({ where: { gameId: id }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -73,7 +72,10 @@ export class UserGameService {
      */
     async create(userGameDto: UserGameDto): Promise<UserGame> {
         try {
-            return this.userGameRepository.create<UserGame>(userGameDto);
+            let ret = await this.userGameRepository.create<UserGame>(userGameDto);
+            await ret.$set('user', userGameDto.user);
+            await ret.$set('game', userGameDto.game);
+            return ret;
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -87,7 +89,7 @@ export class UserGameService {
      */
     async update(userGameDto: UserGameDto): Promise<number> {
         try {
-            return this.userGameRepository.update<UserGame>(userGameDto, {
+            return await this.userGameRepository.update<UserGame>(userGameDto, {
                 where: {
                     gameId: userGameDto.game.dataValues.id,
                     userLogin: userGameDto.user.dataValues.login
@@ -106,7 +108,7 @@ export class UserGameService {
      */
     async delete(id: number): Promise<number> {
         try {
-            return this.userGameRepository.destroy({ where: { id: id } });
+            return await this.userGameRepository.destroy({ where: { id: id } });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

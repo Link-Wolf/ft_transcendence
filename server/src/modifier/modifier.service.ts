@@ -16,7 +16,7 @@ export class ModifierService {
      */
     async findAll(): Promise<Modifier[]> {
         try {
-            return this.modifierRepository.findAll<Modifier>();
+            return await this.modifierRepository.findAll<Modifier>({ include: [{ all: true }] });
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -31,8 +31,8 @@ export class ModifierService {
      */
     async findById(id: number): Promise<Modifier> {
         try {
-            return this.modifierRepository
-                .findOne<Modifier>({ where: { id: id } });
+            return await this.modifierRepository
+                .findOne<Modifier>({ where: { id: id }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -46,8 +46,8 @@ export class ModifierService {
      */
     async findByName(name: string): Promise<Modifier> {
         try {
-            return this.modifierRepository
-                .findOne<Modifier>({ where: { name: name } });
+            return await this.modifierRepository
+                .findOne<Modifier>({ where: { name: name }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -61,7 +61,7 @@ export class ModifierService {
      */
     async create(modifierDto: ModifierDto): Promise<Modifier> {
         try {
-            return this.modifierRepository.create<Modifier>(modifierDto);
+            return await this.modifierRepository.create<Modifier>(modifierDto);
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -75,7 +75,7 @@ export class ModifierService {
      */
     async update(modifierDto: ModifierDto): Promise<number> {
         try {
-            return this.modifierRepository.update<Modifier>(modifierDto, { where: { id: modifierDto.id } })[0];
+            return await this.modifierRepository.update<Modifier>(modifierDto, { where: { id: modifierDto.id } })[0];
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,7 +90,7 @@ export class ModifierService {
      */
     async delete(id: number): Promise<number> {
         try {
-            return this.modifierRepository.destroy({ where: { id: id } });
+            return await this.modifierRepository.destroy({ where: { id: id } });
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);

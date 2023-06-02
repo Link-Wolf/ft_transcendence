@@ -16,7 +16,7 @@ export class GameService {
      */
     async findAll(): Promise<Game[]> {
         try {
-            return this.gameRepository.findAll<Game>({ include: [{ all: true }] });
+            return await this.gameRepository.findAll<Game>({ include: [{ all: true }] });
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -31,7 +31,7 @@ export class GameService {
      */
     async findById(id: number): Promise<Game> {
         try {
-            return this.gameRepository
+            return await this.gameRepository
                 .findOne<Game>({ where: { id: id }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -45,9 +45,19 @@ export class GameService {
      * @return  {Game[]}            List of games
      * @throws  {HttpException}     500 if an error occured
      */
-    async findByPlayer(login: string, ranked: boolean): Promise<any> /*Promise<Game[]>*/ {
+    async findByPlayer(login: string, ranked: boolean = false): Promise<Game[]> {
         try {
-            //TODO
+            let ret = await this.gameRepository.findAll<Game>({
+                include: [{ all: true }],
+                where: {
+                    ...(ranked ? { ranked: ranked } : {})
+                }
+            })
+            return ret.filter(game => {
+                return game.users.some(user => {
+                    return user.login == login;
+                });
+            })
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -78,7 +88,7 @@ export class GameService {
      */
     async update(gameDto: GameDto): Promise<number> {
         try {
-            return this.gameRepository.update<Game>(
+            return await this.gameRepository.update<Game>(
                 gameDto,
                 { where: { id: gameDto.id } }
             )[0];
@@ -95,7 +105,7 @@ export class GameService {
      */
     async delete(id: number): Promise<number> {
         try {
-            return this.gameRepository.destroy<Game>({ where: { id: id } });
+            return await this.gameRepository.destroy<Game>({ where: { id: id } });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

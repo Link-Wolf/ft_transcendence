@@ -16,7 +16,7 @@ export class BlockService {
      */
     async findAll(): Promise<Block[]> {
         try {
-            return this.blockRepository.findAll<Block>({ include: [{ all: true }] });
+            return await this.blockRepository.findAll<Block>({ include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -30,7 +30,7 @@ export class BlockService {
      */
     async findBlockersOf(login: string): Promise<Block[]> {
         try {
-            return this.blockRepository.findAll<Block>({ where: { blocked: login } });
+            return await this.blockRepository.findAll<Block>({ where: { blocked: login }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -44,7 +44,7 @@ export class BlockService {
      */
     async findBlocksBy(login: string): Promise<Block[]> {
         try {
-            return this.blockRepository.findAll<Block>({ where: { blocker: login } });
+            return await this.blockRepository.findAll<Block>({ where: { blocker: login }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -58,7 +58,10 @@ export class BlockService {
      */
     async create(blockDto: BlockDto): Promise<Block> {
         try {
-            return this.blockRepository.create<Block>(blockDto);
+            let ret = await this.blockRepository.create<Block>(blockDto);
+            await ret.$set('blocker', blockDto.blocker);
+            await ret.$set('blocked', blockDto.blocked);
+            return ret;
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

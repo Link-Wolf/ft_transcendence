@@ -8,12 +8,12 @@ export class MessageDto {
 
     @IsString()
     @IsNotEmpty()
-    content: string;
+    content?: string;
 
     @IsDate()
-    date: Date;
+    date?: Date;
 
-    user: User;
+    user?: User;
 
-    channel: Channel;
+    channel?: Channel;
 }

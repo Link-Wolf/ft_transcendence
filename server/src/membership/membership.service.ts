@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { Membership } from './membership.entity';
 import { MembershipDto } from './membership.dto';
 
@@ -14,9 +14,9 @@ export class MembershipService {
      * @return  {Membership[]}     List of memberships
      * @throws  {HttpException}    500 if an error occured
      */
-    async getAll(): Promise<Membership[]> {
+    async findAll(): Promise<Membership[]> {
         try {
-            return this.membershipRepository.findAll<Membership>();
+            return await this.membershipRepository.findAll<Membership>({ include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -30,7 +30,7 @@ export class MembershipService {
      */
     async findByUser(login: string): Promise<Membership[]> {
         try {
-            return this.membershipRepository.findAll<Membership>({ where: { userLogin: login } });
+            return await this.membershipRepository.findAll<Membership>({ where: { userLogin: login }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -44,7 +44,7 @@ export class MembershipService {
      */
     async findByChannel(chan_name: string): Promise<Membership[]> {
         try {
-            return this.membershipRepository.findAll<Membership>({ where: { channelName: chan_name } });
+            return await this.membershipRepository.findAll<Membership>({ where: { channelName: chan_name }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -59,7 +59,7 @@ export class MembershipService {
      */
     async findByUserAndChannel(login: string, chan_name: string): Promise<Membership> {
         try {
-            return this.membershipRepository.findOne<Membership>({ where: { userLogin: login, channelName: chan_name } });
+            return await this.membershipRepository.findOne<Membership>({ where: { userLogin: login, channelName: chan_name }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -73,7 +73,10 @@ export class MembershipService {
      */
     async create(membershipDto: MembershipDto): Promise<Membership> {
         try {
-            return this.membershipRepository.create<Membership>(membershipDto);
+            let ret = await this.membershipRepository.create<Membership>(membershipDto);
+            await ret.$set('user', membershipDto.user);
+            await ret.$set('channel', membershipDto.channel);
+            return ret;
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -87,7 +90,7 @@ export class MembershipService {
      */
     async update(membershipDto: MembershipDto): Promise<number> {
         try {
-            return this.membershipRepository.update<Membership>(membershipDto, {
+            return await this.membershipRepository.update<Membership>(membershipDto, {
                 where: {
                     userLogin: membershipDto.user.dataValues.login,
                     channelName: membershipDto.channel.dataValues.name
@@ -107,7 +110,7 @@ export class MembershipService {
      */
     async delete(login: string, chan_name: string): Promise<number> {
         try {
-            return this.membershipRepository.destroy({
+            return await this.membershipRepository.destroy({
                 where: {
                     userLogin: login,
                     channelName: chan_name

@@ -53,7 +53,7 @@ export class GameController {
      * @response 404 - Not Found
      * @response 500 - Internal Server Error
      */
-    @Get('id/:id')
+    @Get(':id')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async findById(@Param('id', ParseIntPipe) id: number): Promise<Game> {
         let ret = await this.gameService.findById(id);

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -25,6 +24,15 @@ import { FriendshipController } from './friendship/friendship.controller';
 import { FriendshipModule } from './friendship/friendship.module';
 import { MembershipModule } from './membership/membership.module';
 import { BlockController } from './block/block.controller';
+import { MembershipController } from './membership/membership.controller';
+import { MembershipService } from './membership/membership.service';
+import { BanModule } from './ban/ban.module';
+import { BanController } from './ban/ban.controller';
+import { BanService } from './ban/ban.service';
+import { MuteModule } from './mute/mute.module';
+import { MuteController } from './mute/mute.controller';
+import { MuteService } from './mute/mute.service';
+import { PrivateMessageModule } from './private-message/private-message.module';
 
 @Module({
   imports: [
@@ -39,6 +47,9 @@ import { BlockController } from './block/block.controller';
     BlockModule,
     FriendshipModule,
     MembershipModule,
+    BanModule,
+    MuteModule,
+    PrivateMessageModule,
   ],
   controllers: [
     AppController,
@@ -47,7 +58,10 @@ import { BlockController } from './block/block.controller';
     MessageController,
     ModifierController,
     FriendshipController,
-    BlockController
+    BlockController,
+    MembershipController,
+    BanController,
+    MuteController,
   ],
   providers: [
     AppService,
@@ -57,6 +71,9 @@ import { BlockController } from './block/block.controller';
     GameService,
     BlockService,
     FriendshipService,
+    MembershipService,
+    BanService,
+    MuteService
   ],
 })
 export class AppModule { }

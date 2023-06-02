@@ -16,7 +16,7 @@ export class UserService {
      */
     async findAll(): Promise<User[]> {
         try {
-            return this.userRepository.findAll<User>();
+            return await this.userRepository.findAll<User>({ include: [{ all: true }] });
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -31,8 +31,8 @@ export class UserService {
      */
     async findByLogin(login: string): Promise<User> {
         try {
-            return this.userRepository
-                .findOne<User>({ where: { login: login } });
+            return await this.userRepository
+                .findOne<User>({ where: { login: login }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -46,8 +46,8 @@ export class UserService {
      */
     async findByName(name: string): Promise<User> {
         try {
-            return this.userRepository
-                .findOne<User>({ where: { name: name } });
+            return await this.userRepository
+                .findOne<User>({ where: { name: name }, include: [{ all: true }] });
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -61,7 +61,7 @@ export class UserService {
      */
     async create(userDto: UserDto): Promise<User> {
         try {
-            return this.userRepository.create<User>(userDto);
+            return await this.userRepository.create<User>(userDto);
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,7 +76,7 @@ export class UserService {
      */
     async update(userDto: UserDto): Promise<number> {
         try {
-            return this.userRepository.update<User>(
+            return await this.userRepository.update<User>(
                 userDto,
                 { where: { login: userDto.login } }
             )[0];
@@ -94,7 +94,7 @@ export class UserService {
      */
     async delete(login: string): Promise<number> {
         try {
-            return this.userRepository.destroy({ where: { login: login } });
+            return await this.userRepository.destroy({ where: { login: login } });
         }
         catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
