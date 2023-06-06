@@ -80,7 +80,6 @@ export class UserController {
     async create(
         @Body('login') login: string,
         @Body('name') name: string,
-        @Body('has2FA', ParseBoolPipe) has2FA?: boolean,
         /* TODO: avatar from blob :) */
     ): Promise<User> {
         if (!login || !name) {
@@ -93,7 +92,7 @@ export class UserController {
             throw new HttpException('Name is already taken', HttpStatus.CONFLICT);
         }
         return this.userService.create(
-            { login: login, name: name, has2FA: has2FA /* avatar: avatar */ }
+            { login: login, name: name, has2FA: false, clearance: Number(process.env.USER_CLEARANCE), /* avatar: avatar */ }
         );
     }
 
