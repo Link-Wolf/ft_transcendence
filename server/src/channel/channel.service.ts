@@ -11,7 +11,7 @@ export class ChannelService {
 
     /**
      * @brief Get all channels
-     * @return Promise<Channel[]> All channels
+     * @return {Channel[]} All channels
      * @throws {HttpException} 500 - Internal server error
      */
     async findAll(): Promise<Channel[]> {
@@ -24,8 +24,8 @@ export class ChannelService {
 
     /**
      * @brief Get a channel by its name
-     * @param name The channel's name
-     * @return Promise<Channel> The channel
+     * @param {string} name The channel's name
+     * @return {Channel} The channel
      * @throws {HttpException} 500 - Internal server error
      */
     async findByName(name: string): Promise<Channel> {
@@ -38,7 +38,7 @@ export class ChannelService {
 
     /**
      * @brief Get all public channels
-     * @return Promise<Channel[]> All public channels
+     * @return {Channel[]} All public channels
      * @throws {HttpException} 500 - Internal server error
      */ 
     async findPublic(): Promise<Channel[]> {
@@ -51,8 +51,8 @@ export class ChannelService {
 
     /**
      * @brief Get all channels where the login's user is the owner
-     * @param login The user's login
-     * @return Promise<Channel[]> All channels of the user
+     * @param {string} login The user's login
+     * @return {Channel[]} All channels of the user
      * @throws {HttpException} 500 - Internal server error
      */
     async findByOwner(login: string): Promise<Channel[]> {
@@ -67,8 +67,8 @@ export class ChannelService {
      * @brief Get all channels where the password is the same as pass2check
      *        (yeah it's a really bad idea to prevent same password for different 
      *        channels but it's for fun, trust)
-     * @param pass2check The channel's password
-     * @return Promise<Channel[]> All channels where the password is pass2check
+     * @param {string} pass2check The channel's password
+     * @return {Channel[]} All channels where the password is pass2check
      * @throws {HttpException} 500 - Internal server error
      */
     async findByPassword(pass2check: string): Promise<Channel[]> {
@@ -81,8 +81,8 @@ export class ChannelService {
 
     /**
      * @brief Create a channel
-     * @param channelDto The channel to create
-     * @return Promise<Channel> The created channel
+     * @param {ChannelDto} channelDto The channel to create
+     * @return {Channel} The created channel
      * @throws {HttpException} 500 - Internal server error
      */    
     async create(channelDto: ChannelDto): Promise<Channel> {
@@ -99,8 +99,8 @@ export class ChannelService {
 
     /**
      * @brief Update a channel
-     * @param channelDto The channel to update
-     * @return Promise<number> The number of updated rows
+     * @param {ChannelDto} channelDto The channel to update
+     * @return {number} The number of updated rows
      * @throws {HttpException} 500 - Internal server error
      */
     async update(channelDto: ChannelDto): Promise<number> {
@@ -113,8 +113,8 @@ export class ChannelService {
 
     /**
      * @brief Delete a channel
-     * @param name The channel's name
-     * @return Promise<number> The number of deleted rows
+     * @param {string} name The channel's name
+     * @return {number} The number of deleted rows
      * @throws {HttpException} 500 - Internal server error
      */
     async delete(name: string): Promise<number> {

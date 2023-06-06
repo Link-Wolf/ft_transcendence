@@ -23,6 +23,12 @@ export class UserGameService {
         }
     }
 
+    /**
+     * @brief   Find a user game by an user and a game with sequelize
+     * @param   {UserGameDto} dto  The user game to find
+     * @return  {UserGame}         The user game
+     * @throws  {HttpException}    500 if an error occured
+     */
     async findByUserAndGame(dto: UserGameDto): Promise<UserGame> {
         try {
             return await this.userGameRepository.findOne<UserGame>(
