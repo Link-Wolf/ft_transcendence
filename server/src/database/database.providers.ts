@@ -40,7 +40,7 @@ export const databaseProviders = [{
             Message,
             Membership
         ]);
-        await sequelize.sync();
+        await sequelize.sync({alter: true});
         return sequelize;
     },
 }];
