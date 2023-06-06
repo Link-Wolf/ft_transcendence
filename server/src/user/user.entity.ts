@@ -41,6 +41,18 @@ export class User extends Model<User> {
     })
     has2FA: boolean;
 
+	@Column({
+		type: DataType.STRING,
+		allowNull: true
+	})
+	A2FSecret: string;
+
+	@Column({
+		type: DataType.BOOLEAN,
+		defaultValue: false
+	})
+	hasConnected: boolean;
+
     @Column({
         type: DataType.INTEGER,
         defaultValue: 0
