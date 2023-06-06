@@ -32,7 +32,7 @@ export class BanController {
 
 	/**
 	 * @brief Get a ban by its id
-	 * @param id The ban id
+	 * @param {number} id The ban id
 	 * @return {Ban} The ban
 	 * @security Clearance level: admin
 	 * @response 200 - OK
@@ -52,7 +52,7 @@ export class BanController {
 
 	/** 
 	 * @brief Get all bans of a user
-	 * @param login The user login
+	 * @param {string} login The user login
 	 * @return {Ban[]} All bans of the user
 	 * @security Clearance level: admin
 	 * @response 200 - OK
@@ -75,7 +75,7 @@ export class BanController {
 
 	/**
 	 * @brief Get all bans of a channel
-	 * @param chann_name The channel name
+	 * @param {string} chann_name The channel name
 	 * @return {Ban[]} All bans of the channel
 	 * @security Clearance level: admin OR channel owner OR channel admin
 	 * @response 200 - OK
@@ -98,8 +98,8 @@ export class BanController {
 
 	/**
 	 * @brief Get a ban by its user login and channel name
-	 * @param login The user login
-	 * @param chann_name The channel name
+	 * @param {string} login The user login
+	 * @param {string} chann_name The channel name
 	 * @return {Ban} The ban
 	 * @security Clearance level: admin OR channel owner OR channel admin
 	 * @response 200 - OK
@@ -129,9 +129,9 @@ export class BanController {
 
 	/**
 	 * @brief Create a ban
-	 * @param login The user login
-	 * @param chann_name The channel name
-	 * @param reason The ban reason
+	 * @param {string} login The user login
+	 * @param {string} chann_name The channel name
+	 * @param {string} reason The ban reason
 	 * @return {Ban} The created ban
 	 * @security Clearance level: admin OR channel owner OR channel admin
 	 * @response 200 - OK
@@ -181,8 +181,8 @@ export class BanController {
 			
 	/**
 	 * @brief Delete a ban
-	 * @param login The user login
-	 * @param chann_name The channel name
+	 * @param {string} login The user login
+	 * @param {string} chann_name The channel name
 	 * @return {number} The number of deleted bans
 	 * @security Clearance level: admin OR channel owner OR channel admin
 	 * @response 200 - OK
