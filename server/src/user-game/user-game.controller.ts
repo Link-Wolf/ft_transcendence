@@ -16,6 +16,7 @@ export class UserGameController {
     /**
      * @brief Get all user games
      * @returns {UserGame[]} All user games
+     * @security Clearance admin
      * @response 200 - OK
      * @response 401 - Unauthorized
      * @response 403 - Forbidden
@@ -28,12 +29,11 @@ export class UserGameController {
     }
 
     /**
-     * @brief Update a user game
+     * @brief Get a user game by user login and game id
      * @param {number} id - User game id
-     * @param {string} userLogin - User login
-     * @param {number} gameId - Game id
-     * @param {number} score - User score
-     * @returns {number} Number of updated user games
+     * @param {string} login - User login
+     * @returns {UserGame} User game by user login and game id
+     * @security Clearance admin OR user
      * @response 200 - OK
      * @response 401 - Unauthorized
      * @response 403 - Forbidden
@@ -43,13 +43,13 @@ export class UserGameController {
     @Get('game/:id/player/:login')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async getByUserAndGame(
-        @Param('id', ParseIntPipe) gameId: number,
-        @Param('login') userLogin: string,
+        @Param('id', ParseIntPipe) id: number,
+        @Param('login') login: string,
     ): Promise<UserGame> {
-        let user = await this.userService.findByLogin(userLogin);
+        let user = await this.userService.findByLogin(login);
         if (!user)
             throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
-        let game = await this.gameService.findById(gameId);
+        let game = await this.gameService.findById(id);
         if (!game)
             throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
         let ret = await this.userGameService.findByUserAndGame({ game: game, user: user })
@@ -62,6 +62,7 @@ export class UserGameController {
      * @brief Get all user games by user login
      * @param {string} login - User login
      * @returns {UserGame[]} All user games by user login
+     * @security Clearance user
      * @response 200 - OK
      * @response 401 - Unauthorized
      * @response 404 - Not Found
@@ -82,8 +83,10 @@ export class UserGameController {
      * @brief Get all user games by game id
      * @param {number} id - Game id
      * @returns {UserGame[]} All user games by game id
+     * @security Clearance admin OR one of the 2 players of the game
      * @response 200 - OK
      * @response 401 - Unauthorized
+     * @response 403 - Forbidden
      * @response 404 - Not Found
      * @response 500 - Internal Server Error
      */
@@ -139,10 +142,11 @@ export class UserGameController {
     /**
      * @brief Update a user game
      * @param {number} id - User game id
-     * @param {string} userLogin - User login
-     * @param {number} gameId - Game id
+     * @param {string} login - User login
+     * @param {number} id - Game id
      * @param {number} score - User score
      * @returns {number} Number of updated user games
+     * @security Clearance admin OR one of the 2 players of the game
      * @response 200 - OK
      * @response 401 - Unauthorized
      * @response 403 - Forbidden
@@ -152,16 +156,16 @@ export class UserGameController {
     @Patch('game/:id/player/:login')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async update(
-        @Param('id', ParseIntPipe) gameId: number,
-        @Param('login') userLogin: string,
+        @Param('id', ParseIntPipe) id: number,
+        @Param('login') login: string,
         @Body('score', ParseIntPipe) score: number
     ): Promise<Number> {
-        if (!userLogin)
+        if (!login)
             throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
-        let user = await this.userService.findByLogin(userLogin);
+        let user = await this.userService.findByLogin(login);
         if (!user)
             throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
-        let game = await this.gameService.findById(gameId);
+        let game = await this.gameService.findById(id);
         if (!game)
             throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
         if (!await this.userGameService.findByUserAndGame({ game: game, user: user }))

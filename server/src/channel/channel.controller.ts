@@ -20,12 +20,12 @@ import { MembershipService } from 'src/membership/membership.service';
 @Controller('channel')
 export class ChannelController {
 	constructor(
-		private channelService: ChannelService,
-		private userService: UserService,
+		private readonly channelService: ChannelService,
+		private readonly userService: UserService,
 	) { }
 	
 	/**
-	 * @breif Get all channels
+	 * @brief Get all channels
 	 * @returns {Channel[]} All channels
 	 * @security Clearance admin
 	 * @response 200 - OK
@@ -41,7 +41,7 @@ export class ChannelController {
 	}
 	
 	/**
-	 * @breif Get all public channels
+	 * @brief Get all public channels
 	 * @returns {Channel[]} All public channels
 	 * @security Clearance user
 	 * @response 200 - OK
@@ -56,11 +56,13 @@ export class ChannelController {
 	}
 	
 	/**
-	 * @breif Get a channel by name
+	 * @brief Get a channel by name
+	 * @param {string} name The channel name
 	 * @returns {Channel} The channel
 	 * @security Clearance admin if private, user if public
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
 	 * @response 404 - Not Found
 	 * @response 500 - Internal Server Error
 	 */
@@ -77,11 +79,13 @@ export class ChannelController {
 	}
 	
 	/**
-	 * @breif Get all public channels owned by a user
+	 * @brief Get all public channels owned by a user
+	 * @param {string} owner The user's login
 	 * @returns {Channel[]} All channels owned by the user
-	 * @security Clearance public
+	 * @security Clearance admin OR user himself
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
 	 * @response 404 - Not Found
 	 * @response 500 - Internal Server Error
 	 */
@@ -98,7 +102,10 @@ export class ChannelController {
 	}
 
 	/**
-	 * @breif Create a channel
+	 * @brief Create a channel
+	 * @param {string} ownerLogin The owner's login
+	 * @param {string} name The channel name
+	 * @param {string} password The channel password
 	 * @returns {Channel} The created channel
 	 * @security Clearance user
 	 * @response 201 - Created
@@ -135,9 +142,11 @@ export class ChannelController {
 	}
 
 	/**
-	 * @breif Update a channel
+	 * @brief Update a channel
+	 * @param {string} name The channel name
+	 * @param {string} password The channel password
 	 * @returns {number} The number of rows affected
-	 * @security Clearance admin or owner of channel
+	 * @security Clearance admin OR owner of channel
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -164,8 +173,10 @@ export class ChannelController {
 	}
 	
 	/**
-	 * @breif Delete a channel
-	 * @security Clearance admin or owner of channel
+	 * @brief Delete a channel
+	 * @param {string} name The channel name
+	 * @returns {number} The number of rows affected
+	 * @security Clearance admin OR owner of channel
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden

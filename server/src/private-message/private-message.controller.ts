@@ -13,12 +13,24 @@ export class PrivateMessageController {
 		private readonly membershipService: MembershipService,
 	) {}
 
+	/**
+	 * @brief Create a private message channel
+	 * @param {string} loginOther The other user's login
+	 * @returns {Channel} The created channel
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 404 - User not Found
+	 * @response 409 - Conflict
+	 * @response 500 - Internal Server Error
+	 */
 	@Post()
 	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE_LEVEL)))
 	async create(
 		@Body('loginOther') loginOther: string,
 	): Promise<Channel>
 	{
+		//TODO: check if already exist
 		let me = await this.userService.findByLogin('me' /* TODO: session */);
 		let otherMember = await this.userService.findByLogin(loginOther);
 		if (!otherMember)

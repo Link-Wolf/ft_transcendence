@@ -21,9 +21,9 @@ import { ChannelService } from '../channel/channel.service';
 @Controller('membership')
 export class MembershipController {
 	constructor(
-		private membershipService: MembershipService,
-		private userService: UserService,
-		private channelService: ChannelService
+		private readonly membershipService: MembershipService,
+		private readonly userService: UserService,
+		private readonly channelService: ChannelService
 	) {}
 
 	/**
@@ -44,8 +44,9 @@ export class MembershipController {
 
 	/**
 	 * @brief Get all memberships of a user
+	 * @param {string} login The user login
 	 * @return {Membership[]} All memberships of a user
-	 * @security Clearance admin or being the user
+	 * @security Clearance admin OR the user
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -63,8 +64,9 @@ export class MembershipController {
 
 	/**
 	 * @brief Get all memberships of a channel
+	 * @param {string} chan_name The channel name
 	 * @return {Membership[]} All memberships of a channel
-	 * @security Clearance admin or being in the channel
+	 * @security Clearance admin OR being in the channel
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -82,8 +84,10 @@ export class MembershipController {
 
 	/**
 	 * @brief Get a membership by user and channel
+	 * @param {string} login The user login
+	 * @param {string} chan_name The channel name
 	 * @return {Membership} The membership
-	 * @security Clearance admin or being the user or being in the channel
+	 * @security Clearance admin OR the user OR being in the channel
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -106,15 +110,17 @@ export class MembershipController {
 
 	/**
 	 * @brief Create a membership
+	 * @param {string} channelName The channel name
+	 * @param {string} userLogin The user login
+	 * @param {boolean} isAdmin Whether the user is admin or not
 	 * @return {Membership} The created membership
 	 * @security Clearance admin or being the user
-	 * @response 201 - Created
+	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
 	 * @response 404 - Not Found
 	 * @response 409 - Conflict
 	 * @response 500 - Internal Server Error
-	 * @param 
 	 */
 	@Post()
 	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
@@ -140,10 +146,17 @@ export class MembershipController {
 	}
 
 	/**
-	 * @brief Update a membership
-	 * 
-	 * @return {number} The number of updated memberships (technically)
-	 * @security Clearance admin or being admin in the channel
+	 * @brief Update a membership (only to change weather the user is admin or not)
+	 * @param {string} userLogin The user login
+	 * @param {string} channelName The channel name
+	 * @param {boolean} isAdmin Whether the user is admin or not
+	 * @return {number} The number of updated memberships
+	 * @security Clearance admin OR channel admin
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
 	 */
 	@Patch('user/:login/channel/:chan_name')
 	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
@@ -164,6 +177,18 @@ export class MembershipController {
 		return this.membershipService.update({user: user, channel: channel, isAdmin: isAdmin});
 	}
 
+	/**
+	 * @brief Delete a membership
+	 * @param {string} login The user login
+	 * @param {string} chan_name The channel name
+	 * @return {number} The number of deleted memberships
+	 * @security Clearance admin OR the user OR channel admin
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
 	@Delete('user/:login/channel/:chan_name')
 	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
 	async delete(
