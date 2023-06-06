@@ -24,6 +24,7 @@ export class BlockController {
     /**
      * @brief Get all blocks
      * @return {Block[]} All blocks
+     * @security Clearance admin
      * @response 200 - OK
      * @response 401 - Unauthorized
      * @response 403 - Forbidden
@@ -35,6 +36,17 @@ export class BlockController {
         return this.blockService.findAll();
     }
 
+    /**
+     * @brief Get all blocks that block login
+     * @param {string} login The login of the user
+     * @return {Block[]} All blocks that block login
+     * @security Clearance admin
+     * @response 200 - OK
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 404 - User not found
+     * @response 500 - Internal Server Error
+     */
     @Get('of/:login')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async findBlockersOf(
@@ -45,6 +57,17 @@ export class BlockController {
         return this.blockService.findBlockersOf(login);
     }
 
+    /**
+     * @brief Get all blocks that login blocks
+     * @param {string} login The login of the user
+     * @return {Block[]} All blocks that login blocks
+     * @security Clearance admin OR user himself
+     * @response 200 - OK
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 404 - User not found
+     * @response 500 - Internal Server Error
+     */
     @Get('by/:login')
     @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)), /*TODO: check if user is the right one*/)
     async findBlocksBy(
@@ -55,6 +78,17 @@ export class BlockController {
         return this.blockService.findBlocksBy(login);
     }
 
+    /**
+     * @brief Get the number of blocks that block login
+     * @param {string} login The login of the user
+     * @return {number} The number of blocks that block login
+     * @security Clearance admin OR user himself
+     * @response 200 - OK
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 404 - User not found
+     * @response 500 - Internal Server Error
+     */
     @Get('of/:login/count')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async findCountBlockersOf(
@@ -65,6 +99,17 @@ export class BlockController {
         return (await this.blockService.findBlockersOf(login)).length;
     }
 
+    /**
+     * @brief Get the number of blocks that login blocks
+     * @param {string} login The login of the user
+     * @return {number} The number of blocks that login blocks
+     * @security Clearance admin OR user himself
+     * @response 200 - OK
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 404 - User not found
+     * @response 500 - Internal Server Error
+     */
     @Get('by/:login/count')
     @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)), /*TODO: check if user is the right one*/)
     async findCountBlocksBy(
@@ -75,6 +120,17 @@ export class BlockController {
         return (await this.blockService.findBlocksBy(login)).length;
     }
 
+    /**
+     * @brief Get all users who block login
+     * @param {string} login The login of the user
+     * @return {User[]} All users who block login
+     * @security Clearance admin
+     * @response 200 - OK
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 404 - User not found
+     * @response 500 - Internal Server Error
+     */
     @Get('of/:login/users')
     @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     async findUsersBlockersOf(
@@ -85,6 +141,17 @@ export class BlockController {
         return Array.from(new Set((await this.blockService.findBlocksBy(login)).map(block => block.blocker)));//INFO: do some dark magic to have the list of all user who blocked login without duplicate
     }
 
+    /**
+     * @brief Get all users that login blocks
+     * @param {string} login The login of the user
+     * @return {User[]} All users that login blocks
+     * @security Clearance admin OR user himself
+     * @response 200 - OK
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 404 - User not found
+     * @response 500 - Internal Server Error
+     */
     @Get('by/:login/users')
     @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)), /*TODO: check if user is the right one*/)
     async findUsersBlocksBy(
@@ -95,6 +162,19 @@ export class BlockController {
         return Array.from(new Set((await this.blockService.findBlocksBy(login)).map(block => block.blocked)));//INFO: do some dark magic to have the list of all user who got blocked login without duplicate
     }
 
+    /**
+     * @brief Create a new block
+     * @param {string} blockerLogin The login of the blocker
+     * @param {string} blockedLogin The login of the blocked
+     * @return {Block} The block created
+     * @security Clearance admin OR user himself
+     * @response 200 - OK
+     * @response 400 - Bad request
+     * @response 401 - Unauthorized
+     * @response 403 - Forbidden
+     * @response 404 - Not found
+     * @response 500 - Internal Server Error
+     */
     @Post()
     @UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)), /*TODO: check if blocker is the right one*/)
     async create(

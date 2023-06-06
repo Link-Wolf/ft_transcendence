@@ -16,7 +16,9 @@ import { ParseBoolPipe } from './user.pipe';
 
 @Controller('user')
 export class UserController {
-    constructor(private userService: UserService) { }
+    constructor(
+        private readonly userService: UserService
+    ) { }
 
     /**
      * @brief Get all users
@@ -102,7 +104,7 @@ export class UserController {
      * @param {boolean} has2FA - The user's 2AF status
      * @param {Buffer} avatar - The user's avatar
      * @return {User} - The updated user
-     * @security Clearance user
+     * @security Clearance admin OR user himself
      * @response 200 - OK
      * @response 404 - Bad Request
      * @response 401 - Unauthorized
@@ -131,18 +133,18 @@ export class UserController {
         );
     }
 
-    /**
-     * @brief Delete a user
-     * @param {string} login - The user's login
-     * @return {number} - The number of deleted users
-     * @security Clearance admin
-     * @response 200 - OK
-     * @response 400 - Bad Request
-     * @response 401 - Unauthorized
-     * @response 403 - Forbidden
-     * @response 404 - Not Found
-     * @response 500 - Internal Server Error
-     */
+    // /**
+    //  * @brief Delete a user
+    //  * @param {string} login - The user's login
+    //  * @return {number} - The number of deleted users
+    //  * @security Clearance admin
+    //  * @response 200 - OK
+    //  * @response 400 - Bad Request
+    //  * @response 401 - Unauthorized
+    //  * @response 403 - Forbidden
+    //  * @response 404 - Not Found
+    //  * @response 500 - Internal Server Error
+    //  */
     // @Delete(':login')
     // @UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
     // async delete(@Param('login') login: string): Promise<number> {

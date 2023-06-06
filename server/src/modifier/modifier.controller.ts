@@ -5,7 +5,9 @@ import { ModifierService } from './modifier.service';
 
 @Controller('modifier')
 export class ModifierController {
-    constructor(private modifierService: ModifierService) { }
+    constructor(
+        private readonly modifierService: ModifierService
+    ) { }
 
     /**
      * @brief Get all modifiers

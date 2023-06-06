@@ -13,17 +13,20 @@ export class Friendship extends Model<Friendship> {
     @Column({
         primaryKey: true,
     })
-    friendLoginA: string;
+    senderLogin: string;
 
     @ForeignKey(() => User)
     @Column({
         primaryKey: true,
     })
-    friendLoginB: string;
+    receiverLogin: string;
 
-    @BelongsTo(() => User, 'friendLoginA')
-    friendA: User;
+    @Column
+    isPending: boolean;
 
-    @BelongsTo(() => User, 'friendLoginB')
-    friendB: User;
+    @BelongsTo(() => User, 'senderLogin')
+    sender: User;
+
+    @BelongsTo(() => User, 'receiverLogin')
+    receiver: User;
 }
