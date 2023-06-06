@@ -11,7 +11,7 @@ export class BlockService {
 
     /**
      * @brief Get all blocks
-     * @return Promise<Block[]> All blocks
+     * @return {Promise<Block[]>} All blocks
      * @throws {HttpException} 500 - Internal server error
      */
     async findAll(): Promise<Block[]> {

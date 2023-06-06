@@ -36,7 +36,7 @@ export class MuteController {
 	 * @brief Get a mute by its id
 	 * @param id The mute id
 	 * @return {Mute} The mute
-	 * @security Admin only or an admin of the channel or the user muted
+	 * @security Admin only OR admin of the channel
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -56,10 +56,10 @@ export class MuteController {
 	}
 
 	/**
-	 * @brief Get a mute by its id
-	 * @param id The mute id
-	 * @return {Mute} The mute
-	 * @security Admin only or the user muted
+	 * @brief Get mutes by user login
+	 * @param {string} login The user login
+	 * @return {Mute} All mute of the user
+	 * @security Admin only
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -79,10 +79,10 @@ export class MuteController {
 	}
 
 	/**
-	 * @brief Get a mute by its id
-	 * @param id The mute id
+	 * @brief Get all mute in a channel
+	 * @param {string} channelName The channel name
 	 * @return {Mute} The mute
-	 * @security Admin only or an admin of the channel
+	 * @security Admin only OR an admin of the channel
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -103,10 +103,10 @@ export class MuteController {
 
 	/**
 	 * @brief Get all mutes of a user in a channel
-	 * @param login The user login
-	 * @param channelName The channel name
+	 * @param {string} login The user login
+	 * @param {string} channelName The channel name
 	 * @return {Mute[]} The mutes
-	 * @security Admin only or an admin of the channel or the user muted
+	 * @security Admin only OR channel admin
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -131,12 +131,12 @@ export class MuteController {
 
 	/**
 	 * @brief Create a mute
-	 * @param login The user login
-	 * @param channelName The channel name
-	 * @param end The end date
-	 * @param reason The reason
+	 * @param {string} login The user login
+	 * @param {string} channelName The channel name
+	 * @param {date} end The end date
+	 * @param {string} reason The reason
 	 * @return {Mute} The mute
-	 * @security Admin only or an admin of the channel
+	 * @security Admin only OR channel admin
 	 * @response 200 - OK
 	 * @response 400 - Bad request
 	 * @response 401 - Unauthorized
@@ -186,9 +186,9 @@ export class MuteController {
 
 	/**
 	 * @brief Delete a mute
-	 * @param id The mute id
+	 * @param {number} id The mute id
 	 * @return {number} The number of deleted mutes
-	 * @security Admin only or an admin of the channel
+	 * @security Admin only OR channel admin
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden

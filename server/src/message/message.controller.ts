@@ -37,9 +37,9 @@ export class MessageController {
 
 	/**
 	 * @brief Get a message by its id
-	 * @param id The message id
+	 * @param {number} id The message id
 	 * @return {Message} The message
-	 * @security Clearance level: admin OR user member of the channel where the message was posted
+	 * @security Clearance level: admin
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -60,7 +60,7 @@ export class MessageController {
 
     /**
      * @brief Get messages by channel name
-     * @param chanName The channel name
+     * @param {string} chanName The channel name
      * @return {Message[]} The messages
      * @security Clearance level: admin OR user member of the channel
      * @response 200 - OK
@@ -83,9 +83,9 @@ export class MessageController {
 
     /**
      * @brief Get messages by user login
-     * @param userLogin The user login
+     * @param {string} userLogin The user login
      * @return {Message[]} The messages
-     * @security Clearance level: admin OR the user itself
+     * @security Clearance level: admin
      * @response 200 - OK
      * @response 401 - Unauthorized
      * @response 403 - Forbidden
@@ -106,8 +106,8 @@ export class MessageController {
 
     /**
      * @brief Get messages by user login and channel name
-     * @param userLogin The user login
-     * @param chanName The channel name
+     * @param {string} userLogin The user login
+     * @param {string} chanName The channel name
      * @return {Message[]} The messages
      * @security Clearance level: admin OR user member of the channel
      * @response 200 - OK
@@ -134,9 +134,9 @@ export class MessageController {
 
     /**
      * @brief Create a message
-     * @param content The message content
-     * @param userLogin The user login
-     * @param chanName The channel name
+     * @param {string} content The message content
+     * @param {string} userLogin The user login
+     * @param {string} chanName The channel name
      * @return {Message} The message
      * @security Clearance level: admin OR user member of the channel
      * @response 200 - OK
@@ -181,7 +181,8 @@ export class MessageController {
 
     /**
      * @brief Delete a message by its id
-     * @param id The message id
+     * @param {number} id The message id
+	 * @return {number} The number of deleted messages
      * @security Clearance level: admin OR admin of the channel OR user who created the message
      * @response 200 - OK
      * @response 401 - Unauthorized
@@ -193,11 +194,11 @@ export class MessageController {
 	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
 	async deleteMessage(
 		@Param('id', ParseIntPipe) id: number
-	): Promise<void>
+	): Promise<number>
 	{
 		let message = await this.messageService.findById(id);
 		if (!message)
 			throw new HttpException('Message not found', HttpStatus.NOT_FOUND);
-		await this.messageService.delete(id);
+		return await this.messageService.delete(id);
 	}
 }
