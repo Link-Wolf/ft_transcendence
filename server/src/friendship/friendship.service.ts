@@ -6,13 +6,13 @@ import { Op } from 'sequelize';
 @Injectable()
 export class FriendshipService {
 	constructor (
-		@Inject("FRIENDSHIP_REPOSITORY")
+		@Inject('FRIENDSHIP_REPOSITORY')
 		private readonly friendshipRepository: typeof Friendship
 	) {}
 
 	/**
 	 * @brief Get all friendships
-	 * @returns {Promise<Friendship[]>} The list of all friendships
+	 * @returns {Friendship[]} The list of all friendships
 	 * @throws {HttpException} 500 - An error has occured
 	 */
 	async findAll(): Promise<Friendship[]> {

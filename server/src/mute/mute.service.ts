@@ -11,7 +11,7 @@ export class MuteService {
 
     /**
      * @brief Find all mutes
-     * @return A list of mutes
+     * @return {Mute[]} A list of mutes
      * @throws {HttpException} 500 - Internal server error
      */
     async findAll(): Promise<Mute[]> {
@@ -25,8 +25,8 @@ export class MuteService {
     
     /**
      * @brief Find a mute by its id
-     * @param id The mute's id
-     * @return The mute
+     * @param {number} id The mute's id
+     * @return {Mute} The mute
      * @throws {HttpException} 500 - Internal server error
      */
     async findById(id: number): Promise<Mute> {
@@ -40,8 +40,8 @@ export class MuteService {
 
     /**
      * @brief Find all mutes of a user
-     * @param login The user's login
-     * @return A list of mutes
+     * @param {string} login The user's login
+     * @return {Mute[]} A list of mutes
      * @throws {HttpException} 500 - Internal server error
      */
     async findByLogin(login: string): Promise<Mute[]> {
@@ -55,8 +55,8 @@ export class MuteService {
 
     /**
      * @brief Find all mutes of a channel
-     * @param channelName The channel's name
-     * @return A list of mutes
+     * @param {string} channelName The channel's name
+     * @return {Mute[]} A list of mutes
      * @throws {HttpException} 500 - Internal server error
      */
     async findByChannel(channelName: string): Promise<Mute[]> {
@@ -70,9 +70,9 @@ export class MuteService {
 
     /**
      * @brief Find all mutes of a user in a channel
-     * @param login The user's login
-     * @param channelName The channel's name
-     * @return A list of mutes
+     * @param {string} login The user's login
+     * @param {string} channelName The channel's name
+     * @return {Mute[]} A list of mutes
      * @throws {HttpException} 500 - Internal server error
      */
     async findByLoginAndChannel(login: string, channelName: string): Promise<Mute[]> {
@@ -86,8 +86,8 @@ export class MuteService {
 
     /**
      * @brief Create a mute
-     * @param mute The mute to create
-     * @return The created mute
+     * @param {MuteDto} mute The mute to create
+     * @return {Mute} The created mute
      * @throws {HttpException} 500 - Internal server error
      */
     async create(mute: MuteDto): Promise<Mute> {
@@ -104,8 +104,8 @@ export class MuteService {
 
     /**
      * @brief Delete a mute
-     * @param id The mute's id
-     * @return The number of deleted rows
+     * @param {number} id The mute's id
+     * @return {number} The number of deleted rows
      * @throws {HttpException} 500 - Internal server error
      */
     async delete(id: number): Promise<number> {

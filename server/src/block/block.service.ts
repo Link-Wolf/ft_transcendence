@@ -11,7 +11,7 @@ export class BlockService {
 
     /**
      * @brief Get all blocks
-     * @return {Promise<Block[]>} All blocks
+     * @return {Block[]} All blocks
      * @throws {HttpException} 500 - Internal server error
      */
     async findAll(): Promise<Block[]> {
@@ -24,8 +24,8 @@ export class BlockService {
 
     /**
      * @brief Get all blocks where the blocked is the login's user
-     * @param login The user's login
-     * @return Promise<Block[]> All blocks of the user
+     * @param {string} login The user's login
+     * @return {Block[]} All blocks of the user
      * @throws {HttpException} 500 - Internal server error
      */
     async findBlockersOf(login: string): Promise<Block[]> {
@@ -38,8 +38,8 @@ export class BlockService {
 
     /**
      * @brief Get all blocks where the blocker is the login's user
-     * @param login The user's login
-     * @return Promise<Block[]> All blocks by the user
+     * @param {string} login The user's login
+     * @return {Block[]} All blocks by the user
      * @throws {HttpException} 500 - Internal server error
      */
     async findBlocksBy(login: string): Promise<Block[]> {
@@ -52,8 +52,8 @@ export class BlockService {
 
     /**
      * @brief Create a block
-     * @param blockDto The block to create
-     * @return Promise<Block> The created block
+     * @param {BlockDto} blockDto The block to create
+     * @return {Block} The created block
      * @throws {HttpException} 500 - Internal server error
      */
     async create(blockDto: BlockDto): Promise<Block> {
@@ -69,8 +69,8 @@ export class BlockService {
 
     /**
      * @brief Delete a block
-     * @param blockDto The block to delete
-     * @return Promise<number> The number of deleted rows
+     * @param {BlockDto} blockDto The block to delete
+     * @return {number} The number of deleted rows
      * @throws {HttpException} 500 - Internal server error
      */
     async delete(blockDto: BlockDto): Promise<number> {

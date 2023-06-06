@@ -12,7 +12,7 @@ export class BanService {
 	
     /**
      * @brief Find all bans
-     * @return A list of bans
+     * @return {Ban[]} A list of bans
      * @throws {HttpException} 500 - Internal server error
      */
     async findAll(): Promise<Ban[]> {
@@ -26,8 +26,8 @@ export class BanService {
 
     /**
      * @brief Find a ban by its id
-     * @param id The ban's id
-     * @return The ban
+     * @param {number} id The ban's id
+     * @return {Ban} The ban
      * @throws {HttpException} 500 - Internal server error
      */
     async findById(id: number): Promise<Ban> {
@@ -41,8 +41,8 @@ export class BanService {
 
     /**
      * @brief Find all bans of a user
-     * @param login The user's login
-     * @return A list of bans
+     * @param {string} login The user's login 
+     * @return {Ban[]} A list of bans
      * @throws {HttpException} 500 - Internal server error
      */
     async findByLogin(login: string): Promise<Ban[]> {
@@ -56,8 +56,8 @@ export class BanService {
 
     /**
      * @brief Find all bans of a channel
-     * @param channelName The channel's name
-     * @return A list of bans
+     * @param {string} channelName The channel's name
+     * @return {Ban[]} A list of bans
      * @throws {HttpException} 500 - Internal server error
      */
     async findByChannel(channelName: string): Promise<Ban[]> {
@@ -71,9 +71,9 @@ export class BanService {
 
     /**
      * @brief Find all bans of a user in a channel
-     * @param login The user's login
-     * @param channelName The channel's name
-     * @return A list of bans
+     * @param {string} login The user's login
+     * @param {string} channelName The channel's name
+     * @return {Ban[]} A list of bans
      * @throws {HttpException} 500 - Internal server error
      */
     async findByLoginAndChannel(login: string, channelName: string): Promise<Ban[]> {
@@ -87,8 +87,8 @@ export class BanService {
 
     /**
      * @brief Create a ban
-     * @param ban The ban to create
-     * @return The created ban
+     * @param {BanDto} ban The ban to create
+     * @return {Ban} The created ban
      * @throws {HttpException} 500 - Internal server error
      */
     async create(ban: BanDto): Promise<Ban> {
@@ -105,9 +105,9 @@ export class BanService {
 
     /**
      * @brief Delete a ban
-     * @param login The user's login
-     * @param channelName The channel's name
-     * @return The number of deleted bans
+     * @param {string} login The user's login
+     * @param {string} channelName The channel's name
+     * @return {number} The number of deleted bans
      * @throws {HttpException} 500 - Internal server error
      */
     async delete(login: string, channelName: string): Promise<number> {
