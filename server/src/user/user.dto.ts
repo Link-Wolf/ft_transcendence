@@ -9,16 +9,18 @@ import { Channel } from "src/channel/channel.entity";
 export class UserDto {
     @IsString()
     @IsNotEmpty()
-    login: string;
+    login?: string;
 
     @IsString()
     @IsNotEmpty()
-    name: string;
+    name?: string;
 
     avatar?: Buffer;
 
+	clearance?: number;
+
     @IsBoolean()
-    has2FA: boolean;
+    has2FA?: boolean;
 
     userGames?: UserGame[];
 
@@ -31,4 +33,6 @@ export class UserDto {
     bans?: Ban[];
 
     channelsOwned?: Channel[];
+
+	hasConnected?: boolean;
 }
