@@ -1,13 +1,17 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ClearanceContext } from "../App";
 
 const Auth = () => {
 	const clearance = useContext(ClearanceContext);
-	//if non logged -> AuthButton
-	//if logged -> ProfileButton
+	console.log("Auth : ", clearance);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-	return <>{clearance === 0 ? <AuthButton /> : <ProfileButton />}</>;
+	useEffect(() => {
+		setIsLoggedIn(clearance !== 0);
+	}, [clearance]);
+	console.log("Auth2 : ", clearance);
+	return <>{isLoggedIn ? <ProfileButton /> : <AuthButton />}</>;
 };
 
 const AuthButton = () => {

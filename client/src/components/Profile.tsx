@@ -2,9 +2,13 @@ import axios from "axios";
 
 const Profile = () => {
 	const logout = () => {
-		axios.get(`${process.env.REACT_APP_API_URL}/auth/logout`, {
-			withCredentials: true,
-		});
+		axios
+			.get(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, {
+				withCredentials: true,
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
 
 	/**
