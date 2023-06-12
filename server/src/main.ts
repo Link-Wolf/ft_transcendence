@@ -10,13 +10,17 @@ async function bootstrap() {
 		helmet(),
 		session({
 			secret: process.env.SESSION_SECRET,
-			resave: false,
+			resave: true,
 			httpOnly: false,
-			saveUninitialized: false,
+			saveUninitialized: true,
 			maxAge: 42 * 60 * 1000, // 42 minutes
 			name: 'xinjingping',
 		})
 	)
+	app.enableCors({
+		origin: process.env.FRONTEND_URL,
+		credentials: true,
+	});
 	app.setGlobalPrefix('api');
 	await app.listen(process.env.PORT);
 }

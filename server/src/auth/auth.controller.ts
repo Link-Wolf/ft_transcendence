@@ -18,6 +18,7 @@ export class AuthController {
 	 * 				status: 'logged' | 'registered',
 	 * 				needTo2FA: boolean
 	 * 		} } Status of the login and if the user enabled 2FA
+	 * @security Anyone
 	 * @response 200 - OK
 	 * @response 400 - Bad request
 	 * @response 500 - Internal server error
@@ -40,7 +41,9 @@ export class AuthController {
 		if (!user)
 		{
 			status = 'registered';
-			let name = intraUser.first_name;
+			let name = intraUser.usual_first_name 
+				? intraUser.usual_first_name
+				: intraUser.first_name;
 			let i = 1;
 			while (await this.userService.findByName(name + (i == 1 ? '' : i)))
 				i++;
@@ -55,7 +58,7 @@ export class AuthController {
 		session.needToA2F = user.dataValues.has2FA;
 		if (!user.dataValues.hasConnected)
 			await this.userService.update({login: user.dataValues.login, hasConnected: true});
-		console.log(session)
+		// console.log(session)
 		return {
 			status: status,
 			needTo2FA: user.dataValues.has2FA
@@ -65,6 +68,7 @@ export class AuthController {
 	/**
 	 * @brief Logout
 	 * @param {Record<string, any>} session Session (redis)
+	 * @security Clearance user
 	 * @response 200 - OK
 	 * @response 500 - Internal server error
 	 */
@@ -81,6 +85,17 @@ export class AuthController {
 		}
 	}
 
+	@Get('clearance')	
+	async getClearance(
+		@Session() session: Record<string, any>
+	): Promise<number>
+	{
+		let user = await this.userService.findByLogin(session.userLogin);
+		if (!user)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		return user.dataValues.clearance;
+	}
+	
 	/**
 	 * @brief verify the TOTP code
 	 * @param {number} TOTP TOTP code
@@ -88,13 +103,14 @@ export class AuthController {
 	 * @returns { {
 	 * 				status: 'logged'
 	 * 		} } Status of the login
+	 * @security Clearance user
 	 * @response 200 - OK
 	 * @response 400 - Bad request
 	 * @response 404 - Not found
 	 * @response 500 - Internal server error
 	 */
 	@Post('A2F')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
 	async verifyA2F(
 		@Body('TOTP') TOTP: number,
 		@Session() session: Record<string, any>
