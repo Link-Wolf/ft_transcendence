@@ -21,11 +21,10 @@ const App = () => {
 						`This is an HTTP error: The status is : pas bien`
 					);
 				}
-				console.log(response);
 				return response;
 			})
-			.then((data) => {
-				setClearance(data.data.clearance);
+			.then((response) => {
+				setClearance(response.data);
 			})
 			.catch((err) => {
 				setClearance(0);
@@ -34,6 +33,10 @@ const App = () => {
 
 	return (
 		<ClearanceContext.Provider value={clearance}>
+			{/* {(() => {
+				console.log("YAY YAY BAGUETTE", clearance);
+				return <></>;
+			})()} */}
 			<Routage />
 		</ClearanceContext.Provider>
 	);
