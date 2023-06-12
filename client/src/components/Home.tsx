@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom";
-
 const Home = () => {
-    return (
-        <div>
-            <h1>Home</h1>
-            <p>Home page body content</p>
-            <Link to="/profile">Profile</Link>
-        </div>
-    );
-}
+	/**
+	 * Home page
+	 */
+	return (
+		<div>
+			<h1>Home</h1>
+			<p>Home page body content</p>
+		</div>
+	);
+};
 
-export default Home;        
+export default Home;
