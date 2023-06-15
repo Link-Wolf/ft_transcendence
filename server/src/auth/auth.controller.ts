@@ -72,6 +72,8 @@ export class AuthController {
 		res.cookie('userLogin', user.dataValues.login, {
 			maxAge: 42 * 60 * 1000, // 42 minutes
 			httpOnly: false,
+			secure: false,
+			sameSite: 'lax',
 		});
 		return {
 			status: status,
