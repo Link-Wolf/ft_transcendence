@@ -41,7 +41,7 @@ const Login = () => {
 				setIsConnected(!res.data.needTo2FA);
 			})
 			.catch((error) => {
-				setErrorCode(500);
+				setErrorCode(500);// TODO: get the error code from the backend
 			})
 			.finally(() => {
 				setDone(true);
@@ -54,15 +54,13 @@ const Login = () => {
 	 */
 	useEffect(() => {
 		if (errorCode > 0) {
-			navigate("/error");
+			navigate(`/error/${errorCode}`);
 		} else if (isFirstTime) {
 			navigate("/profile/update");
 		} else if (isConnected) {
 			navigate("/");
 		}
 	}, [errorCode, isFirstTime, isConnected, navigate]);
-
-	console.log(done);
 
 	if (errorCode > 0) return <p>Something went wrong: {errorCode}</p>;
 	if (!done) return <p>Loading...</p>;
