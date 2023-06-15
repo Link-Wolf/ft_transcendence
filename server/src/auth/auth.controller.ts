@@ -103,7 +103,7 @@ export class AuthController {
 	@Get('clearance')
 	async getClearance(@Req() req: Request): Promise<number> {
 		if (!req.cookies.token)
-			throw new HttpException('Token not found', HttpStatus.BAD_REQUEST);
+			return 0;
 		const login = (await this.jwtService.verify(req.cookies.token)).login;
 		let user = await this.userService.findByLogin(login);
 		if (!user)
