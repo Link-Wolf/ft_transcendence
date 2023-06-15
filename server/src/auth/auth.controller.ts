@@ -98,6 +98,8 @@ export class AuthController {
 
 	@Get('clearance')
 	async getClearance(@Req() req: Request): Promise<number> {
+		if (!req.cookies.userLogin)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let user = await this.userService.findByLogin(req.cookies.userLogin);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
