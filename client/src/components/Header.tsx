@@ -4,22 +4,16 @@ import Auth from "./Auth";
 const Header = () => {
 	return (
 		<>
-			<h1>Header</h1>
+			<h1>[Header]</h1>
 			<ul>
 				<li>
-					<ul>
-						<li>
-							<Link to='/'>Home</Link>
-						</li>
-						<li>Playfield</li>
-					</ul>
+					<Link to='/'>
+						Image de Platypong (logo site, redirect to Home)
+					</Link>
 				</li>
+				<li>P L A T Y P O N G</li>
 				<li>
-					<ul>
-						<li>
-							<Auth />
-						</li>
-					</ul>
+					<Auth />
 				</li>
 			</ul>
 		</>

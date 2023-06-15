@@ -5,8 +5,18 @@ const Home = () => {
 	return (
 		<div>
 			<h1>Home</h1>
-			<p>Home page body content</p>
+			<p>Home page buddy</p>
+			<MatchMaking />
 		</div>
+	);
+};
+
+const MatchMaking = () => {
+	return (
+		<>
+			<div>Lancer une partie</div>
+			<button>Play</button>
+		</>
 	);
 };
 

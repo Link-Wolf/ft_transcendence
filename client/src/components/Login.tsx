@@ -56,11 +56,11 @@ const Login = () => {
 		if (errorCode > 0) {
 			navigate(`/error/${errorCode}`);
 		} else if (isFirstTime) {
-			navigate("/profile/update");
+			window.location.href = "/profile/update";
 		} else if (isConnected) {
-			navigate("/");
+			window.location.href = "/";
 		}
-	}, [errorCode, isFirstTime, isConnected, navigate]);
+	}, [done]);
 
 	if (errorCode > 0) return <p>Something went wrong: {errorCode}</p>;
 	if (!done) return <p>Loading...</p>;
