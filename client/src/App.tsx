@@ -6,7 +6,6 @@ import { createContext, useEffect, useState } from "react";
 export const ClearanceContext = createContext(0);
 
 const App = () => {
-	axios.defaults.withCredentials = true;
 	const [clearance, setClearance] = useState(0);
 
 	/**
