@@ -4,13 +4,11 @@ import { ClearanceContext } from "../App";
 
 const Auth = () => {
 	const clearance = useContext(ClearanceContext);
-	console.log("Auth : ", clearance);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 	useEffect(() => {
 		setIsLoggedIn(clearance !== 0);
 	}, [clearance]);
-	console.log("Auth2 : ", clearance);
 	return <>{isLoggedIn ? <ProfileButton /> : <AuthButton />}</>;
 };
 
