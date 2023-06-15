@@ -14,12 +14,14 @@ import { ClearanceGuard } from 'src/guards/clearance.guard';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
+import { JWTService } from './jwt.service';
 
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private authService: AuthService,
 		private userService: UserService,
+		private jwtService: JWTService,
 	) {}
 
 	/**
@@ -69,7 +71,9 @@ export class AuthController {
 				login: user.dataValues.login,
 				hasConnected: true,
 			});
-		res.cookie('userLogin', user.dataValues.login, {
+		res.cookie('token', await this.jwtService.tokenise({
+			login: user.dataValues.login
+		}), {
 			maxAge: 42 * 60 * 1000, // 42 minutes
 			httpOnly: false,
 			secure: false,
@@ -93,14 +97,15 @@ export class AuthController {
 	async intraLogout(
 		@Res({ passthrough: true }) res: Response,
 	): Promise<void> {
-		res.clearCookie('userLogin');
+		res.clearCookie('token');
 	}
 
 	@Get('clearance')
 	async getClearance(@Req() req: Request): Promise<number> {
-		if (!req.cookies.userLogin)
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		let user = await this.userService.findByLogin(req.cookies.userLogin);
+		if (!req.cookies.token)
+			throw new HttpException('Token not found', HttpStatus.BAD_REQUEST);
+		const login = (await this.jwtService.verify(req.cookies.token)).login;
+		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		return user.dataValues.clearance;
