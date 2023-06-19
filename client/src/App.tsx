@@ -2,6 +2,7 @@ import axios from "axios";
 import "./style/App.css";
 import Routage from "./components/Routage";
 import { createContext, useEffect, useState } from "react";
+import Chat from "./components/Chat";
 
 export const ClearanceContext = createContext(0);
 
@@ -37,6 +38,7 @@ const App = () => {
 				return <></>;
 			})()} */}
 			<Routage />
+			<Chat />
 		</ClearanceContext.Provider>
 	);
 };

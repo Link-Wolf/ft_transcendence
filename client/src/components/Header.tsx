@@ -5,30 +5,20 @@ import style from "../style/Header.module.scss";
 
 const Header = () => {
 	return (
-		<ul className={style.banner}>
-			<li>
-				<ul>
-					<li>
-						<Link to='/'>Home</Link>
-					</li>
-					{/* <li>Playfield</li> */}
-				</ul>
-			</li>
-			<li>
-				<ul>
-					<li>
-						<img src={logo} alt='logo' />
-					</li>
-				</ul>
-			</li>
-			<li>
-				<ul>
-					<li>
-						<Auth />
-					</li>
-				</ul>
-			</li>
-		</ul>
+		<>
+			<h1>[Header]</h1>
+			<ul>
+				<li>
+					<Link to='/'>
+						Image de Platypong (logo site, redirect to Home)
+					</Link>
+				</li>
+				<li>P L A T Y P O N G</li>
+				<li>
+					<Auth />
+				</li>
+			</ul>
+		</>
 	);
 };
 
