@@ -37,6 +37,7 @@
     "dotenv": "^16.0.3",
     "express-session": "^1.17.3",
     "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.0",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",
     "redis": "^3.1.2",

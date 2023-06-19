@@ -2,9 +2,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const wait = (ms: number) => {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-};
+// const wait = (ms: number) => {
+// 	return new Promise((resolve) => setTimeout(resolve, ms));
+// };
 
 const Login = () => {
 	const navigate = useNavigate();
@@ -41,7 +41,7 @@ const Login = () => {
 				setIsConnected(!res.data.needTo2FA);
 			})
 			.catch((error) => {
-				setErrorCode(500);// TODO: get the error code from the backend
+				setErrorCode(500); // TODO: get the error code from the backend
 			})
 			.finally(() => {
 				setDone(true);
@@ -53,14 +53,15 @@ const Login = () => {
 	 * Else, if the user is connected, redirect him to the home page
 	 */
 	useEffect(() => {
+		if (!done) return;
 		if (errorCode > 0) {
 			navigate(`/error/${errorCode}`);
 		} else if (isFirstTime) {
-			navigate("/profile/update");
+			window.location.href = "/profile/update";
 		} else if (isConnected) {
-			navigate("/");
+			window.location.href = "/";
 		}
-	}, [errorCode, isFirstTime, isConnected, navigate]);
+	}, [done, errorCode, isFirstTime, isConnected, navigate]);
 
 	if (errorCode > 0) return <p>Something went wrong: {errorCode}</p>;
 	if (!done) return <p>Loading...</p>;
