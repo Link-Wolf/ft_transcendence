@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import socket from "../socket";
-import axios from "axios";
-import jwt from "jwt-decode";
-import Cookies from "js-cookie";
+import axios from "axios"; 
+import { UserContext } from "../App";
+import { Link } from "react-router-dom";
 // import style from "../style/Chat.module.scss";
 
 const Chat = () => {
@@ -54,15 +54,12 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 
 const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	const [channels, setChannels] = useState<String[]>([]);
+	const context = useContext(UserContext);
 
 	useEffect(() => {
-		let token = Cookies.get("token");
-		if (!token) return;
-		let jwt_ = jwt(token);
-		let mylogin = (jwt_ as any).login;
 		axios
 			.get(
-				`${process.env.REACT_APP_BACKEND_URL}/membership/user/${mylogin}`
+				`${process.env.REACT_APP_BACKEND_URL}/membership/user/${context.login}`
 			)
 			.then((response) => {
 				setChannels(
@@ -76,17 +73,26 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 			});
 	}, []);
 
+	const addChannel = () => {
+		console.log("TODO: oui");
+	};
+
 	return (
 		<div>
 			<h1>Channel List</h1>
-			{channels.map((channel, i) => (
-				<button
-					key={i}
-					onClick={() => setChannel(channel)}
-				>
-					{channel}
-				</button>
-			))}
+			<button onClick={addChannel}>+</button>
+			{channels.length ? (
+				channels.map((channel, i) => (
+					<button
+						key={i}
+						onClick={() => setChannel(channel)}
+					>
+						{channel}
+					</button>
+				))
+			) : (
+				<div>Tu n'as encore rejoins aucun channel bébé sel</div>
+			)}
 		</div>
 	);
 };
@@ -101,17 +107,35 @@ const UserList = ({
 	const [users, setUsers] = useState<String[]>([]);
 
 	useEffect(() => {
-		// get users from server
-		setUsers(["user1", "user2"]);
+		axios
+			.get(
+				`${process.env.REACT_APP_BACKEND_URL}/membership/channel/${channel}`
+			)
+			.then((res) => {
+				setUsers(
+					res.data.map((membership: any) => membership.userLogin)
+				);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}, []);
 
 	return (
 		<div>
 			<button onClick={() => toggleShowlist()}>Back</button>
 			<h1>User List</h1>
-			{users.map((user, i) => (
-				<button key={i}>{user}</button>
-			))}
+			{users.length ? (
+				users.map((user, i) => (
+					<div key={i}>
+						<Link to={`/profile/${user}`}>{user}</Link>
+					</div>
+				))
+			) : (
+				<div>
+					Tu n'as pas encore de conversations privées bebou sucre
+				</div>
+			)}
 		</div>
 	);
 };
