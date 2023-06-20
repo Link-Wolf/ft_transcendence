@@ -3,11 +3,13 @@ import "./style/App.css";
 import Routage from "./components/Routage";
 import { createContext, useEffect, useState } from "react";
 import Chat from "./components/Chat";
+import socket from "./socket";
 
 export const ClearanceContext = createContext(0);
 
 const App = () => {
 	const [clearance, setClearance] = useState(0);
+	const [isConnected, setIsConnected] = useState(socket.connected);
 
 	/**
 	 * Get the user's clearance level and store it in the context so it can be used in the whole app
@@ -29,6 +31,24 @@ const App = () => {
 			.catch((err) => {
 				setClearance(0);
 			});
+	}, []);
+
+	useEffect(() => {
+		function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+    };
 	}, []);
 
 	return (
