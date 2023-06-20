@@ -17,6 +17,7 @@
     "react-scripts": "5.0.1",
     "sass": "^1.63.4",
     "socket.io": "^4.6.2",
+    "socket.io-client": "^4.6.2",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
