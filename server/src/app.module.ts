@@ -18,6 +18,7 @@ import { MuteModule } from './mute/mute.module';
 import { PrivateMessageModule } from './private-message/private-message.module';
 import { AuthModule } from './auth/auth.module';
 import { redisStore } from 'cache-manager-redis-yet';
+import { MessageGateway } from './message/message.gateway';
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),

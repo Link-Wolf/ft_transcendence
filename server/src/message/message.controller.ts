@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { ClearanceGuard } from 'src/guards/clearance.guard';
 import { Message } from './message.entity';
@@ -7,6 +7,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
 import { BanService } from 'src/ban/ban.service';
 import { MuteService } from 'src/mute/mute.service';
+import { MessageGateway } from './message.gateway';
 
 @Controller('message')
 export class MessageController {
@@ -16,7 +17,8 @@ export class MessageController {
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
 		private readonly banService: BanService,
-		private readonly muteService: MuteService
+		private readonly muteService: MuteService,
+		private readonly messageGateway: MessageGateway
 	) {}
 	
 	/**
@@ -171,12 +173,14 @@ export class MessageController {
 			throw new HttpException('User is muted from the channel', HttpStatus.FORBIDDEN);
 		if (!content || content.length === 0)
 			throw new HttpException('Content is empty', HttpStatus.BAD_REQUEST);
-		return this.messageService.create({
+		let ret = await this.messageService.create({
 			content: content,
 			user: user,
 			channel: channel,
 			date: new Date(Date.now())
 		});
+		this.messageGateway.notifyUpdate(chanName);
+		return ret;
 	}
 
     /**

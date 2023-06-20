@@ -10,9 +10,7 @@ import {
 } from '@nestjs/websockets';
 
 @WebSocketGateway({
-	cors: {
-		origin: '*',
-	}
+	cors: true
 })
 export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server: Server;
@@ -20,6 +18,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
 	@SubscribeMessage('msgToServer')
 	handleMessage(client: Socket, payload: string): void {
+		this.logger.log(`Client ${client.id} sent: ${payload}`);
 		this.server.emit('msgToClient', payload);
 	}
 
@@ -33,5 +32,11 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
 	handleConnection(client: Socket, ...args: any[]) {
 		this.logger.log(`Client connected: ${client.id}`);
+	}
+
+	notifyUpdate(
+		channel: string,
+	) {
+		this.server.emit("newMessage", channel);
 	}
 }
