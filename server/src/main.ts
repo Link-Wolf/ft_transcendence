@@ -9,7 +9,7 @@ async function bootstrap() {
 
 	app.use(helmet(), cookieParser());
 	app.enableCors({
-		origin: process.env.FRONTEND_URL,
+		origin: true,
 		credentials: true,
 	});
 	app.setGlobalPrefix('api');
