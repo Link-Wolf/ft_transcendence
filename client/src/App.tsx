@@ -2,13 +2,12 @@ import axios from "axios";
 import "./style/App.scss";
 import Routage from "./components/Routage";
 import { createContext, useEffect, useState } from "react";
-import Chat from "./components/Chat";
 import socket from "./socket";
 
-export const ClearanceContext = createContext(0);
+export const UserContext = createContext({ login: "", clearance: 0 });
 
 const App = () => {
-	const [clearance, setClearance] = useState(0);
+	const [clearance, setClearance] = useState({ login: "", clearance: 0 });
 	const [isConnected, setIsConnected] = useState(socket.connected);
 
 	/**
@@ -29,7 +28,7 @@ const App = () => {
 				setClearance(response.data);
 			})
 			.catch((err) => {
-				setClearance(0);
+				setClearance({login: "", clearance: 0});
 			});
 	}, []);
 
@@ -52,23 +51,13 @@ const App = () => {
 	}, []);
 
 	return (
-		<ClearanceContext.Provider value={clearance}>
+		<UserContext.Provider value={clearance}>
 			{/* {(() => {
 				console.log("YAY YAY BAGUETTE", clearance);
 				return <></>;
 			})()} */}
 			<Routage />
-			<Chat />
-			<button
-				onClick={() => {
-					console.log("TEST SOCKET");
-					socket.emit("msgToServer", "TEST SOCKET (received)");
-					console.log("TEST SOCKET2222");
-				}}
-			>
-				TEST SOCKET
-			</button>
-		</ClearanceContext.Provider>
+		</UserContext.Provider>
 	);
 };
 

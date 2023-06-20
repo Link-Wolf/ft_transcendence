@@ -101,14 +101,17 @@ export class AuthController {
 	}
 
 	@Get('clearance')
-	async getClearance(@Req() req: Request): Promise<number> {
+	async getClearance(@Req() req: Request): Promise<{clearance: number, login: string}> {
 		if (!req.cookies.token)
-			return 0;
+			return {
+				clearance: Number(process.env.GUEST_CLEARANCE),
+				login: 'guest',
+			};
 		const login = (await this.jwtService.verify(req.cookies.token)).login;
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		return user.dataValues.clearance;
+		return {clearance: user.dataValues.clearance, login: user.dataValues.login};
 	}
 
 	/**
