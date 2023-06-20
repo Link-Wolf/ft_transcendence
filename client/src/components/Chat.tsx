@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import socket from "../socket";
+import axios from "axios";
+import jwt from "jwt-decode";
+import Cookies from "js-cookie";
 // import style from "../style/Chat.module.scss";
 
 const Chat = () => {
@@ -52,8 +56,24 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	const [channels, setChannels] = useState<String[]>([]);
 
 	useEffect(() => {
-		// get channels from server
-		setChannels(["general", "random"]);
+		let token = Cookies.get("token");
+		if (!token) return;
+		let jwt_ = jwt(token);
+		let mylogin = (jwt_ as any).login;
+		axios
+			.get(
+				`${process.env.REACT_APP_BACKEND_URL}/membership/user/${mylogin}`
+			)
+			.then((response) => {
+				setChannels(
+					response.data.map(
+						(membership: any) => membership.channelName
+					)
+				);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}, []);
 
 	return (
@@ -105,12 +125,36 @@ const ChatWindow = ({
 	toggleShowlist: Function;
 	setChannel: Function;
 }) => {
-	const [messages, setMessages] = useState<String[]>([]);
+	const [messages, setMessages] = useState<any[]>([]);
+	const [update, setUpdate] = useState(true);
 
 	useEffect(() => {
-		// get messages from server
-		setMessages(["message1", "message2"]);
+		function clic(payload: String) {
+			if (payload === channel) setUpdate(true);
+		}
+
+		socket.on("newMessage", clic);
+		return () => {
+			socket.off("newMessage", clic);
+		};
 	}, []);
+
+	useEffect(() => {
+		if (!update) return;
+
+		axios
+			.get(
+				`${process.env.REACT_APP_BACKEND_URL}/message/channel/${channel}`
+			)
+			.then((res) => {
+				console.log(res.data);
+				setMessages(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		setUpdate(false);
+	}, [update]);
 
 	return (
 		<div>
@@ -124,8 +168,26 @@ const ChatWindow = ({
 			</button>
 			<h1>{channel}</h1>
 			{messages.map((message, i) => (
-				<p key={i}>{message}</p>
+				<div key={i}>
+					<h2>{message.userLogin}</h2>
+					<label>{message.createdAt}</label>
+					<p>{message.content}</p>
+				</div>
 			))}
+			<button
+				onClick={async () => {
+					await axios.post(
+						`${process.env.REACT_APP_BACKEND_URL}/message`,
+						{
+							chanName: "oui",
+							content: "test message",
+							userLogin: "iCARUS",
+						}
+					);
+				}}
+			>
+				send message
+			</button>
 		</div>
 	);
 };

@@ -35,20 +35,20 @@ const App = () => {
 
 	useEffect(() => {
 		function onConnect() {
-      setIsConnected(true);
-    }
+			setIsConnected(true);
+		}
 
-    function onDisconnect() {
-      setIsConnected(false);
-    }
+		function onDisconnect() {
+			setIsConnected(false);
+		}
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
+		socket.on("connect", onConnect);
+		socket.on("disconnect", onDisconnect);
 
-    return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-    };
+		return () => {
+			socket.off("connect", onConnect);
+			socket.off("disconnect", onDisconnect);
+		};
 	}, []);
 
 	return (
@@ -59,6 +59,15 @@ const App = () => {
 			})()} */}
 			<Routage />
 			<Chat />
+			<button
+				onClick={() => {
+					console.log("TEST SOCKET");
+					socket.emit("msgToServer", "TEST SOCKET (received)");
+					console.log("TEST SOCKET2222");
+				}}
+			>
+				TEST SOCKET
+			</button>
 		</ClearanceContext.Provider>
 	);
 };

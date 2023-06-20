@@ -17,7 +17,7 @@ import { MessageGateway } from './message.gateway';
 		MessageService, ...messageProviders, MessageGateway
 	],
 	exports: [
-		MessageService, ...messageProviders
+		MessageService, ...messageProviders, MessageGateway
 	],
 	imports: [
 		UserModule,
