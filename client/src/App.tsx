@@ -1,5 +1,5 @@
 import axios from "axios";
-import "./style/App.css";
+import "./style/App.scss";
 import Routage from "./components/Routage";
 import { createContext, useEffect, useState } from "react";
 import Chat from "./components/Chat";
