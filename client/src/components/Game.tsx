@@ -23,7 +23,7 @@ const Game = () => {
 			Body = Matter.Body;
 
 		let ballVelocity = {
-			x: BALL_STARTING_X_VELOCITY,
+			x: -BALL_STARTING_X_VELOCITY,
 			y: -BALL_STARTING_Y_VELOCITY,
 		};
 		let ballPosition = {
@@ -35,6 +35,8 @@ const Game = () => {
 		let ballStartsFromTop = true;
 		let playerToStart = true;
 		let isRoundStarted = false;
+		let playerScore = 0;
+		let adversScore = 0;
 
 		// create an engine
 		var engine = Engine.create({
@@ -51,6 +53,7 @@ const Game = () => {
 			options: {
 				width: WIDTH,
 				height: HEIGHT,
+				wireframes: false,
 			},
 		});
 
@@ -63,6 +66,10 @@ const Game = () => {
 			{
 				friction: 0,
 				frictionAir: 0,
+				isStatic: true,
+				render: {
+					fillStyle: "white",
+				},
 			}
 		);
 		var adversBat = Bodies.rectangle(
@@ -73,6 +80,10 @@ const Game = () => {
 			{
 				friction: 0,
 				frictionAir: 0,
+				isStatic: true,
+				render: {
+					fillStyle: "white",
+				},
 			}
 		);
 		var ball = Bodies.rectangle(
@@ -84,6 +95,9 @@ const Game = () => {
 				friction: 0,
 				frictionAir: 0,
 				isSensor: false,
+				render: {
+					fillStyle: "white",
+				},
 			}
 		);
 		ball.collisionFilter = {
@@ -96,7 +110,7 @@ const Game = () => {
 			let middleLine = Bodies.rectangle(WIDTH / 2, i, 2, 10, {
 				isStatic: true,
 				render: {
-					fillStyle: "white",
+					fillStyle: "grey",
 				},
 				isSensor: false,
 			});
@@ -113,8 +127,55 @@ const Game = () => {
 		document.addEventListener("keydown", addKey);
 		document.addEventListener("keyup", removeKey);
 
-		Events.on(engine, "beforeUpdate", function (event) {
-			// Player movement
+		const resetBall = () => {
+			isRoundStarted = false;
+			ballStartsFromTop = !ballStartsFromTop;
+			ballPosition.x = WIDTH / 2;
+			ballPosition.y = ballStartsFromTop
+				? BALL_DISTANCE_FROM_EDGE
+				: HEIGHT - BALL_DISTANCE_FROM_EDGE;
+			ballVelocity.y = ballStartsFromTop
+				? -BALL_STARTING_Y_VELOCITY
+				: BALL_STARTING_Y_VELOCITY;
+
+			playerToStart = ball.position.x < WIDTH / 2;
+			ballVelocity.x = playerToStart
+				? -BALL_STARTING_X_VELOCITY
+				: BALL_STARTING_X_VELOCITY;
+			Body.setPosition(ball, ballPosition);
+			Body.setVelocity(ball, { x: 0, y: 0 });
+		};
+
+		const moveBall = () => {
+			if (ball.position.y > HEIGHT - BALL_SIZE) {
+				ballVelocity.y = Math.abs(ballVelocity.y) * -1;
+			}
+			if (ball.position.y < 0) {
+				ballVelocity.y = Math.abs(ballVelocity.y);
+			}
+			Body.setVelocity(ball, ballVelocity);
+		};
+
+		const fixAllPositions = () => {
+			{
+				Body.setVelocity(ball, { x: 0, y: 0 });
+				Body.setPosition(playerBat, {
+					x: PADDLE_DISTANCE_FROM_EDGE,
+					y: playerBatPosition,
+				});
+				Body.setPosition(adversBat, {
+					x: WIDTH - PADDLE_DISTANCE_FROM_EDGE - PADDLE_WIDTH,
+					y: adversBatPosition,
+				});
+			}
+		};
+
+		const handlePaddleCollision = (
+			paddle: Matter.Body,
+			ball: Matter.Body
+		) => {};
+
+		const handlePlayerMovement = () => {
 			if (keysDown.has("ArrowUp") || keysDown.has("KeyW")) {
 				playerBatPosition -= PADDLE_SPEED;
 				if (playerBatPosition < PADDLE_HEIGHT / 2) {
@@ -126,56 +187,31 @@ const Game = () => {
 				if (playerBatPosition > HEIGHT - PADDLE_HEIGHT / 2)
 					playerBatPosition = HEIGHT - PADDLE_HEIGHT / 2;
 			}
-			if (keysDown.has("Space")) {
-				isRoundStarted = true;
-			}
 			Body.setPosition(playerBat, {
 				x: PADDLE_DISTANCE_FROM_EDGE,
 				y: playerBatPosition,
 			});
+		};
+
+		Events.on(engine, "beforeUpdate", function (event) {
+			// Player movement
+			handlePlayerMovement();
+			if (keysDown.has("Space") && !isRoundStarted && playerToStart) {
+				isRoundStarted = true;
+			}
+
 			if (!isRoundStarted) {
-				Body.setVelocity(ball, { x: 0, y: 0 });
-				Body.setPosition(playerBat, {
-					x: PADDLE_DISTANCE_FROM_EDGE,
-					y: playerBatPosition,
-				});
-				Body.setPosition(adversBat, {
-					x: WIDTH - PADDLE_DISTANCE_FROM_EDGE - PADDLE_WIDTH,
-					y: adversBatPosition,
-				});
+				fixAllPositions();
 				return;
 			}
-			// Bouncing off the ceiling and floor
-			if (ball.position.y > HEIGHT - BALL_SIZE) {
-				ballVelocity.y = Math.abs(ballVelocity.y) * -1;
-			}
-			if (ball.position.y < 0) {
-				ballVelocity.y = Math.abs(ballVelocity.y);
-			}
-			Body.setVelocity(ball, ballVelocity);
-
-			// New round if ball goes off the edge
+			moveBall();
+			handlePaddleCollision(playerBat, ball);
+			handlePaddleCollision(adversBat, ball);
 			if (
 				ball.position.x > WIDTH - PADDLE_DISTANCE_FROM_EDGE / 2 ||
 				ball.position.x < PADDLE_DISTANCE_FROM_EDGE / 2
-			) {
-				isRoundStarted = false;
-				ballStartsFromTop = !ballStartsFromTop;
-				ballPosition.x = WIDTH / 2;
-				ballPosition.y = ballStartsFromTop
-					? BALL_DISTANCE_FROM_EDGE
-					: HEIGHT - BALL_DISTANCE_FROM_EDGE;
-				ballVelocity.y = ballStartsFromTop
-					? -BALL_STARTING_Y_VELOCITY
-					: BALL_STARTING_Y_VELOCITY;
-
-				playerToStart = ball.position.x > WIDTH / 2;
-				ballVelocity.x = playerToStart
-					? BALL_STARTING_X_VELOCITY
-					: -BALL_STARTING_X_VELOCITY;
-				Body.setPosition(ball, ballPosition);
-				Body.setVelocity(ball, { x: 0, y: 0 });
-			}
+			)
+				resetBall();
 		});
 
 		// add all of the bodies to the world
