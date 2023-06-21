@@ -129,11 +129,11 @@ export class ChannelController {
 		let chan_with_pass = await this.channelService.findByPassword(password);
 		if (password && chan_with_pass.length != 0)
 			throw new HttpException('Password already in use', HttpStatus.CONFLICT);
-		if (name[0] == '_')
-			throw new HttpException('Channel name cannot start with _', HttpStatus.BAD_REQUEST);
+		if (!name.match(/^[a-zA-Z0-9]+$/))
+			throw new HttpException('Invalid channel name', HttpStatus.BAD_REQUEST);
 		if (await this.channelService.findByName(name))
 			throw new HttpException('Channel name already in use', HttpStatus.CONFLICT);
-		return this.channelService.create({
+		return await this.channelService.create({
 			isPrivate: false,
 			name: name,
 			password: password,

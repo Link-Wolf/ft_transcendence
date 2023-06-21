@@ -1,8 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import socket from "../socket";
-import axios from "axios"; 
+import axios from "axios";
 import { UserContext } from "../App";
 import { Link } from "react-router-dom";
+import { use } from "matter-js";
 // import style from "../style/Chat.module.scss";
 
 const Chat = () => {
@@ -52,8 +53,101 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 	);
 };
 
+const ChannelCreation = () => {
+	const createChannel = async () => {
+		await axios
+			.post(`${process.env.REACT_APP_BACKEND_URL}/channel`, {
+				ownerLogin: "Link",
+				name: (document.getElementById("name") as HTMLInputElement)
+					.value,
+				password: (document.getElementById("pass") as HTMLInputElement)
+					.value,
+			})
+			.then(async (response) => {
+				await axios
+					.post(`${process.env.REACT_APP_BACKEND_URL}/membership`, {
+						channelName: response.data.name,
+						userLogin: "Link",
+						isAdmin: true,
+					})
+					.catch((err) => {
+						console.log("bouh");
+						console.log(err);
+					});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	return (
+		<>
+			<form>
+				<label>Nom du channel</label>
+				<input
+					id='name'
+					type='text'
+					defaultValue={""}
+				/>
+				<label>Mot de passe (optionnel)</label>
+				<input
+					id='pass'
+					type='password'
+				/>
+			</form>
+			<button onClick={createChannel}>Creer</button>
+		</>
+	);
+};
+
+const NewChannel = () => {
+	const [channels, setChannels] = useState<any[]>([]);
+	const [channelCreation, setChannelCreation] = useState(false);
+
+	useEffect(() => {
+		axios
+			.get(`${process.env.REACT_APP_BACKEND_URL}/channel/public`)
+			.then((response) => {
+				setChannels(
+					response.data.sort(
+						(a: any, b: any) => a.createdAt - b.createdAt
+					)
+				);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
+
+	const createChannel = () => {
+		setChannelCreation(!channelCreation);
+	};
+
+	return (
+		<>
+			{channelCreation ? (
+				<>
+					<button onClick={createChannel}>Annuler</button>
+					<ChannelCreation />
+				</>
+			) : (
+				<>
+					<button onClick={createChannel}>Creer un channel</button>
+					{channels.map((channel, i) => (
+						<div key={i}>
+							<label>{channel.name}</label>{" "}
+							{channel.password ? <label>🔒</label> : <></>}
+						</div>
+					))}
+				</>
+			)}
+		</>
+	);
+};
+
 const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	const [channels, setChannels] = useState<String[]>([]);
+	const [newChannelVisibility, setNewChannelVisibility] = useState(false);
 	const context = useContext(UserContext);
 
 	useEffect(() => {
@@ -62,6 +156,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				`${process.env.REACT_APP_BACKEND_URL}/membership/user/${context.login}`
 			)
 			.then((response) => {
+				console.log(response.data);
 				setChannels(
 					response.data.map(
 						(membership: any) => membership.channelName
@@ -74,24 +169,32 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	}, []);
 
 	const addChannel = () => {
-		console.log("TODO: oui");
+		setNewChannelVisibility(!newChannelVisibility);
 	};
 
 	return (
 		<div>
 			<h1>Channel List</h1>
-			<button onClick={addChannel}>+</button>
-			{channels.length ? (
-				channels.map((channel, i) => (
-					<button
-						key={i}
-						onClick={() => setChannel(channel)}
-					>
-						{channel}
-					</button>
-				))
+			<button onClick={addChannel}>
+				{newChannelVisibility ? <>x</> : <>+</>}
+			</button>
+			{newChannelVisibility ? (
+				<NewChannel />
 			) : (
-				<div>Tu n'as encore rejoins aucun channel bébé sel</div>
+				<>
+					{channels.length ? (
+						channels.map((channel, i) => (
+							<button
+								key={i}
+								onClick={() => setChannel(channel)}
+							>
+								{channel}
+							</button>
+						))
+					) : (
+						<div>Tu n'as encore rejoins aucun channel bébé sel</div>
+					)}
+				</>
 			)}
 		</div>
 	);
