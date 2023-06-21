@@ -136,9 +136,9 @@ export class MembershipController {
 		let channel = await this.channelService.findByName(channelName);
 		if (!channel)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		if (this.membershipService.findByUserAndChannel(userLogin, channelName))
+		if (await this.membershipService.findByUserAndChannel(userLogin, channelName))
 			throw new HttpException('Membership already exists', HttpStatus.CONFLICT);
-		return this.membershipService.create({
+		return await this.membershipService.create({
 			user: user,
 			channel: channel,
 			isAdmin: isAdmin

@@ -88,7 +88,6 @@ export class ChannelService {
     async create(channelDto: ChannelDto): Promise<Channel> {
         try {
             let ret = await this.channelRepository.create<Channel>(channelDto);
-            console.log(channelDto)
             await ret.$set('owner', channelDto.owner);
             return ret;
         } catch (error) {
