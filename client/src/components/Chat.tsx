@@ -72,7 +72,7 @@ const ChannelCreation = () => {
 				name: (document.getElementById("name") as HTMLInputElement)
 					.value,
 				password: (document.getElementById("pass") as HTMLInputElement)
-					.value,
+					.value, //
 			})
 			.then(async (response) => {
 				await axios
