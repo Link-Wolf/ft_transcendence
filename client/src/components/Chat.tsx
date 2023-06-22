@@ -54,10 +54,22 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 };
 
 const ChannelCreation = () => {
+	//TODO: better working because arborescence tout ca
+	//et TODO: tant que tu passes par la y a les trucs de genre quand tu creer
+	//un channel et que ca back ca affiche pas dans la liste le nouveau channel
+	//genre faut refresh le composant tout ca..
+	const [isChannel, setNewChannel] = useState(false);
+	const [channel, setChannel] = useState<String | null>(null);
+	const [showList, setShowList] = useState(false);
+
+	const toggleShowlist = () => {
+		setShowList(!showList);
+	};
+
 	const createChannel = async () => {
 		await axios
 			.post(`${process.env.REACT_APP_BACKEND_URL}/channel`, {
-				ownerLogin: "Link",
+				ownerLogin: "Link", //TODO: change hardcoded login by session
 				name: (document.getElementById("name") as HTMLInputElement)
 					.value,
 				password: (document.getElementById("pass") as HTMLInputElement)
@@ -67,11 +79,13 @@ const ChannelCreation = () => {
 				await axios
 					.post(`${process.env.REACT_APP_BACKEND_URL}/membership`, {
 						channelName: response.data.name,
-						userLogin: "Link",
+						userLogin: "Link", //TODO: change ha login by session
 						isAdmin: true,
 					})
-					.catch((err) => {
-						console.log("bouh");
+					.then(() => {
+						setNewChannel(true);
+					})
+					.catch(async (err) => {
 						console.log(err);
 					});
 			})
@@ -80,23 +94,32 @@ const ChannelCreation = () => {
 			});
 	};
 
-	return (
-		<>
-			<form>
-				<label>Nom du channel</label>
-				<input
-					id='name'
-					type='text'
-					defaultValue={""}
-				/>
-				<label>Mot de passe (optionnel)</label>
-				<input
-					id='pass'
-					type='password'
-				/>
-			</form>
-			<button onClick={createChannel}>Creer</button>
-		</>
+	return isChannel ? (
+		<ChatWindow
+			channel={String(channel)}
+			toggleShowlist={toggleShowlist}
+			setChannel={setChannel}
+		/>
+	) : (
+		<form>
+			<label>Nom du channel</label>
+			<input
+				id='name'
+				type='text'
+				defaultValue={""}
+			/>
+			<label>Mot de passe (optionnel)</label>
+			<input
+				id='pass'
+				type='password'
+			/>
+			<button
+				type='button'
+				onClick={createChannel}
+			>
+				Creer
+			</button>
+		</form>
 	);
 };
 
