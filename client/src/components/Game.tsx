@@ -347,7 +347,25 @@ const Game = () => {
 		const handlePaddleCollision = (
 			paddle: Matter.Body,
 			ball: Matter.Body
-		) => {};
+		) => {
+			let bouncingXDirection =
+				Math.sign(ball.velocity.x) * -1 * BALL_STARTING_X_VELOCITY;
+			if (
+				Math.abs(ball.position.x - paddle.position.x) <=
+					BALL_SIZE / 2 + PADDLE_WIDTH / 2 &&
+				Math.abs(ball.position.y - paddle.position.y) <=
+					BALL_SIZE / 2 + PADDLE_HEIGHT / 2
+			) {
+				Body.setVelocity(ball, {
+					x: bouncingXDirection,
+					y: ball.velocity.y, //TODO: calculte in function of where in the paddle it hits to emulate true pong
+				});
+				Body.setPosition(ball, {
+					x: bouncingXDirection > 0 ? 0 : 0,
+					y: ball.position.y,
+				});
+			}
+		};
 
 		const handlePlayerMovement = () => {
 			if (keysDown.has("ArrowUp") || keysDown.has("KeyW")) {
