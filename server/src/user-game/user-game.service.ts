@@ -70,6 +70,22 @@ export class UserGameService {
         }
     }
 
+    async findNotFinishedByLogin(login: string): Promise<UserGame> {
+        try {
+            let ret = await this.userGameRepository.findAll<UserGame>({
+                where: {
+                    userLogin: login,
+                },
+                include: [{ all: true }]});
+            return ret.filter((userGame) => {
+                return userGame.game.status !== 'finished';
+            })[0];
+        }
+        catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * @brief   Create a user game with sequelize
      * @param   {UserGameDto} userGameDto   The user game to create

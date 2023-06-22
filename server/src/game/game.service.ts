@@ -64,6 +64,22 @@ export class GameService {
         }
     }
 
+    async findWaiting()
+    {
+        try {
+            let ret = await this.gameRepository.findOne<Game>({
+                include: [{ all: true }],
+                where: {
+                    status: 'waiting'
+                }
+            })
+            return ret;
+        }
+        catch (error) {
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * @brief   Create a game with sequelize
      * @param   {GameDto} gameDto   The game to create

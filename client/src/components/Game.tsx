@@ -1,8 +1,81 @@
 import Matter from "matter-js";
-import { useEffect } from "react";
+import { MouseEventHandler, useContext, useEffect, useState } from "react";
 import socket from "../socket";
+import Cookies from "js-cookie";
+import { UserContext } from "../App";
 
 const Game = () => {
+	const context = useContext(UserContext);
+	const [hasFoundGame, setHasFoundGame] = useState(false);
+	const [gameId, setGameId] = useState(-1);
+	const [amFirstPlayer, setAmFirstPlayer] = useState(false);
+	const [lookingForMatch, setLookingForMatch] = useState(true);
+
+	useEffect(() => {
+		const startGame = (payload: any) => {
+			setGameId(payload.gameId);
+			setAmFirstPlayer(payload.firstPlayer == context.login);
+			setHasFoundGame(true);
+		};
+
+		console.log(Cookies.get("token"))
+
+		socket.emit("joinWaitRoom", {
+			auth: Cookies.get("token"),
+			isRanked: true, //TODO: add option for ranked mode
+		});
+
+		socket.on("startGame", startGame);
+
+		return () => {
+			socket.off("startGame", startGame);
+		};
+	}, []);
+
+	const isLookingForMatch = () => {
+		setLookingForMatch(false);
+		//TODO: emit + redirect to home
+	};
+
+	if (!hasFoundGame)
+		return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
+	return (
+		<GameRender
+			gameId={gameId}
+			amFirstPlayer={amFirstPlayer}
+		/>
+	);
+};
+
+const WaitingForMatch = ({
+	setLookingForMatch,
+}: {
+	setLookingForMatch: Function;
+}) => {
+	return (
+		<>
+			<div>Recherche en cours . . .</div>
+			<div>*inserer animation de recherche*</div>
+			<button
+				onClick={() => {
+					setLookingForMatch();
+				}}
+			>
+				Cancel
+			</button>
+		</>
+	);
+};
+
+const GameRender = ({
+	gameId,
+	amFirstPlayer,
+	modifiers,
+}: {
+	gameId: Number;
+	amFirstPlayer: boolean;
+	modifiers?: any[];
+}) => {
 	const HEIGHT = 600; //Canvas height
 	const WIDTH = 800; //Canvas width
 	const PADDLE_HEIGHT = 30; //Paddle height
