@@ -45,7 +45,10 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					setChannel={setChannel}
 				/>
 			) : (
-				<UserList channel={channel} toggleShowlist={toggleShowlist} />
+				<UserList
+					channel={channel}
+					toggleShowlist={toggleShowlist}
+				/>
 			)}
 		</div>
 	);
@@ -102,10 +105,20 @@ const ChannelCreation = () => {
 	) : (
 		<form>
 			<label>Nom du channel</label>
-			<input id='name' type='text' defaultValue={""} />
+			<input
+				id='name'
+				type='text'
+				defaultValue={""}
+			/>
 			<label>Mot de passe (optionnel)</label>
-			<input id='pass' type='password' />
-			<button type='button' onClick={createChannel}>
+			<input
+				id='pass'
+				type='password'
+			/>
+			<button
+				type='button'
+				onClick={createChannel}
+			>
 				Creer
 			</button>
 		</form>
@@ -168,7 +181,6 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				`${process.env.REACT_APP_BACKEND_URL}/membership/user/${context.login}`
 			)
 			.then((response) => {
-				console.log(response.data);
 				setChannels(
 					response.data.map(
 						(membership: any) => membership.channelName
@@ -196,7 +208,10 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				<>
 					{channels.length ? (
 						channels.map((channel, i) => (
-							<button key={i} onClick={() => setChannel(channel)}>
+							<button
+								key={i}
+								onClick={() => setChannel(channel)}
+							>
 								{channel}
 							</button>
 						))
@@ -264,16 +279,11 @@ const ChatWindow = ({
 	const user = useContext(UserContext);
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
-	const [isToggleBox, setIsToggleBox] = useState(false);
 
 	useEffect(() => {
 		function clic(payload: String) {
 			if (payload === channel) setUpdate(true);
 		}
-
-		socket.on("connect_error", (err) => {
-			console.log(`connect_error due to ${err.message}`);
-		});
 		socket.on("newMessage", clic);
 		return () => {
 			socket.off("newMessage", clic);
@@ -288,7 +298,6 @@ const ChatWindow = ({
 				`${process.env.REACT_APP_BACKEND_URL}/message/channel/${channel}`
 			)
 			.then((res) => {
-				console.log(res.data);
 				setMessages(res.data);
 			})
 			.catch((err) => {
@@ -296,10 +305,6 @@ const ChatWindow = ({
 			});
 		setUpdate(false);
 	}, [update]);
-
-	const toggleBox = () => {
-		setIsToggleBox(!isToggleBox);
-	};
 
 	return (
 		<div>
@@ -314,10 +319,11 @@ const ChatWindow = ({
 			<h1>{channel}</h1>
 			{messages.map((message, i) => (
 				<div key={i}>
-					<button onClick={toggleBox}>{message.userLogin}</button>
-					{isToggleBox ? <div>Oui</div> : <></>}
-					<label>{message.createdAt}</label>
-					<p>{message.content}</p>
+					<Message
+						login={message.userLogin}
+						date={message.createdAt}
+						content={message.content}
+					/>
 				</div>
 			))}
 			<button
@@ -336,6 +342,30 @@ const ChatWindow = ({
 				send message
 			</button>
 		</div>
+	);
+};
+
+const Message = ({
+	login,
+	date,
+	content,
+}: {
+	login: String;
+	date: String;
+	content: String;
+}) => {
+	const [isToggleBox, setIsToggleBox] = useState(false);
+
+	const toggleBox = () => {
+		setIsToggleBox(!isToggleBox);
+	};
+	return (
+		<>
+			<button onClick={toggleBox}>{login}</button>
+			{isToggleBox ? <div>Oui</div> : <></>}
+			<label>{date}</label>
+			<p>{content}</p>
+		</>
 	);
 };
 

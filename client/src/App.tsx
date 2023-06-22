@@ -22,7 +22,6 @@ const App = () => {
 						`This is an HTTP error: The status is : pas bien`
 					);
 				}
-				console.log(response.data);
 				return response;
 			})
 			.then((response) => {
