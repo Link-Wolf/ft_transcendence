@@ -79,7 +79,7 @@ const ChannelCreation = () => {
 				await axios
 					.post(`${process.env.REACT_APP_BACKEND_URL}/membership`, {
 						channelName: response.data.name,
-						userLogin: "Link", //TODO: change ha login by session
+						userLogin: "Link", //TODO: change hardcoded login by session
 						isAdmin: true,
 					})
 					.then(() => {
