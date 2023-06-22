@@ -1,5 +1,6 @@
 import Matter from "matter-js";
 import { useEffect } from "react";
+import socket from "../socket";
 
 const Game = () => {
 	const HEIGHT = 600; //Canvas height
@@ -397,7 +398,12 @@ const Game = () => {
 				x: PADDLE_DISTANCE_FROM_EDGE,
 				y: playerBatPosition,
 			});
+			socket.volatile.emit("updatePosition", playerBatPosition);
 		};
+
+		socket.on("adversBatPosition", (position: number) => {
+			adversBatPosition = position;
+		});
 
 		const activateSegment = (segment: Matter.Body) => {
 			segment.render.fillStyle = "#EEE";
