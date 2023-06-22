@@ -2,17 +2,17 @@ import Matter from "matter-js";
 import { useEffect } from "react";
 
 const Game = () => {
-	const HEIGHT = 600;
-	const WIDTH = 800;
-	const PADDLE_HEIGHT = 30;
-	const PADDLE_WIDTH = 8;
-	const BALL_SIZE = 8;
-	const PADDLE_DISTANCE_FROM_EDGE = 121;
-	const BALL_DISTANCE_FROM_EDGE = 60;
-	const BALL_STARTING_Y_VELOCITY = 6;
-	const BALL_STARTING_X_VELOCITY = 3;
-	const PADDLE_SPEED = 14;
-	// module aliases
+	const HEIGHT = 600; //Canvas height
+	const WIDTH = 800; //Canvas width
+	const PADDLE_HEIGHT = 30; //Paddle height
+	const PADDLE_WIDTH = 8; //Paddle width
+	const BALL_SIZE = 8; //Ball size
+	const PADDLE_DISTANCE_FROM_EDGE = 121; //Distance between paddle and edge of the canvas
+	const BALL_DISTANCE_FROM_EDGE = 60; //Distance between ball and edge of the canvas
+	const BALL_STARTING_Y_VELOCITY = 6; //Ball vector y at the start of the round
+	const BALL_STARTING_X_VELOCITY = 3; //Ball vector x at the start of the round
+	const PADDLE_SPEED = 14; //Speed of the paddle when moving
+
 	useEffect(() => {
 		var Engine = Matter.Engine,
 			Render = Matter.Render,
@@ -22,21 +22,24 @@ const Game = () => {
 			Events = Matter.Events,
 			Body = Matter.Body;
 
+		// The ball global velocity in both axis
 		let ballVelocity = {
 			x: -BALL_STARTING_X_VELOCITY,
 			y: -BALL_STARTING_Y_VELOCITY,
 		};
+
+		//The ball position in both axis
 		let ballPosition = {
 			x: WIDTH / 2,
 			y: BALL_DISTANCE_FROM_EDGE,
 		};
-		let playerBatPosition = HEIGHT / 2;
-		let adversBatPosition = HEIGHT / 2;
-		let ballStartsFromTop = true;
-		let playerToStart = true;
-		let isRoundStarted = false;
-		let playerScore = 1;
-		let adversScore = 2;
+		let playerBatPosition = HEIGHT / 2; //The player paddle position in y axis (left paddle)
+		let adversBatPosition = HEIGHT / 2; //The advers paddle position in y axis (right paddle)
+		let ballStartsFromTop = true; //Weather the ball starts from the top or the bottom
+		let playerToStart = true; //Weather the player starts the round or the adversary
+		let isRoundStarted = false; //Weather the round has started
+		let playerScore = 0; //The player score
+		let adversScore = 0; //The adversary score
 
 		// create an engine
 		var engine = Engine.create({
@@ -118,15 +121,18 @@ const Game = () => {
 		}
 
 		/*
-		seven segment display (the interesctions are in both segments)
-		7  0000
-		7  5  1
-		7  5  1
-		7  6666
-		7  4  2
-		7  4  2
-		7  4  2
-		7  3333
+		seven segment display (X are the interesctions, so both segments)
+		Each number corresponds to the index of the array
+
+			7		X	0	0	X
+			7		5			1
+			7		5			1
+			7		X	6	6	X
+			7		4			2
+			7		4			2
+			7		4			2
+			7		X	3	3	X
+
 		*/
 		var UNIT_SIZE = 8;
 		var POSITION = 160;
@@ -356,14 +362,22 @@ const Game = () => {
 				Math.abs(ball.position.y - paddle.position.y) <=
 					BALL_SIZE / 2 + PADDLE_HEIGHT / 2
 			) {
-				Body.setVelocity(ball, {
-					x: bouncingXDirection,
-					y: ball.velocity.y, //TODO: calculte in function of where in the paddle it hits to emulate true pong
-				});
-				Body.setPosition(ball, {
-					x: bouncingXDirection > 0 ? 0 : 0,
+				ballPosition = {
+					x:
+						paddle.position.x +
+						Math.sign(bouncingXDirection) *
+							(BALL_SIZE / 2 + PADDLE_WIDTH / 2),
 					y: ball.position.y,
-				});
+				};
+				ballVelocity = {
+					x: bouncingXDirection,
+					y:
+						((ball.position.y - paddle.position.y) /
+							PADDLE_HEIGHT) *
+						12,
+				};
+				Body.setVelocity(ball, ballVelocity);
+				Body.setPosition(ball, ballPosition);
 			}
 		};
 
@@ -469,6 +483,9 @@ const Game = () => {
 			}
 			isRoundStarted = false;
 			ballStartsFromTop = !ballStartsFromTop;
+			if (playerScore >= 11 || adversScore >= 11) {
+				console.log("Someone has won!");
+			}
 			displayScore(playerScore, PlayerScoreDisplay);
 			displayScore(adversScore, AdversScoreDisplay);
 		};
