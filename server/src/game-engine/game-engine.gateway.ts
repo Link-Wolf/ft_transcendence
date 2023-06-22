@@ -1,13 +1,13 @@
 import { Logger } from '@nestjs/common';
-import { Socket, Server } from 'socket.io';
 import {
-	SubscribeMessage,
-	WebSocketGateway,
-	OnGatewayInit,
-	WebSocketServer,
 	OnGatewayConnection,
 	OnGatewayDisconnect,
+	OnGatewayInit,
+	SubscribeMessage,
+	WebSocketGateway,
+	WebSocketServer,
 } from '@nestjs/websockets';
+import { Socket, Server } from 'socket.io';
 
 @WebSocketGateway({
 	cors: {
@@ -15,17 +15,14 @@ import {
 		credentials: true,
 	},
 })
-export class MessageGateway
+export class GameEngineGateway
 	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
 	@WebSocketServer() server: Server;
 	private logger: Logger = new Logger('MessageGateway');
 
-	@SubscribeMessage('msgToServer')
-	handleMessage(client: Socket, payload: string): void {
-		this.logger.log(`Client ${client.id} sent: ${payload}`);
-		this.server.emit('msgToClient', payload);
-	}
+	@SubscribeMessage('joinWaitRoom')
+	handleJoinWaitRoom(client: Socket, payload: string): void {}
 
 	afterInit(server: Server) {
 		this.logger.log('Init');

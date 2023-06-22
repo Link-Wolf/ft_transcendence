@@ -7,6 +7,7 @@ import { use } from "matter-js";
 // import style from "../style/Chat.module.scss";
 
 const Chat = () => {
+	const user = useContext(UserContext);
 	const [chat, setChat] = useState(false);
 
 	const toggleChat = () => {
@@ -44,10 +45,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					setChannel={setChannel}
 				/>
 			) : (
-				<UserList
-					channel={channel}
-					toggleShowlist={toggleShowlist}
-				/>
+				<UserList channel={channel} toggleShowlist={toggleShowlist} />
 			)}
 		</div>
 	);
@@ -58,6 +56,7 @@ const ChannelCreation = () => {
 	//et TODO: tant que tu passes par la y a les trucs de genre quand tu creer
 	//un channel et que ca back ca affiche pas dans la liste le nouveau channel
 	//genre faut refresh le composant tout ca..
+	const user = useContext(UserContext);
 	const [isChannel, setNewChannel] = useState(false);
 	const [channel, setChannel] = useState<String | null>(null);
 	const [showList, setShowList] = useState(false);
@@ -69,7 +68,7 @@ const ChannelCreation = () => {
 	const createChannel = async () => {
 		await axios
 			.post(`${process.env.REACT_APP_BACKEND_URL}/channel`, {
-				ownerLogin: "Link", //TODO: change hardcoded login by session
+				ownerLogin: user.login,
 				name: (document.getElementById("name") as HTMLInputElement)
 					.value,
 				password: (document.getElementById("pass") as HTMLInputElement)
@@ -79,7 +78,7 @@ const ChannelCreation = () => {
 				await axios
 					.post(`${process.env.REACT_APP_BACKEND_URL}/membership`, {
 						channelName: response.data.name,
-						userLogin: "Link", //TODO: change ha login by session
+						userLogin: user.login,
 						isAdmin: true,
 					})
 					.then(() => {
@@ -103,20 +102,10 @@ const ChannelCreation = () => {
 	) : (
 		<form>
 			<label>Nom du channel</label>
-			<input
-				id='name'
-				type='text'
-				defaultValue={""}
-			/>
+			<input id='name' type='text' defaultValue={""} />
 			<label>Mot de passe (optionnel)</label>
-			<input
-				id='pass'
-				type='password'
-			/>
-			<button
-				type='button'
-				onClick={createChannel}
-			>
+			<input id='pass' type='password' />
+			<button type='button' onClick={createChannel}>
 				Creer
 			</button>
 		</form>
@@ -207,10 +196,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				<>
 					{channels.length ? (
 						channels.map((channel, i) => (
-							<button
-								key={i}
-								onClick={() => setChannel(channel)}
-							>
+							<button key={i} onClick={() => setChannel(channel)}>
 								{channel}
 							</button>
 						))
@@ -275,14 +261,19 @@ const ChatWindow = ({
 	toggleShowlist: Function;
 	setChannel: Function;
 }) => {
+	const user = useContext(UserContext);
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
+	const [isToggleBox, setIsToggleBox] = useState(false);
 
 	useEffect(() => {
 		function clic(payload: String) {
 			if (payload === channel) setUpdate(true);
 		}
 
+		socket.on("connect_error", (err) => {
+			console.log(`connect_error due to ${err.message}`);
+		});
 		socket.on("newMessage", clic);
 		return () => {
 			socket.off("newMessage", clic);
@@ -306,6 +297,10 @@ const ChatWindow = ({
 		setUpdate(false);
 	}, [update]);
 
+	const toggleBox = () => {
+		setIsToggleBox(!isToggleBox);
+	};
+
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
@@ -319,21 +314,23 @@ const ChatWindow = ({
 			<h1>{channel}</h1>
 			{messages.map((message, i) => (
 				<div key={i}>
-					<h2>{message.userLogin}</h2>
+					<button onClick={toggleBox}>{message.userLogin}</button>
+					{isToggleBox ? <div>Oui</div> : <></>}
 					<label>{message.createdAt}</label>
 					<p>{message.content}</p>
 				</div>
 			))}
 			<button
 				onClick={async () => {
-					await axios.post(
-						`${process.env.REACT_APP_BACKEND_URL}/message`,
-						{
-							chanName: "oui",
+					await axios
+						.post(`${process.env.REACT_APP_BACKEND_URL}/message`, {
+							chanName: channel,
 							content: "test message",
-							userLogin: "iCARUS",
-						}
-					);
+							userLogin: user.login,
+						})
+						.catch((err) => {
+							console.log(err);
+						});
 				}}
 			>
 				send message

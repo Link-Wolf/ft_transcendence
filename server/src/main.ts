@@ -14,6 +14,11 @@ async function bootstrap() {
 		credentials: true,
 	});
 	app.setGlobalPrefix('api');
-	await app.listen(process.env.PORT);
+	var server = await app.listen(process.env.PORT);
+	// var io = require('socket.io')(server, {
+	// 	cors: {
+	// 		origin: '*',
+	// 	},
+	// });
 }
 bootstrap();

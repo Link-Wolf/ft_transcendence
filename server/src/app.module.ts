@@ -19,6 +19,7 @@ import { PrivateMessageModule } from './private-message/private-message.module';
 import { AuthModule } from './auth/auth.module';
 import { redisStore } from 'cache-manager-redis-yet';
 import { MessageGateway } from './message/message.gateway';
+import { GameEngineModule } from './game-engine/game-engine.module';
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
@@ -41,7 +42,8 @@ import { MessageGateway } from './message/message.gateway';
 		BanModule,
 		MuteModule,
 		PrivateMessageModule,
-		AuthModule
+		AuthModule,
+		GameEngineModule
 	],
 	controllers: [AppController],
 	providers: [AppService],
