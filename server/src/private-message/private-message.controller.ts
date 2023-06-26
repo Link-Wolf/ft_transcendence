@@ -1,7 +1,14 @@
-import { Body, Controller, HttpException, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	HttpException,
+	HttpStatus,
+	Post,
+	UseGuards,
+} from '@nestjs/common';
 import { Channel } from 'src/channel/channel.entity';
 import { ChannelService } from 'src/channel/channel.service';
-import { ClearanceGuard } from 'src/guards/clearance.guard';
+import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { MembershipService } from 'src/membership/membership.service';
 import { UserService } from 'src/user/user.service';
 
@@ -25,11 +32,8 @@ export class PrivateMessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE_LEVEL)))
-	async create(
-		@Body('loginOther') loginOther: string,
-	): Promise<Channel>
-	{
+	@UseGuards(AdminClearanceGuard)
+	async create(@Body('loginOther') loginOther: string): Promise<Channel> {
 		//TODO: check if already exist
 		let me = await this.userService.findByLogin('me' /* TODO: session */);
 		let otherMember = await this.userService.findByLogin(loginOther);
@@ -37,10 +41,15 @@ export class PrivateMessageController {
 			throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
 		let channel = await this.channelService.create({
 			isPrivate: true,
-			name: `_${[me, otherMember].sort()[0]}&${[me, otherMember].sort()[1]}` //NOTE: _loginA&loginB
-		})
-		await this.membershipService.create({user: me, channel: channel});
-		await this.membershipService.create({user: otherMember, channel: channel});
+			name: `_${[me, otherMember].sort()[0]}&${
+				[me, otherMember].sort()[1]
+			}`, //NOTE: _loginA&loginB
+		});
+		await this.membershipService.create({ user: me, channel: channel });
+		await this.membershipService.create({
+			user: otherMember,
+			channel: channel,
+		});
 		return channel;
 	}
 }

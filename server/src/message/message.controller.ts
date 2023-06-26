@@ -1,6 +1,17 @@
- import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpException,
+	HttpStatus,
+	Param,
+	ParseIntPipe,
+	Post,
+	UseGuards,
+} from '@nestjs/common';
 import { MessageService } from './message.service';
-import { ClearanceGuard } from 'src/guards/clearance.guard';
+import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { Message } from './message.entity';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from 'src/channel/channel.service';
@@ -18,9 +29,9 @@ export class MessageController {
 		private readonly membershipService: MembershipService,
 		private readonly banService: BanService,
 		private readonly muteService: MuteService,
-		private readonly messageGateway: MessageGateway
+		private readonly messageGateway: MessageGateway,
 	) {}
-	
+
 	/**
 	 * @brief Get all messages
 	 * @return {Message[]} All messages
@@ -31,9 +42,8 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get()
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
-	async getAllMessages(): Promise<Message[]>
-	{
+	@UseGuards(AdminClearanceGuard)
+	async getAllMessages(): Promise<Message[]> {
 		return this.messageService.findAll();
 	}
 
@@ -49,82 +59,78 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':id')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async getMessageById(
-		@Param('id', ParseIntPipe) id: number
-	): Promise<Message>
-	{
+		@Param('id', ParseIntPipe) id: number,
+	): Promise<Message> {
 		let message = await this.messageService.findById(id);
 		if (!message)
 			throw new HttpException('Message not found', HttpStatus.NOT_FOUND);
 		return message;
 	}
 
-    /**
-     * @brief Get messages by channel name
-     * @param {string} chanName The channel name
-     * @return {Message[]} The messages
-     * @security Clearance level: admin OR user member of the channel
-     * @response 200 - OK
-     * @response 401 - Unauthorized
-     * @response 403 - Forbidden
-     * @response 404 - Not Found
-     * @response 500 - Internal Server Error
-     */
+	/**
+	 * @brief Get messages by channel name
+	 * @param {string} chanName The channel name
+	 * @return {Message[]} The messages
+	 * @security Clearance level: admin OR user member of the channel
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
 	@Get('channel/:chanName')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async getMessagesByChannel(
-		@Param('chanName') chanName: string
-	): Promise<Message[]>
-	{
+		@Param('chanName') chanName: string,
+	): Promise<Message[]> {
 		let channel = await this.messageService.findByChannel(chanName);
 		if (!channel)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		return this.messageService.findByChannel(chanName);
 	}
 
-    /**
-     * @brief Get messages by user login
-     * @param {string} userLogin The user login
-     * @return {Message[]} The messages
-     * @security Clearance level: admin
-     * @response 200 - OK
-     * @response 401 - Unauthorized
-     * @response 403 - Forbidden
-     * @response 404 - Not Found
-     * @response 500 - Internal Server Error
-     */
+	/**
+	 * @brief Get messages by user login
+	 * @param {string} userLogin The user login
+	 * @return {Message[]} The messages
+	 * @security Clearance level: admin
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
 	@Get('user/:userLogin')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async getMessagesByUser(
-		@Param('userLogin') userLogin: string
-	): Promise<Message[]>
-	{
+		@Param('userLogin') userLogin: string,
+	): Promise<Message[]> {
 		let user = await this.messageService.findByUser(userLogin);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		return this.messageService.findByUser(userLogin);
 	}
 
-    /**
-     * @brief Get messages by user login and channel name
-     * @param {string} userLogin The user login
-     * @param {string} chanName The channel name
-     * @return {Message[]} The messages
-     * @security Clearance level: admin OR user member of the channel
-     * @response 200 - OK
-     * @response 401 - Unauthorized
-     * @response 403 - Forbidden
-     * @response 404 - Not Found
-     * @response 500 - Internal Server Error
-     */
+	/**
+	 * @brief Get messages by user login and channel name
+	 * @param {string} userLogin The user login
+	 * @param {string} chanName The channel name
+	 * @return {Message[]} The messages
+	 * @security Clearance level: admin OR user member of the channel
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
 	@Get('user/:userLogin/channel/:chanName')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async getMessagesByUserAndChannel(
 		@Param('userLogin') userLogin: string,
-		@Param('chanName') chanName: string
-	): Promise<Message[]>
-	{
+		@Param('chanName') chanName: string,
+	): Promise<Message[]> {
 		let user = await this.messageService.findByUser(userLogin);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -134,72 +140,88 @@ export class MessageController {
 		return this.messageService.findByUserAndChannel(userLogin, chanName);
 	}
 
-    /**
-     * @brief Create a message
-     * @param {string} content The message content
-     * @param {string} userLogin The user login
-     * @param {string} chanName The channel name
-     * @return {Message} The message
-     * @security Clearance level: admin OR user member of the channel
-     * @response 200 - OK
-     * @response 400 - Bad Request
-     * @response 401 - Unauthorized
-     * @response 403 - Forbidden
-     * @response 404 - Not Found
-     * @response 500 - Internal Server Error
-     */
+	/**
+	 * @brief Create a message
+	 * @param {string} content The message content
+	 * @param {string} userLogin The user login
+	 * @param {string} chanName The channel name
+	 * @return {Message} The message
+	 * @security Clearance level: admin OR user member of the channel
+	 * @response 200 - OK
+	 * @response 400 - Bad Request
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
 	@Post()
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async createMessage(
 		@Body('content') content: string,
 		@Body('userLogin') userLogin: string,
-		@Body('chanName') chanName: string
-	): Promise<Message>
-	{
+		@Body('chanName') chanName: string,
+	): Promise<Message> {
 		let user = await this.userService.findByLogin(userLogin);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let channel = await this.channelService.findByName(chanName);
 		if (!channel)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		let membership = await this.membershipService.findByUserAndChannel(userLogin, chanName);
+		let membership = await this.membershipService.findByUserAndChannel(
+			userLogin,
+			chanName,
+		);
 		if (!membership)
-			throw new HttpException('User is not a member of the channel', HttpStatus.FORBIDDEN);
-		let ban = await this.banService.findByLoginAndChannel(userLogin, chanName);
+			throw new HttpException(
+				'User is not a member of the channel',
+				HttpStatus.FORBIDDEN,
+			);
+		let ban = await this.banService.findByLoginAndChannel(
+			userLogin,
+			chanName,
+		);
 		if (ban.length > 0)
-			throw new HttpException('User is banned from the channel', HttpStatus.FORBIDDEN);
-		let mute = await this.muteService.findByLoginAndChannel(userLogin, chanName);
+			throw new HttpException(
+				'User is banned from the channel',
+				HttpStatus.FORBIDDEN,
+			);
+		let mute = await this.muteService.findByLoginAndChannel(
+			userLogin,
+			chanName,
+		);
 		if (mute.length > 0)
-			throw new HttpException('User is muted from the channel', HttpStatus.FORBIDDEN);
+			throw new HttpException(
+				'User is muted from the channel',
+				HttpStatus.FORBIDDEN,
+			);
 		if (!content || content.length === 0)
 			throw new HttpException('Content is empty', HttpStatus.BAD_REQUEST);
 		let ret = await this.messageService.create({
 			content: content,
 			user: user,
 			channel: channel,
-			date: new Date(Date.now())
+			date: new Date(Date.now()),
 		});
 		this.messageGateway.notifyUpdate(chanName);
 		return ret;
 	}
 
-    /**
-     * @brief Delete a message by its id
-     * @param {number} id The message id
+	/**
+	 * @brief Delete a message by its id
+	 * @param {number} id The message id
 	 * @return {number} The number of deleted messages
-     * @security Clearance level: admin OR admin of the channel OR user who created the message
-     * @response 200 - OK
-     * @response 401 - Unauthorized
-     * @response 403 - Forbidden
-     * @response 404 - Not Found
-     * @response 500 - Internal Server Error
-     */
+	 * @security Clearance level: admin OR admin of the channel OR user who created the message
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
 	@Delete(':id')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_LEVEL_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async deleteMessage(
-		@Param('id', ParseIntPipe) id: number
-	): Promise<number>
-	{
+		@Param('id', ParseIntPipe) id: number,
+	): Promise<number> {
 		let message = await this.messageService.findById(id);
 		if (!message)
 			throw new HttpException('Message not found', HttpStatus.NOT_FOUND);

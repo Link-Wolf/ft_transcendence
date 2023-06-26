@@ -11,7 +11,7 @@ import {
 	HttpException,
 	HttpStatus,
 } from '@nestjs/common';
-import { ClearanceGuard } from '../guards/clearance.guard';
+import { AdminClearanceGuard } from '../guards/admin_clearance.guard';
 import { ParseBoolPipe } from './membership.pipe';
 import { MembershipService } from './membership.service';
 import { UserService } from '../user/user.service';
@@ -41,7 +41,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get()
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminClearanceGuard)
 	async getAll(): Promise<Membership[]> {
 		return this.membershipService.findAll();
 	}

@@ -8,7 +8,7 @@ import {
 	Post,
 	UseGuards,
 } from '@nestjs/common';
-import { ClearanceGuard } from 'src/guards/clearance.guard';
+import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Block } from './block.entity';
@@ -32,7 +32,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get()
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminClearanceGuard)
 	async findAll(): Promise<Block[]> {
 		return this.blockService.findAll();
 	}
@@ -49,7 +49,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('of/:login')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminClearanceGuard)
 	async findBlockersOf(@Param('login') login: string): Promise<Block[]> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -125,7 +125,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('of/:login/users')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminClearanceGuard)
 	async findUsersBlockersOf(@Param('login') login: string): Promise<User[]> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);

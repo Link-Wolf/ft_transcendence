@@ -16,7 +16,7 @@ const Game = () => {
 		const startGame = (payload: any) => {
 			console.log("Useeffect : ", payload);
 			setGameId(payload.gameId);
-			setAmFirstPlayer(payload.firstPlayer == context.login);
+			setAmFirstPlayer(payload.firstPlayer === context.login);
 			setHasFoundGame(true);
 		};
 
@@ -104,6 +104,7 @@ const GameRender = ({
 	const BALL_STARTING_Y_VELOCITY = 6; //Ball vector y at the start of the round
 	const BALL_STARTING_X_VELOCITY = 3; //Ball vector x at the start of the round
 	const PADDLE_SPEED = 14; //Speed of the paddle when moving
+	const DEFAULT_BAT_HEIGHT = HEIGHT / 2; //The player paddle position in y axis (left paddle)
 
 	useEffect(() => {
 		var Engine = Matter.Engine,
@@ -125,8 +126,6 @@ const GameRender = ({
 			x: WIDTH / 2,
 			y: BALL_DISTANCE_FROM_EDGE,
 		};
-		let playerBatPosition = HEIGHT / 2; //The player paddle position in y axis (left paddle)
-		let adversBatPosition = HEIGHT / 2; //The advers paddle position in y axis (right paddle)
 		let ballStartsFromTop = true; //Weather the ball starts from the top or the bottom
 		let playerToStart = amFirstPlayer; //Weather the player starts the round or the adversary
 		let isRoundStarted = false; //Weather the round has started
@@ -155,7 +154,7 @@ const GameRender = ({
 		// create two boxes and a ground
 		var playerBat = Bodies.rectangle(
 			PADDLE_DISTANCE_FROM_EDGE,
-			playerBatPosition,
+			DEFAULT_BAT_HEIGHT,
 			PADDLE_WIDTH,
 			PADDLE_HEIGHT,
 			{
@@ -169,7 +168,7 @@ const GameRender = ({
 		);
 		var adversBat = Bodies.rectangle(
 			WIDTH - PADDLE_DISTANCE_FROM_EDGE - PADDLE_WIDTH,
-			adversBatPosition,
+			DEFAULT_BAT_HEIGHT,
 			PADDLE_WIDTH,
 			PADDLE_HEIGHT,
 			{
@@ -393,11 +392,30 @@ const GameRender = ({
 		Composite.add(engine.world, AdversScoreDisplay);
 
 		const keysDown = new Set();
+		const keysAdvers = new Set();
+
+		const updateKeys = () => {
+			socket.emit("keys", {
+				keys: Array.from(keysDown),
+				auth: Cookies.get("token"),
+				gameId: gameId,
+			});
+		};
+
+		socket.on("keys", (data) => {
+			keysAdvers.clear();
+			data.keys.forEach((key: string) => {
+				keysAdvers.add(key);
+			});
+		});
+
 		const addKey = (event: KeyboardEvent) => {
 			keysDown.add(event.code);
+			updateKeys();
 		};
 		const removeKey = (event: KeyboardEvent) => {
 			keysDown.delete(event.code);
+			updateKeys();
 		};
 		document.addEventListener("keydown", addKey);
 		document.addEventListener("keyup", removeKey);
@@ -429,17 +447,15 @@ const GameRender = ({
 		};
 
 		const fixAllPositions = () => {
-			{
-				Body.setVelocity(ball, { x: 0, y: 0 });
-				Body.setPosition(playerBat, {
-					x: PADDLE_DISTANCE_FROM_EDGE,
-					y: playerBatPosition,
-				});
-				Body.setPosition(adversBat, {
-					x: WIDTH - PADDLE_DISTANCE_FROM_EDGE - PADDLE_WIDTH,
-					y: adversBatPosition,
-				});
-			}
+			Body.setVelocity(ball, { x: 0, y: 0 });
+			Body.setPosition(playerBat, {
+				x: PADDLE_DISTANCE_FROM_EDGE,
+				y: DEFAULT_BAT_HEIGHT,
+			});
+			Body.setPosition(adversBat, {
+				x: WIDTH - PADDLE_DISTANCE_FROM_EDGE - PADDLE_WIDTH,
+				y: DEFAULT_BAT_HEIGHT,
+			});
 		};
 
 		const handlePaddleCollision = (
@@ -471,59 +487,58 @@ const GameRender = ({
 				Body.setVelocity(ball, ballVelocity);
 				Body.setPosition(ball, ballPosition);
 				if (ball.position.x < WIDTH / 2) {
-					socket.volatile.emit("bounceBall", {
-						ball: {
-							position: ball.position,
-							velocity: ball.velocity,
-						},
-						auth: Cookies.get("token"),
-						gameId: gameId,
-					});
+					// socket.volatile.emit("bounceBall", {
+					// 	ball: {
+					// 		position: ball.position,
+					// 		velocity: ball.velocity,
+					// 	},
+					// 	auth: Cookies.get("token"),
+					// 	gameId: gameId,
+					// });
 				}
 			}
 		};
 
-		socket.on("bounceBall", (data) => {
-			ballPosition = data.ball.position;
-			ballVelocity = data.ball.velocity;
-			Body.setVelocity(ball, ballVelocity);
-			Body.setPosition(ball, ballPosition);
-		});
+		// socket.on("bounceBall", (data) => {
+		// 	ballPosition = data.ball.position;
+		// 	ballVelocity = data.ball.velocity;
+		// 	Body.setVelocity(ball, ballVelocity);
+		// 	Body.setPosition(ball, ballPosition);
+		// });
 
-		const handlePlayerMovement = () => {
-			let hasMoved = false;
-			if (keysDown.has("ArrowUp") || keysDown.has("KeyW")) {
-				playerBatPosition -= PADDLE_SPEED;
-				if (playerBatPosition < PADDLE_HEIGHT / 2) {
-					playerBatPosition = PADDLE_HEIGHT / 2;
+		const handlePlayerMovement = (
+			paddle: Matter.Body,
+			inputs: Set<any>
+		) => {
+			let batPosition = paddle.position.y;
+			if (inputs.has("ArrowUp") || inputs.has("KeyW")) {
+				batPosition -= PADDLE_SPEED;
+				if (batPosition < PADDLE_HEIGHT / 2) {
+					batPosition = PADDLE_HEIGHT / 2;
 				}
-				hasMoved = true;
 			}
-			if (keysDown.has("ArrowDown") || keysDown.has("KeyS")) {
-				playerBatPosition += PADDLE_SPEED;
-				if (playerBatPosition > HEIGHT - PADDLE_HEIGHT / 2)
-					playerBatPosition = HEIGHT - PADDLE_HEIGHT / 2;
-					hasMoved = true;
+			if (inputs.has("ArrowDown") || inputs.has("KeyS")) {
+				batPosition += PADDLE_SPEED;
+				if (batPosition > HEIGHT - PADDLE_HEIGHT / 2)
+					batPosition = HEIGHT - PADDLE_HEIGHT / 2;
 			}
-			
-			if (hasMoved) {
-				socket.volatile.emit("movePaddle", {
-				gameId: gameId,
-				position: playerBatPosition,
-				auth: Cookies.get("token"),
+
+			// 	socket.volatile.emit("movePaddle", {
+			// 	gameId: gameId,
+			// 	position: batPosition,
+			// 	auth: Cookies.get("token"),
+			// });
+			Body.setPosition(paddle, {
+				x: paddle.position.x,
+				y: batPosition,
 			});
-			Body.setPosition(playerBat, {
-				x: PADDLE_DISTANCE_FROM_EDGE,
-				y: playerBatPosition,
-			});
-			}
 		};
 
-		socket.on("movePaddle", (payload: any) => {
-			console.log(payload);
-			if (payload.player === context.login) return;
-			adversBatPosition = payload.position;
-		});
+		// socket.on("movePaddle", (payload: any) => {
+		// 	console.log(payload);
+		// 	if (payload.player === context.login) return;
+		// 	DEFAULT_BAT_HEIGHT = payload.position;
+		// });
 
 		const activateSegment = (segment: Matter.Body) => {
 			segment.render.fillStyle = "#EEE";
@@ -612,45 +627,49 @@ const GameRender = ({
 			if (playerScore >= 11 || adversScore >= 11) {
 				console.log("Someone has won!");
 			}
-			socket.volatile.emit("markGoal", {
-				gameId: gameId,
-				auth: Cookies.get("token"),
-				score: [
-					{
-						login: context.login,
-						score: playerScore,
-					},
-					{
-						login: opponentLogin,
-						score: adversScore,
-					},
-				],
-				ball: {
-					position: ball.position,
-				},
-				playerToPlay: playerToStart ? context.login : opponentLogin,
-			});
+			// socket.volatile.emit("markGoal", {
+			// 	gameId: gameId,
+			// 	auth: Cookies.get("token"),
+			// 	score: [
+			// 		{
+			// 			login: context.login,
+			// 			score: playerScore,
+			// 		},
+			// 		{
+			// 			login: opponentLogin,
+			// 			score: adversScore,
+			// 		},
+			// 	],
+			// 	ball: {
+			// 		position: ball.position,
+			// 	},
+			// 	playerToPlay: playerToStart ? context.login : opponentLogin,
+			// });
 			displayScore(playerScore, PlayerScoreDisplay);
 			displayScore(adversScore, AdversScoreDisplay);
 		};
 
-		socket.on("markGoal", (payload: any) => {
-			playerScore = payload.score.find(
-				(score: any) => score.login === context.login
-			).score;
-			adversScore = payload.score.find(
-				(score: any) => score.login === opponentLogin
-			).score;
-			ballPosition = payload.ball.position;
-			playerToStart = payload.playerToPlay === context.login;
-			Body.setPosition(ball, ballPosition);
-			isRoundStarted = false;
-		});
+		// socket.on("markGoal", (payload: any) => {
+		// 	playerScore = payload.score.find(
+		// 		(score: any) => score.login === context.login
+		// 	).score;
+		// 	adversScore = payload.score.find(
+		// 		(score: any) => score.login === opponentLogin
+		// 	).score;
+		// 	ballPosition = payload.ball.position;
+		// 	playerToStart = payload.playerToPlay === context.login;
+		// 	Body.setPosition(ball, ballPosition);
+		// 	isRoundStarted = false;
+		// });
 
 		Events.on(engine, "beforeUpdate", function (event) {
 			// Player movement
-			handlePlayerMovement();
-			if (keysDown.has("Space") && !isRoundStarted && playerToStart) {
+			handlePlayerMovement(playerBat, keysDown);
+			handlePlayerMovement(adversBat, keysAdvers);
+			if (
+				(keysDown.has("Space") && !isRoundStarted && playerToStart) ||
+				(keysAdvers.has("Space") && !isRoundStarted && !playerToStart)
+			) {
 				isRoundStarted = true;
 			}
 			if (!isRoundStarted) {
@@ -687,9 +706,9 @@ const GameRender = ({
 			render.canvas.remove();
 			document.removeEventListener("keydown", addKey);
 			document.removeEventListener("keyup", removeKey);
-			socket.off("markGoal");
-			socket.off("movePaddle");
-			socket.off("bounceBall");
+			// socket.off("markGoal");
+			// socket.off("movePaddle");
+			// socket.off("bounceBall");
 		};
 	}, []);
 

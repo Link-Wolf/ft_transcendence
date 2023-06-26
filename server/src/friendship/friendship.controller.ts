@@ -12,7 +12,8 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
-import { ClearanceGuard } from 'src/guards/clearance.guard';
+import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
+import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import { Friendship } from './friendship.entity';
 import { UserService } from 'src/user/user.service';
 import { BlockService } from 'src/block/block.service';
@@ -41,7 +42,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get()
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async getAll(): Promise<Friendship[]> {
 		return await this.friendshipService.findAll();
 	}
@@ -154,7 +155,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_USER)))
+	@UseGuards(UserClearanceGuard)
 	async create(
 		@Req() req: Request,
 		@Body('receiverLogin') receiverLogin: string,
@@ -226,7 +227,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch(':loginA/:loginB')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async update(
 		@Req() req: Request,
 		@Param('loginA') loginA: string,
