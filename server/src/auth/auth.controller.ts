@@ -10,11 +10,12 @@ import {
 	Res,
 	UseGuards,
 } from '@nestjs/common';
-import { ClearanceGuard } from 'src/guards/clearance.guard';
+import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
 import { JWTService } from './jwt.service';
+import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -96,7 +97,7 @@ export class AuthController {
 	 * @response 500 - Internal server error
 	 */
 	@Get('logout')
-	@UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
+	@UseGuards(UserClearanceGuard)
 	async intraLogout(
 		@Res({ passthrough: true }) res: Response,
 	): Promise<void> {
@@ -136,7 +137,7 @@ export class AuthController {
 	 * @response 500 - Internal server error
 	 */
 	@Post('A2F')
-	@UseGuards(new ClearanceGuard(Number(process.env.USER_CLEARANCE)))
+	@UseGuards(UserClearanceGuard)
 	async verifyA2F(
 		@Body('TOTP') TOTP: number,
 		@Req() req: Request,

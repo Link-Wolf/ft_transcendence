@@ -11,7 +11,8 @@ import {
 	Body,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { ClearanceGuard } from 'src/guards/clearance.guard';
+import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
+import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import { Channel } from './channel.entity';
 import { UserService } from 'src/user/user.service';
 import { PublicOrPrivateGuard } from 'src/guards/public_or_private.guard';
@@ -35,7 +36,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get()
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(AdminClearanceGuard)
 	async getAll(): Promise<Channel[]> {
 		return await this.channelService.findAll();
 	}
@@ -49,7 +50,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('public')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_USER)))
+	@UseGuards(UserClearanceGuard)
 	async getPublic(): Promise<Channel[]> {
 		return await this.channelService.findPublic();
 	}
@@ -109,7 +110,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post() //TODO: need very much testing cause looks ugly af
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_USER)))
+	@UseGuards(UserClearanceGuard)
 	async create(
 		@Body('ownerLogin') ownerLogin: string,
 		@Body('name') name: string,

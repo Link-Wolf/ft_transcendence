@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { BanService } from './ban.service';
 import { Ban } from './ban.entity';
-import { ClearanceGuard } from 'src/guards/clearance.guard';
+import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
@@ -36,7 +36,7 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get()
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminClearanceGuard)
 	async getAllBans(): Promise<Ban[]> {
 		return this.banService.findAll();
 	}
@@ -53,7 +53,7 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':id')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminClearanceGuard)
 	async getBanById(@Param('id') id: number): Promise<Ban> {
 		let ret = await this.banService.findById(id);
 		if (!ret)
@@ -73,7 +73,7 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminClearanceGuard)
 	async getBansByUserLogin(@Param('login') login: string): Promise<Ban[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)

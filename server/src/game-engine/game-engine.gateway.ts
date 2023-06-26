@@ -78,24 +78,41 @@ export class GameEngineGateway
 		}
 	}
 
-	@SubscribeMessage('movePaddle')
-	async handleMovePaddle(client: Socket, payload: any): Promise<void> {
+	// @SubscribeMessage('movePaddle')
+	// async handleMovePaddle(client: Socket, payload: any): Promise<void> {
+	// 	let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
+	// 	let user = await this.userService.findByLogin(auth.login);
+	// 	if (!user) return;
+
+	// 	console.log(payload);
+	// 	let game = await this.gameService.findById(payload.gameId);
+	// 	if (!game) return;
+
+	// 	let player = game.users.find((user) => {
+	// 		return user.login == auth.login;
+	// 	});
+	// 	if (!player) return;
+
+	// 	client.to(`game-${game.id}`).volatile.emit('movePaddle', {
+	// 		player: player.login,
+	// 		position: payload.position,
+	// 	});
+	// }
+
+	@SubscribeMessage('keys')
+	async handleKeys(client: Socket, payload: any): Promise<void> {
 		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
 		let user = await this.userService.findByLogin(auth.login);
 		if (!user) return;
-
-		console.log(payload);
 		let game = await this.gameService.findById(payload.gameId);
 		if (!game) return;
-
 		let player = game.users.find((user) => {
 			return user.login == auth.login;
 		});
 		if (!player) return;
-
-		client.to(`game-${game.id}`).volatile.emit('movePaddle', {
+		client.to(`game-${game.id}`).volatile.emit('keys', {
 			player: player.login,
-			position: payload.position,
+			keys: payload.keys,
 		});
 	}
 

@@ -6,9 +6,9 @@ import { UserModule } from '../user/user.module';
 import { ChannelModule } from '../channel/channel.module';
 
 @Module({
-  controllers: [MembershipController],
-  providers: [MembershipService, ...membershipProviders],
-  exports: [MembershipService, ...membershipProviders],
-  imports: [UserModule, ChannelModule]
+	controllers: [MembershipController],
+	providers: [MembershipService, ...membershipProviders],
+	exports: [MembershipService, ...membershipProviders],
+	imports: [UserModule, ChannelModule],
 })
 export class MembershipModule {}
