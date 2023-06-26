@@ -2,7 +2,7 @@ import { IsNumber } from 'class-validator';
 import { Game } from 'src/game/game.entity';
 import { User } from 'src/user/user.entity';
 
-export class UserGameDto {
+  export class UserGameDto {
     @IsNumber()
     id?: number;
 

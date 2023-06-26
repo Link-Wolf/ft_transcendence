@@ -38,7 +38,6 @@ export class AuthController {
 	 * @response 500 - Internal server error
 	 */
 	@Get('login')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async intraLogin(
 		@Query('code') code: string,
 		@Res({ passthrough: true }) res: Response,
@@ -71,14 +70,18 @@ export class AuthController {
 				login: user.dataValues.login,
 				hasConnected: true,
 			});
-		res.cookie('token', await this.jwtService.tokenise({
-			login: user.dataValues.login
-		}), {
-			maxAge: 42 * 60 * 1000, // 42 minutes
-			httpOnly: false,
-			secure: false,
-			sameSite: 'lax',
-		});
+		res.cookie(
+			'token',
+			await this.jwtService.tokenise({
+				login: user.dataValues.login,
+			}),
+			{
+				maxAge: 42 * 60 * 1000, // 42 minutes
+				httpOnly: false,
+				secure: false,
+				sameSite: 'lax',
+			},
+		);
 		return {
 			status: status,
 			needTo2FA: user.dataValues.has2FA,
@@ -101,7 +104,9 @@ export class AuthController {
 	}
 
 	@Get('clearance')
-	async getClearance(@Req() req: Request): Promise<{clearance: number, login: string}> {
+	async getClearance(
+		@Req() req: Request,
+	): Promise<{ clearance: number; login: string }> {
 		if (!req.cookies.token)
 			return {
 				clearance: Number(process.env.GUEST_CLEARANCE),
@@ -111,7 +116,10 @@ export class AuthController {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		return {clearance: user.dataValues.clearance, login: user.dataValues.login};
+		return {
+			clearance: user.dataValues.clearance,
+			login: user.dataValues.login,
+		};
 	}
 
 	/**

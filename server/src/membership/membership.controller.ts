@@ -9,7 +9,7 @@ import {
 	Delete,
 	NotFoundException,
 	HttpException,
-	HttpStatus
+	HttpStatus,
 } from '@nestjs/common';
 import { ClearanceGuard } from '../guards/clearance.guard';
 import { ParseBoolPipe } from './membership.pipe';
@@ -17,13 +17,18 @@ import { MembershipService } from './membership.service';
 import { UserService } from '../user/user.service';
 import { Membership } from './membership.entity';
 import { ChannelService } from '../channel/channel.service';
+import { AdminUserGuard } from 'src/guards/admin_user.guard';
+import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
+import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guard';
+import { AdminUserChannelusersGuard } from 'src/guards/admin_user_channelusers.guard';
+import { AdminChannelusersGuard } from 'src/guards/admin_channelusers.guard';
 
 @Controller('membership')
 export class MembershipController {
 	constructor(
 		private readonly membershipService: MembershipService,
 		private readonly userService: UserService,
-		private readonly channelService: ChannelService
+		private readonly channelService: ChannelService,
 	) {}
 
 	/**
@@ -37,8 +42,7 @@ export class MembershipController {
 	 */
 	@Get()
 	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
-	async getAll(): Promise<Membership[]>
-	{
+	async getAll(): Promise<Membership[]> {
 		return this.membershipService.findAll();
 	}
 
@@ -54,9 +58,8 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))//TODO: Better guarding
-	async getByUser(@Param('login') login: string): Promise<Membership[]>
-	{
+	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	async getByUser(@Param('login') login: string): Promise<Membership[]> {
 		if (!this.userService.findByLogin(login))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		return this.membershipService.findByUser(login);
@@ -74,10 +77,11 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chan_name')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))//TODO: Better guarding
-	async getByChannel(@Param('chan_name') chan_name: string): Promise<Membership[]>
-	{
-		if(!this.channelService.findByName(chan_name))
+	@UseGuards(new AdminChannelusersGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	async getByChannel(
+		@Param('chan_name') chan_name: string,
+	): Promise<Membership[]> {
+		if (!this.channelService.findByName(chan_name))
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		return this.membershipService.findByChannel(chan_name);
 	}
@@ -95,15 +99,16 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login/channel/:chan_name')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))//TODO: Better guarding
+	@UseGuards(
+		new AdminUserChannelusersGuard(Number(process.env.ADMIN_CLEARANCE)),
+	) //TODO: Better guarding
 	async getByUserAndChannel(
 		@Param('login') login: string,
-		@Param('chan_name') chan_name: string
-	): Promise<Membership>
-	{
+		@Param('chan_name') chan_name: string,
+	): Promise<Membership> {
 		if (!this.userService.findByLogin(login))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		if(!this.channelService.findByName(chan_name))
+		if (!this.channelService.findByName(chan_name))
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		return this.membershipService.findByUserAndChannel(login, chan_name);
 	}
@@ -123,25 +128,32 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
 	async create(
 		@Body('channelName') channelName: string,
 		@Body('userLogin') userLogin: string,
 		@Body('isAdmin', ParseBoolPipe) isAdmin: boolean = false,
-	): Promise<Membership>
-	{
+	): Promise<Membership> {
 		let user = await this.userService.findByLogin(userLogin);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let channel = await this.channelService.findByName(channelName);
 		if (!channel)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		if (await this.membershipService.findByUserAndChannel(userLogin, channelName))
-			throw new HttpException('Membership already exists', HttpStatus.CONFLICT);
+		if (
+			await this.membershipService.findByUserAndChannel(
+				userLogin,
+				channelName,
+			)
+		)
+			throw new HttpException(
+				'Membership already exists',
+				HttpStatus.CONFLICT,
+			);
 		return await this.membershipService.create({
 			user: user,
 			channel: channel,
-			isAdmin: isAdmin
+			isAdmin: isAdmin,
 		});
 	}
 
@@ -151,30 +163,38 @@ export class MembershipController {
 	 * @param {string} channelName The channel name
 	 * @param {boolean} isAdmin Whether the user is admin or not
 	 * @return {number} The number of updated memberships
-	 * @security Clearance admin OR channel admin
+	 * @security Clearance admin OR channel owner
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
 	 * @response 404 - Not Found
 	 * @response 500 - Internal Server Error
 	 */
-	@Patch('user/:login/channel/:chan_name')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	@Patch('user/:login/channel/:chann_name')
+	@UseGuards(new AdminOwnerGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
 	async update(
 		@Param('login') userLogin: string,
-		@Param('chan_name') channelName: string,
+		@Param('chann_name') channelName: string,
 		@Body('isAdmin', ParseBoolPipe) isAdmin?: boolean,
-	): Promise<number>
-	{
+	): Promise<number> {
 		let user = await this.userService.findByLogin(userLogin);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let channel = await this.channelService.findByName(channelName);
 		if (!channel)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		if (!this.membershipService.findByUserAndChannel(userLogin, channelName))
-			throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
-		return this.membershipService.update({user: user, channel: channel, isAdmin: isAdmin});
+		if (
+			!this.membershipService.findByUserAndChannel(userLogin, channelName)
+		)
+			throw new HttpException(
+				'Membership not found',
+				HttpStatus.NOT_FOUND,
+			);
+		return this.membershipService.update({
+			user: user,
+			channel: channel,
+			isAdmin: isAdmin,
+		});
 	}
 
 	/**
@@ -182,7 +202,7 @@ export class MembershipController {
 	 * @param {string} login The user login
 	 * @param {string} chan_name The channel name
 	 * @return {number} The number of deleted memberships
-	 * @security Clearance admin OR the user OR channel admin
+	 * @security Clearance admin OR the user OR channel admin OR channel owner
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -190,17 +210,22 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete('user/:login/channel/:chan_name')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	@UseGuards(
+		new AdminOwnerAdminUserGuard(Number(process.env.ADMIN_CLEARANCE)),
+	) //TODO: Better guarding
 	async delete(
 		@Param('login') login: string,
-		@Param('chan_name') chan_name: string) 
-	{
+		@Param('chan_name') chan_name: string,
+	) {
 		if (!this.userService.findByLogin(login))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		if(!this.channelService.findByName(chan_name))
+		if (!this.channelService.findByName(chan_name))
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		if (!this.membershipService.findByUserAndChannel(login, chan_name))
-			throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				'Membership not found',
+				HttpStatus.NOT_FOUND,
+			);
 		return this.membershipService.delete(login, chan_name);
 	}
 }

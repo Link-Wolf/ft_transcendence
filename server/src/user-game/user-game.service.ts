@@ -97,6 +97,7 @@ export class UserGameService {
             let ret = await this.userGameRepository.create<UserGame>(userGameDto);
             await ret.$set('user', userGameDto.user);
             await ret.$set('game', userGameDto.game);
+            ret.reload();
             return ret;
         } catch (error) {
             throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
