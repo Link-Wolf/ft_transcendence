@@ -1,17 +1,35 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpException,
+	HttpStatus,
+	Param,
+	Patch,
+	Post,
+	Req,
+	UseGuards,
+} from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import { ClearanceGuard } from 'src/guards/clearance.guard';
 import { Friendship } from './friendship.entity';
 import { UserService } from 'src/user/user.service';
 import { BlockService } from 'src/block/block.service';
+import { AdminUserGuard } from 'src/guards/admin_user.guard';
+import { AdminUserUserGuard } from 'src/guards/admin_user_user.guard';
+import { Cookie } from 'express-session';
+import { Request } from 'express';
+import { send } from 'process';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('friendship')
 export class FriendshipController {
 	constructor(
 		private readonly friendshipService: FriendshipService,
 		private readonly userService: UserService,
-		private readonly blockService: BlockService
-	) { }
+		private readonly blockService: BlockService,
+	) {}
 
 	/**
 	 * @brief Get all friendships
@@ -24,11 +42,10 @@ export class FriendshipController {
 	 */
 	@Get()
 	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
-	async getAll() : Promise<Friendship[]>
-	{
+	async getAll(): Promise<Friendship[]> {
 		return await this.friendshipService.findAll();
 	}
-	
+
 	/**
 	 * @brief Get all friends of a user
 	 * @param {string} login - The user's login
@@ -41,11 +58,8 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':login')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
-	async getFriends(
-		@Param('login') login: string
-	): Promise<Friendship[]>
-	{
+	@UseGuards(new AdminUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	async getFriends(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -63,12 +77,9 @@ export class FriendshipController {
 	 * @response 404 - User not found
 	 * @response 500 - Internal Server Error
 	 */
-	@Get('invitations/:login') 
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
-	async getInvitations(
-		@Param('login') login: string
-	):Promise<Friendship[]>
-	{
+	@Get('invitations/:login')
+	@UseGuards(new AdminUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	async getInvitations(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -86,12 +97,9 @@ export class FriendshipController {
 	 * @response 404 - User not found
 	 * @response 500 - Internal Server Error
 	 */
-	@Get('requests/:login') //get all pending requests of one sender
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
-	async getRequests(
-		@Param('login') login: string
-	): Promise<Friendship[]>
-	{
+	@Get('requests/:login')
+	@UseGuards(new AdminUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	async getRequests(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -111,26 +119,31 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':loginA/:loginB') //get one by both friends
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserUserGuard(Number(process.env.CLEARANCE_ADMIN)))
 	async getOne(
 		@Param('loginA') loginA: string,
-		@Param('loginB') loginB: string
-	): Promise<Friendship>
-	{
+		@Param('loginB') loginB: string,
+	): Promise<Friendship> {
 		let userA = await this.userService.findByLogin(loginA);
 		let userB = await this.userService.findByLogin(loginB);
 		if (!userA || !userB)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		let ret = await this.friendshipService.findByBothFriends(loginA, loginB);
+		let ret = await this.friendshipService.findByBothFriends(
+			loginA,
+			loginB,
+		);
 		if (!ret)
-			throw new HttpException('Friendship not found', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				'Friendship not found',
+				HttpStatus.NOT_FOUND,
+			);
 		return ret;
 	}
 
 	/**
 	 * @brief Create a friendship
-	 * @param {string} sender - The sender's login
-	 * @param {string} receiver - The receiver's login
+	 * @param {string} senderLogin - The sender's login
+	 * @param {string} receiverLogin - The receiver's login
 	 * @returns {Friendship} The created friendship
 	 * @security Clearance user
 	 * @response 200 - OK
@@ -141,31 +154,53 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN))) //Only use one login, get the session for the emetter
+	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_USER)))
 	async create(
-		@Body('senderLogin') senderLogin: string,
+		@Req() req: Request,
 		@Body('receiverLogin') receiverLogin: string,
-	) : Promise<Friendship>
-	{
+	): Promise<Friendship> {
+		let senderLogin = jwt.verify(
+			req.cookies.token,
+			process.env.JWT_SECRET,
+		).login;
 		let receiver = await this.userService.findByLogin(receiverLogin);
 		let sender = await this.userService.findByLogin(senderLogin);
 		if (!receiver || !sender)
-		throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let senderBlockList = await this.blockService.findBlocksBy(senderLogin);
-		let receiverBlockList = await this.blockService.findBlocksBy(receiverLogin);
-		if (senderBlockList.some(block => block.dataValues.blocked == receiver)
-			|| receiverBlockList.some(block => block.dataValues.blocked == sender))
+		let receiverBlockList = await this.blockService.findBlocksBy(
+			receiverLogin,
+		);
+		if (
+			senderBlockList.some(
+				(block) => block.dataValues.blocked == receiver,
+			) ||
+			receiverBlockList.some(
+				(block) => block.dataValues.blocked == sender,
+			)
+		)
 			throw new HttpException('Friendship blocked', HttpStatus.FORBIDDEN);
-		let friendship = await this.friendshipService.findByBothFriends(senderLogin, receiverLogin);
-		if (friendship)
-		{	
+		let friendship = await this.friendshipService.findByBothFriends(
+			senderLogin,
+			receiverLogin,
+		);
+		if (friendship) {
 			if (!friendship.dataValues.isPending)
-				throw new HttpException('Friendship already exists', HttpStatus.CONFLICT);
+				throw new HttpException(
+					'Friendship already exists',
+					HttpStatus.CONFLICT,
+				);
 			if (friendship.dataValues.sender == sender)
-				throw new HttpException('Invitation already sent', HttpStatus.CONFLICT);
-			if (friendship.dataValues.sender == receiver)
-			{
-				await this.friendshipService.update({ isPending: false, receiver: receiver, sender: sender});
+				throw new HttpException(
+					'Invitation already sent',
+					HttpStatus.CONFLICT,
+				);
+			if (friendship.dataValues.sender == receiver) {
+				await this.friendshipService.update({
+					isPending: false,
+					receiver: receiver,
+					sender: sender,
+				});
 				friendship.reload();
 				return friendship;
 			}
@@ -173,7 +208,7 @@ export class FriendshipController {
 		return await this.friendshipService.create({
 			sender: sender,
 			receiver: receiver,
-			isPending: true
+			isPending: true,
 		});
 	}
 
@@ -181,7 +216,7 @@ export class FriendshipController {
 	 * @brief Accept a friendship invitation
 	 * @param {string} loginA - The first user's login
 	 * @param {string} loginB - The second user's login
-	 * @returns {number} The number of updated rows (theoretically)
+	 * @returns {number} The number of updated rows
 	 * @security Clearance admin OR invited user
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
@@ -193,23 +228,37 @@ export class FriendshipController {
 	@Patch(':loginA/:loginB')
 	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
 	async update(
+		@Req() req: Request,
 		@Param('loginA') loginA: string,
 		@Param('loginB') loginB: string,
-	): Promise<number>
-	{
+	): Promise<number> {
 		let userA = await this.userService.findByLogin(loginA);
 		let userB = await this.userService.findByLogin(loginB);
 		if (!userA || !userB)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		let friendship = await this.friendshipService.findByBothFriends(loginA, loginB);	
+		let friendship = await this.friendshipService.findByBothFriends(
+			loginA,
+			loginB,
+		);
 		if (!friendship)
-			throw new HttpException('Friendship not found', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				'Friendship not found',
+				HttpStatus.NOT_FOUND,
+			);
+		if (
+			friendship.dataValues.receiver !=
+			jwt.verify(req.cookies.token, process.env.JWT_SECRET).login
+		)
+			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (!friendship.dataValues.isPending)
-			throw new HttpException('Friendship already accepted', HttpStatus.CONFLICT);
+			throw new HttpException(
+				'Friendship already accepted',
+				HttpStatus.CONFLICT,
+			);
 		return await this.friendshipService.update({
 			isPending: false,
 			receiver: friendship.dataValues.receiver,
-			sender: friendship.dataValues.sender
+			sender: friendship.dataValues.sender,
 		});
 	}
 
@@ -225,19 +274,24 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':loginA/:loginB')
-	@UseGuards(new ClearanceGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserUserGuard(Number(process.env.CLEARANCE_ADMIN)))
 	async delete(
 		@Param('loginA') loginA: string,
-		@Param('loginB') loginB: string
-	): Promise<void>
-	{
+		@Param('loginB') loginB: string,
+	): Promise<void> {
 		let userA = await this.userService.findByLogin(loginA);
 		let userB = await this.userService.findByLogin(loginB);
 		if (!userA || !userB)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		let friendship = await this.friendshipService.findByBothFriends(loginA, loginB);
+		let friendship = await this.friendshipService.findByBothFriends(
+			loginA,
+			loginB,
+		);
 		if (!friendship)
-			throw new HttpException('Friendship not found', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				'Friendship not found',
+				HttpStatus.NOT_FOUND,
+			);
 		await this.friendshipService.delete(friendship);
 	}
 }

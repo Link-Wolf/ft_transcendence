@@ -1,19 +1,30 @@
-import { Controller, Delete, Get, Post, Body, HttpException, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import {
+	Controller,
+	Delete,
+	Get,
+	Post,
+	Body,
+	HttpException,
+	HttpStatus,
+	Param,
+	UseGuards,
+} from '@nestjs/common';
 import { BanService } from './ban.service';
 import { Ban } from './ban.entity';
 import { ClearanceGuard } from 'src/guards/clearance.guard';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
+import { AdminOwnerAdminGuard } from 'src/guards/admin_owner_admin.guard';
 
 @Controller('ban')
 export class BanController {
-    constructor(
+	constructor(
 		private readonly banService: BanService,
 		private readonly userService: UserService,
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
-	) { }
+	) {}
 
 	/**
 	 * @brief Get all bans
@@ -50,7 +61,7 @@ export class BanController {
 		return ret;
 	}
 
-	/** 
+	/**
 	 * @brief Get all bans of a user
 	 * @param {string} login The user login
 	 * @return {Ban[]} All bans of the user
@@ -59,14 +70,11 @@ export class BanController {
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
 	 * @response 404 - Not Found
-	 * @response 500 - Internal Server Error 
-	*/
+	 * @response 500 - Internal Server Error
+	 */
 	@Get('user/:login')
 	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
-	async getBansByUserLogin(
-		@Param('login') login: string,
-	): Promise<Ban[]>
-	{
+	async getBansByUserLogin(@Param('login') login: string): Promise<Ban[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -85,11 +93,10 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chann_name')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getBansByChannelName(
 		@Param('chann_name') chann_name: string,
-	): Promise<Ban[]>
-	{
+	): Promise<Ban[]> {
 		let chan = await this.channelService.findByName(chann_name);
 		if (!chan)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
@@ -109,19 +116,21 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login/channel/:chann_name')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getBanByUserLoginAndChannelName(
 		@Param('login') login: string,
 		@Param('chann_name') chann_name: string,
-	): Promise<Ban>
-	{
+	): Promise<Ban> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let chan = await this.channelService.findByName(chann_name);
 		if (!chan)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		let ret = await this.banService.findByLoginAndChannel(login, chann_name);
+		let ret = await this.banService.findByLoginAndChannel(
+			login,
+			chann_name,
+		);
 		if (!ret)
 			throw new HttpException('Ban not found', HttpStatus.NOT_FOUND);
 		return ret[0];
@@ -143,31 +152,50 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async createBan(
 		@Body('login') login: string,
 		@Body('chann_name') chann_name: string,
 		@Body('reason') reason: string,
-	): Promise<Ban>
-	{
+	): Promise<Ban> {
 		let chan = await this.channelService.findByName(chann_name);
 		if (!chan)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		let me = await this.userService.findByLogin("me"/*TODO: check session*/);
-		let my_membership = await this.membershipService.findByUserAndChannel(me.dataValues.login , chann_name);
+		let me = await this.userService.findByLogin(
+			'me' /*TODO: check session*/,
+		);
+		let my_membership = await this.membershipService.findByUserAndChannel(
+			me.dataValues.login,
+			chann_name,
+		);
 		if (!my_membership)
-			throw new HttpException('User can\'t ban if he\'s not in channel', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				"User can't ban if he's not in channel",
+				HttpStatus.NOT_FOUND,
+			);
 		if (!my_membership.dataValues.isAdmin)
-			throw new HttpException('You can\'t do this', HttpStatus.FORBIDDEN);
+			throw new HttpException("You can't do this", HttpStatus.FORBIDDEN);
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		let membership = await this.membershipService.findByUserAndChannel(login, chann_name);
+		let membership = await this.membershipService.findByUserAndChannel(
+			login,
+			chann_name,
+		);
 		if (!membership)
-			throw new HttpException('User not in channel', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				'User not in channel',
+				HttpStatus.NOT_FOUND,
+			);
 		if (membership.dataValues.isAdmin && chan.dataValues.owner !== me)
-			throw new HttpException('Cannot ban channel admin', HttpStatus.FORBIDDEN);
-		let precBans = await this.banService.findByLoginAndChannel(login, chann_name);
+			throw new HttpException(
+				'Cannot ban channel admin',
+				HttpStatus.FORBIDDEN,
+			);
+		let precBans = await this.banService.findByLoginAndChannel(
+			login,
+			chann_name,
+		);
 		if (precBans.length > 0)
 			throw new HttpException('User already banned', HttpStatus.CONFLICT);
 		if (reason.length < 0)
@@ -177,8 +205,8 @@ export class BanController {
 			channel: chan,
 			reason: reason,
 		});
-	}	
-			
+	}
+
 	/**
 	 * @brief Delete a ban
 	 * @param {string} login The user login
@@ -192,21 +220,30 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete('user/:login/channel/:chann_name')
-	@UseGuards(new ClearanceGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: better guarding
+	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: better guarding
 	async delete(
 		@Param('login') login: string,
-		@Param('chann_name') chann_name: string
-	): Promise<number>
-	{
-		let ban = (await this.banService.findByLoginAndChannel(login, chann_name))[0];
+		@Param('chann_name') chann_name: string,
+	): Promise<number> {
+		let ban = (
+			await this.banService.findByLoginAndChannel(login, chann_name)
+		)[0];
 		if (!ban)
 			throw new HttpException('Ban not found', HttpStatus.NOT_FOUND);
-		let me = await this.userService.findByLogin("me"/*TODO: check session*/);
-		let my_membership = await this.membershipService.findByUserAndChannel(me.dataValues.login , chann_name);
+		let me = await this.userService.findByLogin(
+			'me' /*TODO: check session*/,
+		);
+		let my_membership = await this.membershipService.findByUserAndChannel(
+			me.dataValues.login,
+			chann_name,
+		);
 		if (!my_membership)
-			throw new HttpException('User can\'t unban if he\'s not in channel', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				"User can't unban if he's not in channel",
+				HttpStatus.NOT_FOUND,
+			);
 		if (!my_membership.dataValues.isAdmin)
-			throw new HttpException('You can\'t do this', HttpStatus.FORBIDDEN);
+			throw new HttpException("You can't do this", HttpStatus.FORBIDDEN);
 		return this.banService.delete(login, chann_name);
 	}
 }

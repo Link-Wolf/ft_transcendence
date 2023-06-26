@@ -3,6 +3,7 @@ import { MouseEventHandler, useContext, useEffect, useState } from "react";
 import socket from "../socket";
 import Cookies from "js-cookie";
 import { UserContext } from "../App";
+import axios from "axios";
 
 const Game = () => {
 	const context = useContext(UserContext);
@@ -13,12 +14,11 @@ const Game = () => {
 
 	useEffect(() => {
 		const startGame = (payload: any) => {
+			console.log("Useeffect : ", payload);
 			setGameId(payload.gameId);
 			setAmFirstPlayer(payload.firstPlayer == context.login);
 			setHasFoundGame(true);
 		};
-
-		console.log(Cookies.get("token"))
 
 		socket.emit("joinWaitRoom", {
 			auth: Cookies.get("token"),
@@ -76,6 +76,24 @@ const GameRender = ({
 	amFirstPlayer: boolean;
 	modifiers?: any[];
 }) => {
+	const context = useContext(UserContext);
+	const [opponentLogin, setOpponentLogin] = useState("");
+
+	useEffect(() => {
+		axios
+			.get(`${process.env.REACT_APP_BACKEND_URL}/game/${gameId}`)
+			.then((res) => {
+				setOpponentLogin(
+					res.data.users[0] === context.login
+						? res.data.users[0]
+						: res.data.users[1]
+				);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
+
 	const HEIGHT = 600; //Canvas height
 	const WIDTH = 800; //Canvas width
 	const PADDLE_HEIGHT = 30; //Paddle height
@@ -110,7 +128,7 @@ const GameRender = ({
 		let playerBatPosition = HEIGHT / 2; //The player paddle position in y axis (left paddle)
 		let adversBatPosition = HEIGHT / 2; //The advers paddle position in y axis (right paddle)
 		let ballStartsFromTop = true; //Weather the ball starts from the top or the bottom
-		let playerToStart = true; //Weather the player starts the round or the adversary
+		let playerToStart = amFirstPlayer; //Weather the player starts the round or the adversary
 		let isRoundStarted = false; //Weather the round has started
 		let playerScore = 0; //The player score
 		let adversScore = 0; //The adversary score
@@ -452,30 +470,59 @@ const GameRender = ({
 				};
 				Body.setVelocity(ball, ballVelocity);
 				Body.setPosition(ball, ballPosition);
+				if (ball.position.x < WIDTH / 2) {
+					socket.volatile.emit("bounceBall", {
+						ball: {
+							position: ball.position,
+							velocity: ball.velocity,
+						},
+						auth: Cookies.get("token"),
+						gameId: gameId,
+					});
+				}
 			}
 		};
 
+		socket.on("bounceBall", (data) => {
+			ballPosition = data.ball.position;
+			ballVelocity = data.ball.velocity;
+			Body.setVelocity(ball, ballVelocity);
+			Body.setPosition(ball, ballPosition);
+		});
+
 		const handlePlayerMovement = () => {
+			let hasMoved = false;
 			if (keysDown.has("ArrowUp") || keysDown.has("KeyW")) {
 				playerBatPosition -= PADDLE_SPEED;
 				if (playerBatPosition < PADDLE_HEIGHT / 2) {
 					playerBatPosition = PADDLE_HEIGHT / 2;
 				}
+				hasMoved = true;
 			}
 			if (keysDown.has("ArrowDown") || keysDown.has("KeyS")) {
 				playerBatPosition += PADDLE_SPEED;
 				if (playerBatPosition > HEIGHT - PADDLE_HEIGHT / 2)
 					playerBatPosition = HEIGHT - PADDLE_HEIGHT / 2;
+					hasMoved = true;
 			}
+			
+			if (hasMoved) {
+				socket.volatile.emit("movePaddle", {
+				gameId: gameId,
+				position: playerBatPosition,
+				auth: Cookies.get("token"),
+			});
 			Body.setPosition(playerBat, {
 				x: PADDLE_DISTANCE_FROM_EDGE,
 				y: playerBatPosition,
 			});
-			socket.volatile.emit("updatePosition", playerBatPosition);
+			}
 		};
 
-		socket.on("adversBatPosition", (position: number) => {
-			adversBatPosition = position;
+		socket.on("movePaddle", (payload: any) => {
+			console.log(payload);
+			if (payload.player === context.login) return;
+			adversBatPosition = payload.position;
 		});
 
 		const activateSegment = (segment: Matter.Body) => {
@@ -565,9 +612,40 @@ const GameRender = ({
 			if (playerScore >= 11 || adversScore >= 11) {
 				console.log("Someone has won!");
 			}
+			socket.volatile.emit("markGoal", {
+				gameId: gameId,
+				auth: Cookies.get("token"),
+				score: [
+					{
+						login: context.login,
+						score: playerScore,
+					},
+					{
+						login: opponentLogin,
+						score: adversScore,
+					},
+				],
+				ball: {
+					position: ball.position,
+				},
+				playerToPlay: playerToStart ? context.login : opponentLogin,
+			});
 			displayScore(playerScore, PlayerScoreDisplay);
 			displayScore(adversScore, AdversScoreDisplay);
 		};
+
+		socket.on("markGoal", (payload: any) => {
+			playerScore = payload.score.find(
+				(score: any) => score.login === context.login
+			).score;
+			adversScore = payload.score.find(
+				(score: any) => score.login === opponentLogin
+			).score;
+			ballPosition = payload.ball.position;
+			playerToStart = payload.playerToPlay === context.login;
+			Body.setPosition(ball, ballPosition);
+			isRoundStarted = false;
+		});
 
 		Events.on(engine, "beforeUpdate", function (event) {
 			// Player movement
@@ -592,15 +670,7 @@ const GameRender = ({
 		});
 
 		// add all of the bodies to the world
-		Composite.add(engine.world, [
-			playerBat,
-			adversBat,
-			ball,
-			// ground,
-			// ceiling,
-			// leftWall,
-			// rightWall,
-		]);
+		Composite.add(engine.world, [playerBat, adversBat, ball]);
 
 		// run the renderer
 		Render.run(render);
@@ -617,6 +687,9 @@ const GameRender = ({
 			render.canvas.remove();
 			document.removeEventListener("keydown", addKey);
 			document.removeEventListener("keyup", removeKey);
+			socket.off("markGoal");
+			socket.off("movePaddle");
+			socket.off("bounceBall");
 		};
 	}, []);
 
