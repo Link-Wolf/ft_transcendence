@@ -4,9 +4,12 @@ import Settings from "./Settings";
 const Profile = () => {
 	const logout = () => {
 		axios
-			.get(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, {
-				withCredentials: true,
-			})
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/logout`,
+				{
+					withCredentials: true,
+				}
+			)
 			.then(() => {
 				window.location.href = "/";
 			})

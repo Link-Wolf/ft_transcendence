@@ -39,12 +39,7 @@ const Game = () => {
 
 	if (!hasFoundGame)
 		return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
-	return (
-		<GameRender
-			gameId={gameId}
-			amFirstPlayer={amFirstPlayer}
-		/>
-	);
+	return <GameRender gameId={gameId} amFirstPlayer={amFirstPlayer} />;
 };
 
 const WaitingForMatch = ({
@@ -81,7 +76,9 @@ const GameRender = ({
 
 	useEffect(() => {
 		axios
-			.get(`${process.env.REACT_APP_BACKEND_URL}/game/${gameId}`)
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/game/${gameId}`
+			)
 			.then((res) => {
 				setOpponentLogin(
 					res.data.users[0] === context.login
