@@ -23,10 +23,11 @@ export class AdminUserChannelusersGuard implements CanActivate {
 		let jwt_data: any;
 		const userLogin = context.switchToHttp().getRequest().params.login;
 		const cookies = context.switchToHttp().getRequest().cookies;
-		const channelName = context.switchToHttp().getRequest().params.chan_name;
+		const channelName = context.switchToHttp().getRequest()
+			.params.chan_name;
 		let clearance = 0;
 		if (cookies.token) {
-			jwt_data = jwt.verify(cookies['token'], process.env.JWT_SECRET);
+			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
 			const user = await this.userService.findByLogin(jwt_data.login);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);

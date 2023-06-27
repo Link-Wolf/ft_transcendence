@@ -67,7 +67,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':name')
-	@UseGuards(new PublicOrPrivateGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new PublicOrPrivateGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getByName(@Param('name') name: string): Promise<Channel> {
 		let channel = await this.channelService.findByName(name);
 		if (!channel)
@@ -87,7 +87,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('owner/:owner')
-	@UseGuards(new AdminUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getByOwner(@Param('owner') owner: string): Promise<Channel[]> {
 		let user = await this.userService.findByLogin(owner);
 		if (!user)
@@ -157,7 +157,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch(':name')
-	@UseGuards(new AdminOwnerGuard(Number(process.env.CLEARANCE_ADMIN))) //TODO: better guard
+	@UseGuards(new AdminOwnerGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: better guard
 	async update(
 		@Param('name') name: string,
 		@Body('password') password?: string,
@@ -188,7 +188,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':name')
-	@UseGuards(new AdminOwnerGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminOwnerGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async delete(@Param('name') name: string): Promise<Number> {
 		if (!(await this.channelService.findByName(name)))
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);

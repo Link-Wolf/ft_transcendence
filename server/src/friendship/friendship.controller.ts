@@ -59,7 +59,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':login')
-	@UseGuards(new AdminUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getFriends(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
@@ -79,7 +79,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('invitations/:login')
-	@UseGuards(new AdminUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getInvitations(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
@@ -99,7 +99,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('requests/:login')
-	@UseGuards(new AdminUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getRequests(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
@@ -120,7 +120,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':loginA/:loginB') //get one by both friends
-	@UseGuards(new AdminUserUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserUserGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async getOne(
 		@Param('loginA') loginA: string,
 		@Param('loginB') loginB: string,
@@ -162,7 +162,7 @@ export class FriendshipController {
 	): Promise<Friendship> {
 		let senderLogin = jwt.verify(
 			req.cookies.token,
-			process.env.JWT_SECRET,
+			process.env.JWT_KEY,
 		).login;
 		let receiver = await this.userService.findByLogin(receiverLogin);
 		let sender = await this.userService.findByLogin(senderLogin);
@@ -248,7 +248,7 @@ export class FriendshipController {
 			);
 		if (
 			friendship.dataValues.receiver !=
-			jwt.verify(req.cookies.token, process.env.JWT_SECRET).login
+			jwt.verify(req.cookies.token, process.env.JWT_KEY).login
 		)
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (!friendship.dataValues.isPending)
@@ -275,7 +275,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':loginA/:loginB')
-	@UseGuards(new AdminUserUserGuard(Number(process.env.CLEARANCE_ADMIN)))
+	@UseGuards(new AdminUserUserGuard(Number(process.env.ADMIN_CLEARANCE)))
 	async delete(
 		@Param('loginA') loginA: string,
 		@Param('loginB') loginB: string,
