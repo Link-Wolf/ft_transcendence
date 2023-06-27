@@ -17,10 +17,11 @@ import { UserService } from 'src/user/user.service';
 export class AdminClearanceGuard implements CanActivate {
 	constructor(
 		@Inject(UserService)
-		private readonly userService: UserService) {}
+		private readonly userService: UserService,
+	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const clearanceNeeded = Number(process.env.CLEARANCE_ADMIN);
+		const clearanceNeeded = Number(process.env.ADMIN_CLEARANCE);
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let clearance = 0;
 		if (cookies.token) {

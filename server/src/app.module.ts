@@ -20,12 +20,14 @@ import { AuthModule } from './auth/auth.module';
 import { redisStore } from 'cache-manager-redis-yet';
 import { MessageGateway } from './message/message.gateway';
 import { GameEngineModule } from './game-engine/game-engine.module';
+import { GameEngineGateway } from './game-engine/game-engine.gateway';
+import { AppGateway } from './app.gateway';
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		// CacheModule.register({ 
+		// CacheModule.register({
 		// 	isGlobal: true,
-		// 	store: redisStore, 
+		// 	store: redisStore,
 		// 	host: 'localhost', //default host
 		// 	port: 6379, //default port
 		// }),
@@ -43,9 +45,9 @@ import { GameEngineModule } from './game-engine/game-engine.module';
 		MuteModule,
 		PrivateMessageModule,
 		AuthModule,
-		GameEngineModule
+		GameEngineModule,
 	],
 	controllers: [AppController],
-	providers: [AppService],
+	providers: [AppService, AppGateway],
 })
-export class AppModule { }
+export class AppModule {}

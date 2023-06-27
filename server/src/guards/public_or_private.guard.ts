@@ -27,7 +27,7 @@ export class PublicOrPrivateGuard implements CanActivate {
 		let jwt_data: any;
 		let clearance = 0;
 		if (cookies.token) {
-			jwt_data = jwt.verify(cookies['token'], process.env.JWT_SECRET);
+			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
 			user = await this.userService.findByLogin(jwt_data.login);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);

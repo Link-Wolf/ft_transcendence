@@ -19,9 +19,7 @@ import { UserGameService } from 'src/user-game/user-game.service';
 		credentials: true,
 	},
 })
-export class GameEngineGateway
-	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class AppGateway {
 	constructor(
 		private readonly userService: UserService,
 		private readonly gameService: GameService,
@@ -197,17 +195,5 @@ export class GameEngineGateway
 			game: payload.game,
 			player: player.login,
 		});
-	}
-
-	afterInit(server: Server) {
-		this.logger.log('Init');
-	}
-
-	handleDisconnect(client: Socket) {
-		this.logger.log(`Client disconnected: ${client.id}`);
-	}
-
-	handleConnection(client: Socket, ...args: any[]) {
-		this.logger.log(`Client connected: ${client.id}`);
 	}
 }
