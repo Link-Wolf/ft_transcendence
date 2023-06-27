@@ -14,6 +14,6 @@ async function bootstrap() {
 		credentials: true,
 	});
 	app.setGlobalPrefix('api');
-	await app.listen(process.env.PORT);
+	await app.listen(process.env.REACT_APP_BACKEND_PORT);
 }
 bootstrap();

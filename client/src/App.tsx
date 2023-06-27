@@ -15,7 +15,10 @@ const App = () => {
 	 */
 	useEffect(() => {
 		axios
-			.get(`${process.env.REACT_APP_BACKEND_URL}/auth/clearance`, {})
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/clearance`,
+				{}
+			)
 			.then((response) => {
 				if (!response) {
 					throw new Error(

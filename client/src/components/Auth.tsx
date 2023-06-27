@@ -22,7 +22,9 @@ const AuthButton = () => {
 				`https://api.intra.42.fr/oauth/authorize?` +
 				`client_id=${process.env.REACT_APP_INTRA_UID}&` +
 				`redirect_uri=${encodeURIComponent(
-					String(process.env.REACT_APP_INTRA_REDIRECT)
+					`${process.env.REACT_APP_PROTOCOL}://` +
+						`${process.env.REACT_APP_HOSTNAME}:` +
+						`${process.env.REACT_APP_FRONTEND_PORT}/login`
 				)}&` +
 				`response_type=code`
 			}

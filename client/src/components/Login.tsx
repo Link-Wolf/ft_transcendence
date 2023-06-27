@@ -30,11 +30,14 @@ const Login = () => {
 		}
 
 		axios
-			.get(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
-				params: {
-					code: code,
-				},
-			})
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/login`,
+				{
+					params: {
+						code: code,
+					},
+				}
+			)
 			.then((res) => {
 				setNeedA2F(res.data.needTo2FA);
 				setIsFirstTime(res.data.status === "registered");

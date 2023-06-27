@@ -21,7 +21,9 @@ export const databaseProviders = [{
             process.env.DB_NAME,
             process.env.DB_USER,
             process.env.DB_PASS, {
-            dialect: 'postgres',
+			host: process.env.DB_HOST,
+			port: parseInt(process.env.DB_PORT),
+            dialect: process.env.DB_DIALECT as 'postgres',
             logging: false,
             dialectOptions: {
                 application_name: 'ft_transcendence',

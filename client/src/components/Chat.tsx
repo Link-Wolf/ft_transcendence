@@ -45,10 +45,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					setChannel={setChannel}
 				/>
 			) : (
-				<UserList
-					channel={channel}
-					toggleShowlist={toggleShowlist}
-				/>
+				<UserList channel={channel} toggleShowlist={toggleShowlist} />
 			)}
 		</div>
 	);
@@ -70,20 +67,27 @@ const ChannelCreation = () => {
 
 	const createChannel = async () => {
 		await axios
-			.post(`${process.env.REACT_APP_BACKEND_URL}/channel`, {
-				ownerLogin: user.login,
-				name: (document.getElementById("name") as HTMLInputElement)
-					.value,
-				password: (document.getElementById("pass") as HTMLInputElement)
-					.value, //
-			})
+			.post(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel`,
+				{
+					ownerLogin: user.login,
+					name: (document.getElementById("name") as HTMLInputElement)
+						.value,
+					password: (
+						document.getElementById("pass") as HTMLInputElement
+					).value, //
+				}
+			)
 			.then(async (response) => {
 				await axios
-					.post(`${process.env.REACT_APP_BACKEND_URL}/membership`, {
-						channelName: response.data.name,
-						userLogin: user.login,
-						isAdmin: true,
-					})
+					.post(
+						`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
+						{
+							channelName: response.data.name,
+							userLogin: user.login,
+							isAdmin: true,
+						}
+					)
 					.then(() => {
 						setNewChannel(true);
 					})
@@ -105,20 +109,10 @@ const ChannelCreation = () => {
 	) : (
 		<form>
 			<label>Nom du channel</label>
-			<input
-				id='name'
-				type='text'
-				defaultValue={""}
-			/>
+			<input id='name' type='text' defaultValue={""} />
 			<label>Mot de passe (optionnel)</label>
-			<input
-				id='pass'
-				type='password'
-			/>
-			<button
-				type='button'
-				onClick={createChannel}
-			>
+			<input id='pass' type='password' />
+			<button type='button' onClick={createChannel}>
 				Creer
 			</button>
 		</form>
@@ -131,7 +125,9 @@ const NewChannel = () => {
 
 	useEffect(() => {
 		axios
-			.get(`${process.env.REACT_APP_BACKEND_URL}/channel/public`)
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/public`
+			)
 			.then((response) => {
 				setChannels(
 					response.data.sort(
@@ -178,7 +174,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_BACKEND_URL}/membership/user/${context.login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${context.login}`
 			)
 			.then((response) => {
 				setChannels(
@@ -208,10 +204,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				<>
 					{channels.length ? (
 						channels.map((channel, i) => (
-							<button
-								key={i}
-								onClick={() => setChannel(channel)}
-							>
+							<button key={i} onClick={() => setChannel(channel)}>
 								{channel}
 							</button>
 						))
@@ -236,7 +229,7 @@ const UserList = ({
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_BACKEND_URL}/membership/channel/${channel}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/channel/${channel}`
 			)
 			.then((res) => {
 				setUsers(
@@ -295,7 +288,7 @@ const ChatWindow = ({
 
 		axios
 			.get(
-				`${process.env.REACT_APP_BACKEND_URL}/message/channel/${channel}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message/channel/${channel}`
 			)
 			.then((res) => {
 				setMessages(res.data);
@@ -329,11 +322,14 @@ const ChatWindow = ({
 			<button
 				onClick={async () => {
 					await axios
-						.post(`${process.env.REACT_APP_BACKEND_URL}/message`, {
-							chanName: channel,
-							content: "test message",
-							userLogin: user.login,
-						})
+						.post(
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
+							{
+								chanName: channel,
+								content: "test message",
+								userLogin: user.login,
+							}
+						)
 						.catch((err) => {
 							console.log(err);
 						});
