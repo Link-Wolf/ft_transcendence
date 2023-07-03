@@ -1,7 +1,45 @@
-.toggle {
-	width: 100px;
-	height: 40px;
-	position: fixed;
-	top: calc(100vh - 5vh - 40px);
-	left: calc(100vw - 5vw - 100px);
+.chat {
+	border: salmon 1px solid;
+	color: blue;
+
+	--height: 600px;
+
+	/**
+	 * define max dimensions of the chatbox to be smaller
+	 * when the chat is closed (when there's only the button i.e)
+	 */
+	max-width: calc(var(--height) / 1.618);
+	max-height: var(--height);
+
+	position: absolute;
+	bottom: calc(50px);
+	right: calc(50px);
+	// overflow: hidden;
+
+	.toggleChat {
+		border: fuchsia 1px solid;
+		color: green;
+
+		// dimensions of the button to open/close chat
+		width: 50px;
+		height: 50px;
+	}
+
+	.chatbox {
+		border: olive 1px solid;
+		color: red;
+
+		// dimensions of the main chatbox
+		width: calc(var(--height) / 1.618);
+		height: var(--height);
+	}
+
+	.channelList {
+		border: orange 1px solid;
+		color: purple;
+
+		h1 {
+			text-align: center;
+		}
+	}
 }

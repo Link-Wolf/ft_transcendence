@@ -93,7 +93,7 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chann_name')
-	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminOwnerAdminGuard)
 	async getBansByChannelName(
 		@Param('chann_name') chann_name: string,
 	): Promise<Ban[]> {
@@ -116,7 +116,7 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login/channel/:chann_name')
-	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminOwnerAdminGuard)
 	async getBanByUserLoginAndChannelName(
 		@Param('login') login: string,
 		@Param('chann_name') chann_name: string,
@@ -152,7 +152,7 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminOwnerAdminGuard)
 	async createBan(
 		@Body('login') login: string,
 		@Body('chann_name') chann_name: string,
@@ -220,7 +220,7 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete('user/:login/channel/:chann_name')
-	@UseGuards(new AdminOwnerAdminGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: better guarding
+	@UseGuards(AdminOwnerAdminGuard) //TODO: better guarding
 	async delete(
 		@Param('login') login: string,
 		@Param('chann_name') chann_name: string,

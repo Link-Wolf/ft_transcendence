@@ -58,7 +58,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login')
-	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	@UseGuards(AdminUserGuard) //TODO: Better guarding
 	async getByUser(@Param('login') login: string): Promise<Membership[]> {
 		if (!this.userService.findByLogin(login))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -77,7 +77,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chan_name')
-	@UseGuards(new AdminChannelusersGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	@UseGuards(AdminChannelusersGuard) //TODO: Better guarding
 	async getByChannel(
 		@Param('chan_name') chan_name: string,
 	): Promise<Membership[]> {
@@ -100,7 +100,7 @@ export class MembershipController {
 	 */
 	@Get('user/:login/channel/:chan_name')
 	@UseGuards(
-		new AdminUserChannelusersGuard(Number(process.env.ADMIN_CLEARANCE)),
+		AdminUserChannelusersGuard,
 	) //TODO: Better guarding
 	async getByUserAndChannel(
 		@Param('login') login: string,
@@ -128,7 +128,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	@UseGuards(AdminUserGuard) //TODO: Better guarding
 	async create(
 		@Body('channelName') channelName: string,
 		@Body('userLogin') userLogin: string,
@@ -171,7 +171,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch('user/:login/channel/:chann_name')
-	@UseGuards(new AdminOwnerGuard(Number(process.env.ADMIN_CLEARANCE))) //TODO: Better guarding
+	@UseGuards(AdminOwnerGuard) //TODO: Better guarding
 	async update(
 		@Param('login') userLogin: string,
 		@Param('chann_name') channelName: string,
@@ -211,7 +211,7 @@ export class MembershipController {
 	 */
 	@Delete('user/:login/channel/:chan_name')
 	@UseGuards(
-		new AdminOwnerAdminUserGuard(Number(process.env.ADMIN_CLEARANCE)),
+		AdminOwnerAdminUserGuard,
 	) //TODO: Better guarding
 	async delete(
 		@Param('login') login: string,

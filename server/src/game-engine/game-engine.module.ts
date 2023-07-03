@@ -6,10 +6,10 @@ import { UserGameModule } from 'src/user-game/user-game.module';
 
 @Module({
 	providers: [
-		GameEngineGateway
+		// GameEngineGateway
 	],
 	exports: [
-		GameEngineGateway
+		// GameEngineGateway
 	],
 	imports: [GameModule, UserModule, UserGameModule],
 })

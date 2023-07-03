@@ -21,7 +21,6 @@ export class AdminClearanceGuard implements CanActivate {
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const clearanceNeeded = Number(process.env.ADMIN_CLEARANCE);
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let clearance = 0;
 		if (cookies.token) {
@@ -32,8 +31,9 @@ export class AdminClearanceGuard implements CanActivate {
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		if (clearance < clearanceNeeded)
+		if (clearance < Number(process.env.ADMIN_CLEARANCE))
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		return true;
+		//TODO: test
 	}
 }

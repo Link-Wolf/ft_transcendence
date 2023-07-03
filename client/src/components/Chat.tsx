@@ -3,8 +3,7 @@ import socket from "../socket";
 import axios from "axios";
 import { UserContext } from "../App";
 import { Link } from "react-router-dom";
-import { use } from "matter-js";
-// import style from "../style/Chat.module.scss";
+import style from "../style/Chat.module.scss";
 
 const Chat = () => {
 	const user = useContext(UserContext);
@@ -15,11 +14,16 @@ const Chat = () => {
 	};
 
 	return (
-		<div>
+		<div className={style.chat}>
 			{chat ? (
 				<ChatBox toggleChat={toggleChat} />
 			) : (
-				<button onClick={toggleChat}>Toggle Chat</button>
+				<button
+					className={style.toggleChat}
+					onClick={toggleChat}
+				>
+					Toggle Chat
+				</button>
 			)}
 		</div>
 	);
@@ -34,8 +38,13 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 	};
 
 	return (
-		<div>
-			<button onClick={() => toggleChat()}>Close Chat</button>
+		<div className={style.chatbox}>
+			<button
+				className={style.toggleChat}
+				onClick={() => toggleChat()}
+			>
+				Close Chat
+			</button>
 			{!channel ? (
 				<ChannelList setChannel={setChannel} />
 			) : !showList ? (
@@ -45,7 +54,10 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					setChannel={setChannel}
 				/>
 			) : (
-				<UserList channel={channel} toggleShowlist={toggleShowlist} />
+				<UserList
+					channel={channel}
+					toggleShowlist={toggleShowlist}
+				/>
 			)}
 		</div>
 	);
@@ -109,10 +121,20 @@ const ChannelCreation = () => {
 	) : (
 		<form>
 			<label>Nom du channel</label>
-			<input id='name' type='text' defaultValue={""} />
+			<input
+				id='name'
+				type='text'
+				defaultValue={""}
+			/>
 			<label>Mot de passe (optionnel)</label>
-			<input id='pass' type='password' />
-			<button type='button' onClick={createChannel}>
+			<input
+				id='pass'
+				type='password'
+			/>
+			<button
+				type='button'
+				onClick={createChannel}
+			>
 				Creer
 			</button>
 		</form>
@@ -193,7 +215,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	};
 
 	return (
-		<div>
+		<div className={style.channelList}>
 			<h1>Channel List</h1>
 			<button onClick={addChannel}>
 				{newChannelVisibility ? <>x</> : <>+</>}
@@ -204,7 +226,10 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				<>
 					{channels.length ? (
 						channels.map((channel, i) => (
-							<button key={i} onClick={() => setChannel(channel)}>
+							<button
+								key={i}
+								onClick={() => setChannel(channel)}
+							>
 								{channel}
 							</button>
 						))

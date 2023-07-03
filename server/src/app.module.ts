@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,20 +16,11 @@ import { BanModule } from './ban/ban.module';
 import { MuteModule } from './mute/mute.module';
 import { PrivateMessageModule } from './private-message/private-message.module';
 import { AuthModule } from './auth/auth.module';
-import { redisStore } from 'cache-manager-redis-yet';
-import { MessageGateway } from './message/message.gateway';
 import { GameEngineModule } from './game-engine/game-engine.module';
-import { GameEngineGateway } from './game-engine/game-engine.gateway';
-import { AppGateway } from './app.gateway';
+
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		// CacheModule.register({
-		// 	isGlobal: true,
-		// 	store: redisStore,
-		// 	host: 'localhost', //default host
-		// 	port: 6379, //default port
-		// }),
 		UserModule,
 		DatabaseModule,
 		ChannelModule,
@@ -48,6 +38,6 @@ import { AppGateway } from './app.gateway';
 		GameEngineModule,
 	],
 	controllers: [AppController],
-	providers: [AppService, AppGateway],
+	providers: [AppService],
 })
 export class AppModule {}

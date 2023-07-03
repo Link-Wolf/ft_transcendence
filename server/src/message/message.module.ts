@@ -10,21 +10,15 @@ import { ChannelModule } from 'src/channel/channel.module';
 import { MessageGateway } from './message.gateway';
 
 @Module({
-	controllers: [
-		MessageController
-	],
-	providers: [
-		MessageService, ...messageProviders, MessageGateway
-	],
-	exports: [
-		MessageService, ...messageProviders, MessageGateway
-	],
+	controllers: [MessageController],
+	providers: [MessageService, ...messageProviders, MessageGateway],
+	exports: [MessageService, ...messageProviders],
 	imports: [
 		UserModule,
-		ChannelModule, 
+		ChannelModule,
 		MembershipModule,
 		BanModule,
 		MuteModule,
-	]
+	],
 })
-export class MessageModule { }
+export class MessageModule {}

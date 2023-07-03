@@ -4,6 +4,7 @@ import {
 	ExecutionContext,
 	HttpStatus,
 	HttpException,
+	Inject,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from '../user/user.service';
@@ -16,10 +17,14 @@ import { ChannelService } from 'src/channel/channel.service';
  */
 @Injectable()
 export class AdminOwnerAdminGuard implements CanActivate {
-	constructor(private clearanceNeeded: number) {}
-	private readonly userService: UserService;
-	private readonly membershipService: MembershipService;
-	private readonly channelService: ChannelService;
+	constructor(
+		@Inject(UserService)
+		private readonly userService: UserService,
+		@Inject(MembershipService)
+		private readonly membershipService: MembershipService,
+		@Inject(ChannelService)
+		private readonly channelService: ChannelService,
+	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const channel = context.switchToHttp().getRequest().params.chann_name;
@@ -43,7 +48,7 @@ export class AdminOwnerAdminGuard implements CanActivate {
 		);
 		//TODO: tester
 		if (isAdminOfChannel) return true;
-		else if (clearance >= this.clearanceNeeded) return true;
+		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else if (isOwnerOfChannel) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 	}

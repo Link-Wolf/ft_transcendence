@@ -18,7 +18,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
 import { BanService } from 'src/ban/ban.service';
 import { MuteService } from 'src/mute/mute.service';
-import { MessageGateway } from './message.gateway';
+// import { MessageGateway } from './message.gateway';
 
 @Controller('message')
 export class MessageController {
@@ -28,8 +28,7 @@ export class MessageController {
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
 		private readonly banService: BanService,
-		private readonly muteService: MuteService,
-		private readonly messageGateway: MessageGateway,
+		private readonly muteService: MuteService, // private readonly messageGateway: MessageGateway,
 	) {}
 
 	/**
@@ -202,7 +201,7 @@ export class MessageController {
 			channel: channel,
 			date: new Date(Date.now()),
 		});
-		this.messageGateway.notifyUpdate(chanName);
+		// this.messageGateway.notifyUpdate(chanName);
 		return ret;
 	}
 

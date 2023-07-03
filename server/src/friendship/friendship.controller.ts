@@ -59,7 +59,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':login')
-	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async getFriends(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
@@ -79,7 +79,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('invitations/:login')
-	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async getInvitations(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
@@ -99,7 +99,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('requests/:login')
-	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async getRequests(@Param('login') login: string): Promise<Friendship[]> {
 		let user = await this.userService.findByLogin(login);
 		if (!user)
@@ -120,7 +120,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':loginA/:loginB') //get one by both friends
-	@UseGuards(new AdminUserUserGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminUserUserGuard)
 	async getOne(
 		@Param('loginA') loginA: string,
 		@Param('loginB') loginB: string,
@@ -275,7 +275,7 @@ export class FriendshipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':loginA/:loginB')
-	@UseGuards(new AdminUserUserGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminUserUserGuard)
 	async delete(
 		@Param('loginA') loginA: string,
 		@Param('loginB') loginB: string,
