@@ -16,7 +16,7 @@ import { BanModule } from './ban/ban.module';
 import { MuteModule } from './mute/mute.module';
 import { PrivateMessageModule } from './private-message/private-message.module';
 import { AuthModule } from './auth/auth.module';
-import { GameEngineModule } from './game-engine/game-engine.module';
+import { AppGateway } from './app.gateway';
 
 @Module({
 	imports: [
@@ -35,9 +35,8 @@ import { GameEngineModule } from './game-engine/game-engine.module';
 		MuteModule,
 		PrivateMessageModule,
 		AuthModule,
-		GameEngineModule,
 	],
 	controllers: [AppController],
-	providers: [AppService],
+	providers: [AppService, AppGateway],
 })
 export class AppModule {}

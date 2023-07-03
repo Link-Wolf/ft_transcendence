@@ -121,7 +121,7 @@ export class UserController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch(':login')
-	@UseGuards(UserClearanceGuard)
+	@UseGuards(UserClearanceGuard)//TODO: suite guards
 	async update(
 		@Param('login') login: string,
 		@Body('name') name?: string,

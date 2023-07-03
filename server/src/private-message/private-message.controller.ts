@@ -32,7 +32,7 @@ export class PrivateMessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminClearanceGuard)//TODO: suite guards
 	async create(@Body('loginOther') loginOther: string): Promise<Channel> {
 		//TODO: check if already exist
 		let me = await this.userService.findByLogin('me' /* TODO: session */);

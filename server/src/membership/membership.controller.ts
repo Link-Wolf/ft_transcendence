@@ -7,7 +7,6 @@ import {
 	UseGuards,
 	Patch,
 	Delete,
-	NotFoundException,
 	HttpException,
 	HttpStatus,
 } from '@nestjs/common';
@@ -58,7 +57,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login')
-	@UseGuards(AdminUserGuard) //TODO: Better guarding
+	@UseGuards(AdminUserGuard)
 	async getByUser(@Param('login') login: string): Promise<Membership[]> {
 		if (!this.userService.findByLogin(login))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -77,7 +76,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chan_name')
-	@UseGuards(AdminChannelusersGuard) //TODO: Better guarding
+	@UseGuards(AdminChannelusersGuard)
 	async getByChannel(
 		@Param('chan_name') chan_name: string,
 	): Promise<Membership[]> {

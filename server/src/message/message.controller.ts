@@ -18,7 +18,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
 import { BanService } from 'src/ban/ban.service';
 import { MuteService } from 'src/mute/mute.service';
-// import { MessageGateway } from './message.gateway';
+import { AdminChannelusersGuard } from 'src/guards/admin_channelusers.guard';
 
 @Controller('message')
 export class MessageController {
@@ -28,7 +28,7 @@ export class MessageController {
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
 		private readonly banService: BanService,
-		private readonly muteService: MuteService, // private readonly messageGateway: MessageGateway,
+		private readonly muteService: MuteService,
 	) {}
 
 	/**
@@ -80,7 +80,7 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chanName')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminChannelusersGuard)
 	async getMessagesByChannel(
 		@Param('chanName') chanName: string,
 	): Promise<Message[]> {
@@ -125,7 +125,7 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:userLogin/channel/:chanName')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminChannelusersGuard)
 	async getMessagesByUserAndChannel(
 		@Param('userLogin') userLogin: string,
 		@Param('chanName') chanName: string,
@@ -154,7 +154,7 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminChannelusersGuard)
 	async createMessage(
 		@Body('content') content: string,
 		@Body('userLogin') userLogin: string,
@@ -201,7 +201,6 @@ export class MessageController {
 			channel: channel,
 			date: new Date(Date.now()),
 		});
-		// this.messageGateway.notifyUpdate(chanName);
 		return ret;
 	}
 
@@ -209,7 +208,7 @@ export class MessageController {
 	 * @brief Delete a message by its id
 	 * @param {number} id The message id
 	 * @return {number} The number of deleted messages
-	 * @security Clearance level: admin OR admin of the channel OR user who created the message
+	 * @security Clearance level: admin OR admin of the channel OR owner OR user who created the message
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
@@ -217,7 +216,7 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':id')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminClearanceGuard) //TODO: suite guards
 	async deleteMessage(
 		@Param('id', ParseIntPipe) id: number,
 	): Promise<number> {

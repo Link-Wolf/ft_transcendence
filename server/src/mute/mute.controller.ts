@@ -54,7 +54,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':id')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminClearanceGuard)//TODO: suite guards
 	async findOne(@Param('id', ParseIntPipe) id: number): Promise<Mute> {
 		let ret = this.muteService.findById(id);
 		if (!ret)
@@ -94,7 +94,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:channelName')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminClearanceGuard)//TODO: suite guards
 	async findByChannel(
 		@Param('channelName') channelName: string,
 	): Promise<Mute[]> {
@@ -117,7 +117,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login/channel/:channelName')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminClearanceGuard)//TODO: suite guards
 	async findByUserAndChannel(
 		@Param('login') login: string,
 		@Param('channelName') channelName: string,
@@ -148,7 +148,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminClearanceGuard)//TODO: suite guards
 	async create(
 		@Body('login') login: string,
 		@Body('channelName') channelName: string,
@@ -218,7 +218,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':id')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminClearanceGuard)//TODO: suite guards
 	async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
 		let ret = await this.muteService.findById(id);
 		if (!ret)
