@@ -37,14 +37,9 @@ const Game = () => {
 		//TODO: emit + redirect to home
 	};
 
-	if (!hasFoundGame)
-		return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
-	return (
-		<GameRender
-			gameId={gameId}
-			amFirstPlayer={amFirstPlayer}
-		/>
-	);
+	// if (!hasFoundGame)
+	// 	return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
+	return <GameRender gameId={gameId} amFirstPlayer={amFirstPlayer} />;
 };
 
 const WaitingForMatch = ({
