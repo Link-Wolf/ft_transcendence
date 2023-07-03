@@ -7,11 +7,10 @@ import { BanModule } from 'src/ban/ban.module';
 import { MuteModule } from 'src/mute/mute.module';
 import { UserModule } from 'src/user/user.module';
 import { ChannelModule } from 'src/channel/channel.module';
-import { MessageGateway } from './message.gateway';
 
 @Module({
 	controllers: [MessageController],
-	providers: [MessageService, ...messageProviders, MessageGateway],
+	providers: [MessageService, ...messageProviders],
 	exports: [MessageService, ...messageProviders],
 	imports: [
 		UserModule,

@@ -1,33 +1,55 @@
-import { Logger } from '@nestjs/common';
 import {
-	OnGatewayConnection,
-	OnGatewayDisconnect,
-	OnGatewayInit,
 	SubscribeMessage,
 	WebSocketGateway,
+	OnGatewayInit,
 	WebSocketServer,
+	OnGatewayConnection,
+	OnGatewayDisconnect,
 } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
-import { GameService } from 'src/game/game.service';
-import { UserService } from 'src/user/user.service';
-import { UserGameService } from 'src/user-game/user-game.service';
+import { GameService } from './game/game.service';
+import { UserService } from './user/user.service';
+import { UserGameService } from './user-game/user-game.service';
 
-@WebSocketGateway(Number(process.env.REACT_APP_GAME_ENGINE_SOCKET_PORT), {
+@WebSocketGateway({
 	cors: {
-		origin: '*:*',
-		credentials: true,
+		origin: '*',
 	},
 })
-export class GameEngineGateway {
+export class AppGateway
+	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
 	constructor(
-		private readonly userService: UserService,
-		private readonly gameService: GameService,
-		private readonly gameUserService: UserGameService,
+		private userService: UserService,
+		private gameService: GameService,
+		private usergameService: UserGameService,
 	) {}
 
 	@WebSocketServer() server: Server;
-	private logger: Logger = new Logger('MessageGateway');
+	private logger: Logger = new Logger('AppGateway');
+
+	@SubscribeMessage('msgToServer')
+	handleMessage(client: Socket, payload: string): void {
+		this.server.emit('msgToClient', payload);
+	}
+
+	afterInit(server: Server) {
+		this.logger.log('Init');
+	}
+
+	handleDisconnect(client: Socket) {
+		this.logger.log(`Client disconnected: ${client.id}`);
+	}
+
+	handleConnection(client: Socket, ...args: any[]) {
+		this.logger.log(`Client connected: ${client.id}`);
+	}
+
+	notifyUpdate(channel: string) {
+		this.server.emit('newMessage', channel);
+	}
 
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
@@ -35,7 +57,7 @@ export class GameEngineGateway {
 		let user = await this.userService.findByLogin(auth.login);
 		let isRanked = payload.isRanked ? true : false;
 		if (!user) return;
-		let previousGameUG = await this.gameUserService.findNotFinishedByLogin(
+		let previousGameUG = await this.usergameService.findNotFinishedByLogin(
 			user.login,
 		);
 

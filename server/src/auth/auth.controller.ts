@@ -10,7 +10,6 @@ import {
 	Res,
 	UseGuards,
 } from '@nestjs/common';
-import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';

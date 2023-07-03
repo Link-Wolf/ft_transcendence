@@ -12,7 +12,7 @@ import { UserService } from 'src/user/user.service';
 
 /**
  * This guard is used to check wheter the user has the clearance needed to access
- * the route, or is the user targeted by the route, or being in the channel targeted by the route.
+ * the route, or being in the channel targeted by the route.
  */
 @Injectable()
 export class AdminChannelusersGuard implements CanActivate {
