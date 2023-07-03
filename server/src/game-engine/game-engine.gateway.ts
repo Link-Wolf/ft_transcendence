@@ -13,15 +13,13 @@ import { GameService } from 'src/game/game.service';
 import { UserService } from 'src/user/user.service';
 import { UserGameService } from 'src/user-game/user-game.service';
 
-@WebSocketGateway({
+@WebSocketGateway(Number(process.env.REACT_APP_GAME_ENGINE_SOCKET_PORT), {
 	cors: {
-		origin: '*',
+		origin: '*:*',
 		credentials: true,
 	},
 })
-export class GameEngineGateway
-	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class GameEngineGateway {
 	constructor(
 		private readonly userService: UserService,
 		private readonly gameService: GameService,
@@ -33,7 +31,6 @@ export class GameEngineGateway
 
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
-		console.log('joinWaitRoom');
 		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
 		let user = await this.userService.findByLogin(auth.login);
 		let isRanked = payload.isRanked ? true : false;
@@ -197,17 +194,5 @@ export class GameEngineGateway
 			game: payload.game,
 			player: player.login,
 		});
-	}
-
-	afterInit(server: Server) {
-		this.logger.log('Init');
-	}
-
-	handleDisconnect(client: Socket) {
-		this.logger.log(`Client disconnected: ${client.id}`);
-	}
-
-	handleConnection(client: Socket, ...args: any[]) {
-		this.logger.log(`Client connected: ${client.id}`);
 	}
 }

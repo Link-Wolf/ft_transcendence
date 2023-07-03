@@ -4,6 +4,7 @@ import {
 	ExecutionContext,
 	HttpStatus,
 	HttpException,
+	Inject,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { MembershipService } from 'src/membership/membership.service';
@@ -15,9 +16,12 @@ import { UserService } from 'src/user/user.service';
  */
 @Injectable()
 export class AdminChannelusersGuard implements CanActivate {
-	constructor(private clearanceNeeded: number) {}
-	private readonly userService: UserService;
-	private readonly membershipService: MembershipService;
+	constructor(
+		@Inject(UserService)
+		private readonly userService: UserService,
+		@Inject(MembershipService)
+		private readonly membershipService: MembershipService,
+	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		let jwt_data: any;
@@ -38,7 +42,7 @@ export class AdminChannelusersGuard implements CanActivate {
 			channelName,
 		);
 		if (membership) return true;
-		else if (clearance >= this.clearanceNeeded) return true;
+		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		//TODO: tester lol
 	}

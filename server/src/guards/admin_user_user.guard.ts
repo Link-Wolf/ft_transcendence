@@ -4,6 +4,7 @@ import {
 	ExecutionContext,
 	HttpStatus,
 	HttpException,
+	Inject,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
@@ -14,8 +15,10 @@ import { UserService } from 'src/user/user.service';
  */
 @Injectable()
 export class AdminUserUserGuard implements CanActivate {
-	constructor(private clearanceNeeded: number) {}
-	private readonly userService: UserService;
+	constructor(
+		@Inject(UserService)
+		private readonly userService: UserService,
+	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		let jwt_data: any;
@@ -32,7 +35,7 @@ export class AdminUserUserGuard implements CanActivate {
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (userLoginA === jwt_data.login) return true;
 		else if (userLoginB === jwt_data.login) return true;
-		else if (clearance >= this.clearanceNeeded) return true;
+		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		//TODO: tester lol
 	}

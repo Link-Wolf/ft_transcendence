@@ -4,6 +4,7 @@ import {
 	ExecutionContext,
 	HttpStatus,
 	HttpException,
+	Inject,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from '../user/user.service';
@@ -16,9 +17,12 @@ import { ChannelService } from 'src/channel/channel.service';
  */
 @Injectable()
 export class PublicOrPrivateGuard implements CanActivate {
-	constructor(private clearanceNeeded: number) {}
-	private readonly userService: UserService;
-	private readonly channelService: ChannelService;
+	constructor(
+		@Inject(UserService)
+		private readonly userService: UserService,
+		@Inject(ChannelService)
+		private readonly channelService: ChannelService,
+	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const channel_name = context.switchToHttp().getRequest().params.name;
@@ -35,7 +39,11 @@ export class PublicOrPrivateGuard implements CanActivate {
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		//TODO: tester
 		const channel = await this.channelService.findByName(channel_name);
-		if (channel.isPrivate && clearance >= this.clearanceNeeded) return true;
+		if (
+			channel.isPrivate &&
+			clearance >= Number(process.env.ADMIN_CLEARANCE)
+		)
+			return true;
 		else if (
 			!channel.isPrivate &&
 			clearance >= Number(process.env.USER_CLEARANCE)

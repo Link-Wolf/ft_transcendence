@@ -68,7 +68,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('by/:login')
-	@UseGuards(new AdminUserGuard(Number(process.env.USER_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async findBlocksBy(@Param('login') login: string): Promise<Block[]> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -87,7 +87,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('of/:login/count')
-	@UseGuards(new AdminUserGuard(Number(process.env.ADMIN_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async findCountBlockersOf(@Param('login') login: string): Promise<number> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -106,7 +106,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('by/:login/count')
-	@UseGuards(new AdminUserGuard(Number(process.env.USER_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async findCountBlocksBy(@Param('login') login: string): Promise<number> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -150,7 +150,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('by/:login/users')
-	@UseGuards(new AdminUserGuard(Number(process.env.USER_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async findUsersBlocksBy(@Param('login') login: string): Promise<User[]> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -177,7 +177,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(new AdminUserGuard(Number(process.env.USER_CLEARANCE)))
+	@UseGuards(AdminUserGuard)
 	async create(
 		@Body('blocker') blockerLogin: string,
 		@Body('blocked') blockedLogin: string,

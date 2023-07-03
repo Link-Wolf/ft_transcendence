@@ -4,7 +4,7 @@ $(NAME): node_modules .env
 	npm start
 
 node_modules: package.json
-	npm i --save --legagcy-peer-deps
+	npm i --save
 
 .env: ../.env
 	cp ../.env .env
