@@ -14,7 +14,8 @@ export default function physic(
 		for (let ball of balls) {
 			ball.move();
 			for (let movable of movables) {
-				if (movable.collide(ball)) movable.onColide(movable, ball);
+				if (movable.collide(ball))
+					movable.onColide(movable, ball, values);
 			}
 		}
 	}

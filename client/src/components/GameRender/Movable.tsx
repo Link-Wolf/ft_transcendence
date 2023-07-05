@@ -6,7 +6,7 @@ export default class Movable {
 	public position: { x: number; y: number };
 	public velocity: { dx: number; dy: number };
 	public facing: number;
-	public onColide: (object: Movable, ball: Movable) => void;
+	public onColide: (object: Movable, ball: Movable, values: any) => void;
 	public type: string;
 
 	constructor(
@@ -15,7 +15,7 @@ export default class Movable {
 		position = { x: 0, y: 0 },
 		velocity = { dx: 0, dy: 0 },
 		facing = 0,
-		onColide = (object: Movable, ball: Movable) => {},
+		onColide = (object: Movable, ball: Movable, values: any) => {},
 		type = "rectangle"
 	) {
 		this.p5 = p5;
@@ -30,20 +30,20 @@ export default class Movable {
 	public move() {
 		this.position.x += (this.velocity.dx * this.p5.deltaTime) / 1000;
 		this.position.y += (this.velocity.dy * this.p5.deltaTime) / 1000;
-		if (this.position.x < -this.p5.width / 2) {
-			this.position.x = -this.p5.width / 2;
+		if (this.position.x < -this.p5.width / 2 + this.size.w / 2) {
+			this.position.x = -this.p5.width / 2 + this.size.w / 2;
 			this.velocity.dx *= -1;
 		}
-		if (this.position.x > this.p5.width / 2) {
-			this.position.x = this.p5.width / 2;
+		if (this.position.x > this.p5.width / 2 - this.size.w / 2) {
+			this.position.x = this.p5.width / 2 - this.size.w / 2;
 			this.velocity.dx *= -1;
 		}
-		if (this.position.y < -this.p5.height / 2) {
-			this.position.y = -this.p5.height / 2;
+		if (this.position.y < -this.p5.height / 2 + this.size.h / 2) {
+			this.position.y = -this.p5.height / 2 + this.size.h / 2;
 			this.velocity.dy *= -1;
 		}
-		if (this.position.y > this.p5.height / 2) {
-			this.position.y = this.p5.height / 2;
+		if (this.position.y > this.p5.height / 2 - this.size.h / 2) {
+			this.position.y = this.p5.height / 2 - this.size.h / 2;
 			this.velocity.dy *= -1;
 		}
 	}
