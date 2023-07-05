@@ -29,6 +29,7 @@ let values: any = {
 	BALL_X_SPEED: 250, //Speed of the ball when moving horizontally
 	BALL_STARTING_ANGLE: Math.PI / 4, //Angle of the ball when it is served
 	PADDLE_SPEED: 500, //Speed of the paddle when moving,
+	MAX_BALL_SPEED: 2000, //Max speed of the ball
 	doPlayerServe: true,
 	isPointStarted: false,
 };
