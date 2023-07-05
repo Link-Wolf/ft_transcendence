@@ -48,15 +48,8 @@ const Test = () => {
 				))}
 			</div>
 			<form>
-				<input
-					type='text'
-					value={message}
-					onChange={updateMessage}
-				/>
-				<button
-					type='button'
-					onClick={sendMessage}
-				>
+				<input type='text' value={message} onChange={updateMessage} />
+				<button type='button' onClick={sendMessage}>
 					Send
 				</button>
 			</form>
@@ -99,7 +92,7 @@ const App = () => {
 				return <></>;
 			})()} */}
 			<Routage />
-			<Test />
+			{/* <Test /> */}
 		</UserContext.Provider>
 	);
 };
