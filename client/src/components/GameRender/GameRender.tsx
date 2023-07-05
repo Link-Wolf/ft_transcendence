@@ -26,7 +26,7 @@ let values: any = {
 	BALL_STARTING_DISTANCE_FROM_CENTER: 540, //Distance between ball and edge of the canvas
 	BALL_X_SPEED: 3, //Speed of the ball when moving horizontally
 	BALL_STARTING_ANGLE: Math.PI / 4, //Angle of the ball when it is served
-	PADDLE_SPEED: 14, //Speed of the paddle when moving
+	PADDLE_SPEED: 14, //Speed of the paddle when moving,
 };
 
 const GameRender = ({
