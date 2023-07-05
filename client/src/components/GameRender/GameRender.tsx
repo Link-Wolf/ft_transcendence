@@ -7,6 +7,8 @@ import drawMovables from "./drawMovables";
 import drawMiddleLine from "./drawMiddleLine";
 import physic from "./physic";
 import drawScore from "./drawScore";
+import inputHandler from "./inputHandler";
+import displayTurnText from "./displayTurnText";
 
 let playerPaddles: Movable[] = [];
 let adversPaddles: Movable[] = [];
@@ -24,10 +26,14 @@ let values: any = {
 	BALL_SIZE: 8, //Ball size
 	PADDLE_DISTANCE_FROM_CENTER: 280, //Distance between paddle and edge of the canvas
 	BALL_STARTING_DISTANCE_FROM_CENTER: 540, //Distance between ball and edge of the canvas
-	BALL_X_SPEED: 3, //Speed of the ball when moving horizontally
+	BALL_X_SPEED: 250, //Speed of the ball when moving horizontally
 	BALL_STARTING_ANGLE: Math.PI / 4, //Angle of the ball when it is served
-	PADDLE_SPEED: 14, //Speed of the paddle when moving,
+	PADDLE_SPEED: 500, //Speed of the paddle when moving,
+	doPlayerServe: true,
+	isPointStarted: false,
 };
+let playerKeys = new Set<number>();
+let adversKeys = new Set<number>();
 
 const GameRender = ({
 	gameId,
@@ -41,6 +47,7 @@ const GameRender = ({
 	const setup = (p5: p5Types, canvasParentRef: Element) => {
 		playerPaddles.push(
 			new Movable(
+				p5,
 				{ w: values.PADDLE_WIDTH, h: values.PADDLE_HEIGHT },
 				{ x: -values.PADDLE_DISTANCE_FROM_CENTER, y: 0 },
 				{ dx: 0, dy: 0 },
@@ -50,6 +57,7 @@ const GameRender = ({
 		);
 		adversPaddles.push(
 			new Movable(
+				p5,
 				{ w: values.PADDLE_WIDTH, h: values.PADDLE_HEIGHT },
 				{ x: values.PADDLE_DISTANCE_FROM_CENTER, y: 0 },
 				{ dx: 0, dy: 0 },
@@ -59,9 +67,15 @@ const GameRender = ({
 		);
 		balls.push(
 			new Movable(
+				p5,
 				{ w: values.BALL_SIZE, h: values.BALL_SIZE },
 				{ x: 0, y: 0 },
-				{ dx: 0, dy: 1 },
+				{
+					dx: values.BALL_X_SPEED,
+					dy:
+						values.BALL_X_SPEED *
+						Math.tan(values.BALL_STARTING_ANGLE),
+				},
 				0,
 				paddleBounce
 			)
@@ -83,6 +97,9 @@ const GameRender = ({
 			...modifierMovables,
 		]);
 
+		inputHandler(p5, values, playerPaddles, playerKeys);
+		inputHandler(p5, values, adversPaddles, adversKeys);
+
 		drawMiddleLine(p5);
 		drawScore(p5, score);
 		drawMovables(p5, [
@@ -91,9 +108,21 @@ const GameRender = ({
 			...balls,
 			...modifierMovables,
 		]);
+		displayTurnText(p5, values);
 	};
 
-	return <Sketch setup={setup} draw={draw} />;
+	return (
+		<Sketch
+			setup={setup}
+			draw={draw}
+			keyPressed={(p5) => {
+				playerKeys.add(p5.keyCode);
+			}}
+			keyReleased={(p5) => {
+				playerKeys.delete(p5.keyCode);
+			}}
+		/>
+	);
 };
 
 export default GameRender;
