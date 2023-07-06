@@ -14,10 +14,6 @@ import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { Game } from './game/game.entity';
 
-let game = {
-	player
-}
-
 @WebSocketGateway({
 	cors: {
 		origin: '*',
@@ -65,6 +61,271 @@ export class AppGateway
 
 	//TODO: handle properly quittage de game en cours -> plein de trucs a devoir gerer
 
+	private game = {
+		players: [
+			{
+				paddle: {
+					size: {
+						w: 0,
+						h: 0,
+					},
+					position: {
+						x: 0,
+						y: 0,
+					},
+					velocity: {
+						dx: 0,
+						dy: 0,
+					},
+				},
+				score: 0,
+				inputs: [],
+				login: '',
+			},
+			{
+				paddle: {
+					size: {
+						w: 0,
+						h: 0,
+					},
+					position: {
+						x: 0,
+						y: 0,
+					},
+					velocity: {
+						dx: 0,
+						dy: 0,
+					},
+				},
+				score: 0,
+				inputs: [],
+				login: '',
+			},
+		],
+		ball: {
+			size: {
+				radius: 0,
+			},
+			position: {
+				x: 0,
+				y: 0,
+			},
+			velocity: {
+				dx: 0,
+				dy: 0,
+			},
+		},
+		turn: 0,
+		playerToStart: 0,
+		isTurnStarted: false,
+		gameId: 0,
+		lastTimestamp: 0,
+		height: 600,
+		width: 800,
+	};
+
+	private gameLoop: NodeJS.Timeout | null = null;
+
+	handleInputs() {
+		this.game.players.forEach((player) => {
+			let inputs = player.inputs;
+			player.paddle.velocity.dy = 0;
+			if (inputs.includes(38) || inputs.includes(87)) {
+				//UP or W
+				player.paddle.velocity.dy -= 1;
+			}
+			if (inputs.includes(40) || inputs.includes(83)) {
+				//DOWN or S
+				player.paddle.velocity.dy += 1;
+			}
+		});
+	}
+
+	moveBall(dt: number) {
+		this.game.ball.position.x += this.game.ball.velocity.dx * dt;
+		this.game.ball.position.y += this.game.ball.velocity.dy * dt;
+	}
+
+	movePaddles(dt: number) {
+		this.game.players.forEach((player) => {
+			player.paddle.position.y += player.paddle.velocity.dy * dt;
+		});
+	}
+
+	resetBall() {
+		this.game.ball.position.x = 0;
+		this.game.ball.position.y =
+			((this.game.height / 2 - 50) * this.game.turn) % 2 == 0 ? 1 : -1;
+		this.game.ball.velocity.dx = 1;
+		this.game.ball.velocity.dy = 1;
+	}
+
+	resetPaddles() {
+		this.game.players.forEach((player, i) => {
+			player.paddle.position.y = 0;
+			player.paddle.velocity.dy = 0;
+			player.paddle.position.x = i == 0 ? -350 : 350;
+			player.paddle.size.w = 20;
+			player.paddle.size.h = 100;
+		});
+	}
+
+	checkCollisions() {
+		//bounce of top
+		if (
+			this.game.ball.position.y - this.game.ball.size.radius / 2 <
+			-this.game.height / 2
+		) {
+			this.game.ball.velocity.dy = 1;
+			this.game.ball.position.y =
+				-this.game.height / 2 - this.game.ball.size.radius / 2;
+		}
+		//bounce of bottom
+		if (
+			this.game.ball.position.y + this.game.ball.size.radius / 2 >
+			this.game.height / 2
+		) {
+			this.game.ball.velocity.dy = -1;
+			this.game.ball.position.y =
+				this.game.height / 2 + this.game.ball.size.radius / 2;
+		}
+		// bounce on paddles
+		this.game.players.forEach((player) => {
+			let paddle = player.paddle;
+			if (
+				(this.game.ball.position.x -
+					Math.max(
+						paddle.position.x - paddle.size.w / 2,
+						Math.min(
+							this.game.ball.position.x,
+							paddle.position.x + paddle.size.w / 2,
+						),
+					)) **
+					2 +
+					(this.game.ball.position.y -
+						Math.max(
+							paddle.position.y - paddle.size.h / 2,
+							Math.min(
+								this.game.ball.position.y,
+								paddle.position.y + paddle.size.h / 2,
+							),
+						)) **
+						2 <
+				this.game.ball.size.radius ** 2
+			) {
+				this.game.ball.velocity.dx *= -1;
+				this.game.ball.position.x =
+					paddle.position.x +
+					(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
+						Math.sign(this.game.ball.velocity.dx);
+			}
+		});
+		//score on player 0 goal
+		if (this.game.ball.position.x < -this.game.width / 2) {
+			this.game.players[1].score++;
+			this.resetBall();
+			this.resetPaddles();
+			this.game.playerToStart = 0;
+			this.game.isTurnStarted = false;
+		}
+		// score on player 1 goal
+		if (this.game.ball.position.x < -this.game.width / 2) {
+			this.game.players[0].score++;
+			this.resetBall();
+			this.resetPaddles();
+			this.game.playerToStart = 1;
+			this.game.isTurnStarted = false;
+		}
+	}
+
+	handleStartTurn() {
+		if (this.game.isTurnStarted) return;
+		let inputs = this.game.players[this.game.playerToStart].inputs;
+		if (inputs.includes(32)) {
+			//SPACE
+			this.game.isTurnStarted = true;
+			this.game.turn++;
+		}
+	}
+
+	startGame(gameId: number, player1: string, player2: string) {
+		this.game.gameId = gameId;
+		this.game.players[0].login = player1;
+		this.game.players[1].login = player2;
+		this.resetBall();
+		this.resetPaddles();
+		this.game.lastTimestamp = Date.now();
+		this.gameLoop = setInterval(() => {
+			//update dt
+			let now = Date.now();
+			let dt = now - this.game.lastTimestamp;
+			this.game.lastTimestamp = now;
+
+			// check for final score
+			if (
+				this.game.players[0].score >= 11 ||
+				this.game.players[1].score >= 11
+			) {
+				this.stopGame();
+				this.server.to(`game-${gameId}`).emit('gameOver', {
+					score: [
+						this.game.players[0].score,
+						this.game.players[1].score,
+					],
+				});
+			}
+
+			// if turn is started, update the game
+			if (this.game.isTurnStarted) {
+				this.handleInputs();
+				this.moveBall(dt);
+				this.movePaddles(dt);
+				this.checkCollisions();
+			} else this.handleStartTurn();
+			this.server.to(`game-${gameId}`).emit('gameUpdate', this.game);
+		}, 16);
+	}
+
+	stopGame() {
+		clearInterval(this.gameLoop);
+		this.game = {
+			gameId: 0,
+			width: 0,
+			height: 0,
+			players: [
+				{
+					login: '',
+					score: 0,
+					paddle: {
+						position: { x: 0, y: 0 },
+						velocity: { dx: 0, dy: 0 },
+						size: { w: 0, h: 0 },
+					},
+					inputs: [],
+				},
+				{
+					login: '',
+					score: 0,
+					paddle: {
+						position: { x: 0, y: 0 },
+						velocity: { dx: 0, dy: 0 },
+						size: { w: 0, h: 0 },
+					},
+					inputs: [],
+				},
+			],
+			ball: {
+				position: { x: 0, y: 0 },
+				size: { radius: 0 },
+				velocity: { dx: 0, dy: 0 },
+			},
+			playerToStart: 0,
+			isTurnStarted: false,
+			turn: 0,
+			lastTimestamp: 0,
+		};
+	}
+
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
 		//verifiy the user
@@ -107,14 +368,8 @@ export class AppGateway
 			this.server.to(`game-${waitingGame.id}`).emit('startGame', {
 				gameId: waitingGame.id,
 				isNew: true,
-				modifiers: [
-					/*TODO: add modifier from payload*/
-				],
-				players: users.map((user) => {
-					return user.login;
-				}),
-				playerToStart: Math.random() > 0.5 ? 0 : 1,
 			});
+			this.startGame(waitingGame.id, users[0].login, users[1].login);
 		}
 	}
 
@@ -127,6 +382,4 @@ export class AppGateway
 		// Else
 		////// Return nop attends
 	}
-
-	
 }

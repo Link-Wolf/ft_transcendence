@@ -39,117 +39,110 @@ const GameRender = ({
 	players: string[];
 }) => {
 	const user = useContext(UserContext);
-
-	let values: any = {
-		HEIGHT: 600, //Canvas height
-		WIDTH: 800, //Canvas width
-		PADDLE_HEIGHT: 30, //Paddle height
-		PADDLE_WIDTH: 8, //Paddle width
-		BALL_SIZE: 8, //Ball size
-		PADDLE_DISTANCE_FROM_CENTER: 280, //Distance between paddle and edge of the canvas
-		BALL_STARTING_DISTANCE_FROM_CENTER: 250, //Distance between ball and edge of the canvas
-		BALL_X_SPEED: 400, //Speed of the ball when moving horizontally
-		BALL_STARTING_ANGLE: Math.PI / 4, //Angle of the ball when it is served
-		PADDLE_SPEED: 1000, //Speed of the paddle when moving,
-		MAX_BALL_SPEED: 3000, //Max speed of the ball
-		doPlayerServe: players[playerToStart] === user.login,
-		isPointStarted: false,
-		isGameOver: false,
+	let game = {
+		players: [
+			{
+				paddle: {
+					size: {
+						w: 0,
+						h: 0,
+					},
+					position: {
+						x: 0,
+						y: 0,
+					},
+					velocity: {
+						dx: 0,
+						dy: 0,
+					},
+				},
+				score: 0,
+				inputs: [],
+				login: "",
+			},
+			{
+				paddle: {
+					size: {
+						w: 0,
+						h: 0,
+					},
+					position: {
+						x: 0,
+						y: 0,
+					},
+					velocity: {
+						dx: 0,
+						dy: 0,
+					},
+				},
+				score: 0,
+				inputs: [],
+				login: "",
+			},
+		],
+		ball: {
+			size: {
+				radius: 0,
+			},
+			position: {
+				x: 0,
+				y: 0,
+			},
+			velocity: {
+				dx: 0,
+				dy: 0,
+			},
+		},
 		turn: 0,
+		playerToStart: 0,
+		isTurnStarted: false,
+		gameId: 0,
+		lastTimestamp: 0,
+		height: 600,
+		width: 800,
 	};
 
+	useEffect(() => {
+		socket.on("gameUpdate", (data) => {
+			console.log(data);
+			game = data;
+		});
+
+		return () => {
+			socket.off("gameUpdate");
+		};
+	});
+
 	const setup = (p5: p5Types, canvasParentRef: Element) => {
-		playerPaddles.push(
-			new Movable(
-				p5,
-				{ w: values.PADDLE_WIDTH, h: values.PADDLE_HEIGHT },
-				{ x: -values.PADDLE_DISTANCE_FROM_CENTER, y: 0 },
-				{ dx: 0, dy: 0 },
-				0,
-				paddleBounce
-			)
-		);
-		adversPaddles.push(
-			new Movable(
-				p5,
-				{ w: values.PADDLE_WIDTH, h: values.PADDLE_HEIGHT },
-				{ x: values.PADDLE_DISTANCE_FROM_CENTER, y: 0 },
-				{ dx: 0, dy: 0 },
-				Math.PI,
-				paddleBounce
-			)
-		);
-		balls.push(
-			new Movable(
-				p5,
-				{ w: values.BALL_SIZE, h: values.BALL_SIZE },
-				{
-					x: 0,
-					y:
-						(values.turn % 2 ? 1 : -1) *
-						values.BALL_STARTING_DISTANCE_FROM_CENTER,
-				},
-				{
-					dx: (values.doPlayerServe ? -1 : 1) * values.BALL_X_SPEED,
-					dy:
-						(values.turn % 2 ? 1 : -1) *
-						values.BALL_X_SPEED *
-						Math.tan(values.BALL_STARTING_ANGLE),
-				},
-				0,
-				paddleBounce
-			)
-		);
-		p5.createCanvas(values.WIDTH, values.HEIGHT).parent(canvasParentRef);
-		p5.rectMode(p5.CENTER);
-		p5.angleMode(p5.RADIANS);
+		p5.createCanvas(game.width, game.height).parent(canvasParentRef);
 		p5.frameRate(60);
 		p5.noStroke();
 	};
 
 	const draw = (p5: p5Types) => {
+		p5.translate(game.width / 2, game.height / 2);
 		p5.background(0);
-		p5.translate(p5.width / 2, p5.height / 2);
-
-		inputHandler(p5, values, playerPaddles, playerKeys, true);
-		inputHandler(p5, values, adversPaddles, adversKeys, false);
-
-		// physic(p5, values, balls, [
-		// 	...playerPaddles,
-		// 	...adversPaddles,
-		// 	...modifierMovables,
-		// ]);
-
-		// checkForScoreUpdate(p5, values, balls, score);
-
-		drawMiddleLine(p5);
-		drawScore(p5, score);
-		drawMovables(p5, [
-			...playerPaddles,
-			...adversPaddles,
-			...balls,
-			...modifierMovables,
-		]);
-		displayTurnText(p5, values, score);
+		p5.rectMode(p5.CENTER);
+		p5.fill(255);
+		p5.rect(
+			game.players[0].paddle.position.x,
+			game.players[0].paddle.position.y,
+			game.players[0].paddle.size.w,
+			game.players[0].paddle.size.h
+		);
+		p5.rect(
+			game.players[1].paddle.position.x,
+			game.players[1].paddle.position.y,
+			game.players[1].paddle.size.w,
+			game.players[1].paddle.size.h
+		);
+		p5.ellipse(
+			game.ball.position.x,
+			game.ball.position.y,
+			game.ball.size.radius,
+			game.ball.size.radius
+		);
 	};
-
-	useEffect(() => {
-		socket.on("keys", (data) => {
-			if (data.login === user.login) return;
-			adversKeys = new Set(data.keys);
-		});
-
-		socket.on("paddleBounce", (data) => {
-			adversPaddles[0].position = data.paddle.position
-			adversPaddles[0].velocity = data.paddle.velocity
-			balls[0].position = data.ball.position
-			balls[0].velocity = data.ball.velocity
-			})
-
-		return () => {
-			socket.off("keys");
-		}
-	}, []);
 
 	return (
 		<Sketch
