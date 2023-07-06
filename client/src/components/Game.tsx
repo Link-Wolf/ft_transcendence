@@ -44,8 +44,6 @@ const Game = () => {
 		//TODO: emit quitRoom et attendre la reponse avant de go back home
 	};
 
-	console.log(gameInfo);
-
 	if (!hasFoundGame)
 		return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
 	return <GameRender {...gameInfo} />;
