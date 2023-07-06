@@ -4,13 +4,17 @@ import {
 	HttpException,
 	HttpStatus,
 	Post,
+	Req,
 	UseGuards,
 } from '@nestjs/common';
 import { Channel } from 'src/channel/channel.entity';
 import { ChannelService } from 'src/channel/channel.service';
 import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
+import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import { MembershipService } from 'src/membership/membership.service';
 import { UserService } from 'src/user/user.service';
+import { Request } from 'express';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('private-message')
 export class PrivateMessageController {
@@ -32,12 +36,19 @@ export class PrivateMessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminClearanceGuard)//TODO: suite guards
-	async create(@Body('loginOther') loginOther: string): Promise<Channel> {
+	@UseGuards(UserClearanceGuard)
+	async create(
+		@Req() req: Request,
+		@Body('loginOther') loginOther: string,
+	): Promise<Channel> {
 		//TODO: check if already exist
-		let me = await this.userService.findByLogin('me' /* TODO: session */);
+		let senderLogin = jwt.verify(
+			req.cookies.token,
+			process.env.JWT_KEY,
+		).login;
+		let me = await this.userService.findByLogin(senderLogin);
 		let otherMember = await this.userService.findByLogin(loginOther);
-		if (!otherMember)
+		if (!otherMember || !me)
 			throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
 		let channel = await this.channelService.create({
 			isPrivate: true,

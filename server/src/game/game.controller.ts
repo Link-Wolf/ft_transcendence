@@ -18,6 +18,7 @@ import { UserService } from 'src/user/user.service';
 import { Game } from './game.entity';
 import { GameService } from './game.service';
 import { ModifierService } from 'src/modifier/modifier.service';
+import { AdminUserUserGuardPost } from 'src/guards/admin_user_user.guard';
 
 @Controller('game')
 export class GameController {
@@ -102,7 +103,7 @@ export class GameController {
 	 * @param {string} playerBLogin - Player B login
 	 * @param {string} modifiersString - Modifiers ids
 	 * @return {Game} Game
-	 * @security Clearance user
+	 * @security Admin clearance OR user with loginA OR user with loginB
 	 * @response 200 - OK
 	 * @response 400 - Bad Request
 	 * @response 401 - Unauthorized
@@ -110,12 +111,12 @@ export class GameController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(UserClearanceGuard)
+	@UseGuards(AdminUserUserGuardPost)
 	async create(
 		@Body('isRanked', new DefaultValuePipe(false), ParseBoolPipe)
 		isRanked: boolean,
-		@Body('playerALogin') playerALogin: string,
-		@Body('playerBLogin') playerBLogin: string,
+		@Body('loginA') playerALogin: string,
+		@Body('loginB') playerBLogin: string,
 		@Body('modifiers') modifiersString?: string,
 	): Promise<Game> {
 		if (!playerALogin || !playerBLogin) {

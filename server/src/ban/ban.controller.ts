@@ -8,6 +8,7 @@ import {
 	HttpStatus,
 	Param,
 	UseGuards,
+	Req,
 } from '@nestjs/common';
 import { BanService } from './ban.service';
 import { Ban } from './ban.entity';
@@ -15,7 +16,9 @@ import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
-import { AdminOwnerAdminGuard } from 'src/guards/admin_owner_admin.guard';
+import { AdminOwnerAdminGuard, AdminOwnerAdminGuardPost } from 'src/guards/admin_owner_admin.guard';
+import { Request } from 'express';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('ban')
 export class BanController {
@@ -152,8 +155,9 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminOwnerAdminGuard)
+	@UseGuards(AdminOwnerAdminGuardPost)
 	async createBan(
+		@Req() req: Request,
 		@Body('login') login: string,
 		@Body('chann_name') chann_name: string,
 		@Body('reason') reason: string,
@@ -161,9 +165,13 @@ export class BanController {
 		let chan = await this.channelService.findByName(chann_name);
 		if (!chan)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		let me = await this.userService.findByLogin(
-			'me' /*TODO: check session*/,
-		);
+		let senderLogin = jwt.verify(
+			req.cookies.token,
+			process.env.JWT_KEY,
+		).login;
+		let me = await this.userService.findByLogin(senderLogin);
+		if (!me)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let my_membership = await this.membershipService.findByUserAndChannel(
 			me.dataValues.login,
 			chann_name,
@@ -220,8 +228,9 @@ export class BanController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete('user/:login/channel/:chann_name')
-	@UseGuards(AdminOwnerAdminGuard) //TODO: better guarding
+	@UseGuards(AdminOwnerAdminGuard)
 	async delete(
+		@Req() req: Request,
 		@Param('login') login: string,
 		@Param('chann_name') chann_name: string,
 	): Promise<number> {
@@ -230,9 +239,13 @@ export class BanController {
 		)[0];
 		if (!ban)
 			throw new HttpException('Ban not found', HttpStatus.NOT_FOUND);
-		let me = await this.userService.findByLogin(
-			'me' /*TODO: check session*/,
-		);
+		let senderLogin = jwt.verify(
+			req.cookies.token,
+			process.env.JWT_KEY,
+		).login;
+		let me = await this.userService.findByLogin(senderLogin);
+		if (!me)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let my_membership = await this.membershipService.findByUserAndChannel(
 			me.dataValues.login,
 			chann_name,

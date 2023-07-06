@@ -16,6 +16,7 @@ import { UserGameService } from './user-game.service';
 import { UserGame } from './user-game.entity';
 import { UserService } from '../user/user.service';
 import { GameService } from '../game/game.service';
+import { AdminUserGuardPost } from 'src/guards/admin_user.guard';
 
 @Controller('user-game')
 export class UserGameController {
@@ -123,7 +124,7 @@ export class UserGameController {
 	 * @param {string} userLogin - User login
 	 * @param {number} gameId - Game id
 	 * @returns {UserGame} New user game
-	 * @security Clearance user
+	 * @security Admin clearance OR user himself
 	 * @response 201 - Created
 	 * @response 400 - Bad Request
 	 * @response 401 - Unauthorized
@@ -132,7 +133,7 @@ export class UserGameController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(UserClearanceGuard)
+	@UseGuards(AdminUserGuardPost)
 	async create(
 		@Body('userLogin') userLogin: string,
 		@Body('gameId', ParseIntPipe) gameId: number,

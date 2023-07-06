@@ -13,6 +13,8 @@ const Chat = () => {
 		setChat(!chat);
 	};
 
+	if (!user.clearance || user.clearance === 0) return <></>;
+
 	return (
 		<div className={style.chat}>
 			{chat ? (
@@ -63,14 +65,13 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 	);
 };
 
-const ChannelCreation = () => {
+const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 	//TODO: better working because arborescence tout ca
 	//et TODO: tant que tu passes par la y a les trucs de genre quand tu creer
 	//un channel et que ca back ca affiche pas dans la liste le nouveau channel
 	//genre faut refresh le composant tout ca..
 	const user = useContext(UserContext);
 	const [isChannel, setNewChannel] = useState(false);
-	const [channel, setChannel] = useState<String | null>(null);
 	const [showList, setShowList] = useState(false);
 
 	const toggleShowlist = () => {
@@ -82,43 +83,35 @@ const ChannelCreation = () => {
 			.post(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel`,
 				{
-					ownerLogin: user.login,
+					userLogin: user.login,
 					name: (document.getElementById("name") as HTMLInputElement)
 						.value,
 					password: (
 						document.getElementById("pass") as HTMLInputElement
-					).value, //
+					).value, //TODO: iCARUS veut pas de ca
 				}
 			)
 			.then(async (response) => {
-				await axios
-					.post(
+				try {
+					const created_channel = await axios.post(
 						`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
 						{
-							channelName: response.data.name,
+							chanName: response.data.name,
 							userLogin: user.login,
 							isAdmin: true,
 						}
-					)
-					.then(() => {
-						setNewChannel(true);
-					})
-					.catch(async (err) => {
-						console.log(err);
-					});
+					);
+					setChannel(created_channel.data.channelName);
+				} catch (error) {
+					console.log(error);
+				}
 			})
 			.catch((err) => {
 				console.log(err);
 			});
 	};
 
-	return isChannel ? (
-		<ChatWindow
-			channel={String(channel)}
-			toggleShowlist={toggleShowlist}
-			setChannel={setChannel}
-		/>
-	) : (
+	return (
 		<form>
 			<label>Nom du channel</label>
 			<input
@@ -141,7 +134,7 @@ const ChannelCreation = () => {
 	);
 };
 
-const NewChannel = () => {
+const NewChannel = ({ setChannel }: { setChannel: Function }) => {
 	const [channels, setChannels] = useState<any[]>([]);
 	const [channelCreation, setChannelCreation] = useState(false);
 
@@ -171,7 +164,7 @@ const NewChannel = () => {
 			{channelCreation ? (
 				<>
 					<button onClick={createChannel}>Annuler</button>
-					<ChannelCreation />
+					<ChannelCreation setChannel={setChannel} />
 				</>
 			) : (
 				<>
@@ -221,7 +214,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				{newChannelVisibility ? <>x</> : <>+</>}
 			</button>
 			{newChannelVisibility ? (
-				<NewChannel />
+				<NewChannel setChannel={setChannel} />
 			) : (
 				<>
 					{channels.length ? (
@@ -344,20 +337,38 @@ const ChatWindow = ({
 					/>
 				</div>
 			))}
+			<input
+				id='msg'
+				type='text'
+				placeholder='message'
+			/>
 			<button
 				onClick={async () => {
-					await axios
-						.post(
-							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
-							{
-								chanName: channel,
-								content: "test message",
-								userLogin: user.login,
-							}
-						)
-						.catch((err) => {
-							console.log(err);
-						});
+					let printableRegexButNoSpace = /[!-~]/; // Matches any printable ASCII characters except space
+					let content = (
+						document.getElementById("msg") as HTMLInputElement
+					).value; //TODO: yes iCARUS, ik
+					if (printableRegexButNoSpace.test(content))
+						await axios
+							.post(
+								`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
+								{
+									chanName: channel,
+									content: content,
+									userLogin: user.login,
+								}
+							)
+							.then(() => {
+								(
+									document.getElementById(
+										"msg"
+									) as HTMLInputElement
+								).value = ""; //TODO: better way to do this
+								setUpdate(true);
+							})
+							.catch((err) => {
+								console.log(err);
+							});
 				}}
 			>
 				send message

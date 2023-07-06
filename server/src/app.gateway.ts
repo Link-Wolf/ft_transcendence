@@ -12,6 +12,11 @@ import * as jwt from 'jsonwebtoken';
 import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
+import { Game } from './game/game.entity';
+
+let game = {
+	player
+}
 
 @WebSocketGateway({
 	cors: {
@@ -30,11 +35,6 @@ export class AppGateway
 	@WebSocketServer() server: Server;
 	private logger: Logger = new Logger('AppGateway');
 
-	@SubscribeMessage('msgToServer')
-	handleMessage(client: Socket, payload: string): void {
-		this.server.emit('msgToClient', payload);
-	}
-
 	afterInit(server: Server) {
 		this.logger.log('Init');
 	}
@@ -47,174 +47,86 @@ export class AppGateway
 		this.logger.log(`Client connected: ${client.id}`);
 	}
 
-	notifyUpdate(channel: string) {
-		this.server.emit('newMessage', channel);
+	/*********************************************************
+	 * 														 *
+	 * 					MESSAGES HANDLING 					 *
+	 * 					            						 *
+	 ********************************************************/
+	@SubscribeMessage('newMessageDaddy')
+	async notifyUpdate(client: Socket, payload: any) {
+		this.server.emit('youGotMail', payload.channel);
 	}
+
+	/*********************************************************
+	 * 														 *
+	 * 					GAME HANDLING						 *
+	 * 					            						 *
+	 ********************************************************/
+
+	//TODO: handle properly quittage de game en cours -> plein de trucs a devoir gerer
 
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
-		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		let user = await this.userService.findByLogin(auth.login);
-		let isRanked = payload.isRanked ? true : false;
-		if (!user) return;
-		let previousGameUG = await this.usergameService.findNotFinishedByLogin(
-			user.login,
+		//verifiy the user
+		if (!payload.auth) return;
+		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
+		if (!session) return;
+		let user = await this.userService.findByLogin(session.login);
+
+		//get the user back from his game if he has one
+		let userGame = await this.usergameService.findNotFinishedByLogin(
+			user.dataValues.login,
 		);
-
-		if (previousGameUG) {
-			let previousGame = await this.gameService.findById(
-				previousGameUG.dataValues.gameId,
-			);
+		if (userGame) {
 			client.emit('startGame', {
-				//TODO: better handling of previous game
-				startingPlayer: previousGame.users[0].dataValues.login,
-				isRanked: previousGame.dataValues.isRanked,
-				gameId: previousGame.dataValues.id,
+				gameId: userGame.gameId,
+				isNew: false,
 			});
+			return;
 		}
-		let game = await this.gameService.findWaiting();
-		if (!game) {
-			game = await this.gameService.create({
-				isRanked: isRanked,
-				users: [user],
-				modifiers: [],
+
+		//if there isn't a game waiting for a player, create it
+		let waitingGame = await this.gameService.findWaiting(payload.isRanked);
+		if (!waitingGame) {
+			waitingGame = await this.gameService.create({
+				isRanked: payload.isRanked,
 				status: 'waiting',
+				users: [user],
+				modifiers: [
+					/*TODO: add modifiers from payload*/
+				],
 			});
+			client.join(`game-${waitingGame.id}`);
 		} else {
-			game.users.push(user);
-			await game.$set('users', game.users);
-			await game.save();
-		}
-		client.join(`game-${game.id}`);
-		console.log(`User ${user.login} joined game ${game.id}`);
-		if (game.dataValues.users.length == 2) {
-			let players = game.users.map((user) => {
-				return user.login;
+			//else, join the other player waiting
+			client.join(`game-${waitingGame.id}`);
+			let users = waitingGame.users;
+			users.push(user);
+			waitingGame.$set('users', users);
+			await waitingGame.save();
+			this.server.to(`game-${waitingGame.id}`).emit('startGame', {
+				gameId: waitingGame.id,
+				isNew: true,
+				modifiers: [
+					/*TODO: add modifier from payload*/
+				],
+				players: users.map((user) => {
+					return user.login;
+				}),
+				playerToStart: Math.random() > 0.5 ? 0 : 1,
 			});
-			this.server.to(`game-${game.id}`).volatile.emit('startGame', {
-				firstPlayer: players[Math.floor(Math.random() * 2)],
-				gameId: game.dataValues.id,
-			});
 		}
 	}
 
-	// @SubscribeMessage('movePaddle')
-	// async handleMovePaddle(client: Socket, payload: any): Promise<void> {
-	// 	let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
-	// 	let user = await this.userService.findByLogin(auth.login);
-	// 	if (!user) return;
-
-	// 	console.log(payload);
-	// 	let game = await this.gameService.findById(payload.gameId);
-	// 	if (!game) return;
-
-	// 	let player = game.users.find((user) => {
-	// 		return user.login == auth.login;
-	// 	});
-	// 	if (!player) return;
-
-	// 	client.to(`game-${game.id}`).volatile.emit('movePaddle', {
-	// 		player: player.login,
-	// 		position: payload.position,
-	// 	});
-	// }
-
-	@SubscribeMessage('keys')
-	async handleKeys(client: Socket, payload: any): Promise<void> {
-		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		let user = await this.userService.findByLogin(auth.login);
-		if (!user) return;
-		let game = await this.gameService.findById(payload.gameId);
-		if (!game) return;
-		let player = game.users.find((user) => {
-			return user.login == auth.login;
-		});
-		if (!player) return;
-		client.to(`game-${game.id}`).volatile.emit('keys', {
-			player: player.login,
-			keys: payload.keys,
-		});
+	@SubscribeMessage('quitWaitRoom')
+	async handleQuitWaitRoom(client: Socket, payload: any): Promise<void> {
+		// Get the user
+		// If waiting solo
+		////// Yes: delete the game
+		////// Return OK
+		// Else
+		////// Return nop attends
 	}
 
-	@SubscribeMessage('bounceBall')
-	async handleBounceBall(client: Socket, payload: any): Promise<void> {
-		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		let user = await this.userService.findByLogin(auth.login);
-		if (!user) return;
-
-		let game = await this.gameService.findById(payload.gameId);
-		if (!game) return;
-
-		let player = game.users.find((user) => {
-			return user.login == auth.login;
-		});
-		if (!player) return;
-
-		this.server.to(`game-${game.id}`).volatile.emit('bounceBall', {
-			ball: payload.ball,
-		});
-	}
-
-	@SubscribeMessage('markGoal')
-	async handleMarkGoal(client: Socket, payload: any): Promise<void> {
-		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		let user = await this.userService.findByLogin(auth.login);
-		if (!user) return;
-
-		let game = await this.gameService.findById(payload.gameId);
-		if (!game) return;
-
-		let player = game.users.find((user) => {
-			return user.login == auth.login;
-		});
-		if (!player) return;
-
-		this.server.to(`game-${game.id}`).volatile.emit('markGoal', {
-			score: payload.score,
-			ball: payload.ball,
-			playerToPlay: payload.playerToPlay,
-		});
-	}
-
-	@SubscribeMessage('requestUpdate')
-	async handleRequestUpdate(client: Socket, payload: any): Promise<void> {
-		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		let user = await this.userService.findByLogin(auth.login);
-		if (!user) return;
-
-		let game = await this.gameService.findById(payload.gameId);
-		if (!game) return;
-
-		let player = game.users.find((user) => {
-			return user.login == auth.login;
-		});
-		if (!player) return;
-		let otherPlayer = game.users.find((user) => {
-			return user.login != auth.login;
-		});
-
-		this.server.to(`game-${game.id}`).volatile.emit('requestUpdate', {
-			player: otherPlayer.login,
-		});
-	}
-
-	@SubscribeMessage('update')
-	async handleUpdate(client: Socket, payload: any): Promise<void> {
-		let auth = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		let user = await this.userService.findByLogin(auth.login);
-		if (!user) return;
-
-		let game = await this.gameService.findById(payload.gameId);
-		if (!game) return;
-
-		let player = game.users.find((user) => {
-			return user.login == auth.login;
-		});
-		if (!player) return;
-
-		this.server.to(`game-${game.id}`).volatile.emit('update', {
-			game: payload.game,
-			player: player.login,
-		});
-	}
+	
 }

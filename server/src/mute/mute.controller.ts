@@ -17,6 +17,7 @@ import { MuteService } from './mute.service';
 import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { Mute } from './mute.entity';
 import { ParseDatePipe } from './mute.pipe';
+import { AdminOwnerAdminGuard } from 'src/guards/admin_owner_admin.guard';
 
 @Controller('mute')
 export class MuteController {
@@ -54,7 +55,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get(':id')
-	@UseGuards(AdminClearanceGuard)//TODO: suite guards
+	@UseGuards(AdminOwnerAdminGuard)
 	async findOne(@Param('id', ParseIntPipe) id: number): Promise<Mute> {
 		let ret = this.muteService.findById(id);
 		if (!ret)
@@ -94,7 +95,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:channelName')
-	@UseGuards(AdminClearanceGuard)//TODO: suite guards
+	@UseGuards(AdminOwnerAdminGuard)
 	async findByChannel(
 		@Param('channelName') channelName: string,
 	): Promise<Mute[]> {
@@ -117,7 +118,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login/channel/:channelName')
-	@UseGuards(AdminClearanceGuard)//TODO: suite guards
+	@UseGuards(AdminOwnerAdminGuard)
 	async findByUserAndChannel(
 		@Param('login') login: string,
 		@Param('channelName') channelName: string,
@@ -148,10 +149,10 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminClearanceGuard)//TODO: suite guards
+	@UseGuards(AdminOwnerAdminGuard)
 	async create(
 		@Body('login') login: string,
-		@Body('channelName') channelName: string,
+		@Body('chann_name') channelName: string,
 		@Body('end', ParseDatePipe) end: Date,
 		@Body('reason') reason: string,
 	): Promise<Mute> {
@@ -218,7 +219,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':id')
-	@UseGuards(AdminClearanceGuard)//TODO: suite guards
+	@UseGuards(AdminOwnerAdminGuard)
 	async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
 		let ret = await this.muteService.findById(id);
 		if (!ret)

@@ -5,7 +5,8 @@ export default function inputHandler(
 	p5: p5Types,
 	values: any,
 	paddles: Movable[],
-	keys: Set<number>
+	keys: Set<number>,
+	me: boolean
 ) {
 	if (values.isPointStarted) {
 		{
@@ -18,7 +19,12 @@ export default function inputHandler(
 			}
 		}
 	} else {
-		if (values.doPlayerServe && keys.has(" ".charCodeAt(0))) {
+		if (
+			values.doPlayerServe == me &&
+			keys.has(" ".charCodeAt(0)) &&
+			!values.isPointStarted &&
+			!values.isGameOver
+		) {
 			values.isPointStarted = true;
 		}
 	}

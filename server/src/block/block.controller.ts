@@ -13,7 +13,10 @@ import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Block } from './block.entity';
 import { BlockService } from './block.service';
-import { AdminUserGuard } from 'src/guards/admin_user.guard';
+import {
+	AdminUserGuard,
+	AdminUserGuardPost,
+} from 'src/guards/admin_user.guard';
 
 @Controller('block')
 export class BlockController {
@@ -177,9 +180,9 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminUserGuard)
+	@UseGuards(AdminUserGuardPost)
 	async create(
-		@Body('blocker') blockerLogin: string,
+		@Body('userLogin') blockerLogin: string,
 		@Body('blocked') blockedLogin: string,
 	): Promise<Block> {
 		if (!blockedLogin || !blockerLogin)

@@ -6,56 +6,56 @@ import socket from "./socket";
 
 export const UserContext = createContext({ login: "", clearance: 0 });
 
-const Test = () => {
-	const [messages, setMessages] = useState<string[]>([]);
-	const [message, setMessage] = useState<string>("");
+// const Test = () => {
+// 	const [messages, setMessages] = useState<string[]>([]);
+// 	const [message, setMessage] = useState<string>("");
 
-	const updateMessage = (event: ChangeEvent<HTMLInputElement>) => {
-		setMessage(event.target.value);
-	};
+// 	const updateMessage = (event: ChangeEvent<HTMLInputElement>) => {
+// 		setMessage(event.target.value);
+// 	};
 
-	const sendMessage = () => {
-		socket.emit("msgToServer", message);
-		setMessage("");
-	};
+// 	const sendMessage = () => {
+// 		socket.emit("msgToServer", message);
+// 		setMessage("");
+// 	};
 
-	useEffect(() => {
-		socket.on("connect", () => {
-			console.log("Connected to server");
-		});
-		socket.on("disconnect", () => {
-			console.log("Disconnected from server");
-		});
-		socket.on("msgToClient", (message: string) => {
-			setMessages((messages) => [...messages, message]);
-		});
+// 	useEffect(() => {
+// 		socket.on("connect", () => {
+// 			console.log("Connected to server");
+// 		});
+// 		socket.on("disconnect", () => {
+// 			console.log("Disconnected from server");
+// 		});
+// 		socket.on("msgToClient", (message: string) => {
+// 			setMessages((messages) => [...messages, message]);
+// 		});
 
-		return () => {
-			socket.off("connect");
-			socket.off("disconnect");
-		};
-	}, []);
+// 		return () => {
+// 			socket.off("connect");
+// 			socket.off("disconnect");
+// 		};
+// 	}, []);
 
-	return (
-		<div className='App'>
-			<div
-				style={{
-					height: "500px",
-				}}
-			>
-				{messages.map((message, index) => (
-					<p key={index}>{message}</p>
-				))}
-			</div>
-			<form>
-				<input type='text' value={message} onChange={updateMessage} />
-				<button type='button' onClick={sendMessage}>
-					Send
-				</button>
-			</form>
-		</div>
-	);
-};
+// 	return (
+// 		<div className='App'>
+// 			<div
+// 				style={{
+// 					height: "500px",
+// 				}}
+// 			>
+// 				{messages.map((message, index) => (
+// 					<p key={index}>{message}</p>
+// 				))}
+// 			</div>
+// 			<form>
+// 				<input type='text' value={message} onChange={updateMessage} />
+// 				<button type='button' onClick={sendMessage}>
+// 					Send
+// 				</button>
+// 			</form>
+// 		</div>
+// 	);
+// };
 
 const App = () => {
 	const [clearance, setClearance] = useState({ login: "", clearance: 0 });

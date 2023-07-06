@@ -15,6 +15,7 @@ import { User } from './user.entity';
 import { AdminClearanceGuard } from '../guards/admin_clearance.guard';
 import { UserClearanceGuard } from '../guards/user_clearance.guard';
 import { ParseBoolPipe } from './user.pipe';
+import { AdminUserGuard } from 'src/guards/admin_user.guard';
 
 @Controller('user')
 export class UserController {
@@ -121,7 +122,7 @@ export class UserController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch(':login')
-	@UseGuards(UserClearanceGuard)//TODO: suite guards
+	@UseGuards(AdminUserGuard)
 	async update(
 		@Param('login') login: string,
 		@Body('name') name?: string,
