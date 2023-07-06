@@ -40,3 +40,31 @@ export class AdminUserUserGuard implements CanActivate {
 		//TODO: tester lol
 	}
 }
+
+@Injectable()
+export class AdminUserUserGuardPost implements CanActivate {
+	constructor(
+		@Inject(UserService)
+		private readonly userService: UserService,
+	) {}
+
+	async canActivate(context: ExecutionContext): Promise<boolean> {
+		let jwt_data: any;
+		const userLoginA = context.switchToHttp().getRequest().body.loginA;
+		const userLoginB = context.switchToHttp().getRequest().body.loginB;
+		const cookies = context.switchToHttp().getRequest().cookies;
+		let clearance = 0;
+		if (cookies.token) {
+			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
+			const user = await this.userService.findByLogin(jwt_data.login);
+			if (!user)
+				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
+			clearance = user.clearance;
+		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+		if (userLoginA === jwt_data.login) return true;
+		else if (userLoginB === jwt_data.login) return true;
+		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
+		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+		//TODO: tester lol
+	}
+}

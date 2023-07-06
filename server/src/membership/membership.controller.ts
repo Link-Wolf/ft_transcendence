@@ -16,11 +16,14 @@ import { MembershipService } from './membership.service';
 import { UserService } from '../user/user.service';
 import { Membership } from './membership.entity';
 import { ChannelService } from '../channel/channel.service';
-import { AdminUserGuard } from 'src/guards/admin_user.guard';
+import {
+	AdminUserGuard,
+	AdminUserGuardPost,
+} from 'src/guards/admin_user.guard';
 import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
 import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guard';
 import { AdminUserChannelusersGuard } from 'src/guards/admin_user_channelusers.guard';
-import { AdminChannelusersGuard } from 'src/guards/admin_channelusers.guard';
+import { AdminChannelusersGuardCookies } from 'src/guards/admin_channelusers.guard';
 
 @Controller('membership')
 export class MembershipController {
@@ -76,9 +79,9 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chan_name')
-	@UseGuards(AdminChannelusersGuard)
+	@UseGuards(AdminChannelusersGuardCookies)
 	async getByChannel(
-		@Param('chan_name') chan_name: string,
+		@Param('chanName') chan_name: string,
 	): Promise<Membership[]> {
 		if (!this.channelService.findByName(chan_name))
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
@@ -98,9 +101,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('user/:login/channel/:chan_name')
-	@UseGuards(
-		AdminUserChannelusersGuard,
-	) //TODO: Better guarding
+	@UseGuards(AdminUserChannelusersGuard)
 	async getByUserAndChannel(
 		@Param('login') login: string,
 		@Param('chan_name') chan_name: string,
@@ -127,9 +128,9 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminUserGuard) //TODO: Better guarding
+	@UseGuards(AdminUserGuardPost)
 	async create(
-		@Body('channelName') channelName: string,
+		@Body('chanName') channelName: string,
 		@Body('userLogin') userLogin: string,
 		@Body('isAdmin', ParseBoolPipe) isAdmin: boolean = false,
 	): Promise<Membership> {
@@ -170,7 +171,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch('user/:login/channel/:chann_name')
-	@UseGuards(AdminOwnerGuard) //TODO: Better guarding
+	@UseGuards(AdminOwnerGuard)
 	async update(
 		@Param('login') userLogin: string,
 		@Param('chann_name') channelName: string,
@@ -209,9 +210,7 @@ export class MembershipController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete('user/:login/channel/:chan_name')
-	@UseGuards(
-		AdminOwnerAdminUserGuard,
-	) //TODO: Better guarding
+	@UseGuards(AdminOwnerAdminUserGuard)
 	async delete(
 		@Param('login') login: string,
 		@Param('chan_name') chan_name: string,

@@ -6,7 +6,7 @@ const ThereIsNoFuckingPageBro = () => {
 		<>
 			<div>
 				<h1>404</h1>
-				<p>No fucker</p>
+				<p>No u</p>
 			</div>
 		</>
 	);

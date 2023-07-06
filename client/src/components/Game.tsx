@@ -4,19 +4,24 @@ import Cookies from "js-cookie";
 import { UserContext } from "../App";
 import axios from "axios";
 import GameRender from "./GameRender/GameRender";
+import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 
 const Game = () => {
-	const context = useContext(UserContext);
 	const [hasFoundGame, setHasFoundGame] = useState(false);
-	const [gameId, setGameId] = useState(-1);
-	const [amFirstPlayer, setAmFirstPlayer] = useState(false);
-	const [lookingForMatch, setLookingForMatch] = useState(true);
+	const [gameInfo, setGameInfo] = useState({
+		gameId: 0,
+		isNew: false,
+		modifiers: [],
+		playerToStart: 0,
+		players: [],
+	});
+	const user = useContext(UserContext);
+
+	//listen to history or smth to send quitRoom (/quitGame) when leaving the page
 
 	useEffect(() => {
 		const startGame = (payload: any) => {
-			console.log("Useeffect : ", payload);
-			setGameId(payload.gameId);
-			setAmFirstPlayer(payload.firstPlayer === context.login);
+			setGameInfo(payload);
 			setHasFoundGame(true);
 		};
 
@@ -32,14 +37,18 @@ const Game = () => {
 		};
 	}, []);
 
+	if (!user.clearance || user.clearance === 0)
+		return <ThereIsNotEnoughPermsBro />;
+
 	const isLookingForMatch = () => {
-		setLookingForMatch(false);
-		//TODO: emit + redirect to home
+		//TODO: emit quitRoom et attendre la reponse avant de go back home
 	};
 
-	// if (!hasFoundGame)
-	// 	return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
-	return <GameRender gameId={gameId} amFirstPlayer={amFirstPlayer} />;
+	console.log(gameInfo);
+
+	if (!hasFoundGame)
+		return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
+	return <GameRender {...gameInfo} />;
 };
 
 const WaitingForMatch = ({

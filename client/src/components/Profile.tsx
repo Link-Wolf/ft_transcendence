@@ -1,7 +1,15 @@
 import axios from "axios";
 import Settings from "./Settings";
+import { useContext } from "react";
+import { UserContext } from "../App";
+import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 
 const Profile = () => {
+	const user = useContext(UserContext);
+
+	if (!user.clearance || user.clearance === 0)
+		return <ThereIsNotEnoughPermsBro />;
+
 	const logout = () => {
 		axios
 			.get(

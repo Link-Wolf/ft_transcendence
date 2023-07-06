@@ -16,7 +16,10 @@ import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import { Channel } from './channel.entity';
 import { UserService } from 'src/user/user.service';
 import { PublicOrPrivateGuard } from 'src/guards/public_or_private.guard';
-import { AdminUserGuard } from 'src/guards/admin_user.guard';
+import {
+	AdminUserGuard,
+	AdminUserGuardPost,
+} from 'src/guards/admin_user.guard';
 import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
 
 @Controller('channel')
@@ -101,7 +104,7 @@ export class ChannelController {
 	 * @param {string} name The channel name
 	 * @param {string} password The channel password
 	 * @returns {Channel} The created channel
-	 * @security Clearance user
+	 * @security Admin clearance OR user himself
 	 * @response 201 - Created
 	 * @response 400 - Bad Request
 	 * @response 401 - Unauthorized
@@ -110,9 +113,9 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post() //TODO: need very much testing cause looks ugly af
-	@UseGuards(UserClearanceGuard)
+	@UseGuards(AdminUserGuardPost)
 	async create(
-		@Body('ownerLogin') ownerLogin: string,
+		@Body('userLogin') ownerLogin: string,
 		@Body('name') name: string,
 		@Body('password') password?: string,
 	): Promise<Channel> {
@@ -157,7 +160,7 @@ export class ChannelController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch(':name')
-	@UseGuards(AdminOwnerGuard) //TODO: better guard
+	@UseGuards(AdminOwnerGuard)
 	async update(
 		@Param('name') name: string,
 		@Body('password') password?: string,

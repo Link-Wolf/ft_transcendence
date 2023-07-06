@@ -32,6 +32,33 @@ export class AdminUserGuard implements CanActivate {
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+
+		if (userLogin === jwt_data.login) return true;
+		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
+		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+		//TODO: tester lol
+	}
+}
+
+@Injectable()
+export class AdminUserGuardPost implements CanActivate {
+	constructor(
+		@Inject(UserService)
+		private readonly userService: UserService,
+	) {}
+
+	async canActivate(context: ExecutionContext): Promise<boolean> {
+		let jwt_data: any;
+		const userLogin = context.switchToHttp().getRequest().body.userLogin;
+		const cookies = context.switchToHttp().getRequest().cookies;
+		let clearance = 0;
+		if (cookies.token) {
+			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
+			const user = await this.userService.findByLogin(jwt_data.login);
+			if (!user)
+				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
+			clearance = user.clearance;
+		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (userLogin === jwt_data.login) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);

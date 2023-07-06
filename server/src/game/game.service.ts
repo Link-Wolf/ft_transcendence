@@ -69,12 +69,19 @@ export class GameService {
 		}
 	}
 
-	async findWaiting() {
+	/**
+	 * @brief	Find a game that is waiting for more player
+	 * @param	{boolean} isRanked	Weither or not the game is ranked
+	 * @return	{Game}				The game
+	 * @throws	{HttpException}		500 if an error occured
+	 */
+	async findWaiting(isRanked: boolean = false): Promise<Game> {
 		try {
 			let ret = await this.gameRepository.findOne<Game>({
 				include: [{ all: true }],
 				where: {
 					status: 'waiting',
+					isRanked: isRanked,
 				},
 			});
 			return ret;

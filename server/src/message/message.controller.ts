@@ -8,6 +8,7 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
+	Req,
 	UseGuards,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
@@ -18,7 +19,11 @@ import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
 import { BanService } from 'src/ban/ban.service';
 import { MuteService } from 'src/mute/mute.service';
-import { AdminChannelusersGuard } from 'src/guards/admin_channelusers.guard';
+import {
+	AdminChannelusersGuard,
+	AdminChannelusersGuardCookies,
+	AdminChannelusersGuardPost,
+} from 'src/guards/admin_channelusers.guard';
 
 @Controller('message')
 export class MessageController {
@@ -80,7 +85,7 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('channel/:chanName')
-	@UseGuards(AdminChannelusersGuard)
+	@UseGuards(AdminChannelusersGuardCookies)
 	async getMessagesByChannel(
 		@Param('chanName') chanName: string,
 	): Promise<Message[]> {
@@ -154,7 +159,7 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminChannelusersGuard)
+	@UseGuards(AdminChannelusersGuardPost)
 	async createMessage(
 		@Body('content') content: string,
 		@Body('userLogin') userLogin: string,
