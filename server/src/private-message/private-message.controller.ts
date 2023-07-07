@@ -41,7 +41,6 @@ export class PrivateMessageController {
 		@Req() req: Request,
 		@Body('loginOther') loginOther: string,
 	): Promise<Channel> {
-		//TODO: check if already exist
 		let senderLogin = jwt.verify(
 			req.cookies.token,
 			process.env.JWT_KEY,
@@ -50,7 +49,11 @@ export class PrivateMessageController {
 		let otherMember = await this.userService.findByLogin(loginOther);
 		if (!otherMember || !me)
 			throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
-		let channel = await this.channelService.create({
+		let channel = await this.channelService.findByName(
+			`_${[me, otherMember].sort()[0]}&${[me, otherMember].sort()[1]}`,
+		);
+		if (channel) return channel;
+		channel = await this.channelService.create({
 			isPrivate: true,
 			name: `_${[me, otherMember].sort()[0]}&${
 				[me, otherMember].sort()[1]
