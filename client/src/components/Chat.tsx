@@ -13,17 +13,14 @@ const Chat = () => {
 		setChat(!chat);
 	};
 
-	if (!user.clearance || user.clearance === 0) return <></>;
+	// if (!user.clearance || user.clearance === 0) return <></>;
 
 	return (
 		<div className={style.chat}>
 			{chat ? (
 				<ChatBox toggleChat={toggleChat} />
 			) : (
-				<button
-					className={style.toggleChat}
-					onClick={toggleChat}
-				>
+				<button className={style.toggleChat} onClick={toggleChat}>
 					Toggle Chat
 				</button>
 			)}
@@ -41,10 +38,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 
 	return (
 		<div className={style.chatbox}>
-			<button
-				className={style.toggleChat}
-				onClick={() => toggleChat()}
-			>
+			<button className={style.toggleChat} onClick={() => toggleChat()}>
 				Close Chat
 			</button>
 			{!channel ? (
@@ -56,10 +50,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					setChannel={setChannel}
 				/>
 			) : (
-				<UserList
-					channel={channel}
-					toggleShowlist={toggleShowlist}
-				/>
+				<UserList channel={channel} toggleShowlist={toggleShowlist} />
 			)}
 		</div>
 	);
@@ -73,6 +64,11 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 	const user = useContext(UserContext);
 	const [isChannel, setNewChannel] = useState(false);
 	const [showList, setShowList] = useState(false);
+	const [data, setData] = useState({ name: "", pass: "" });
+
+	const handleFormChange = (e: any) => {
+		setData({ ...data, [e.target.id]: e.target.value });
+	};
 
 	const toggleShowlist = () => {
 		setShowList(!showList);
@@ -84,11 +80,8 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel`,
 				{
 					userLogin: user.login,
-					name: (document.getElementById("name") as HTMLInputElement)
-						.value,
-					password: (
-						document.getElementById("pass") as HTMLInputElement
-					).value, //TODO: iCARUS veut pas de ca
+					name: data.name,
+					password: data.pass,
 				}
 			)
 			.then(async (response) => {
@@ -117,17 +110,17 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 			<input
 				id='name'
 				type='text'
-				defaultValue={""}
+				value={data.name}
+				onChange={handleFormChange}
 			/>
 			<label>Mot de passe (optionnel)</label>
 			<input
 				id='pass'
 				type='password'
+				value={data.pass}
+				onChange={handleFormChange}
 			/>
-			<button
-				type='button'
-				onClick={createChannel}
-			>
+			<button type='button' onClick={createChannel}>
 				Creer
 			</button>
 		</form>
@@ -219,10 +212,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				<>
 					{channels.length ? (
 						channels.map((channel, i) => (
-							<button
-								key={i}
-								onClick={() => setChannel(channel)}
-							>
+							<button key={i} onClick={() => setChannel(channel)}>
 								{channel}
 							</button>
 						))
@@ -337,11 +327,7 @@ const ChatWindow = ({
 					/>
 				</div>
 			))}
-			<input
-				id='msg'
-				type='text'
-				placeholder='message'
-			/>
+			<input id='msg' type='text' placeholder='message' />
 			<button
 				onClick={async () => {
 					let printableRegexButNoSpace = /[!-~]/; // Matches any printable ASCII characters except space
