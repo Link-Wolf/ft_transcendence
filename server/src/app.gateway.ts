@@ -157,7 +157,8 @@ export class AppGateway
 		this.game.ball.position.y =
 			((this.game.height / 2 - 50) * this.game.turn) % 2 == 0 ? 1 : -1;
 		this.game.ball.velocity.dx = 1;
-		this.game.ball.velocity.dy = 1;
+		this.game.ball.velocity.dy = 0;
+		this.game.ball.size.radius = 10;
 	}
 
 	resetPaddles() {
@@ -343,6 +344,7 @@ export class AppGateway
 				gameId: userGame.gameId,
 				isNew: false,
 			});
+			client.join(`game-${userGame.gameId}`);
 			return;
 		}
 
@@ -381,5 +383,12 @@ export class AppGateway
 		////// Return OK
 		// Else
 		////// Return nop attends
+	}
+
+	@SubscribeMessage('keys')
+	async handleKeys(client: Socket, payload: any): Promise<void> {
+		let player = this.game.players.find((p) => p.login === payload.login);
+		if (!player) return;
+		player.inputs = payload.keys;
 	}
 }
