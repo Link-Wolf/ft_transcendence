@@ -5,6 +5,3 @@ $(NAME): node_modules .env
 
 node_modules: package.json
 	npm i --save
-
-.env: ../.env
-	cp ../.env .env

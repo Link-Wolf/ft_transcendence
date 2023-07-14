@@ -1,0 +1,63 @@
+services:
+  server:
+    container_name: server
+    build:
+      context: .
+      dockerfile: server.dockerfile
+    ports:
+      - ${REACT_APP_BACKEND_PORT}:${REACT_APP_BACKEND_PORT}
+    networks:
+      - lorule
+    depends_on:
+      - database
+    volumes:
+      - server_source:/usr/src/src
+      - /usr/src/node_modules
+
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile: client.dockerfile
+    ports:
+      - ${REACT_APP_FRONTEND_PORT}:${REACT_APP_FRONTEND_PORT}
+    depends_on:
+      - server
+    volumes:
+      - client_source:/usr/src/src
+      - /usr/src/node_modules
+
+  database:
+    container_name: database
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    expose:
+      - ${DB_PORT}
+    networks:
+      - lorule
+    volumes:
+      - database_data:/var/lib/postgresql/data
+
+networks:
+  lorule:
+    driver: bridge
+
+volumes:
+  server_source:
+    name: server_source
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/server/src
+      o: bind
+  client_source:
+    name: client_source
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/client/src
+      o: bind
+  database_data:

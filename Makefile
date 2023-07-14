@@ -1,11 +1,10 @@
-NAME = ft_transcendence
+all: env docker
 
-$(NAME): server client
+env:
+	cp .env client/.env
+	cp .env server/.env
 
-server:
-	@make -C ./server
+docker:
+	docker-compose up --build
 
-client:
-	@make -C ./client
-
-.PHONY: server client
+.PHONY: all env docker
