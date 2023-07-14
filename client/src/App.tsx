@@ -1,64 +1,30 @@
 import axios from "axios";
-import "./style/App.scss";
 import Routage from "./components/Routage";
 import { ChangeEvent, createContext, useEffect, useState } from "react";
-import socket from "./socket";
+import style from "./style/App.module.scss";
 
-export const UserContext = createContext({ login: "", clearance: 0 });
-
-// const Test = () => {
-// 	const [messages, setMessages] = useState<string[]>([]);
-// 	const [message, setMessage] = useState<string>("");
-
-// 	const updateMessage = (event: ChangeEvent<HTMLInputElement>) => {
-// 		setMessage(event.target.value);
-// 	};
-
-// 	const sendMessage = () => {
-// 		socket.emit("msgToServer", message);
-// 		setMessage("");
-// 	};
-
-// 	useEffect(() => {
-// 		socket.on("connect", () => {
-// 			console.log("Connected to server");
-// 		});
-// 		socket.on("disconnect", () => {
-// 			console.log("Disconnected from server");
-// 		});
-// 		socket.on("msgToClient", (message: string) => {
-// 			setMessages((messages) => [...messages, message]);
-// 		});
-
-// 		return () => {
-// 			socket.off("connect");
-// 			socket.off("disconnect");
-// 		};
-// 	}, []);
-
-// 	return (
-// 		<div className='App'>
-// 			<div
-// 				style={{
-// 					height: "500px",
-// 				}}
-// 			>
-// 				{messages.map((message, index) => (
-// 					<p key={index}>{message}</p>
-// 				))}
-// 			</div>
-// 			<form>
-// 				<input type='text' value={message} onChange={updateMessage} />
-// 				<button type='button' onClick={sendMessage}>
-// 					Send
-// 				</button>
-// 			</form>
-// 		</div>
-// 	);
-// };
+export const UserContext = createContext({
+	login: "",
+	clearance: 0,
+	theme: "light",
+	toggleTheme: () => {},
+});
 
 const App = () => {
-	const [clearance, setClearance] = useState({ login: "", clearance: 0 });
+	const [clearance, setClearance] = useState({
+		login: "",
+		clearance: 0,
+		theme: "light",
+	});
+
+	const toggleTheme = () => {
+		setClearance((clearance) => {
+			return {
+				...clearance,
+				theme: clearance.theme === "light" ? "dark" : "light",
+			};
+		});
+	};
 
 	/**
 	 * Get the user's clearance level and store it in the context so it can be used in the whole app
@@ -81,19 +47,18 @@ const App = () => {
 				setClearance(response.data);
 			})
 			.catch((err) => {
-				setClearance({ login: "", clearance: 0 });
+				setClearance({ ...clearance, login: "", clearance: 0 });
 			});
 	}, []);
 
 	return (
-		<UserContext.Provider value={clearance}>
-			{/* {(() => {
-				console.log("YAY YAY BAGUETTE", clearance);
-				return <></>;
-			})()} */}
-			<Routage />
-			{/* <Test /> */}
-		</UserContext.Provider>
+		<div className={clearance.theme == "light" ? style.light : style.dark}>
+			<UserContext.Provider
+				value={{ ...clearance, toggleTheme: toggleTheme }}
+			>
+				<Routage />
+			</UserContext.Provider>
+		</div>
 	);
 };
 

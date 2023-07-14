@@ -1,0 +1,54 @@
+.toggle_switch {
+	--dark: #1a1a1a;
+	--light: #fff;
+	--size: 25px;
+
+	position: relative;
+	width: calc(var(--size) * 2);
+
+	label {
+		position: absolute;
+		width: 100%;
+		height: var(--size);
+		background-color: var(--dark);
+		border-radius: calc(0.5 * var(--size));
+		cursor: pointer;
+
+		input {
+			position: absolute;
+			display: none;
+
+			&:checked ~ .slider {
+				background-color: blue;
+
+				&::before {
+					transform: translateX(calc(0.75 * var(--size)));
+					background-color: yellow;
+					box-shadow: none;
+				}
+			}
+		}
+
+		.slider {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			border-radius: calc(0.5 * var(--size));
+			transition: 0.3s;
+
+			&::before {
+				content: "";
+				position: absolute;
+				top: calc(0.13 * var(--size));
+				left: calc(0.16 * var(--size));
+				width: calc(0.75 * var(--size));
+				height: calc(0.75 * var(--size));
+				border-radius: 50%;
+				box-shadow: inset calc(0.28 * var(--size))
+					calc(-0.04 * var(--size)) 0px 0px var(--light);
+				background-color: var(--dark);
+				transition: 0.3s;
+			}
+		}
+	}
+}
