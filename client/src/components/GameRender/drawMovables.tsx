@@ -1,5 +1,5 @@
-import Movable from "./Movable";
 import p5Types from "p5";
+import Movable from "./Movable";
 
 export default function drawMovables(p5: p5Types, movables: Movable[]) {
 	for (let object of movables) {
@@ -11,6 +11,6 @@ export default function drawMovables(p5: p5Types, movables: Movable[]) {
 				object.size.h
 			);
 		else if (object.type === "circle")
-			p5.circle(object.position.x, object.position.y, object.size.w);
+			p5.circle(object.position.x, object.position.y, object.size.radius);
 	}
 }
