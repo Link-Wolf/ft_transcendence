@@ -1,8 +1,9 @@
 .toggle_switch {
 	--dark: #1a1a1a;
 	--light: #fff;
-	--size: 25px;
+	--size: 20px;
 
+	margin-top: calc(-1 * var(--size) / 2);
 	position: relative;
 	width: calc(var(--size) * 2);
 
