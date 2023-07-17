@@ -1,10 +1,13 @@
-all: env docker
+all: env up
 
 env:
 	cp .env client/.env
 	cp .env server/.env
 
-docker:
+up:
+	docker-compose up
+
+re: env
 	docker-compose up --build
 
-.PHONY: all env docker
+.PHONY: all env up
