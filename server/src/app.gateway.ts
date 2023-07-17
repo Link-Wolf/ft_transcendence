@@ -122,6 +122,7 @@ export class AppGateway
 		lastTimestamp: 0,
 		height: 600,
 		width: 800,
+		isOver: false,
 	};
 
 	private gameLoop: NodeJS.Timeout | null = null;
@@ -230,7 +231,7 @@ export class AppGateway
 			this.game.isTurnStarted = false;
 		}
 		// score on player 1 goal
-		if (this.game.ball.position.x < -this.game.width / 2) {
+		if (this.game.ball.position.x > this.game.width / 2) {
 			this.game.players[0].score++;
 			this.resetBall();
 			this.resetPaddles();
@@ -324,6 +325,7 @@ export class AppGateway
 			isTurnStarted: false,
 			turn: 0,
 			lastTimestamp: 0,
+			isOver: false,
 		};
 	}
 
