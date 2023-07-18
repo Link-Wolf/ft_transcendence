@@ -284,13 +284,10 @@ export class AppGateway
 				this.game.players[0].score >= 11 ||
 				this.game.players[1].score >= 11
 			) {
+				this.game.isOver = true;
+				this.server.to(`game-${gameId}`).emit('gameUpdate', this.game);
 				this.stopGame();
-				this.server.to(`game-${gameId}`).emit('gameOver', {
-					score: [
-						this.game.players[0].score,
-						this.game.players[1].score,
-					],
-				});
+				return;
 			}
 
 			// if turn is started, update the game
