@@ -86,10 +86,11 @@ const draw7Segment = (p5: p5Types, score: number, position: number) => {
 
 export default function drawScore(
 	p5: p5Types,
-	score: { player: number; advers: number }
+	score: { player: number; advers: number },
+	isPlayerLeft: number
 ) {
 	p5.push();
-	draw7Segment(p5, score.player, -(p5.width / 2 - 160));
-	draw7Segment(p5, score.advers, p5.width / 2 - 160);
+	draw7Segment(p5, score.player, -isPlayerLeft * (p5.width / 2 - 160));
+	draw7Segment(p5, score.advers, isPlayerLeft * (p5.width / 2 - 160));
 	p5.pop();
 }

@@ -86,12 +86,13 @@ const GameRender = ({
 		lastTimestamp: 0,
 		height: 600,
 		width: 800,
-		myIndex: 0,
+		myIndex: -1,
 		isOver: false,
 	};
 
 	useEffect(() => {
 		socket.on("gameUpdate", (data) => {
+			console.log(data);
 			game = { ...game, ...data };
 		});
 
@@ -110,14 +111,21 @@ const GameRender = ({
 	};
 
 	const draw = (p5: p5Types) => {
-		p5.translate(game.width / 2, game.height / 2);
-		if (game.myIndex === 1) {
-			p5.scale(1, -1);
+		if (game.myIndex === -1) {
+			game.myIndex = game.players.findIndex(
+				(player) => player.login === user.login
+			);
+			return;
 		}
+		p5.translate(game.width / 2, game.height / 2);
 		p5.background(0);
 		p5.rectMode(p5.CENTER);
 
 		drawMiddleLine(p5);
+		p5.push();
+		if (game.myIndex === 1) {
+			p5.scale(-1, 1);
+		}
 		drawMovables(p5, [
 			{
 				type: "rectangle",
@@ -132,10 +140,15 @@ const GameRender = ({
 				...game.ball,
 			},
 		]);
-		drawScore(p5, {
-			player: game.players[0].score,
-			advers: game.players[1].score,
-		});
+		p5.pop();
+		drawScore(
+			p5,
+			{
+				player: game.players[0].score,
+				advers: game.players[1].score,
+			},
+			game.myIndex === 0 ? 1 : -1
+		);
 		displayTurnText(p5, game);
 	};
 
