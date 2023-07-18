@@ -178,11 +178,12 @@ export class AppGateway
 			this.game.ball.position.y - this.game.ball.size.radius / 2 <
 			-this.game.height / 2
 		) {
-			this.game.ball.position.x =
-				((this.game.ball.position.x / this.game.ball.position.y) *
-					-this.game.height) /
-					2 -
-				this.game.ball.size.radius / 2;
+			this.game.ball.position.x +=
+				(this.game.ball.velocity.dx *
+					(-this.game.height / 2 -
+						this.game.ball.size.radius / 2 -
+						this.game.ball.position.y)) /
+				this.game.ball.velocity.dy;
 			this.game.ball.position.y =
 				-this.game.height / 2 - this.game.ball.size.radius / 2;
 			this.game.ball.velocity.dy = 1;
@@ -192,11 +193,12 @@ export class AppGateway
 			this.game.ball.position.y + this.game.ball.size.radius / 2 >
 			this.game.height / 2
 		) {
-			this.game.ball.position.x =
-				((this.game.ball.position.x / this.game.ball.position.y) *
-					this.game.height) /
-					2 +
-				this.game.ball.size.radius / 2;
+			this.game.ball.position.x +=
+				(this.game.ball.velocity.dx *
+					(this.game.height / 2 +
+						this.game.ball.size.radius / 2 -
+						this.game.ball.position.y)) /
+				this.game.ball.velocity.dy;
 			this.game.ball.position.y =
 				this.game.height / 2 + this.game.ball.size.radius / 2;
 			this.game.ball.velocity.dy = -1;
@@ -226,11 +228,14 @@ export class AppGateway
 				this.game.ball.size.radius ** 2
 			) {
 				this.game.ball.velocity.dx *= -1;
-				this.game.ball.position.y =
-					(this.game.ball.position.y / this.game.ball.position.x) *
-						paddle.position.x +
-					(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
-						Math.sign(this.game.ball.velocity.dx);
+				this.game.ball.position.y +=
+					(this.game.ball.velocity.dy *
+						(paddle.position.x +
+							(paddle.size.w / 2 +
+								this.game.ball.size.radius / 2) *
+								Math.sign(this.game.ball.velocity.dx) -
+							this.game.ball.position.x)) /
+					this.game.ball.velocity.dx;
 				this.game.ball.position.x =
 					paddle.position.x +
 					(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
