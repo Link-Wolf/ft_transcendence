@@ -218,49 +218,47 @@ export class AppGateway
 	};
 
 	checkCollisions() {
-		//COMBAK: must refactor ASAP
 		this.bounceOnWalls();
-		// bounce on paddles
 		this.game.players.forEach((player, i) => {
-			let paddle = player.paddle;
-			if (
-				(this.game.ball.position.x -
-					Math.max(
-						paddle.position.x - paddle.size.w / 2,
-						Math.min(
-							this.game.ball.position.x,
-							paddle.position.x + paddle.size.w / 2,
-						),
-					)) **
-					2 +
-					(this.game.ball.position.y -
-						Math.max(
-							paddle.position.y - paddle.size.h / 2,
-							Math.min(
-								this.game.ball.position.y,
-								paddle.position.y + paddle.size.h / 2,
-							),
-						)) **
-						2 <
-				this.game.ball.size.radius ** 2
-			) {
-				this.game.ball.velocity.dx = 1 - 2 * i;
-				this.game.ball.position.y +=
-					(this.game.ball.velocity.dy *
-						(paddle.position.x +
-							(paddle.size.w / 2 +
-								this.game.ball.size.radius / 2) *
-								Math.sign(this.game.ball.velocity.dx) -
-							this.game.ball.position.x)) /
-					this.game.ball.velocity.dx;
-				this.game.ball.position.x =
-					paddle.position.x +
-					(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
-						Math.sign(this.game.ball.velocity.dx);
-				this.game.ball.velocity.dy =
-					(this.game.ball.position.y - paddle.position.y) /
-					(paddle.size.h / 2);
-			}
+			const paddle = player.paddle;
+			const distBallPaddleX =
+				this.game.ball.position.x -
+				Math.max(
+					paddle.position.x - paddle.size.w / 2,
+					Math.min(
+						this.game.ball.position.x,
+						paddle.position.x + paddle.size.w / 2,
+					),
+				);
+			const distBallPaddleY =
+				this.game.ball.position.y -
+				Math.max(
+					paddle.position.y - paddle.size.h / 2,
+					Math.min(
+						this.game.ball.position.y,
+						paddle.position.y + paddle.size.h / 2,
+					),
+				);
+			const distanceBallPaddleSquared =
+				distBallPaddleX ** 2 + distBallPaddleY ** 2;
+			const isBallInPaddle =
+				distanceBallPaddleSquared < this.game.ball.size.radius ** 2;
+			if (!isBallInPaddle) return;
+			this.game.ball.velocity.dx = 1 - 2 * i;
+			this.game.ball.position.y +=
+				(this.game.ball.velocity.dy *
+					(paddle.position.x +
+						(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
+							Math.sign(this.game.ball.velocity.dx) -
+						this.game.ball.position.x)) /
+				this.game.ball.velocity.dx;
+			this.game.ball.position.x =
+				paddle.position.x +
+				(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
+					Math.sign(this.game.ball.velocity.dx);
+			this.game.ball.velocity.dy =
+				(this.game.ball.position.y - paddle.position.y) /
+				(paddle.size.h / 2);
 		});
 
 		const checkForScore = (n: number) => {
