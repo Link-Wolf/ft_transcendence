@@ -130,11 +130,13 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 const NewChannel = ({ setChannel }: { setChannel: Function }) => {
 	const [channels, setChannels] = useState<any[]>([]);
 	const [channelCreation, setChannelCreation] = useState(false);
+	const [joinChannel, setJoinChannel] = useState<any>(null);
+	const user = useContext(UserContext);
 
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/public`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/public/me`
 			)
 			.then((response) => {
 				setChannels(
@@ -147,6 +149,27 @@ const NewChannel = ({ setChannel }: { setChannel: Function }) => {
 				console.log(err);
 			});
 	}, []);
+
+	useEffect(() => {
+		if (!joinChannel) return;
+		if (joinChannel.password) return; //TODO: if password, ask for password
+
+		axios
+			.post(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
+				{
+					chanName: joinChannel.name,
+					userLogin: user.login,
+					isAdmin: false,
+				}
+			)
+			.then((joined_channel) => {
+				setChannel(joined_channel.data.channelName);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}, [joinChannel]);
 
 	const createChannel = () => {
 		setChannelCreation(!channelCreation);
@@ -164,8 +187,9 @@ const NewChannel = ({ setChannel }: { setChannel: Function }) => {
 					<button onClick={createChannel}>Creer un channel</button>
 					{channels.map((channel, i) => (
 						<div key={i}>
-							<label>{channel.name}</label>{" "}
-							{channel.password ? <label>🔒</label> : <></>}
+							<button onClick={() => setJoinChannel(channel)}>
+								{channel.name} {channel.password ? "🔒" : <></>}
+							</button>
 						</div>
 					))}
 				</>
