@@ -5,10 +5,10 @@ env:
 	cp .env server/.env
 
 up:
-	docker-compose up -d
+	docker-compose up
 
 re: env
-	docker-compose up --build -d
+	docker-compose up --build
 
 clean:
 	docker-compose down

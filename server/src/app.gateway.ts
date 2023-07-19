@@ -156,9 +156,9 @@ export class AppGateway
 	resetBall() {
 		this.game.ball.position.x = 0;
 		this.game.ball.position.y =
-			((this.game.height / 2 - 50) * this.game.turn) % 2 == 0 ? 1 : -1;
-		this.game.ball.velocity.dx = 1;
-		this.game.ball.velocity.dy = 0;
+			(this.game.height / 2 - 50) * (this.game.turn % 2 == 0 ? 1 : -1);
+		this.game.ball.velocity.dx = this.game.playerToStart == 0 ? -1 : 1;
+		this.game.ball.velocity.dy = this.game.turn % 2 == 0 ? 1 : -1;
 		this.game.ball.size.radius = 10;
 	}
 
@@ -178,18 +178,30 @@ export class AppGateway
 			this.game.ball.position.y - this.game.ball.size.radius / 2 <
 			-this.game.height / 2
 		) {
-			this.game.ball.velocity.dy = 1;
+			this.game.ball.position.x +=
+				(this.game.ball.velocity.dx *
+					(-this.game.height / 2 -
+						this.game.ball.size.radius / 2 -
+						this.game.ball.position.y)) /
+				this.game.ball.velocity.dy;
 			this.game.ball.position.y =
 				-this.game.height / 2 - this.game.ball.size.radius / 2;
+			this.game.ball.velocity.dy = 1;
 		}
 		//bounce of bottom
 		if (
 			this.game.ball.position.y + this.game.ball.size.radius / 2 >
 			this.game.height / 2
 		) {
-			this.game.ball.velocity.dy = -1;
+			this.game.ball.position.x +=
+				(this.game.ball.velocity.dx *
+					(this.game.height / 2 +
+						this.game.ball.size.radius / 2 -
+						this.game.ball.position.y)) /
+				this.game.ball.velocity.dy;
 			this.game.ball.position.y =
 				this.game.height / 2 + this.game.ball.size.radius / 2;
+			this.game.ball.velocity.dy = -1;
 		}
 		// bounce on paddles
 		this.game.players.forEach((player) => {
@@ -216,28 +228,37 @@ export class AppGateway
 				this.game.ball.size.radius ** 2
 			) {
 				this.game.ball.velocity.dx *= -1;
+				this.game.ball.position.y +=
+					(this.game.ball.velocity.dy *
+						(paddle.position.x +
+							(paddle.size.w / 2 +
+								this.game.ball.size.radius / 2) *
+								Math.sign(this.game.ball.velocity.dx) -
+							this.game.ball.position.x)) /
+					this.game.ball.velocity.dx;
 				this.game.ball.position.x =
 					paddle.position.x +
 					(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
 						Math.sign(this.game.ball.velocity.dx);
+				this.game.ball.velocity.dy =
+					(this.game.ball.position.y - paddle.position.y) /
+					paddle.size.h /
+					2;
 			}
 		});
+
+		const checkForScore = (n: number) => {
+			this.game.players[n].score++;
+			this.game.playerToStart = 1 - n;
+			this.game.isTurnStarted = false;
+			this.resetBall();
+			this.resetPaddles();
+			if (this.game.players[n].score >= 11) this.game.isOver = true;
+		};
 		//score on player 0 goal
-		if (this.game.ball.position.x < -this.game.width / 2) {
-			this.game.players[1].score++;
-			this.resetBall();
-			this.resetPaddles();
-			this.game.playerToStart = 0;
-			this.game.isTurnStarted = false;
-		}
+		if (this.game.ball.position.x < -this.game.width / 2) checkForScore(1);
 		// score on player 1 goal
-		if (this.game.ball.position.x > this.game.width / 2) {
-			this.game.players[0].score++;
-			this.resetBall();
-			this.resetPaddles();
-			this.game.playerToStart = 1;
-			this.game.isTurnStarted = false;
-		}
+		if (this.game.ball.position.x > this.game.width / 2) checkForScore(0);
 	}
 
 	handleStartTurn() {
@@ -268,13 +289,10 @@ export class AppGateway
 				this.game.players[0].score >= 11 ||
 				this.game.players[1].score >= 11
 			) {
+				this.game.isOver = true;
+				this.server.to(`game-${gameId}`).emit('gameUpdate', this.game);
 				this.stopGame();
-				this.server.to(`game-${gameId}`).emit('gameOver', {
-					score: [
-						this.game.players[0].score,
-						this.game.players[1].score,
-					],
-				});
+				return;
 			}
 
 			// if turn is started, update the game
@@ -291,40 +309,66 @@ export class AppGateway
 	stopGame() {
 		clearInterval(this.gameLoop);
 		this.game = {
-			gameId: 0,
-			width: 0,
-			height: 0,
 			players: [
 				{
-					login: '',
-					score: 0,
 					paddle: {
-						position: { x: 0, y: 0 },
-						velocity: { dx: 0, dy: 0 },
-						size: { w: 0, h: 0 },
+						size: {
+							w: 0,
+							h: 0,
+						},
+						position: {
+							x: 0,
+							y: 0,
+						},
+						velocity: {
+							dx: 0,
+							dy: 0,
+						},
 					},
+					score: 0,
 					inputs: [],
+					login: '',
 				},
 				{
-					login: '',
-					score: 0,
 					paddle: {
-						position: { x: 0, y: 0 },
-						velocity: { dx: 0, dy: 0 },
-						size: { w: 0, h: 0 },
+						size: {
+							w: 0,
+							h: 0,
+						},
+						position: {
+							x: 0,
+							y: 0,
+						},
+						velocity: {
+							dx: 0,
+							dy: 0,
+						},
 					},
+					score: 0,
 					inputs: [],
+					login: '',
 				},
 			],
 			ball: {
-				position: { x: 0, y: 0 },
-				size: { radius: 0 },
-				velocity: { dx: 0, dy: 0 },
+				size: {
+					radius: 0,
+				},
+				position: {
+					x: 0,
+					y: 0,
+				},
+				velocity: {
+					dx: 0,
+					dy: 0,
+				},
 			},
+			turn: 0,
 			playerToStart: 0,
 			isTurnStarted: false,
-			turn: 0,
+			gameId: 0,
 			lastTimestamp: 0,
+			height: 600,
+			width: 800,
 			isOver: false,
 		};
 	}
