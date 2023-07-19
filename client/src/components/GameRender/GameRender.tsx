@@ -92,7 +92,6 @@ const GameRender = ({
 
 	useEffect(() => {
 		socket.on("gameUpdate", (data) => {
-			console.log(data);
 			game = { ...game, ...data };
 		});
 

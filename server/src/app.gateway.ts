@@ -150,6 +150,20 @@ export class AppGateway
 	movePaddles(dt: number) {
 		this.game.players.forEach((player) => {
 			player.paddle.position.y += player.paddle.velocity.dy * dt;
+			if (
+				player.paddle.position.y + player.paddle.size.h / 2 >
+				this.game.height / 2
+			) {
+				player.paddle.position.y =
+					this.game.height / 2 - player.paddle.size.h / 2;
+			}
+			if (
+				player.paddle.position.y - player.paddle.size.h / 2 <
+				-this.game.height / 2
+			) {
+				player.paddle.position.y =
+					-this.game.height / 2 + player.paddle.size.h / 2;
+			}
 		});
 	}
 
@@ -157,7 +171,7 @@ export class AppGateway
 		this.game.ball.position.x = 0;
 		this.game.ball.position.y =
 			(this.game.height / 2 - 50) * (this.game.turn % 2 == 0 ? 1 : -1);
-		this.game.ball.velocity.dx = this.game.playerToStart == 0 ? -1 : 1;
+		this.game.ball.velocity.dx = this.game.playerToStart == 0 ? -0.5 : 0.5;
 		this.game.ball.velocity.dy = this.game.turn % 2 == 0 ? 1 : -1;
 		this.game.ball.size.radius = 10;
 	}
@@ -167,44 +181,47 @@ export class AppGateway
 			player.paddle.position.y = 0;
 			player.paddle.velocity.dy = 0;
 			player.paddle.position.x = i == 0 ? -350 : 350;
-			player.paddle.size.w = 20;
-			player.paddle.size.h = 100;
+			player.paddle.size.w = 8 * 1;
+			player.paddle.size.h = 8 * 7;
 		});
 	}
 
+	bounceOnWalls = () => {
+		//get all values in shorter variables
+		const ballY = this.game.ball.position.y;
+		const signOfY = Math.sign(ballY);
+		if (signOfY == 0) return;
+
+		const ballX = this.game.ball.position.x;
+		const ballRadius = this.game.ball.size.radius;
+
+		//check if ball is in wall
+		const ballIsInWall =
+			Math.abs(ballY + ballRadius * signOfY) >
+			Math.abs(this.game.height / 2);
+		if (!ballIsInWall) return;
+
+		//	calculate new ball position and velocity
+		// The ball go in direction of x=0
+		const newBallDy = -Math.abs(this.game.ball.velocity.dy) * signOfY;
+		// The ball is placed tangent to the wall
+		const newBallY = (this.game.height / 2 - ballRadius) * signOfY;
+		const newBallX =
+			ballX +
+			(this.game.ball.velocity.dx / this.game.ball.velocity.dy) *
+				(signOfY * (this.game.height / 2 - ballRadius) - ballY);
+
+		//apply new ball position and velocity
+		this.game.ball.velocity.dy = newBallDy;
+		this.game.ball.position.y = newBallY;
+		this.game.ball.position.x = newBallX;
+	};
+
 	checkCollisions() {
-		//bounce of top
-		if (
-			this.game.ball.position.y - this.game.ball.size.radius / 2 <
-			-this.game.height / 2
-		) {
-			this.game.ball.position.x +=
-				(this.game.ball.velocity.dx *
-					(-this.game.height / 2 -
-						this.game.ball.size.radius / 2 -
-						this.game.ball.position.y)) /
-				this.game.ball.velocity.dy;
-			this.game.ball.position.y =
-				-this.game.height / 2 - this.game.ball.size.radius / 2;
-			this.game.ball.velocity.dy = 1;
-		}
-		//bounce of bottom
-		if (
-			this.game.ball.position.y + this.game.ball.size.radius / 2 >
-			this.game.height / 2
-		) {
-			this.game.ball.position.x +=
-				(this.game.ball.velocity.dx *
-					(this.game.height / 2 +
-						this.game.ball.size.radius / 2 -
-						this.game.ball.position.y)) /
-				this.game.ball.velocity.dy;
-			this.game.ball.position.y =
-				this.game.height / 2 + this.game.ball.size.radius / 2;
-			this.game.ball.velocity.dy = -1;
-		}
+		//COMBAK: must refactor ASAP
+		this.bounceOnWalls();
 		// bounce on paddles
-		this.game.players.forEach((player) => {
+		this.game.players.forEach((player, i) => {
 			let paddle = player.paddle;
 			if (
 				(this.game.ball.position.x -
@@ -227,7 +244,7 @@ export class AppGateway
 						2 <
 				this.game.ball.size.radius ** 2
 			) {
-				this.game.ball.velocity.dx *= -1;
+				this.game.ball.velocity.dx = 1 - 2 * i;
 				this.game.ball.position.y +=
 					(this.game.ball.velocity.dy *
 						(paddle.position.x +
@@ -242,8 +259,7 @@ export class AppGateway
 						Math.sign(this.game.ball.velocity.dx);
 				this.game.ball.velocity.dy =
 					(this.game.ball.position.y - paddle.position.y) /
-					paddle.size.h /
-					2;
+					(paddle.size.h / 2);
 			}
 		});
 
@@ -252,7 +268,7 @@ export class AppGateway
 			this.game.playerToStart = 1 - n;
 			this.game.isTurnStarted = false;
 			this.resetBall();
-			this.resetPaddles();
+			// this.resetPaddles();
 			if (this.game.players[n].score >= 11) this.game.isOver = true;
 		};
 		//score on player 0 goal
@@ -296,10 +312,10 @@ export class AppGateway
 			}
 
 			// if turn is started, update the game
+			this.handleInputs();
+			this.movePaddles(dt);
 			if (this.game.isTurnStarted) {
-				this.handleInputs();
 				this.moveBall(dt);
-				this.movePaddles(dt);
 				this.checkCollisions();
 			} else this.handleStartTurn();
 			this.server.to(`game-${gameId}`).emit('gameUpdate', this.game);
