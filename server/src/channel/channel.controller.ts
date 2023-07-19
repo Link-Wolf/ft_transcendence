@@ -9,6 +9,7 @@ import {
 	Post,
 	UseGuards,
 	Body,
+	Req,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
@@ -21,6 +22,9 @@ import {
 	AdminUserGuardPost,
 } from 'src/guards/admin_user.guard';
 import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
+import { Request } from 'express';
+import * as jwt from 'jsonwebtoken';
+import { readFileSync } from 'fs';
 
 @Controller('channel')
 export class ChannelController {
@@ -56,6 +60,27 @@ export class ChannelController {
 	@UseGuards(UserClearanceGuard)
 	async getPublic(): Promise<Channel[]> {
 		return await this.channelService.findPublic();
+	}
+
+	/**
+	 * @brief Get all public channels without those already joined by the user
+	 * @returns {Channel[]} All public channels except those already joined by the user
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('public/me')
+	@UseGuards(UserClearanceGuard)
+	async getPublicWithoutMine(@Req() req: Request): Promise<Channel[]> {
+		let senderLogin = jwt.verify(
+			req.cookies.token,
+			process.env.JWT_KEY,
+		).login;
+		let sender = await this.userService.findByLogin(senderLogin);
+		if (!sender)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		return await this.channelService.findPublicWithoutMine(sender.login);
 	}
 
 	/**

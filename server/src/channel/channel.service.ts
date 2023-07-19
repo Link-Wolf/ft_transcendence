@@ -58,6 +58,29 @@ export class ChannelService {
 	}
 
 	/**
+	 * @brief Get all public channels except those where the user is already
+	 * @return {Channel[]} All public channels
+	 * @throws {HttpException} 500 - Internal server error
+	 */
+	async findPublicWithoutMine(login: string): Promise<Channel[]> {
+		try {
+			let ret = await this.channelRepository.findAll<Channel>({
+				where: { isPrivate: false },
+				include: [{ all: true }],
+			});
+			return ret.filter(
+				(channel) =>
+					channel.dataValues.memberships.filter(
+						(membership) =>
+							membership.dataValues.userLogin === login,
+					).length === 0,
+			);
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
 	 * @brief Get all channels where the login's user is the owner
 	 * @param {string} login The user's login
 	 * @return {Channel[]} All channels of the user
