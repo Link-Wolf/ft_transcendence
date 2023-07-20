@@ -6,20 +6,20 @@ import { Mute } from 'src/mute/mute.entity';
 import { User } from 'src/user/user.entity';
 
 export class ChannelDto {
-    @IsString()
-    @IsNotEmpty()
-    name?: string;
+	@IsString()
+	@IsNotEmpty()
+	name?: string;
 
-    @IsString()
-    @IsNotEmpty()
-    password?: string;
+	@IsString()
+	@IsNotEmpty()
+	password?: string;
 
-    @IsBoolean()
-    isPrivate?: boolean;
+	@IsBoolean()
+	isPrivate?: boolean;
 
-    owner?: User;
-    messages?: Message[];
-    memberships?: Membership[];
-    mutes?: Mute[];
-    bans?: Ban[];
+	owner?: User;
+	messages?: Message[];
+	memberships?: Membership[];
+	mutes?: Mute[];
+	bans?: Ban[];
 }
