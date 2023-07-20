@@ -15,6 +15,7 @@ import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
 import { JWTService } from './jwt.service';
 import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
+import { readFileSync } from 'fs';
 
 @Controller('auth')
 export class AuthController {
@@ -58,11 +59,14 @@ export class AuthController {
 			let i = 1;
 			while (await this.userService.findByName(name + (i == 1 ? '' : i)))
 				i++;
+			const default_avatar_buffer = readFileSync(
+				'src/assets/default_avatar.jpg',
+			);
 			user = await this.userService.create({
 				login: intraUser.login,
 				name: name + (i == 1 ? '' : i),
 				clearance: Number(process.env.USER_CLEARANCE),
-				/* avatar: default_avatar */
+				avatar: default_avatar_buffer,
 			});
 		}
 		if (!user.dataValues.hasConnected)
