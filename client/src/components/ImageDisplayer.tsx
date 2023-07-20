@@ -10,29 +10,13 @@ const PPDisplayer = ({ login }: { login: string }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
 			)
 			.then((response) => {
-				// const buf = new Buffer(response.data.avatar.data);
-				// let buffer = new Buffer(response.data.avatar.data);
-				// console.log(buffer, typeof buffer);
-				// console.log(response.data.avatar.data.toString("hex"));
-				// const imgb64 = Buffer.from(response.data.avatar.data).toString(
-				// 	"base64"
-				// );
-
-				let toString = "";
+				let imgString = "";
 				for (let i = 0; i < response.data.avatar.data.length; i++) {
-					toString += String.fromCharCode(
+					imgString += String.fromCharCode(
 						response.data.avatar.data[i]
 					);
 				}
-				const imgb64 = btoa(toString);
-				// const imageBlob = new Blob(response.data.avatar.data, {
-				// 	type: "image/*",
-				// });
-				// const imageBlob = Buffer.from(
-				// 	response.data.avatar,
-				// 	"binary"
-				// ).toString("base64");
-				// setImageURL(URL.createObjectURL(imageBlob));
+				const imgb64 = btoa(imgString);
 				setImageURL(`data:image/*;base64,${imgb64}`);
 			})
 			.catch((error) => {
