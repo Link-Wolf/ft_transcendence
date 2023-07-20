@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../App";
+import { PPDisplayer } from "./ImageDisplayer";
 
 const Home = () => {
 	/**
@@ -14,7 +15,10 @@ const Home = () => {
 			<h1>Home</h1>
 			<p>Home page buddy</p>
 			{user.clearance > 0 ? (
-				<Link to='/game'>Play</Link>
+				<>
+					<Link to='/game'>Play</Link>
+					<PPDisplayer login={user.login} />
+				</>
 			) : (
 				<Link
 					to={
