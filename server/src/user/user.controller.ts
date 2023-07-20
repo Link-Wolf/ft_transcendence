@@ -18,6 +18,7 @@ import { UserClearanceGuard } from '../guards/user_clearance.guard';
 import { ParseBoolPipe } from './user.pipe';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
 import { readFileSync } from 'fs';
 
 @Controller('user')
