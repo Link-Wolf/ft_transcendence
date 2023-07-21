@@ -6,14 +6,14 @@ import { Link } from "react-router-dom";
 import style from "../style/Chat.module.scss";
 
 const Chat = () => {
-	const user = useContext(UserContext);
 	const [chat, setChat] = useState(false);
+	const user = useContext(UserContext);
 
 	const toggleChat = () => {
 		setChat(!chat);
 	};
 
-	// if (!user.clearance || user.clearance === 0) return <></>;
+	if (!user.clearance || user.clearance === 0) return <></>;
 
 	return (
 		<div className={style.chat}>

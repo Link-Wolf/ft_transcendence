@@ -20,6 +20,7 @@ const Game = () => {
 	//listen to history or smth to send quitRoom (/quitGame) when leaving the page
 
 	useEffect(() => {
+		if (!user.clearance || user.clearance === 0) return;
 		const startGame = (payload: any) => {
 			setGameInfo(payload);
 			setHasFoundGame(true);
