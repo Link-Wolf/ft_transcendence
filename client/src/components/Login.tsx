@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
 	const navigate = useNavigate();
 	const [done, setDone] = useState(false);
-	const [needA2F, setNeedA2F] = useState(false);
+	const [needTFA, setNeedTFA] = useState(false);
 	const [errorCode, setErrorCode] = useState(0);
 	const [isConnected, setIsConnected] = useState(false);
 	const [isFirstTime, setIsFirstTime] = useState(false);
@@ -39,9 +39,9 @@ const Login = () => {
 				}
 			)
 			.then((res) => {
-				setNeedA2F(res.data.needTo2FA);
+				setNeedTFA(res.data.needToTFA);
 				setIsFirstTime(res.data.status === "registered");
-				setIsConnected(!res.data.needTo2FA);
+				setIsConnected(!res.data.needToTFA);
 			})
 			.catch((error) => {
 				setErrorCode(500); // TODO: get the error code from the backend
@@ -68,7 +68,7 @@ const Login = () => {
 
 	if (errorCode > 0) return <p>Something went wrong: {errorCode}</p>;
 	if (!done) return <p>Loading...</p>;
-	if (needA2F) return <form></form>; // Manage 2FA
+	if (needTFA) return <form></form>; // Manage TFA
 	return <></>;
 };
 

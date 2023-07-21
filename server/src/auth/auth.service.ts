@@ -55,12 +55,12 @@ export class AuthService {
 	/**
 	 * @brief Verify the TOTP
 	 * @param {number} totp TOTP given by the user
-	 * @param {string} A2FSecret Secret of the user
+	 * @param {string} TFASecret Secret of the user
 	 * @returns {boolean} True if the TOTP is valid, false otherwise
 	 * @response 200 - OK
 	 * @response 500 - Internal server error
 	 */
-	async verifyTOTP(totp: number, A2FSecret: string): Promise<boolean> {
+	async verifyTOTP(totp: number, TFASecret: string): Promise<boolean> {
 		return true;
 	}
 }
