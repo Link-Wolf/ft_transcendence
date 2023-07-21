@@ -1,38 +1,38 @@
-import { IsNotEmpty, IsString, IsBoolean } from "class-validator";
-import { Membership } from "src/membership/membership.entity";
-import { Message } from "src/message/message.entity";
-import { UserGame } from "src/user-game/user-game.entity";
-import { Ban } from "src/ban/ban.entity";
-import { Mute } from "src/mute/mute.entity";
-import { Channel } from "src/channel/channel.entity";
+import { IsNotEmpty, IsString, IsBoolean } from 'class-validator';
+import { Membership } from 'src/membership/membership.entity';
+import { Message } from 'src/message/message.entity';
+import { UserGame } from 'src/user-game/user-game.entity';
+import { Ban } from 'src/ban/ban.entity';
+import { Mute } from 'src/mute/mute.entity';
+import { Channel } from 'src/channel/channel.entity';
 
 export class UserDto {
-    @IsString()
-    @IsNotEmpty()
-    login?: string;
+	@IsString()
+	@IsNotEmpty()
+	login?: string;
 
-    @IsString()
-    @IsNotEmpty()
-    name?: string;
+	@IsString()
+	@IsNotEmpty()
+	name?: string;
 
-    avatar?: Buffer;
+	avatar?: string;
 
 	clearance?: number;
 
-    @IsBoolean()
-    has2FA?: boolean;
+	@IsBoolean()
+	hasTFA?: boolean;
 
-    userGames?: UserGame[];
+	userGames?: UserGame[];
 
-    messages?: Message[];
+	messages?: Message[];
 
-    memberships?: Membership[];
+	memberships?: Membership[];
 
-    mutes?: Mute[];
+	mutes?: Mute[];
 
-    bans?: Ban[];
+	bans?: Ban[];
 
-    channelsOwned?: Channel[];
+	channelsOwned?: Channel[];
 
 	hasConnected?: boolean;
 }

@@ -31,8 +31,8 @@ export class AuthController {
 	 * @param {Record<string, any>} session Session (redis)
 	 * @returns { {
 	 * 				status: 'logged' | 'registered',
-	 * 				needTo2FA: boolean
-	 * 		} } Status of the login and if the user enabled 2FA
+	 * 				needToTFA: boolean
+	 * 		} } Status of the login and if the user enabled TFA
 	 * @security Anyone
 	 * @response 200 - OK
 	 * @response 400 - Bad request
@@ -44,7 +44,7 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response,
 	): Promise<{
 		status: string;
-		needTo2FA: boolean;
+		needToTFA: boolean;
 	}> {
 		let status = 'logged';
 		let intraUser = await this.authService.getIntraUser(code);
@@ -62,11 +62,23 @@ export class AuthController {
 			const default_avatar_buffer = readFileSync(
 				'src/assets/default_avatar.jpg',
 			);
+			//generate a random string between 8 and 16 lowercase letters
+			let randomString: string;
+			do {
+				randomString = '';
+				const randomStringLength = Math.floor(Math.random() * 9) + 8; // Random length between 8 and 16
+
+				for (let i = 0; i < randomStringLength; i++) {
+					const randomCharCode = Math.floor(Math.random() * 26) + 97; // ASCII code for lowercase 'a' to 'z'
+					randomString += String.fromCharCode(randomCharCode);
+				}
+			} while (this.userService.findByName(randomString));
+
 			user = await this.userService.create({
 				login: intraUser.login,
-				name: name + (i == 1 ? '' : i),
 				clearance: Number(process.env.USER_CLEARANCE),
-				avatar: default_avatar_buffer,
+				avatar: default_avatar_buffer.toString('base64'),
+				name: randomString,
 			});
 		}
 		if (!user.dataValues.hasConnected)
@@ -88,7 +100,7 @@ export class AuthController {
 		);
 		return {
 			status: status,
-			needTo2FA: user.dataValues.has2FA,
+			needToTFA: user.dataValues.hasTFA,
 		};
 	}
 
@@ -139,9 +151,9 @@ export class AuthController {
 	 * @response 404 - Not found
 	 * @response 500 - Internal server error
 	 */
-	@Post('A2F')
+	@Post('TFA')
 	@UseGuards(UserClearanceGuard)
-	async verifyA2F(
+	async verifyTFA(
 		@Body('TOTP') TOTP: number,
 		@Req() req: Request,
 	): Promise<{ status: 'logged' }> {
@@ -151,7 +163,7 @@ export class AuthController {
 		if (
 			!(await this.authService.verifyTOTP(
 				TOTP,
-				user.dataValues.A2FSecret,
+				user.dataValues.TFASecret,
 			))
 		)
 			throw new HttpException('Invalid TOTP', HttpStatus.BAD_REQUEST);

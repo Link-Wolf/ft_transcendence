@@ -10,14 +10,14 @@ const PPDisplayer = ({ login }: { login: string }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
 			)
 			.then((response) => {
-				let imgString = "";
-				for (let i = 0; i < response.data.avatar.data.length; i++) {
-					imgString += String.fromCharCode(
-						response.data.avatar.data[i]
-					);
-				}
-				const imgb64 = btoa(imgString);
-				setImageURL(`data:image/*;base64,${imgb64}`);
+				// let imgString = "";
+				// for (let i = 0; i < response.data.avatar.data.length; i++) {
+				// 	imgString += String.fromCharCode(
+				// 		response.data.avatar.data[i]
+				// 	);
+				// }
+				// const imgb64 = btoa(imgString);
+				setImageURL(`data:image/*;base64,${response.data.avatar}`);
 			})
 			.catch((error) => {
 				console.error("Error fetching image:", error);
@@ -27,11 +27,7 @@ const PPDisplayer = ({ login }: { login: string }) => {
 	return (
 		<div>
 			{imageURL ? (
-				<img
-					src={imageURL}
-					alt='Uploaded'
-					style={{ maxWidth: "300px" }}
-				/>
+				<img src={imageURL} style={{ maxWidth: "300px" }} />
 			) : (
 				<p>Loading image...</p>
 			)}
@@ -62,11 +58,7 @@ const ImageDisplayer = ({ what }: { what: string }) => {
 	return (
 		<div>
 			{imageURL ? (
-				<img
-					src={imageURL}
-					alt='Uploaded'
-					style={{ maxWidth: "300px" }}
-				/>
+				<img src={imageURL} style={{ maxWidth: "300px" }} />
 			) : (
 				<p>Loading image...</p>
 			)}
