@@ -1,11 +1,11 @@
 import {
-    Table,
-    Column,
-    Model,
-    DataType,
-    HasMany,
-    PrimaryKey,
-    BelongsToMany
+	Table,
+	Column,
+	Model,
+	DataType,
+	HasMany,
+	PrimaryKey,
+	BelongsToMany,
 } from 'sequelize-typescript';
 import { UserGame } from 'src/user-game/user-game.entity';
 import { Message } from 'src/message/message.entity';
@@ -17,64 +17,64 @@ import { Game } from 'src/game/game.entity';
 
 @Table({ tableName: 'User' })
 export class User extends Model<User> {
-    //TODO: ajouter un status (online, offline, playing, etc.)
-    @PrimaryKey
-    @Column({
-        type: DataType.STRING,
-    })
-    login: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-        unique: true,
-    })
-    name: string;
-
-    @Column({
-        type: DataType.BLOB,
-    })
-    avatar: Buffer;
-
-    @Column({
-        type: DataType.BOOLEAN,
-        defaultValue: false
-    })
-    has2FA: boolean;
-
+	//TODO: ajouter un status (online, offline, playing, etc.)
+	@PrimaryKey
 	@Column({
 		type: DataType.STRING,
-		allowNull: true
 	})
-	A2FSecret: string;
+	login: string;
+
+	@Column({
+		type: DataType.STRING(21),
+		allowNull: false,
+		unique: true,
+	})
+	name: string;
+
+	@Column({
+		type: DataType.TEXT,
+	})
+	avatar: string;
 
 	@Column({
 		type: DataType.BOOLEAN,
-		defaultValue: false
+		defaultValue: false,
+	})
+	hasTFA: boolean;
+
+	@Column({
+		type: DataType.STRING,
+		allowNull: true,
+	})
+	TFASecret: string;
+
+	@Column({
+		type: DataType.BOOLEAN,
+		defaultValue: false,
 	})
 	hasConnected: boolean;
 
-    @Column({
-        type: DataType.INTEGER,
-        defaultValue: 0
-    })
-    clearance: number;
+	@Column({
+		type: DataType.INTEGER,
+		defaultValue: 0,
+	})
+	clearance: number;
 
-    @BelongsToMany(() => Game, () => UserGame)
-    games: Game[];
+	@BelongsToMany(() => Game, () => UserGame)
+	games: Game[];
 
-    @HasMany(() => Message)
-    messages: Message[];
+	@HasMany(() => Message)
+	messages: Message[];
 
-    @HasMany(() => Membership)
-    memberships: Membership[];
+	@HasMany(() => Membership)
+	memberships: Membership[];
 
-    @HasMany(() => Mute)
-    mutes: Mute[];
+	@HasMany(() => Mute)
+	mutes: Mute[];
 
-    @HasMany(() => Ban)
-    bans: Ban[];
+	@HasMany(() => Ban)
+	bans: Ban[];
 
-    @HasMany(() => Channel)
-    channelsOwned: Channel[];
+	@HasMany(() => Channel)
+	channelsOwned: Channel[];
 }

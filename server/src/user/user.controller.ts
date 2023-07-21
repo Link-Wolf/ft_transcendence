@@ -71,7 +71,7 @@ export class UserController {
 	 * @brief Create a user
 	 * @param {string} login - The user's login
 	 * @param {string} name - The user's name
-	 * @param {boolean} has2FA - The user's 2AF status
+	 * @param {boolean} hasTFA - The user's 2AF status
 	 * @param {Buffer} avatar - The user's avatar
 	 * @return {User} - The created user
 	 * @security Clearance admin
@@ -108,9 +108,9 @@ export class UserController {
 		return this.userService.create({
 			login: login,
 			name: name,
-			has2FA: false,
+			hasTFA: false,
 			clearance: Number(process.env.USER_CLEARANCE),
-			avatar: default_avatar_buffer,
+			avatar: default_avatar_buffer.toString('base64'),
 		});
 	}
 
@@ -118,7 +118,7 @@ export class UserController {
 	 * @brief Update a user
 	 * @param {string} login - The user's login
 	 * @param {string} name - The user's name
-	 * @param {boolean} has2FA - The user's 2AF status
+	 * @param {boolean} hasTFA - The user's 2AF status
 	 * @return {User} - The updated user
 	 * @security Clearance admin OR user himself
 	 * @response 200 - OK
@@ -133,7 +133,7 @@ export class UserController {
 	async update(
 		@Param('login') login: string,
 		@Body('name') name?: string,
-		@Body('has2FA', ParseBoolPipe) has2FA?: boolean,
+		@Body('hasTFA', ParseBoolPipe) hasTFA?: boolean,
 	): Promise<number> {
 		let user = await this.userService.findByLogin(login);
 		//TODO: check if connected with right account / admin for 403 HTTP status
@@ -149,7 +149,7 @@ export class UserController {
 		return this.userService.update({
 			login: login,
 			name: name,
-			has2FA: has2FA,
+			hasTFA: hasTFA,
 		});
 	}
 
@@ -180,7 +180,7 @@ export class UserController {
 		}
 		return this.userService.updateProfilePicture({
 			login: login,
-			avatar: avatar.buffer,
+			avatar: avatar.buffer.toString('base64'),
 		});
 	}
 
