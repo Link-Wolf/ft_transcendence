@@ -1,5 +1,5 @@
 import axios from "axios";
-import Settings from "./Settings";
+import Update from "./Update";
 import { useContext } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
@@ -36,7 +36,7 @@ const Profile = () => {
 			<Stats />
 			<Friends />
 			<Blocked />
-			<Settings />
+			<Update />
 			<button onClick={logout}>Log out</button>
 		</div>
 	);
