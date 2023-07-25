@@ -51,18 +51,15 @@ export class AuthController {
 		if (!intraUser)
 			throw new HttpException('Invalid code', HttpStatus.BAD_REQUEST);
 		let user = await this.userService.findByLogin(intraUser.login);
+
+		// CREATE A NEW USER
 		if (!user) {
 			status = 'registered';
-			let name = intraUser.usual_first_name
-				? intraUser.usual_first_name
-				: intraUser.first_name;
-			let i = 1;
-			while (await this.userService.findByName(name + (i == 1 ? '' : i)))
-				i++;
 			const default_avatar_buffer = readFileSync(
 				'src/assets/default_avatar.jpg',
 			);
-			//generate a random string between 8 and 16 lowercase letters
+
+			// generate a random string between 8 and 16 lowercase letters
 			let randomString: string;
 			do {
 				randomString = '';
@@ -72,7 +69,7 @@ export class AuthController {
 					const randomCharCode = Math.floor(Math.random() * 26) + 97; // ASCII code for lowercase 'a' to 'z'
 					randomString += String.fromCharCode(randomCharCode);
 				}
-			} while (this.userService.findByName(randomString));
+			} while (await this.userService.findByName(randomString));
 
 			user = await this.userService.create({
 				login: intraUser.login,
@@ -81,6 +78,7 @@ export class AuthController {
 				name: randomString,
 			});
 		}
+
 		if (!user.dataValues.hasConnected)
 			await this.userService.update({
 				login: user.dataValues.login,
