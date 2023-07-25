@@ -309,9 +309,9 @@ const ChatWindow = ({
 		function clic(payload: String) {
 			if (payload === channel) setUpdate(true);
 		}
-		socket.on("newMessage", clic);
+		socket.on("youGotMail", clic);
 		return () => {
-			socket.off("newMessage", clic);
+			socket.off("youGotMail", clic);
 		};
 	}, []);
 
@@ -375,6 +375,9 @@ const ChatWindow = ({
 									) as HTMLInputElement
 								).value = ""; //TODO: better way to do this
 								setUpdate(true);
+								socket.emit("newMessageDaddy", {
+									channel: channel,
+								});
 							})
 							.catch((err) => {
 								console.log(err);
