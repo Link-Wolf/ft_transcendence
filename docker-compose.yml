@@ -13,6 +13,7 @@ services:
     volumes:
       - server_source:/usr/src/src
       - /usr/src/node_modules
+    restart: always
 
   client:
     container_name: client
@@ -26,6 +27,7 @@ services:
     volumes:
       - client_source:/usr/src/src
       - /usr/src/node_modules
+    restart: always
 
   database:
     container_name: database
@@ -40,6 +42,7 @@ services:
       - lorule
     volumes:
       - database_data:/var/lib/postgresql/data
+    restart: always
 
 networks:
   lorule:
