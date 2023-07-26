@@ -20,7 +20,10 @@ const Chat = () => {
 			{chat ? (
 				<ChatBox toggleChat={toggleChat} />
 			) : (
-				<button className={style.toggleChat} onClick={toggleChat}>
+				<button
+					className={style.toggleChat}
+					onClick={toggleChat}
+				>
 					Toggle Chat
 				</button>
 			)}
@@ -38,7 +41,10 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 
 	return (
 		<div className={style.chatbox}>
-			<button className={style.toggleChat} onClick={() => toggleChat()}>
+			<button
+				className={style.toggleChat}
+				onClick={() => toggleChat()}
+			>
 				Close Chat
 			</button>
 			{!channel ? (
@@ -50,7 +56,10 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					setChannel={setChannel}
 				/>
 			) : (
-				<UserList channel={channel} toggleShowlist={toggleShowlist} />
+				<UserList
+					channel={channel}
+					toggleShowlist={toggleShowlist}
+				/>
 			)}
 		</div>
 	);
@@ -120,7 +129,10 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 				value={data.pass}
 				onChange={handleFormChange}
 			/>
-			<button type='button' onClick={createChannel}>
+			<button
+				type='button'
+				onClick={createChannel}
+			>
 				Creer
 			</button>
 		</form>
@@ -152,7 +164,13 @@ const NewChannel = ({ setChannel }: { setChannel: Function }) => {
 
 	useEffect(() => {
 		if (!joinChannel) return;
-		if (joinChannel.password) return; //TODO: if password, ask for password
+		if (joinChannel.password) {
+			const password = prompt("Password");
+			if (password !== joinChannel.password) {
+				alert("Wrong password");
+				return;
+			}
+		}
 
 		axios
 			.post(
@@ -236,7 +254,10 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				<>
 					{channels.length ? (
 						channels.map((channel, i) => (
-							<button key={i} onClick={() => setChannel(channel)}>
+							<button
+								key={i}
+								onClick={() => setChannel(channel)}
+							>
 								{channel}
 							</button>
 						))
@@ -304,6 +325,7 @@ const ChatWindow = ({
 	const user = useContext(UserContext);
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
+	const [message, setMessage] = useState("");
 
 	useEffect(() => {
 		function clic(payload: String) {
@@ -351,29 +373,29 @@ const ChatWindow = ({
 					/>
 				</div>
 			))}
-			<input id='msg' type='text' placeholder='message' />
+			<input
+				value={message}
+				type='text'
+				placeholder='message'
+				onChange={(e) => {
+					setMessage(e.target.value);
+				}}
+			/>
 			<button
 				onClick={async () => {
 					let printableRegexButNoSpace = /[!-~]/; // Matches any printable ASCII characters except space
-					let content = (
-						document.getElementById("msg") as HTMLInputElement
-					).value; //TODO: yes iCARUS, ik
-					if (printableRegexButNoSpace.test(content))
+					if (printableRegexButNoSpace.test(message))
 						await axios
 							.post(
 								`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
 								{
 									chanName: channel,
-									content: content,
+									content: message,
 									userLogin: user.login,
 								}
 							)
 							.then(() => {
-								(
-									document.getElementById(
-										"msg"
-									) as HTMLInputElement
-								).value = ""; //TODO: better way to do this
+								setMessage("");
 								setUpdate(true);
 								socket.emit("newMessageDaddy", {
 									channel: channel,
