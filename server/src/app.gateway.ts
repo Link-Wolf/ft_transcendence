@@ -14,6 +14,52 @@ import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { Game } from './game/game.entity';
 
+type Player = {
+	paddle: {
+		size: {
+			w: number;
+			h: number;
+		};
+		position: {
+			x: number;
+			y: number;
+		};
+		velocity: {
+			dx: number;
+			dy: number;
+		};
+	};
+	score: number;
+	inputs: number[];
+	login: string;
+};
+
+type Ball = {
+	size: {
+		radius: number;
+	};
+	position: {
+		x: number;
+		y: number;
+	};
+	velocity: {
+		dx: number;
+		dy: number;
+	};
+};
+
+type GameData = {
+	players: Player[];
+	ball: Ball;
+	turn: number;
+	playerToStart: number;
+	isTurnStarted: boolean;
+	gameId: number;
+	lastTimestamp: number;
+	height: number;
+	width: number;
+	isOver: boolean;
+};
 @WebSocketGateway({
 	cors: {
 		origin: '*',
@@ -61,47 +107,9 @@ export class AppGateway
 
 	//TODO: handle properly quittage de game en cours -> plein de trucs a devoir gerer
 
-	private game = {
-		players: [
-			{
-				paddle: {
-					size: {
-						w: 0,
-						h: 0,
-					},
-					position: {
-						x: 0,
-						y: 0,
-					},
-					velocity: {
-						dx: 0,
-						dy: 0,
-					},
-				},
-				score: 0,
-				inputs: [],
-				login: '',
-			},
-			{
-				paddle: {
-					size: {
-						w: 0,
-						h: 0,
-					},
-					position: {
-						x: 0,
-						y: 0,
-					},
-					velocity: {
-						dx: 0,
-						dy: 0,
-					},
-				},
-				score: 0,
-				inputs: [],
-				login: '',
-			},
-		],
+	private game: GameData
+	 = {
+		players: new Player[2];
 		ball: {
 			size: {
 				radius: 0,
