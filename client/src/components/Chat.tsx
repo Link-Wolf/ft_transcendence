@@ -4,6 +4,7 @@ import axios from "axios";
 import { UserContext } from "../App";
 import { Link } from "react-router-dom";
 import style from "../style/Chat.module.scss";
+import { use } from "matter-js";
 
 const Chat = () => {
 	const [chat, setChat] = useState(false);
@@ -311,7 +312,6 @@ const ChatWindow = ({
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
 	const [message, setMessage] = useState("");
-	const [isBlocked, setIsBlocked] = useState(false);
 
 	const [relations, setRelations] = useState<any>({});
 
@@ -329,8 +329,7 @@ const ChatWindow = ({
 	}, []);
 
 	/**
-	 *	@brief	Load the messages from the server and add the users
-	 *		to the relations
+	 *	@brief	Load the messages from the server
 	 */
 	useEffect(() => {
 		axios
@@ -342,16 +341,46 @@ const ChatWindow = ({
 			)
 			.then((res) => {
 				setMessages(res.data);
-				for (let message of res.data) {
-					if (message.userLogin === user.login) continue;
-					if (message.userLogin in relations) continue;
-					setRelations({
-						...relations,
-						[message.userLogin]: {
-							isBlocked: undefined,
-							isFriend: undefined,
-						},
-					});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		setUpdate(false);
+	}, [update]);
+
+	/**
+	 * @brief	Load the relations from the server
+	 */
+	useEffect(() => {
+		for (let message of messages) {
+			if (message.userLogin === user.login) continue;
+			if (message.userLogin in relations) continue;
+			setRelations({
+				...relations,
+				[message.userLogin]: {
+					isBlocked: undefined,
+					isFriend: undefined,
+				},
+			});
+		}
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}` +
+					`://${process.env.REACT_APP_HOSTNAME}` +
+					`:${process.env.REACT_APP_BACKEND_PORT}` +
+					`/api/block/by/${user.login}`
+			)
+			.then((res) => {
+				for (let block of res.data) {
+					if (block.blockedLogin in relations) {
+						setRelations({
+							...relations,
+							[block.blockedLogin]: {
+								...relations[block.blockedLogin],
+								isBlocked: true,
+							},
+						});
+					}
 				}
 			})
 			.then(() => {
@@ -360,45 +389,20 @@ const ChatWindow = ({
 						`${process.env.REACT_APP_PROTOCOL}` +
 							`://${process.env.REACT_APP_HOSTNAME}` +
 							`:${process.env.REACT_APP_BACKEND_PORT}` +
-							`/api/block/by/${user.login}`
+							`/api/friendship/${user.login}`
 					)
 					.then((res) => {
-						for (let block of res.data) {
-							if (block.blockedLogin in relations) {
+						for (let friend of res.data) {
+							if (friend.userLogin in relations) {
 								setRelations({
 									...relations,
-									[block.blockedLogin]: {
-										...relations[block.blockedLogin],
-										isBlocked: true,
+									[friend.userLogin]: {
+										...relations[friend.userLogin],
+										isFriend: true,
 									},
 								});
 							}
 						}
-					})
-					.then(() => {
-						axios
-							.get(
-								`${process.env.REACT_APP_PROTOCOL}` +
-									`://${process.env.REACT_APP_HOSTNAME}` +
-									`:${process.env.REACT_APP_BACKEND_PORT}` +
-									`/api/friendship/${user.login}`
-							)
-							.then((res) => {
-								for (let friend of res.data) {
-									if (friend.userLogin in relations) {
-										setRelations({
-											...relations,
-											[friend.userLogin]: {
-												...relations[friend.userLogin],
-												isFriend: true,
-											},
-										});
-									}
-								}
-							})
-							.catch((err) => {
-								console.log(err);
-							});
 					})
 					.catch((err) => {
 						console.log(err);
@@ -407,8 +411,7 @@ const ChatWindow = ({
 			.catch((err) => {
 				console.log(err);
 			});
-		setUpdate(false);
-	}, [update]);
+	}, [messages]);
 
 	const toggleBlock = (login: string) => {
 		if (relations[login].isBlocked) {
@@ -604,6 +607,7 @@ const Message = ({
 					<button
 						onClick={() => {
 							toggleFriendship(login);
+							toggleBox();
 						}}
 					>
 						{relation.isFriend
@@ -613,6 +617,7 @@ const Message = ({
 					<button
 						onClick={() => {
 							toggleBlock(login);
+							toggleBox();
 						}}
 					>
 						{relation.isBlocked ? "Débloquer" : "Bloquer"}
