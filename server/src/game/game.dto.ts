@@ -3,17 +3,17 @@ import { Modifier } from 'src/modifier/modifier.entity';
 import { User } from 'src/user/user.entity';
 
 export class GameDto {
-    @IsNumber()
-    id?: number;
+	@IsNumber()
+	id?: number;
 
-    @IsBoolean()
-    isRanked: boolean;
+	@IsBoolean()
+	isRanked?: boolean;
 
-    @IsString()
-    @IsNotEmpty()
-    status: string;
+	@IsString()
+	@IsNotEmpty()
+	status?: string;
 
-    users: User[];
+	users?: User[];
 
-    modifiers: Modifier[];
+	modifiers?: Modifier[];
 }
