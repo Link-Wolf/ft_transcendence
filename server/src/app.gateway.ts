@@ -59,6 +59,7 @@ type GameData = {
 	height: number;
 	width: number;
 	isOver: boolean;
+	loop: NodeJS.Timeout;
 };
 @WebSocketGateway({
 	cors: {
@@ -107,36 +108,10 @@ export class AppGateway
 
 	//TODO: handle properly quittage de game en cours -> plein de trucs a devoir gerer
 
-	private game: GameData
-	 = {
-		players: new Player[2];
-		ball: {
-			size: {
-				radius: 0,
-			},
-			position: {
-				x: 0,
-				y: 0,
-			},
-			velocity: {
-				dx: 0,
-				dy: 0,
-			},
-		},
-		turn: 0,
-		playerToStart: 0,
-		isTurnStarted: false,
-		gameId: 0,
-		lastTimestamp: 0,
-		height: 600,
-		width: 800,
-		isOver: false,
-	};
+	private game: GameData[] = [];
 
-	private gameLoop: NodeJS.Timeout | null = null;
-
-	handleInputs() {
-		this.game.players.forEach((player) => {
+	handleInputs(game: GameData) {
+		game.players.forEach((player) => {
 			let inputs = player.inputs;
 			player.paddle.velocity.dy = 0;
 			if (inputs.includes(38) || inputs.includes(87)) {
@@ -150,42 +125,42 @@ export class AppGateway
 		});
 	}
 
-	moveBall(dt: number) {
-		this.game.ball.position.x += this.game.ball.velocity.dx * dt;
-		this.game.ball.position.y += this.game.ball.velocity.dy * dt;
+	moveBall(dt: number, game: GameData) {
+		game.ball.position.x += game.ball.velocity.dx * dt;
+		game.ball.position.y += game.ball.velocity.dy * dt;
 	}
 
-	movePaddles(dt: number) {
-		this.game.players.forEach((player) => {
+	movePaddles(dt: number, game: GameData) {
+		game.players.forEach((player) => {
 			player.paddle.position.y += player.paddle.velocity.dy * dt;
 			if (
 				player.paddle.position.y + player.paddle.size.h / 2 >
-				this.game.height / 2
+				game.height / 2
 			) {
 				player.paddle.position.y =
-					this.game.height / 2 - player.paddle.size.h / 2;
+					game.height / 2 - player.paddle.size.h / 2;
 			}
 			if (
 				player.paddle.position.y - player.paddle.size.h / 2 <
-				-this.game.height / 2
+				-game.height / 2
 			) {
 				player.paddle.position.y =
-					-this.game.height / 2 + player.paddle.size.h / 2;
+					-game.height / 2 + player.paddle.size.h / 2;
 			}
 		});
 	}
 
-	resetBall() {
-		this.game.ball.position.x = 0;
-		this.game.ball.position.y =
-			(this.game.height / 2 - 50) * (this.game.turn % 2 == 0 ? 1 : -1);
-		this.game.ball.velocity.dx = this.game.playerToStart == 0 ? -0.5 : 0.5;
-		this.game.ball.velocity.dy = this.game.turn % 2 == 0 ? 1 : -1;
-		this.game.ball.size.radius = 10;
+	resetBall(game: GameData) {
+		game.ball.position.x = 0;
+		game.ball.position.y =
+			(game.height / 2 - 50) * (game.turn % 2 == 0 ? 1 : -1);
+		game.ball.velocity.dx = game.playerToStart == 0 ? -0.5 : 0.5;
+		game.ball.velocity.dy = game.turn % 2 == 0 ? 1 : -1;
+		game.ball.size.radius = 10;
 	}
 
-	resetPaddles() {
-		this.game.players.forEach((player, i) => {
+	resetPaddles(game: GameData) {
+		game.players.forEach((player, i) => {
 			player.paddle.position.y = 0;
 			player.paddle.velocity.dy = 0;
 			player.paddle.position.x = i == 0 ? -350 : 350;
@@ -194,252 +169,240 @@ export class AppGateway
 		});
 	}
 
-	bounceOnWalls = () => {
+	bounceOnWalls = (game: GameData) => {
 		//get all values in shorter variables
-		const ballY = this.game.ball.position.y;
+		const ballY = game.ball.position.y;
 		const signOfY = Math.sign(ballY);
 		if (signOfY == 0) return;
 
-		const ballX = this.game.ball.position.x;
-		const ballRadius = this.game.ball.size.radius;
+		const ballX = game.ball.position.x;
+		const ballRadius = game.ball.size.radius;
 
 		//check if ball is in wall
 		const ballIsInWall =
-			Math.abs(ballY + ballRadius * signOfY) >
-			Math.abs(this.game.height / 2);
+			Math.abs(ballY + ballRadius * signOfY) > Math.abs(game.height / 2);
 		if (!ballIsInWall) return;
 
 		//	calculate new ball position and velocity
 		// The ball go in direction of x=0
-		const newBallDy = -Math.abs(this.game.ball.velocity.dy) * signOfY;
+		const newBallDy = -Math.abs(game.ball.velocity.dy) * signOfY;
 		// The ball is placed tangent to the wall
-		const newBallY = (this.game.height / 2 - ballRadius) * signOfY;
+		const newBallY = (game.height / 2 - ballRadius) * signOfY;
 		const newBallX =
 			ballX +
-			(this.game.ball.velocity.dx / this.game.ball.velocity.dy) *
-				(signOfY * (this.game.height / 2 - ballRadius) - ballY);
+			(game.ball.velocity.dx / game.ball.velocity.dy) *
+				(signOfY * (game.height / 2 - ballRadius) - ballY);
 
 		//apply new ball position and velocity
-		this.game.ball.velocity.dy = newBallDy;
-		this.game.ball.position.y = newBallY;
-		this.game.ball.position.x = newBallX;
+		game.ball.velocity.dy = newBallDy;
+		game.ball.position.y = newBallY;
+		game.ball.position.x = newBallX;
 	};
 
-	checkCollisions() {
-		this.bounceOnWalls();
-		this.game.players.forEach((player, i) => {
+	checkCollisions(game: GameData) {
+		this.bounceOnWalls(game);
+		game.players.forEach((player, i) => {
 			const paddle = player.paddle;
 			const distBallPaddleX =
-				this.game.ball.position.x -
+				game.ball.position.x -
 				Math.max(
 					paddle.position.x - paddle.size.w / 2,
 					Math.min(
-						this.game.ball.position.x,
+						game.ball.position.x,
 						paddle.position.x + paddle.size.w / 2,
 					),
 				);
 			const distBallPaddleY =
-				this.game.ball.position.y -
+				game.ball.position.y -
 				Math.max(
 					paddle.position.y - paddle.size.h / 2,
 					Math.min(
-						this.game.ball.position.y,
+						game.ball.position.y,
 						paddle.position.y + paddle.size.h / 2,
 					),
 				);
 			const distanceBallPaddleSquared =
 				distBallPaddleX ** 2 + distBallPaddleY ** 2;
 			const isBallInPaddle =
-				distanceBallPaddleSquared < this.game.ball.size.radius ** 2;
+				distanceBallPaddleSquared < game.ball.size.radius ** 2;
 			if (!isBallInPaddle) return;
-			this.game.ball.velocity.dx = 1 - 2 * i;
-			this.game.ball.position.y +=
-				(this.game.ball.velocity.dy *
+			game.ball.velocity.dx = 1 - 2 * i;
+			game.ball.position.y +=
+				(game.ball.velocity.dy *
 					(paddle.position.x +
-						(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
-							Math.sign(this.game.ball.velocity.dx) -
-						this.game.ball.position.x)) /
-				this.game.ball.velocity.dx;
-			this.game.ball.position.x =
+						(paddle.size.w / 2 + game.ball.size.radius / 2) *
+							Math.sign(game.ball.velocity.dx) -
+						game.ball.position.x)) /
+				game.ball.velocity.dx;
+			game.ball.position.x =
 				paddle.position.x +
-				(paddle.size.w / 2 + this.game.ball.size.radius / 2) *
-					Math.sign(this.game.ball.velocity.dx);
-			this.game.ball.velocity.dy =
-				(this.game.ball.position.y - paddle.position.y) /
+				(paddle.size.w / 2 + game.ball.size.radius / 2) *
+					Math.sign(game.ball.velocity.dx);
+			game.ball.velocity.dy =
+				(game.ball.position.y - paddle.position.y) /
 				(paddle.size.h / 2);
 		});
 
 		const checkForScore = (n: number) => {
-			this.game.players[n].score++;
-			this.game.playerToStart = 1 - n;
-			this.game.isTurnStarted = false;
-			this.resetBall();
+			game.players[n].score++;
+			game.playerToStart = 1 - n;
+			game.isTurnStarted = false;
+			this.resetBall(game);
 			// this.resetPaddles();
-			if (this.game.players[n].score >= 11) this.game.isOver = true;
+			if (game.players[n].score >= 11) game.isOver = true;
 		};
 		//score on player 0 goal
-		if (this.game.ball.position.x < -this.game.width / 2) checkForScore(1);
+		if (game.ball.position.x < -game.width / 2) checkForScore(1);
 		// score on player 1 goal
-		if (this.game.ball.position.x > this.game.width / 2) checkForScore(0);
+		if (game.ball.position.x > game.width / 2) checkForScore(0);
 	}
 
-	handleStartTurn() {
-		if (this.game.isTurnStarted) return;
-		let inputs = this.game.players[this.game.playerToStart].inputs;
+	handleStartTurn(game: GameData) {
+		if (game.isTurnStarted) return;
+		let inputs = game.players[game.playerToStart].inputs;
 		if (inputs.includes(32)) {
 			//SPACE
-			this.game.isTurnStarted = true;
-			this.game.turn++;
+			game.isTurnStarted = true;
+			game.turn++;
 		}
 	}
 
+	newGame(gameId: number, player1: string, player2: string): GameData {
+		const width = 800; //TODO: check for modifiers and adapt if needed
+		const height = 600; //TODO: check for modifiers and adapt if needed
+		return {
+			gameId: gameId,
+			players: [
+				{
+					login: player1,
+					score: 0,
+					paddle: {
+						position: { x: -width / 2 + 10, y: 0 },
+						size: { w: 10, h: 50 },
+						velocity: { dx: 0, dy: 0 },
+					},
+					inputs: [],
+				},
+				{
+					login: player2,
+					score: 0,
+					paddle: {
+						position: { x: width / 2 - 10, y: 0 },
+						size: { w: 10, h: 50 },
+						velocity: { dx: 0, dy: 0 },
+					},
+					inputs: [],
+				},
+			],
+			ball: {
+				position: { x: 0, y: 0 },
+				velocity: { dx: 0, dy: 0 },
+				size: { radius: 5 },
+			},
+			width: width,
+			height: height,
+			lastTimestamp: Date.now(),
+			playerToStart: 0,
+			isTurnStarted: false,
+			turn: 0,
+			isOver: false,
+			loop: null,
+		};
+	}
+
 	startGame(gameId: number, player1: string, player2: string) {
-		this.game.gameId = gameId;
-		this.game.players[0].login = player1;
-		this.game.players[1].login = player2;
-		this.resetBall();
-		this.resetPaddles();
-		this.game.lastTimestamp = Date.now();
-		this.gameLoop = setInterval(() => {
+		this.game.length = Math.max(this.game?.length | 0, gameId + 1);
+		this.game[gameId] = this.newGame(gameId, player1, player2);
+		let game = this.game[gameId];
+		this.resetBall(game);
+		this.resetPaddles(game);
+		game.loop = setInterval(() => {
 			//update dt
 			let now = Date.now();
-			let dt = now - this.game.lastTimestamp;
-			this.game.lastTimestamp = now;
+			let dt = now - game.lastTimestamp;
+			game.lastTimestamp = now;
 
 			// check for final score
-			if (
-				this.game.players[0].score >= 11 ||
-				this.game.players[1].score >= 11
-			) {
-				this.game.isOver = true;
+			if (game.players[0].score >= 11 || game.players[1].score >= 11) {
+				game.isOver = true;
 				this.server.to(`game-${gameId}`).emit('gameUpdate', this.game);
-				this.stopGame();
+				this.stopGame(game);
 				return;
 			}
 
 			// if turn is started, update the game
-			this.handleInputs();
-			this.movePaddles(dt);
-			if (this.game.isTurnStarted) {
-				this.moveBall(dt);
-				this.checkCollisions();
-			} else this.handleStartTurn();
-			this.server.to(`game-${gameId}`).emit('gameUpdate', this.game);
+			this.handleInputs(game);
+			this.movePaddles(dt, game);
+			if (game.isTurnStarted) {
+				this.moveBall(dt, game);
+				this.checkCollisions(game);
+			} else this.handleStartTurn(game);
+			this.server.to(`game-${gameId}`).emit('gameUpdate', game);
 		}, 16);
 	}
 
-	stopGame() {
-		clearInterval(this.gameLoop);
-		this.game = {
-			players: [
-				{
-					paddle: {
-						size: {
-							w: 0,
-							h: 0,
-						},
-						position: {
-							x: 0,
-							y: 0,
-						},
-						velocity: {
-							dx: 0,
-							dy: 0,
-						},
-					},
-					score: 0,
-					inputs: [],
-					login: '',
-				},
-				{
-					paddle: {
-						size: {
-							w: 0,
-							h: 0,
-						},
-						position: {
-							x: 0,
-							y: 0,
-						},
-						velocity: {
-							dx: 0,
-							dy: 0,
-						},
-					},
-					score: 0,
-					inputs: [],
-					login: '',
-				},
-			],
-			ball: {
-				size: {
-					radius: 0,
-				},
-				position: {
-					x: 0,
-					y: 0,
-				},
-				velocity: {
-					dx: 0,
-					dy: 0,
-				},
-			},
-			turn: 0,
-			playerToStart: 0,
-			isTurnStarted: false,
-			gameId: 0,
-			lastTimestamp: 0,
-			height: 600,
-			width: 800,
-			isOver: false,
-		};
-	}
+	stopGame(game: GameData) {
+		clearInterval(game.loop);
+		this.game[game.gameId] = null;
+		this.gameService.update({
+			id: game.gameId,
+			status: 'finished',
+		});
+	} //iCARUS, ayagmur, ggiboury, jmathieu, aguemazi. lloison. me
 
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
-		//verifiy the user
+		// //verifiy the user
 		if (!payload.auth) return;
 		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
 		if (!session) return;
 		let user = await this.userService.findByLogin(session.login);
+		if (!user) return;
 
-		//get the user back from his game if he has one
-		let userGame = await this.usergameService.findNotFinishedByLogin(
+		let ongoingGames = await this.gameService.findOngoing(
 			user.dataValues.login,
 		);
-		if (userGame) {
+		if (ongoingGames.length > 0) {
 			client.emit('startGame', {
-				gameId: userGame.gameId,
+				gameId: ongoingGames[0].id,
 				isNew: false,
 			});
-			client.join(`game-${userGame.gameId}`);
+			client.join(`game-${ongoingGames[0].id}`);
 			return;
 		}
 
-		//if there isn't a game waiting for a player, create it
 		let waitingGame = await this.gameService.findWaiting(payload.isRanked);
 		if (!waitingGame) {
 			waitingGame = await this.gameService.create({
 				isRanked: payload.isRanked,
 				status: 'waiting',
-				users: [user],
-				modifiers: [
-					/*TODO: add modifiers from payload*/
-				],
+				users: [],
+				modifiers: [],
 			});
-			client.join(`game-${waitingGame.id}`);
-		} else {
-			//else, join the other player waiting
-			client.join(`game-${waitingGame.id}`);
-			let users = waitingGame.users;
-			users.push(user);
-			waitingGame.$set('users', users);
-			await waitingGame.save();
+		}
+		console.log(waitingGame);
+		waitingGame.$set('users', [...waitingGame.dataValues.users, user]);
+		await waitingGame.save();
+
+		console.log(
+			`User ${user.login} joined game ${waitingGame.id} which has ${waitingGame.dataValues.users.length} users`,
+		);
+		client.join(`game-${waitingGame.id}`);
+
+		if (waitingGame.dataValues.users.length === 2) {
+			await this.gameService.update({
+				id: waitingGame.id,
+				status: 'ongoing',
+			});
+			this.startGame(
+				waitingGame.id,
+				waitingGame.users[0].login,
+				waitingGame.users[1].login,
+			);
 			this.server.to(`game-${waitingGame.id}`).emit('startGame', {
 				gameId: waitingGame.id,
 				isNew: true,
 			});
-			this.startGame(waitingGame.id, users[0].login, users[1].login);
 		}
 	}
 
@@ -455,7 +418,9 @@ export class AppGateway
 
 	@SubscribeMessage('keys')
 	async handleKeys(client: Socket, payload: any): Promise<void> {
-		let player = this.game.players.find((p) => p.login === payload.login);
+		let game = this.game[payload.gameId];
+		if (!game) return;
+		let player = game.players.find((p) => p.login === payload.login);
 		if (!player) return;
 		player.inputs = payload.keys;
 	}

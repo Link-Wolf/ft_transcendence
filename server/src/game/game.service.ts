@@ -4,6 +4,7 @@ import { Game } from './game.entity';
 
 @Injectable()
 export class GameService {
+
 	constructor(
 		@Inject('GAME_REPOSITORY')
 		private readonly gameRepository: typeof Game,
@@ -35,6 +36,30 @@ export class GameService {
 			return await this.gameRepository.findOne<Game>({
 				where: { id: id },
 				include: [{ all: true }],
+			});
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @brief   Find all games that are ongoing with sequelize
+	 * @param   {string} login      The player's login
+	 * @return  {Game[]}            List of games
+	 * @throws  {HttpException}     500 if an error occured
+	 */
+	async findOngoing(login: string): Promise<Game[]> {
+		try {
+			let ret = await this.gameRepository.findAll<Game>({
+				include: [{ all: true }],
+				where: {
+					status: 'ongoing',
+				},
+			});
+			return ret.filter((game) => {
+				return game.users.some((user) => {
+					return user.login == login;
+				});
 			});
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
