@@ -91,7 +91,6 @@ export class BlockService {
 	 */
 	async create(blockDto: BlockDto): Promise<Block> {
 		try {
-			console.log(blockDto);
 			let ret = await this.blockRepository.create<Block>(blockDto);
 			console.log('NON');
 			await ret.$set('blocker', blockDto.blocker);
@@ -111,7 +110,10 @@ export class BlockService {
 	async delete(blockDto: BlockDto): Promise<number> {
 		try {
 			return await this.blockRepository.destroy({
-				where: { blocked: blockDto.blocked, blocker: blockDto.blocker },
+				where: {
+					blockedLogin: blockDto.blockedLogin,
+					blockerLogin: blockDto.blockerLogin,
+				},
 			});
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -207,6 +207,7 @@ export class BlockController {
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
 	 * @response 404 - Not found
+	 * @response 409 - Conflict
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
@@ -223,12 +224,22 @@ export class BlockController {
 		let blocked = await this.userService.findByLogin(blockedLogin);
 		if (!blocked)
 			throw new HttpException('Blocked not found', HttpStatus.NOT_FOUND);
-		return this.blockService.create({
-			blocked: blocked,
-			blocker: blocker,
-			blockedLogin: blockedLogin,
-			blockerLogin: blockerLogin,
-		});
+		if (blockerLogin === blockedLogin)
+			throw new HttpException(
+				'You cannot block yourself',
+				HttpStatus.CONFLICT,
+			);
+		const block = await this.blockService.findBlockByBothLogin(
+			blockerLogin,
+			blockedLogin,
+		);
+		if (!block)
+			return this.blockService.create({
+				blocked: blocked,
+				blocker: blocker,
+				blockedLogin: blockedLogin,
+				blockerLogin: blockerLogin,
+			});
 	}
 
 	/**
