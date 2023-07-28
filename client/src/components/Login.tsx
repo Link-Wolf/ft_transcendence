@@ -52,7 +52,7 @@ const Login = () => {
 	}, [code]);
 
 	/**
-	 * If it's the first time the user is logging in, redirect him to the profile update page
+	 * If it's the first time the user is logging in, redirect him to his profile update page
 	 * Else, if the user is connected, redirect him to the home page
 	 */
 	useEffect(() => {
@@ -60,7 +60,7 @@ const Login = () => {
 		if (errorCode > 0) {
 			navigate(`/error/${errorCode}`);
 		} else if (isFirstTime) {
-			window.location.href = "/profile/update";
+			window.location.href = "/me/update";
 		} else if (isConnected) {
 			window.location.href = "/";
 		}
