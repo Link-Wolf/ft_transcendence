@@ -5,9 +5,9 @@ import { Op } from 'sequelize';
 
 @Injectable()
 export class FriendshipService {
-	constructor (
+	constructor(
 		@Inject('FRIENDSHIP_REPOSITORY')
-		private readonly friendshipRepository: typeof Friendship
+		private readonly friendshipRepository: typeof Friendship,
 	) {}
 
 	/**
@@ -17,9 +17,10 @@ export class FriendshipService {
 	 */
 	async findAll(): Promise<Friendship[]> {
 		try {
-			return await this.friendshipRepository.findAll<Friendship>({ include: [{ all: true }] });
-		}
-		catch (error) {
+			return await this.friendshipRepository.findAll<Friendship>({
+				include: [{ all: true }],
+			});
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -31,22 +32,27 @@ export class FriendshipService {
 	 * @returns {Friendship} The friendship
 	 * @throws {HttpException} 500 if an error occured
 	 */
-	async findByBothFriends(loginA: string, loginB: string): Promise<Friendship> {
+	async findByBothFriends(
+		loginA: string,
+		loginB: string,
+	): Promise<Friendship> {
 		try {
-			return await this.friendshipRepository.findOne<Friendship>({ where: { 
-				[Op.or]: {
-					[Op.and]: [
-						{ sender: loginA },
-						{ receiver: loginB }
-					],
-					[Op.and]: [
-						{ sender: loginB },
-						{ receiver: loginA }
-					]
-				}
-			 }, include: [{ all: true }] });
-		}
-		catch (error) {
+			return await this.friendshipRepository.findOne<Friendship>({
+				where: {
+					[Op.or]: {
+						[Op.and]: [
+							{ senderLogin: loginA },
+							{ receiverLogin: loginB },
+						],
+						[Op.and]: [
+							{ senderLogin: loginB },
+							{ receiverLogin: loginA },
+						],
+					},
+				},
+				include: [{ all: true }],
+			});
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -57,18 +63,16 @@ export class FriendshipService {
 	 * @returns {Friendship[]} The list of friendship invitations
 	 * @throws {HttpException} 500 if an error occured
 	 */
-	async findRequests(login: string): Promise<Friendship[]>
-	{
+	async findRequests(login: string): Promise<Friendship[]> {
 		try {
-			return await this.friendshipRepository.findAll<Friendship>({ 
-				where: { 
+			return await this.friendshipRepository.findAll<Friendship>({
+				where: {
 					sender: login,
-					isPending: true 
+					isPending: true,
 				},
-				include: [{ all: true }]
+				include: [{ all: true }],
 			});
-		}
-		catch (error) {
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -79,18 +83,16 @@ export class FriendshipService {
 	 * @returns {Friendship[]} The list of friendship invitations
 	 * @throws {HttpException} 500 if an error occured
 	 */
-	async findInvitations(login: string): Promise<Friendship[]>
-	{
+	async findInvitations(login: string): Promise<Friendship[]> {
 		try {
-			return await this.friendshipRepository.findAll<Friendship>({ 
-				where: { 
+			return await this.friendshipRepository.findAll<Friendship>({
+				where: {
 					receiver: login,
-					isPending: true
+					isPending: true,
 				},
-				include: [{ all: true }]
+				include: [{ all: true }],
 			});
-		}
-		catch (error) {
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -103,18 +105,14 @@ export class FriendshipService {
 	 */
 	async findFriends(login: string): Promise<Friendship[]> {
 		try {
-			return await this.friendshipRepository.findAll<Friendship>({ 
-				where: { 
-					[Op.or]: [
-						{ sender: login },
-						{ receiver: login }
-					],
-					isPending: false
+			return await this.friendshipRepository.findAll<Friendship>({
+				where: {
+					[Op.or]: [{ sender: login }, { receiver: login }],
+					isPending: false,
 				},
-				include: [{ all: true }]
+				include: [{ all: true }],
 			});
-		}
-		catch (error) {
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -125,15 +123,15 @@ export class FriendshipService {
 	 * @returns {Friendship} The created friendship
 	 * @throws {HttpException} 500 if an error occured
 	 */
-	async create(friendshipDto: FriendshipDto): Promise<Friendship>
-	{
+	async create(friendshipDto: FriendshipDto): Promise<Friendship> {
 		try {
-			let ret = await this.friendshipRepository.create<Friendship>(friendshipDto);
+			let ret = await this.friendshipRepository.create<Friendship>(
+				friendshipDto,
+			);
 			await ret.$set('sender', friendshipDto.sender);
 			await ret.$set('receiver', friendshipDto.receiver);
 			return ret;
-		}
-		catch (error) {
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -146,20 +144,22 @@ export class FriendshipService {
 	 */
 	async update(friendshipDto: FriendshipDto): Promise<number> {
 		try {
-			return (await this.friendshipRepository.update<Friendship>(
-				friendshipDto, { 
-					where: {
-						receiver: friendshipDto.receiver,
-						sender: friendshipDto.sender
-					}
-				}
-			))[0];
-		}
-		catch (error) {
+			return (
+				await this.friendshipRepository.update<Friendship>(
+					friendshipDto,
+					{
+						where: {
+							receiver: friendshipDto.receiver,
+							sender: friendshipDto.sender,
+						},
+					},
+				)
+			)[0];
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	/**
 	 * @brief Delete a friendship
 	 * @param {Friendship} friendship The friendship to delete
@@ -168,10 +168,15 @@ export class FriendshipService {
 	 */
 	async delete(friendship: Friendship): Promise<number> {
 		try {
+			console.log(friendship.dataValues);
 			return await this.friendshipRepository.destroy<Friendship>({
-				where: {...friendship.dataValues}});
-		}
-		catch (error) {
+				// where: { ...friendship.dataValues },
+				where: {
+					senderLogin: friendship.senderLogin,
+					receiverLogin: friendship.receiverLogin,
+				},
+			});
+		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

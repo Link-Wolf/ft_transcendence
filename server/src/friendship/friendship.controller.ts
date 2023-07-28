@@ -132,11 +132,6 @@ export class FriendshipController {
 			loginA,
 			loginB,
 		);
-		if (!ret)
-			throw new HttpException(
-				'Friendship not found',
-				HttpStatus.NOT_FOUND,
-			);
 		return ret;
 	}
 
@@ -211,7 +206,7 @@ export class FriendshipController {
 			isPending: true,
 		});
 	}
-	
+
 	/**
 	 * @brief Accept a friendship invitation
 	 * @param {string} loginA - The first user's login

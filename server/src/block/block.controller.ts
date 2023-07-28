@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	HttpException,
 	HttpStatus,
@@ -17,6 +18,7 @@ import {
 	AdminUserGuard,
 	AdminUserGuardPost,
 } from 'src/guards/admin_user.guard';
+import { AdminUserUserGuard } from 'src/guards/admin_user_user.guard';
 
 @Controller('block')
 export class BlockController {
@@ -167,6 +169,34 @@ export class BlockController {
 	}
 
 	/**
+	 * @brief Get block by both blocker and blocked login
+	 * @param {string} blockerLogin The login of the blocker
+	 * @param {string} blockedLogin The login of the blocked
+	 * @security Clearance admin OR blocker OR blocked
+	 * @return {Block} The block found (or not)
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get(':loginA/:loginB')
+	@UseGuards(AdminUserUserGuard)
+	async findBlockByBothLogin(
+		@Param('loginA') blockerLogin: string,
+		@Param('loginB') blockedLogin: string,
+	): Promise<Block> {
+		let blocker = await this.userService.findByLogin(blockerLogin);
+		let blocked = await this.userService.findByLogin(blockedLogin);
+		if (!blocker || !blocked)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		return this.blockService.findBlockByBothLogin(
+			blockerLogin,
+			blockedLogin,
+		);
+	}
+
+	/**
 	 * @brief Create a new block
 	 * @param {string} blockerLogin The login of the blocker
 	 * @param {string} blockedLogin The login of the blocked
@@ -193,6 +223,42 @@ export class BlockController {
 		let blocked = await this.userService.findByLogin(blockedLogin);
 		if (!blocked)
 			throw new HttpException('Blocked not found', HttpStatus.NOT_FOUND);
-		return this.blockService.create({ blocked: blocked, blocker: blocker });
+		return this.blockService.create({
+			blocked: blocked,
+			blocker: blocker,
+			blockedLogin: blockedLogin,
+			blockerLogin: blockerLogin,
+		});
+	}
+
+	/**
+	 * @brief Delete a block
+	 * @param {string} blockerLogin The login of the blocker
+	 * @param {string} blockedLogin The login of the blocked
+	 * @return {number} The number of deleted blocks
+	 * @security Clearance admin OR blocker
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not found
+	 * @response 500 - Internal Server Error
+	 */
+	@Delete(':login/:blocked')
+	@UseGuards(AdminUserGuard)
+	async delete(
+		@Param('login') blockerLogin: string,
+		@Param('blocked') blockedLogin: string,
+	): Promise<number> {
+		let blocker = await this.userService.findByLogin(blockerLogin);
+		let blocked = await this.userService.findByLogin(blockedLogin);
+		if (!blocker || !blocked)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		let block = await this.blockService.findBlockByBothLogin(
+			blockerLogin,
+			blockedLogin,
+		);
+		if (!block)
+			throw new HttpException('Block not found', HttpStatus.NOT_FOUND);
+		return this.blockService.delete(block);
 	}
 }

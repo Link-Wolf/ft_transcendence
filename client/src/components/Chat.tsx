@@ -20,10 +20,7 @@ const Chat = () => {
 			{chat ? (
 				<ChatBox toggleChat={toggleChat} />
 			) : (
-				<button
-					className={style.toggleChat}
-					onClick={toggleChat}
-				>
+				<button className={style.toggleChat} onClick={toggleChat}>
 					Toggle Chat
 				</button>
 			)}
@@ -41,10 +38,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 
 	return (
 		<div className={style.chatbox}>
-			<button
-				className={style.toggleChat}
-				onClick={() => toggleChat()}
-			>
+			<button className={style.toggleChat} onClick={() => toggleChat()}>
 				Close Chat
 			</button>
 			{!channel ? (
@@ -56,10 +50,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					setChannel={setChannel}
 				/>
 			) : (
-				<UserList
-					channel={channel}
-					toggleShowlist={toggleShowlist}
-				/>
+				<UserList channel={channel} toggleShowlist={toggleShowlist} />
 			)}
 		</div>
 	);
@@ -129,10 +120,7 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 				value={data.pass}
 				onChange={handleFormChange}
 			/>
-			<button
-				type='button'
-				onClick={createChannel}
-			>
+			<button type='button' onClick={createChannel}>
 				Creer
 			</button>
 		</form>
@@ -254,10 +242,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				<>
 					{channels.length ? (
 						channels.map((channel, i) => (
-							<button
-								key={i}
-								onClick={() => setChannel(channel)}
-							>
+							<button key={i} onClick={() => setChannel(channel)}>
 								{channel}
 							</button>
 						))
@@ -326,6 +311,7 @@ const ChatWindow = ({
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
 	const [message, setMessage] = useState("");
+	const [isBlocked, setIsBlocked] = useState(false);
 
 	useEffect(() => {
 		function clic(payload: String) {
@@ -353,6 +339,30 @@ const ChatWindow = ({
 		setUpdate(false);
 	}, [update]);
 
+	const unblockSomeone = (login: String) => {
+		axios
+			.delete(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
+			)
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const blockSomeone = (login: String) => {
+		axios
+			.post(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block`,
+				{
+					userLogin: user.login,
+					blocked: login,
+				}
+			)
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
@@ -370,6 +380,10 @@ const ChatWindow = ({
 						login={message.userLogin}
 						date={message.createdAt}
 						content={message.content}
+						blockSomeone={blockSomeone}
+						unblockSomeone={unblockSomeone}
+						isBlocked={isBlocked}
+						setIsBlocked={setIsBlocked}
 					/>
 				</div>
 			))}
@@ -416,22 +430,131 @@ const Message = ({
 	login,
 	date,
 	content,
+	blockSomeone,
+	unblockSomeone,
+	isBlocked,
+	setIsBlocked,
 }: {
 	login: String;
 	date: String;
 	content: String;
+	blockSomeone: Function;
+	unblockSomeone: Function;
+	isBlocked: Boolean;
+	setIsBlocked: Function;
 }) => {
 	const [isToggleBox, setIsToggleBox] = useState(false);
+	const [friendshipStatus, setFriendshipStatus] = useState("");
+	const user = useContext(UserContext);
 
-	const toggleBox = () => {
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
+			)
+			.then((res) => {
+				if (res.data) {
+					setIsBlocked(true);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
+
+	const toggleBox = async () => {
+		if (login == user.login) return; //TODO: redirect him to its profile maybe ?
+
+		if (!isToggleBox) {
+			//if opening the box, get the friendship status
+			await axios
+				.get(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
+				)
+				.then((res) => {
+					if (res.data) {
+						setFriendshipStatus("friend");
+					} else {
+						setFriendshipStatus("not-friend");
+					}
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} else {
+			//if closing the box, reset the friendship status
+			setFriendshipStatus("");
+		}
 		setIsToggleBox(!isToggleBox);
 	};
+
+	const askForGame = () => {
+		//TODO: ask the other person for game
+		toggleBox();
+	};
+
+	const askForFriendship = async () => {
+		if (friendshipStatus == "friend") {
+			//Delete the friendship
+			await axios
+				.delete(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
+				)
+				.then(() => {
+					setFriendshipStatus("not-friend");
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} else {
+			//TODO: ask for their friendship / accept the pending asked friendship
+		}
+		toggleBox();
+	};
+
+	const blockTheir = async () => {
+		//TODO: block the other person / unblock the other person
+		if (isBlocked) {
+			//Unblock the other person
+			await unblockSomeone(login);
+			setIsBlocked(false);
+		} else {
+			//Block the other person
+			await blockSomeone(login);
+			setIsBlocked(true);
+		}
+		toggleBox();
+	};
+
 	return (
 		<>
-			<button onClick={toggleBox}>{login}</button>
-			{isToggleBox ? <div>Oui</div> : <></>}
+			<button onClick={toggleBox}>
+				{login} {isBlocked ? "(bloqué)" : ""}
+			</button>
+			{isToggleBox ? (
+				friendshipStatus == "" ? (
+					<label>je charge chuut</label> //TODO: <LoadingSmall />
+				) : (
+					<div>
+						<Link to={`/profile/${login}`}>
+							<label>Profil</label>
+						</Link>
+						<button onClick={askForGame}>Faire une partie</button>
+						<button onClick={askForFriendship}>
+							{friendshipStatus == "friend"
+								? "Supprimer l'ami"
+								: "Demander en ami"}
+						</button>
+						<button onClick={blockTheir}>
+							{isBlocked ? "Débloquer" : "Bloquer"}
+						</button>
+					</div>
+				)
+			) : (
+				<></>
+			)}
 			<label>{date}</label>
-			<p>{content}</p>
+			<p>{isBlocked ? "Ce message est masquée" : content}</p>
 		</>
 	);
 };
