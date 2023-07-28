@@ -50,7 +50,7 @@ export class BlockService {
 	async findBlocksBy(login: string): Promise<Block[]> {
 		try {
 			return await this.blockRepository.findAll<Block>({
-				where: { blocker: login },
+				where: { blockerLogin: login },
 				include: [{ all: true }],
 			});
 		} catch (error) {
