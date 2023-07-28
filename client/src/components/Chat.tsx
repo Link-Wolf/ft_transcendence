@@ -313,6 +313,11 @@ const ChatWindow = ({
 	const [message, setMessage] = useState("");
 	const [isBlocked, setIsBlocked] = useState(false);
 
+	const [relations, setRelations] = useState<any>({});
+
+	/**
+	 *	@brief	Listen to the server for new messages
+	 */
 	useEffect(() => {
 		function clic(payload: String) {
 			if (payload === channel) setUpdate(true);
@@ -323,15 +328,81 @@ const ChatWindow = ({
 		};
 	}, []);
 
+	/**
+	 *	@brief	Load the messages from the server and add the users
+	 *		to the relations
+	 */
 	useEffect(() => {
-		if (!update) return;
-
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message/channel/${channel}`
+				`${process.env.REACT_APP_PROTOCOL}` +
+					`://${process.env.REACT_APP_HOSTNAME}` +
+					`:${process.env.REACT_APP_BACKEND_PORT}` +
+					`/api/message/channel/${channel}`
 			)
 			.then((res) => {
 				setMessages(res.data);
+				for (let message of res.data) {
+					if (message.userLogin === user.login) continue;
+					if (message.userLogin in relations) continue;
+					setRelations({
+						...relations,
+						[message.userLogin]: {
+							isBlocked: undefined,
+							isFriend: undefined,
+						},
+					});
+				}
+			})
+			.then(() => {
+				axios
+					.get(
+						`${process.env.REACT_APP_PROTOCOL}` +
+							`://${process.env.REACT_APP_HOSTNAME}` +
+							`:${process.env.REACT_APP_BACKEND_PORT}` +
+							`/api/block/by/${user.login}`
+					)
+					.then((res) => {
+						for (let block of res.data) {
+							if (block.blockedLogin in relations) {
+								setRelations({
+									...relations,
+									[block.blockedLogin]: {
+										...relations[block.blockedLogin],
+										isBlocked: true,
+									},
+								});
+							}
+						}
+					})
+					.then(() => {
+						axios
+							.get(
+								`${process.env.REACT_APP_PROTOCOL}` +
+									`://${process.env.REACT_APP_HOSTNAME}` +
+									`:${process.env.REACT_APP_BACKEND_PORT}` +
+									`/api/friendship/${user.login}`
+							)
+							.then((res) => {
+								for (let friend of res.data) {
+									if (friend.userLogin in relations) {
+										setRelations({
+											...relations,
+											[friend.userLogin]: {
+												...relations[friend.userLogin],
+												isFriend: true,
+											},
+										});
+									}
+								}
+							})
+							.catch((err) => {
+								console.log(err);
+							});
+					})
+					.catch((err) => {
+						console.log(err);
+					});
 			})
 			.catch((err) => {
 				console.log(err);
@@ -339,7 +410,29 @@ const ChatWindow = ({
 		setUpdate(false);
 	}, [update]);
 
-	const unblockSomeone = (login: String) => {
+	const toggleBlock = (login: string) => {
+		if (relations[login].isBlocked) {
+			unblockSomeone(login);
+			setRelations({
+				...relations,
+				[login]: {
+					...relations[login],
+					isBlocked: false,
+				},
+			});
+		} else {
+			blockSomeone(login);
+			setRelations({
+				...relations,
+				[login]: {
+					...relations[login],
+					isBlocked: true,
+				},
+			});
+		}
+	};
+
+	const unblockSomeone = (login: string) => {
 		axios
 			.delete(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
@@ -349,7 +442,7 @@ const ChatWindow = ({
 			});
 	};
 
-	const blockSomeone = (login: String) => {
+	const blockSomeone = (login: string) => {
 		axios
 			.post(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block`,
@@ -361,6 +454,45 @@ const ChatWindow = ({
 			.catch((err) => {
 				console.log(err);
 			});
+	};
+
+	const toggleFriendship = (login: string) => {
+		if (relations[login].isFriend) {
+			unfriendSomeone(login);
+			setRelations({
+				...relations,
+				[login]: {
+					...relations[login],
+					isFriend: false,
+				},
+			});
+		} else {
+			friendSomeone(login);
+			setRelations({
+				...relations,
+				[login]: {
+					...relations[login],
+					isFriend: true,
+				},
+			});
+		}
+	};
+
+	const unfriendSomeone = (login: string) => {
+		axios
+			.delete(
+				`${process.env.REACT_APP_PROTOCOL}` +
+					`://${process.env.REACT_APP_HOSTNAME}` +
+					`:${process.env.REACT_APP_BACKEND_PORT}` +
+					`/api/friendship/${user.login}/${login}`
+			)
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const friendSomeone = (login: string) => {
+		console.log(`${user.login} wants to be friend with ${login}`); //TODO: implement friendship request
 	};
 
 	return (
@@ -380,10 +512,13 @@ const ChatWindow = ({
 						login={message.userLogin}
 						date={message.createdAt}
 						content={message.content}
-						blockSomeone={blockSomeone}
-						unblockSomeone={unblockSomeone}
-						isBlocked={isBlocked}
-						setIsBlocked={setIsBlocked}
+						relation={
+							message.userLogin === user.login
+								? { isBlocked: false, isFriend: false }
+								: relations[message.userLogin]
+						}
+						toggleBlock={toggleBlock}
+						toggleFriendship={toggleFriendship}
 					/>
 				</div>
 			))}
@@ -430,61 +565,22 @@ const Message = ({
 	login,
 	date,
 	content,
-	blockSomeone,
-	unblockSomeone,
-	isBlocked,
-	setIsBlocked,
+	relation,
+	toggleBlock,
+	toggleFriendship,
 }: {
 	login: String;
 	date: String;
 	content: String;
-	blockSomeone: Function;
-	unblockSomeone: Function;
-	isBlocked: Boolean;
-	setIsBlocked: Function;
+	relation: { isBlocked: boolean; isFriend: boolean };
+	toggleBlock: Function;
+	toggleFriendship: Function;
 }) => {
 	const [isToggleBox, setIsToggleBox] = useState(false);
-	const [friendshipStatus, setFriendshipStatus] = useState("");
 	const user = useContext(UserContext);
-
-	useEffect(() => {
-		axios
-			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
-			)
-			.then((res) => {
-				if (res.data) {
-					setIsBlocked(true);
-				}
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}, []);
 
 	const toggleBox = async () => {
 		if (login == user.login) return; //TODO: redirect him to its profile maybe ?
-
-		if (!isToggleBox) {
-			//if opening the box, get the friendship status
-			await axios
-				.get(
-					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
-				)
-				.then((res) => {
-					if (res.data) {
-						setFriendshipStatus("friend");
-					} else {
-						setFriendshipStatus("not-friend");
-					}
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		} else {
-			//if closing the box, reset the friendship status
-			setFriendshipStatus("");
-		}
 		setIsToggleBox(!isToggleBox);
 	};
 
@@ -493,68 +589,38 @@ const Message = ({
 		toggleBox();
 	};
 
-	const askForFriendship = async () => {
-		if (friendshipStatus == "friend") {
-			//Delete the friendship
-			await axios
-				.delete(
-					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
-				)
-				.then(() => {
-					setFriendshipStatus("not-friend");
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		} else {
-			//TODO: ask for their friendship / accept the pending asked friendship
-		}
-		toggleBox();
-	};
-
-	const blockTheir = async () => {
-		//TODO: block the other person / unblock the other person
-		if (isBlocked) {
-			//Unblock the other person
-			await unblockSomeone(login);
-			setIsBlocked(false);
-		} else {
-			//Block the other person
-			await blockSomeone(login);
-			setIsBlocked(true);
-		}
-		toggleBox();
-	};
-
+	if (!relation) return <>loading...</>;
 	return (
 		<>
 			<button onClick={toggleBox}>
-				{login} {isBlocked ? "(bloqué)" : ""}
+				{login} {relation.isBlocked ? "(bloqué)" : ""}
 			</button>
-			{isToggleBox ? (
-				friendshipStatus == "" ? (
-					<label>je charge chuut</label> //TODO: <LoadingSmall />
-				) : (
-					<div>
-						<Link to={`/profile/${login}`}>
-							<label>Profil</label>
-						</Link>
-						<button onClick={askForGame}>Faire une partie</button>
-						<button onClick={askForFriendship}>
-							{friendshipStatus == "friend"
-								? "Supprimer l'ami"
-								: "Demander en ami"}
-						</button>
-						<button onClick={blockTheir}>
-							{isBlocked ? "Débloquer" : "Bloquer"}
-						</button>
-					</div>
-				)
-			) : (
-				<></>
+			{isToggleBox && (
+				<div>
+					<Link to={`/profile/${login}`}>
+						<label>Profil</label>
+					</Link>
+					<button onClick={askForGame}>Faire une partie</button>
+					<button
+						onClick={() => {
+							toggleFriendship(login);
+						}}
+					>
+						{relation.isFriend
+							? "Supprimer l'ami"
+							: "Demander en ami"}
+					</button>
+					<button
+						onClick={() => {
+							toggleBlock(login);
+						}}
+					>
+						{relation.isBlocked ? "Débloquer" : "Bloquer"}
+					</button>
+				</div>
 			)}
 			<label>{date}</label>
-			<p>{isBlocked ? "Ce message est masquée" : content}</p>
+			<p>{relation.isBlocked ? "Ce message est masquée" : content}</p>
 		</>
 	);
 };
