@@ -17,8 +17,9 @@ const Routage = () => {
 			<Header />
 			<Routes>
 				<Route path='/' element={<Home />} />
-				<Route path='/profile/update' element={<Update />} />
-				<Route path='/profile' element={<Profile />} />
+				<Route path='/profile/:login' element={<Profile />} />
+				<Route path='/me/update' element={<Update />} />
+				<Route path='/me' element={<Profile />} />
 				<Route path='/login' element={<Login />} />
 				<Route path='/game' element={<Game />} />
 

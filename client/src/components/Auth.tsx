@@ -36,9 +36,9 @@ const AuthButton = () => {
 
 const ProfileButton = () => {
 	/**
-	 * Redirect the user to the profile page
+	 * Redirect the user to their profile page
 	 */
-	return <Link to='/profile'>Profile</Link>;
+	return <Link to='/me'>Profile</Link>;
 };
 
 export default Auth;
