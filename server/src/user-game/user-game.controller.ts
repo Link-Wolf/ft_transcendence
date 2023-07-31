@@ -54,7 +54,7 @@ export class UserGameController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('game/:id/player/:login')
-	@UseGuards(AdminClearanceGuard) //TODO: suite guards
+	@UseGuards(AdminClearanceGuard)
 	async getByUserAndGame(
 		@Param('id', ParseIntPipe) id: number,
 		@Param('login') login: string,
@@ -107,7 +107,7 @@ export class UserGameController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('game/:id')
-	@UseGuards(UserClearanceGuard) //TODO: suite guards
+	@UseGuards(UserClearanceGuard)
 	async findByGame(
 		@Param('id', ParseIntPipe) id: number,
 	): Promise<UserGame[]> {
@@ -183,7 +183,7 @@ export class UserGameController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Patch('game/:id/player/:login')
-	@UseGuards(AdminClearanceGuard) //TODO: suite guards
+	@UseGuards(AdminClearanceGuard)
 	async update(
 		@Param('id', ParseIntPipe) id: number,
 		@Param('login') login: string,
