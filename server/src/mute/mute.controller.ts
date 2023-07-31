@@ -8,6 +8,7 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
+	Req,
 	UseGuards,
 } from '@nestjs/common';
 import { ChannelService } from 'src/channel/channel.service';
@@ -18,9 +19,11 @@ import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { Mute } from './mute.entity';
 import { ParseDatePipe } from './mute.pipe';
 import { AdminOwnerAdminGuard } from 'src/guards/admin_owner_admin.guard';
+import { Request } from 'express';
 
 @Controller('mute')
 export class MuteController {
+	jwtService: any;
 	constructor(
 		private readonly muteService: MuteService,
 		private readonly membershipService: MembershipService,
@@ -155,8 +158,13 @@ export class MuteController {
 		@Body('chann_name') channelName: string,
 		@Body('end', ParseDatePipe) end: Date,
 		@Body('reason') reason: string,
+		@Req() req: Request,
 	): Promise<Mute> {
-		let me = await this.userService.findByLogin('me' /* TODO: session */);
+		if (!req.cookies.token)
+			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+		const my_login = (await this.jwtService.verify(req.cookies.token))
+			.login;
+		let me = await this.userService.findByLogin(my_login);
 		let user = await this.userService.findByLogin(login);
 		if (!user)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -220,11 +228,18 @@ export class MuteController {
 	 */
 	@Delete(':id')
 	@UseGuards(AdminOwnerAdminGuard)
-	async delete(@Param('id', ParseIntPipe) id: number): Promise<number> {
+	async delete(
+		@Param('id', ParseIntPipe) id: number,
+		@Req() req: Request,
+	): Promise<number> {
 		let ret = await this.muteService.findById(id);
 		if (!ret)
 			throw new HttpException('Mute not found', HttpStatus.NOT_FOUND);
-		let me = await this.userService.findByLogin('me' /* TODO: session */);
+		if (!req.cookies.token)
+			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+		const my_login = (await this.jwtService.verify(req.cookies.token))
+			.login;
+		let me = await this.userService.findByLogin(my_login);
 		let my_membership = await this.membershipService.findByUserAndChannel(
 			me.dataValues.login,
 			ret.dataValues.channelName,
