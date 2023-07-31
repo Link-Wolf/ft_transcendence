@@ -10,12 +10,14 @@ import {
 	Res,
 	UseGuards,
 } from '@nestjs/common';
+const { Image, createCanvas } = require('canvas');
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
 import { JWTService } from './jwt.service';
 import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import { readFileSync } from 'fs';
+import axios from 'axios';
 
 @Controller('auth')
 export class AuthController {
@@ -55,9 +57,32 @@ export class AuthController {
 		// CREATE A NEW USER
 		if (!user) {
 			status = 'registered';
-			const default_avatar_buffer = readFileSync(
-				'src/assets/default_avatar.jpg',
-			);
+			let default_avatar_buffer: string;
+
+			await axios
+				.get(`https://thispersondoesnotexist.com/`)
+				.then((res) => {
+					// default_avatar_buffer = `data:image/*;base64,${res.data}`;
+					console.log(res.data);
+
+					const buffer = Buffer.from(res.data);
+
+					// console.log(buffer);
+
+					const image = new Image();
+					image.src = buffer;
+					const canvas = createCanvas(500, 500);
+					const ctx = canvas.getContext('2d');
+
+					ctx.drawImage(image, 0, 0, 500, 500);
+
+					default_avatar_buffer = canvas.toDataURL().split(',')[1];
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+
+			console.log(default_avatar_buffer);
 
 			// generate a random string between 8 and 16 lowercase letters
 			let randomString: string;
@@ -74,7 +99,7 @@ export class AuthController {
 			user = await this.userService.create({
 				login: intraUser.login,
 				clearance: Number(process.env.USER_CLEARANCE),
-				avatar: default_avatar_buffer.toString('base64'),
+				avatar: default_avatar_buffer,
 				name: randomString,
 			});
 		}

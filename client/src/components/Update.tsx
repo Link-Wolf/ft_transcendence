@@ -27,7 +27,7 @@ const Update = () => {
 					<input type='text' value={form.name} />
 				</div>
 				<div>
-					<PPDisplayer login={user.login} />
+					<PPDisplayer login={user.login} size={400} />
 					<input type='file' />
 				</div>
 				<div>

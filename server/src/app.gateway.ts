@@ -348,7 +348,7 @@ export class AppGateway
 			id: game.gameId,
 			status: 'finished',
 		});
-	} //iCARUS, ayagmur, ggiboury, jmathieu, aguemazi. lloison. me
+	}
 
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
@@ -380,7 +380,6 @@ export class AppGateway
 				modifiers: [],
 			});
 		}
-		console.log(waitingGame);
 		waitingGame.$set('users', [...waitingGame.dataValues.users, user]);
 		await waitingGame.save();
 
@@ -408,12 +407,28 @@ export class AppGateway
 
 	@SubscribeMessage('quitWaitRoom')
 	async handleQuitWaitRoom(client: Socket, payload: any): Promise<void> {
-		// Get the user
-		// If waiting solo
-		////// Yes: delete the game
-		////// Return OK
-		// Else
-		////// Return nop attends
+		if (!payload.auth) {
+			payload.callback({ status: 400 });
+			return;
+		}
+		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
+		if (!session) {
+			payload.callback({ status: 400 });
+			return;
+		}
+		let user = await this.userService.findByLogin(session.login);
+		if (!user) return;
+
+		let waitingGame = await this.gameService.findWaiting(undefined);
+		if (!waitingGame) return;
+
+		if (waitingGame.dataValues.users.length === 1) {
+			await this.gameService.delete(waitingGame.id);
+			payload.callback({ status: 200 });
+			return;
+		}
+
+		payload.callback({ status: 400 });
 	}
 
 	@SubscribeMessage('keys')

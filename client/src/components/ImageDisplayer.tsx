@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-// const Buffer = require("node").Buffer;
-const PPDisplayer = ({ login }: { login: string }) => {
+
+const PPDisplayer = ({ login, size }: { login: string; size: number }) => {
 	const [imageURL, setImageURL] = useState("");
 
 	useEffect(() => {
@@ -10,13 +10,6 @@ const PPDisplayer = ({ login }: { login: string }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
 			)
 			.then((response) => {
-				// let imgString = "";
-				// for (let i = 0; i < response.data.avatar.data.length; i++) {
-				// 	imgString += String.fromCharCode(
-				// 		response.data.avatar.data[i]
-				// 	);
-				// }
-				// const imgb64 = btoa(imgString);
 				setImageURL(`data:image/*;base64,${response.data.avatar}`);
 			})
 			.catch((error) => {
@@ -24,10 +17,12 @@ const PPDisplayer = ({ login }: { login: string }) => {
 			});
 	}, [login]);
 
+	console.log(size);
+
 	return (
 		<div>
 			{imageURL ? (
-				<img src={imageURL} style={{ maxWidth: "300px" }} />
+				<img src={imageURL} style={{ width: size, height: size }} />
 			) : (
 				<p>Loading image...</p>
 			)}

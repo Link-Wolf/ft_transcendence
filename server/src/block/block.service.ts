@@ -70,7 +70,6 @@ export class BlockService {
 		blockedLogin: string,
 	): Promise<Block> {
 		try {
-			console.log(blockerLogin, blockedLogin);
 			return await this.blockRepository.findOne<Block>({
 				where: {
 					blockerLogin: blockerLogin,
@@ -92,7 +91,6 @@ export class BlockService {
 	async create(blockDto: BlockDto): Promise<Block> {
 		try {
 			let ret = await this.blockRepository.create<Block>(blockDto);
-			console.log('NON');
 			await ret.$set('blocker', blockDto.blocker);
 			await ret.$set('blocked', blockDto.blocked);
 			return ret;

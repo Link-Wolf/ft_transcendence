@@ -5,6 +5,7 @@ import { UserContext } from "../App";
 import { Link, redirect } from "react-router-dom";
 import style from "../style/Chat.module.scss";
 import { use } from "matter-js";
+import { PPDisplayer } from "./ImageDisplayer";
 
 const Chat = () => {
 	const [chat, setChat] = useState(false);
@@ -43,15 +44,16 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 				Close Chat
 			</button>
 			{!channel ? (
-				<ChannelList setChannel={setChannel} />
-			) : !showList ? (
+				<>
+					<ChannelList setChannel={setChannel} />
+					<UserList />
+				</>
+			) : (
 				<ChatWindow
 					channel={channel}
 					toggleShowlist={toggleShowlist}
 					setChannel={setChannel}
 				/>
-			) : (
-				<UserList channel={channel} toggleShowlist={toggleShowlist} />
 			)}
 		</div>
 	);
@@ -252,24 +254,16 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	);
 };
 
-const UserList = ({
-	channel,
-	toggleShowlist,
-}: {
-	channel: String;
-	toggleShowlist: Function;
-}) => {
-	const [users, setUsers] = useState<String[]>([]);
+const UserList = () => {
+	const [users, setUsers] = useState<any[]>([]);
 
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/channel/${channel}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user`
 			)
-			.then((res) => {
-				setUsers(
-					res.data.map((membership: any) => membership.userLogin)
-				);
+			.then((response) => {
+				setUsers(response.data);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -278,19 +272,13 @@ const UserList = ({
 
 	return (
 		<div>
-			<button onClick={() => toggleShowlist()}>Back</button>
-			<h1>User List</h1>
-			{users.length ? (
-				users.map((user, i) => (
-					<div key={i}>
-						<Link to={`/profile/${user}`}>{user}</Link>
-					</div>
-				))
-			) : (
-				<div>
-					Tu n'as pas encore de conversations privées bebou sucre
+			<h1>DM List</h1>
+			{users.map((user, i) => (
+				<div key={i}>
+					<PPDisplayer size={100} login={user.login} />
+					{user.login}
 				</div>
-			)}
+			))}
 		</div>
 	);
 };
@@ -312,9 +300,7 @@ const ChatWindow = ({
 	const [relations, setRelations] = useState<any>({});
 	const [avatars, setAvatars] = useState<any>({});
 
-	/**
-	 *	@brief	Listen to the server for new messages
-	 */
+	//	Listen to the server for new messages
 	useEffect(() => {
 		function clic(payload: String) {
 			if (payload === channel) setUpdate(true);
@@ -325,9 +311,7 @@ const ChatWindow = ({
 		};
 	}, []);
 
-	/**
-	 *	@brief	Load the messages from the server
-	 */
+	//	Load the messages from the server
 	useEffect(() => {
 		axios
 			.get(
@@ -345,9 +329,7 @@ const ChatWindow = ({
 		setUpdate(false);
 	}, [update]);
 
-	/**
-	 * @brief	Load the relations from the server
-	 */
+	//Load the relations from the server
 	useEffect(() => {
 		for (let message of messages) {
 			if (message.userLogin === user.login) continue;
@@ -619,7 +601,11 @@ const Message = ({
 	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
-			<img src={`data:image/*;base64,${avatar}`} alt='avatar' />
+			<img
+				src={`data:image/*;base64,${avatar}`}
+				alt='avatar'
+				style={{ width: 40, height: 40 }}
+			/>
 			<button onClick={toggleBox}>
 				{login} {relation.isBlocked ? "(bloqué)" : ""}
 			</button>

@@ -32,7 +32,6 @@ export class UserClearanceGuard implements CanActivate {
 			clearance = user.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (clearance < Number(process.env.USER_CLEARANCE)) {
-			console.log('bah non en fait');
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		}
 		return true;
