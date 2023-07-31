@@ -6,6 +6,7 @@ import axios from "axios";
 import GameRender from "./GameRender/GameRender";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { use } from "matter-js";
+import { redirect } from "react-router-dom";
 
 const Game = () => {
 	const [hasFoundGame, setHasFoundGame] = useState(false);
@@ -45,27 +46,35 @@ const Game = () => {
 	if (!user.clearance || user.clearance === 0)
 		return <ThereIsNotEnoughPermsBro />;
 
-	const isLookingForMatch = () => {
-		//TODO: emit quitRoom et attendre la reponse avant de go back home
+	const cancelSearch = () => {
+		console.log("canceling search");
+		socket.emit(
+			"quitWaitRoom",
+			{
+				auth: Cookies.get("token"),
+			},
+			(res: any) => {
+				console.log("canceling search callback");
+				if (res.status === 200) {
+					setHasFoundGame(false);
+					redirect("/");
+				}
+			}
+		);
 	};
 
-	if (!hasFoundGame)
-		return <WaitingForMatch setLookingForMatch={isLookingForMatch} />;
+	if (!hasFoundGame) return <WaitingForMatch cancelSearch={cancelSearch} />;
 	return <GameRender {...gameInfo} />;
 };
 
-const WaitingForMatch = ({
-	setLookingForMatch,
-}: {
-	setLookingForMatch: Function;
-}) => {
+const WaitingForMatch = ({ cancelSearch }: { cancelSearch: Function }) => {
 	return (
 		<>
 			<div>Recherche en cours . . .</div>
 			<div>*inserer animation de recherche*</div>
 			<button
 				onClick={() => {
-					setLookingForMatch();
+					cancelSearch();
 				}}
 			>
 				Cancel

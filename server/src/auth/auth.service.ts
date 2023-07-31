@@ -35,7 +35,6 @@ export class AuthService {
 						return response.data;
 					})
 					.catch((error) => {
-						console.log('ME');
 						throw new HttpException(
 							'Internal Server Error',
 							HttpStatus.INTERNAL_SERVER_ERROR,
@@ -43,7 +42,6 @@ export class AuthService {
 					});
 			})
 			.catch((error) => {
-				console.log('TOKEN');
 				throw new HttpException(
 					'Internal Server Error',
 					HttpStatus.INTERNAL_SERVER_ERROR,

@@ -10,6 +10,10 @@ up:
 re: env
 	docker-compose up --build
 
+nocache: env
+	docker-compose build --no-cache
+	docker-compose up
+
 clean:
 	docker-compose down
 

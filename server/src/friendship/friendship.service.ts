@@ -168,9 +168,7 @@ export class FriendshipService {
 	 */
 	async delete(friendship: Friendship): Promise<number> {
 		try {
-			console.log(friendship.dataValues);
 			return await this.friendshipRepository.destroy<Friendship>({
-				// where: { ...friendship.dataValues },
 				where: {
 					senderLogin: friendship.senderLogin,
 					receiverLogin: friendship.receiverLogin,
