@@ -85,7 +85,6 @@ export class UserController {
 	async create(
 		@Body('login') login: string,
 		@Body('name') name: string,
-		/* TODO: avatar from blob :) */
 	): Promise<User> {
 		if (!login || !name) {
 			throw new HttpException(
@@ -136,7 +135,6 @@ export class UserController {
 		@Body('hasTFA', ParseBoolPipe) hasTFA?: boolean,
 	): Promise<number> {
 		let user = await this.userService.findByLogin(login);
-		//TODO: check if connected with right account / admin for 403 HTTP status
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
@@ -174,7 +172,6 @@ export class UserController {
 		@UploadedFile() avatar: Express.Multer.File,
 	): Promise<number> {
 		let user = await this.userService.findByLogin(login);
-		//TODO: check if connected with right account / admin for 403 HTTP status
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
