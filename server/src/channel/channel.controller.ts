@@ -137,7 +137,7 @@ export class ChannelController {
 	 * @response 409 - Conflict
 	 * @response 500 - Internal Server Error
 	 */
-	@Post() //TODO: need very much testing cause looks ugly af
+	@Post()
 	@UseGuards(AdminUserGuardPost)
 	async create(
 		@Body('userLogin') ownerLogin: string,

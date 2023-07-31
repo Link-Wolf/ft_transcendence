@@ -221,7 +221,7 @@ export class MessageController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Delete(':id')
-	@UseGuards(AdminClearanceGuard) //TODO: suite guards
+	@UseGuards(AdminClearanceGuard)
 	async deleteMessage(
 		@Param('id', ParseIntPipe) id: number,
 	): Promise<number> {
