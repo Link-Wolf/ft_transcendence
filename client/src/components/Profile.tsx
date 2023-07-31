@@ -3,6 +3,7 @@ import Update from "./Update";
 import { useContext } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
 	const user = useContext(UserContext);
@@ -36,7 +37,7 @@ const Profile = () => {
 			<Stats />
 			<Friends />
 			<Blocked />
-			<Update />
+			<Link to='/me/update'>Update</Link>
 			<button onClick={logout}>Log out</button>
 		</div>
 	);
