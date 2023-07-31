@@ -30,7 +30,7 @@ const Chat = () => {
 };
 
 const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
-	const [channel, setChannel] = useState<String | null>(null);
+	const [channel, setChannel] = useState<string | null>(null);
 	const [showList, setShowList] = useState(false);
 
 	const toggleShowlist = () => {
@@ -314,6 +314,7 @@ const ChatWindow = ({
 	const [message, setMessage] = useState("");
 
 	const [relations, setRelations] = useState<any>({});
+	const [avatars, setAvatars] = useState<any>({});
 
 	/**
 	 *	@brief	Listen to the server for new messages
@@ -358,8 +359,8 @@ const ChatWindow = ({
 			setRelations({
 				...relations,
 				[message.userLogin]: {
-					isBlocked: undefined,
-					isFriend: undefined,
+					isBlocked: false,
+					isFriend: false,
 				},
 			});
 		}
@@ -371,16 +372,15 @@ const ChatWindow = ({
 					`/api/block/by/${user.login}`
 			)
 			.then((res) => {
+				let blocked = {};
 				for (let block of res.data) {
-					if (block.blockedLogin in relations) {
-						setRelations({
-							...relations,
-							[block.blockedLogin]: {
-								...relations[block.blockedLogin],
-								isBlocked: true,
-							},
-						});
-					}
+					setRelations({
+						...relations,
+						[block.blockedLogin]: {
+							...relations[block.blockedLogin],
+							isBlocked: true,
+						},
+					});
 				}
 			})
 			.then(() => {
@@ -393,15 +393,13 @@ const ChatWindow = ({
 					)
 					.then((res) => {
 						for (let friend of res.data) {
-							if (friend.userLogin in relations) {
-								setRelations({
-									...relations,
-									[friend.userLogin]: {
-										...relations[friend.userLogin],
-										isFriend: true,
-									},
-								});
-							}
+							setRelations({
+								...relations,
+								[friend.userLogin]: {
+									...relations[friend.userLogin],
+									isFriend: true,
+								},
+							});
 						}
 					})
 					.catch((err) => {
@@ -412,6 +410,25 @@ const ChatWindow = ({
 				console.log(err);
 			});
 	}, [messages]);
+
+	useEffect(() => {
+		for (let login in { ...relations, [user.login]: {} }) {
+			axios
+				.get(
+					`${process.env.REACT_APP_PROTOCOL}` +
+						`://${process.env.REACT_APP_HOSTNAME}` +
+						`:${process.env.REACT_APP_BACKEND_PORT}` +
+						`/api/user/${login}`
+				)
+				.then((res) => {
+					setAvatars({
+						...avatars,
+						[login]: res.data.avatar,
+					});
+				})
+				.catch(() => console.log("error"));
+		}
+	}, [relations]);
 
 	const toggleBlock = (login: string) => {
 		if (relations[login].isBlocked) {
@@ -498,6 +515,36 @@ const ChatWindow = ({
 		console.log(`${user.login} wants to be friend with ${login}`); //TODO: implement friendship request
 	};
 
+	const sendMessage = async () => {
+		let printableRegexButNoSpace = /[!-~]/; // Matches any printable ASCII characters except space
+		if (printableRegexButNoSpace.test(message))
+			await axios
+				.post(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
+					{
+						chanName: channel,
+						content: message,
+						userLogin: user.login,
+					}
+				)
+				.then(() => {
+					setMessage("");
+					setUpdate(true);
+					socket.emit("newMessageDaddy", {
+						channel: channel,
+					});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+	};
+
+	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			sendMessage();
+		}
+	};
+
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
@@ -517,9 +564,13 @@ const ChatWindow = ({
 						content={message.content}
 						relation={
 							message.userLogin === user.login
-								? { isBlocked: false, isFriend: false }
+								? {
+										isBlocked: false,
+										isFriend: false,
+								  }
 								: relations[message.userLogin]
 						}
+						avatar={avatars[message.userLogin]}
 						toggleBlock={toggleBlock}
 						toggleFriendship={toggleFriendship}
 					/>
@@ -532,34 +583,9 @@ const ChatWindow = ({
 				onChange={(e) => {
 					setMessage(e.target.value);
 				}}
+				onKeyDown={handleKeyPress}
 			/>
-			<button
-				onClick={async () => {
-					let printableRegexButNoSpace = /[!-~]/; // Matches any printable ASCII characters except space
-					if (printableRegexButNoSpace.test(message))
-						await axios
-							.post(
-								`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
-								{
-									chanName: channel,
-									content: message,
-									userLogin: user.login,
-								}
-							)
-							.then(() => {
-								setMessage("");
-								setUpdate(true);
-								socket.emit("newMessageDaddy", {
-									channel: channel,
-								});
-							})
-							.catch((err) => {
-								console.log(err);
-							});
-				}}
-			>
-				send message
-			</button>
+			<button onClick={sendMessage}>send message</button>
 		</div>
 	);
 };
@@ -569,13 +595,15 @@ const Message = ({
 	date,
 	content,
 	relation,
+	avatar,
 	toggleBlock,
 	toggleFriendship,
 }: {
-	login: String;
-	date: String;
-	content: String;
+	login: string;
+	date: string;
+	content: string;
 	relation: { isBlocked: boolean; isFriend: boolean };
+	avatar: string;
 	toggleBlock: Function;
 	toggleFriendship: Function;
 }) => {
@@ -592,9 +620,10 @@ const Message = ({
 		toggleBox();
 	};
 
-	if (!relation) return <>loading...</>;
+	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
+			<img src={`data:image/*;base64,${avatar}`} alt='avatar' />
 			<button onClick={toggleBox}>
 				{login} {relation.isBlocked ? "(bloqué)" : ""}
 			</button>
@@ -611,7 +640,7 @@ const Message = ({
 						}}
 					>
 						{relation.isFriend
-							? "Supprimer l'ami"
+							? "Message privé"
 							: "Demander en ami"}
 					</button>
 					<button
