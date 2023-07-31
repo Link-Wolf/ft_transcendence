@@ -27,19 +27,6 @@ const Game = () => {
 			setHasFoundGame(true);
 		};
 
-		socket.emit("joinWaitRoom", {
-			auth: Cookies.get("token"),
-			isRanked: true, //TODO: add option for ranked mode
-		});
-
-		socket.on("startGame", startGame);
-
-		return () => {
-			socket.off("startGame", startGame);
-		};
-	}, []);
-
-	useEffect(() => {
 		let loop = setInterval(() => {
 			socket.emit("joinWaitRoom", {
 				auth: Cookies.get("token"),
@@ -47,7 +34,10 @@ const Game = () => {
 			});
 		}, 1000);
 
+		socket.on("startGame", startGame);
+
 		return () => {
+			socket.off("startGame", startGame);
 			clearInterval(loop);
 		};
 	}, []);

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import socket from "../socket";
 import axios from "axios";
 import { UserContext } from "../App";
-import { Link } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
 import style from "../style/Chat.module.scss";
 import { use } from "matter-js";
 
@@ -58,10 +58,6 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 };
 
 const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
-	//TODO: better working because arborescence tout ca
-	//et TODO: tant que tu passes par la y a les trucs de genre quand tu creer
-	//un channel et que ca back ca affiche pas dans la liste le nouveau channel
-	//genre faut refresh le composant tout ca..
 	const user = useContext(UserContext);
 	const [isChannel, setNewChannel] = useState(false);
 	const [showList, setShowList] = useState(false);
@@ -611,7 +607,7 @@ const Message = ({
 	const user = useContext(UserContext);
 
 	const toggleBox = async () => {
-		if (login == user.login) return; //TODO: redirect him to its profile maybe ?
+		if (login == user.login) redirect("/me");
 		setIsToggleBox(!isToggleBox);
 	};
 

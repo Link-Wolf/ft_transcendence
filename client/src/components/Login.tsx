@@ -44,7 +44,7 @@ const Login = () => {
 				setIsConnected(!res.data.needToTFA);
 			})
 			.catch((error) => {
-				setErrorCode(500); // TODO: get the error code from the backend
+				setErrorCode(error.response.status);
 			})
 			.finally(() => {
 				setDone(true);
