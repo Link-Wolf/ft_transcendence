@@ -11,13 +11,12 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 // const { Image, createCanvas } = require('canvas');
-import { Image, createCanvas, loadImage } from 'canvas';
+import {, createCanvas, loadImage } from 'canvas';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
 import { JWTService } from './jwt.service';
 import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
-import { readFileSync } from 'fs';
 import axios from 'axios';
 
 @Controller('auth')
@@ -65,28 +64,15 @@ export class AuthController {
 					responseType: 'arraybuffer',
 				})
 				.then(async (res) => {
-					// default_avatar_buffer = `data:image/*;base64,${res.data}`;
-
 					const buffer = Buffer.from(res.data);
-
-					// console.log(buffer);
-
 					const image = await loadImage(buffer);
 					const canvas = createCanvas(500, 500);
-					console.log('before');
 					canvas.getContext('2d').drawImage(image, 0, 0, 500, 500);
-
-					console.log('after');
-
 					default_avatar_buffer = canvas.toDataURL().split(',')[1];
-
-					// image.src = default_avatar_buffer;
 				})
 				.catch((err) => {
 					console.log(err);
 				});
-
-			// console.log(default_avatar_buffer);
 
 			// generate a random string between 8 and 16 lowercase letters
 			let randomString: string;
