@@ -10,7 +10,8 @@ import {
 	Res,
 	UseGuards,
 } from '@nestjs/common';
-const { Image, createCanvas } = require('canvas');
+// const { Image, createCanvas } = require('canvas');
+import { Image, createCanvas, loadImage } from 'canvas';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
@@ -60,29 +61,32 @@ export class AuthController {
 			let default_avatar_buffer: string;
 
 			await axios
-				.get(`https://thispersondoesnotexist.com/`)
-				.then((res) => {
+				.get(`https://thispersondoesnotexist.com/`, {
+					responseType: 'arraybuffer',
+				})
+				.then(async (res) => {
 					// default_avatar_buffer = `data:image/*;base64,${res.data}`;
-					console.log(res.data);
 
 					const buffer = Buffer.from(res.data);
 
 					// console.log(buffer);
 
-					const image = new Image();
-					image.src = buffer;
+					const image = await loadImage(buffer);
 					const canvas = createCanvas(500, 500);
-					const ctx = canvas.getContext('2d');
+					console.log('before');
+					canvas.getContext('2d').drawImage(image, 0, 0, 500, 500);
 
-					ctx.drawImage(image, 0, 0, 500, 500);
+					console.log('after');
 
 					default_avatar_buffer = canvas.toDataURL().split(',')[1];
+
+					// image.src = default_avatar_buffer;
 				})
 				.catch((err) => {
 					console.log(err);
 				});
 
-			console.log(default_avatar_buffer);
+			// console.log(default_avatar_buffer);
 
 			// generate a random string between 8 and 16 lowercase letters
 			let randomString: string;
