@@ -11,7 +11,7 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 // const { Image, createCanvas } = require('canvas');
-import {, createCanvas, loadImage } from 'canvas';
+import { createCanvas, loadImage } from 'canvas';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
