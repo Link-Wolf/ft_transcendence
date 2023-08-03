@@ -17,8 +17,6 @@ const PPDisplayer = ({ login, size }: { login: string; size: number }) => {
 			});
 	}, [login]);
 
-	console.log(size);
-
 	return (
 		<div>
 			{imageURL ? (

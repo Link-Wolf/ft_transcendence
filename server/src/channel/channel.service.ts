@@ -136,6 +136,30 @@ export class ChannelService {
 	}
 
 	/**
+	 * @brief Get all private channels where the login's user is a member
+	 * @param {string} login The user's login
+	 * @return {Channel[]} All private channels of the user
+	 * @throws {HttpException} 500 - Internal server error
+	 */
+	async findDM(login: string): Promise<Channel[]> {
+		try {
+			let channels = await this.channelRepository.findAll<Channel>({
+				where: { isPrivate: true },
+				include: [{ all: true }],
+			});
+			return channels.filter(
+				(channel) =>
+					channel.dataValues.memberships.filter(
+						(membership) =>
+							membership.dataValues.userLogin === login,
+					).length > 0,
+			);
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
 	 * @brief Create a channel
 	 * @param {ChannelDto} channelDto The channel to create
 	 * @return {Channel} The created channel

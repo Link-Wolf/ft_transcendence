@@ -46,7 +46,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 			{!channel ? (
 				<>
 					<ChannelList setChannel={setChannel} />
-					<UserList />
+					<UserList setChannel={setChannel} />
 				</>
 			) : (
 				<ChatWindow
@@ -61,7 +61,6 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 
 const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 	const user = useContext(UserContext);
-	const [isChannel, setNewChannel] = useState(false);
 	const [showList, setShowList] = useState(false);
 	const [data, setData] = useState({ name: "", pass: "" });
 
@@ -254,16 +253,25 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	);
 };
 
-const UserList = () => {
-	const [users, setUsers] = useState<any[]>([]);
+const UserList = ({ setChannel }: { setChannel: Function }) => {
+	const [memberships, setMemberships] = useState<any[]>([]);
+	const context = useContext(UserContext);
 
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/dm/${context.login}`
 			)
 			.then((response) => {
-				setUsers(response.data);
+				//get all memberships from dm channels with current user
+				let memberships = response.data.map((channel: any) => {
+					return channel.memberships.filter(
+						(membership: any) =>
+							membership.userLogin !== context.login
+					)[0];
+				});
+				console.log(memberships);
+				setMemberships(memberships);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -273,10 +281,10 @@ const UserList = () => {
 	return (
 		<div>
 			<h1>DM List</h1>
-			{users.map((user, i) => (
-				<div key={i}>
-					<PPDisplayer size={100} login={user.login} />
-					{user.login}
+			{memberships.map((membership, i) => (
+				<div key={i} onClick={() => setChannel(membership.channelName)}>
+					<PPDisplayer size={100} login={membership.userLogin} />
+					{membership.userLogin}
 				</div>
 			))}
 		</div>
@@ -288,7 +296,7 @@ const ChatWindow = ({
 	toggleShowlist,
 	setChannel,
 }: {
-	channel: String;
+	channel: string;
 	toggleShowlist: Function;
 	setChannel: Function;
 }) => {
@@ -296,9 +304,50 @@ const ChatWindow = ({
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
 	const [message, setMessage] = useState("");
-
 	const [relations, setRelations] = useState<any>({});
 	const [avatars, setAvatars] = useState<any>({});
+	const [canSendMessage, setCanSendMessage] = useState(false);
+
+	useEffect(() => {
+		if (channel[0] === "_") {
+			axios
+				.get(
+					`${process.env.REACT_APP_PROTOCOL}` +
+						`://${process.env.REACT_APP_HOSTNAME}` +
+						`:${process.env.REACT_APP_BACKEND_PORT}` +
+						`/api/block/of/${user.login}`
+				)
+				.then((res) => {
+					setCanSendMessage(
+						!res.data.some(
+							(blocker: any) =>
+								blocker.blockerLogin ===
+									channel.slice(1).split("&")[0] ||
+								blocker.blockerLogin ===
+									channel.slice(1).split("&")[1]
+						)
+					);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} else {
+			axios
+				.get(
+					`${process.env.REACT_APP_PROTOCOL}` +
+						`://${process.env.REACT_APP_HOSTNAME}` +
+						`:${process.env.REACT_APP_BACKEND_PORT}` +
+						`/api/mute/user/${user.login}/channel/${channel}`
+				)
+				.then((res) => {
+					setCanSendMessage(res.data.length === 0);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
+		setUpdate(false);
+	}, [update]);
 
 	//	Listen to the server for new messages
 	useEffect(() => {
@@ -435,6 +484,11 @@ const ChatWindow = ({
 			.delete(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
 			)
+			.then(() => {
+				socket.emit("newMessageDaddy", {
+					channel: channel,
+				});
+			})
 			.catch((err) => {
 				console.log(err);
 			});
@@ -449,6 +503,11 @@ const ChatWindow = ({
 					blocked: login,
 				}
 			)
+			.then(() => {
+				socket.emit("newMessageDaddy", {
+					channel: channel,
+				});
+			})
 			.catch((err) => {
 				console.log(err);
 			});
@@ -494,6 +553,7 @@ const ChatWindow = ({
 	};
 
 	const sendMessage = async () => {
+		if (!canSendMessage) return;
 		let printableRegexButNoSpace = /[!-~]/; // Matches any printable ASCII characters except space
 		if (printableRegexButNoSpace.test(message))
 			await axios
@@ -513,7 +573,10 @@ const ChatWindow = ({
 					});
 				})
 				.catch((err) => {
-					console.log(err);
+					if (err.response.status === 403) {
+						alert("You are blocked from this channel");
+					}
+					// console.log(err);
 				});
 	};
 
@@ -523,47 +586,68 @@ const ChatWindow = ({
 		}
 	};
 
+	const getNameOfTheOther = (channel: string) => {
+		let names = channel.split("_")[1].split("&");
+		return names[0] === user.login ? names[1] : names[0];
+	};
+
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
-			<button
-				onClick={() => {
-					toggleShowlist();
-				}}
-			>
-				User List
-			</button>
-			<h1>{channel}</h1>
-			{messages.map((message, i) => (
-				<div key={i}>
-					<Message
-						login={message.userLogin}
-						date={message.createdAt}
-						content={message.content}
-						relation={
-							message.userLogin === user.login
-								? {
-										isBlocked: false,
-										isFriend: false,
-								  }
-								: relations[message.userLogin]
-						}
-						avatar={avatars[message.userLogin]}
-						toggleBlock={toggleBlock}
-						toggleFriendship={toggleFriendship}
-					/>
-				</div>
-			))}
+			{channel[0] !== "_" && (
+				<button
+					onClick={() => {
+						toggleShowlist();
+					}}
+				>
+					User List
+				</button>
+			)}
+			<h1>{channel[0] !== "_" ? channel : getNameOfTheOther(channel)}</h1>
+			{messages
+				.sort((m1, m2) => {
+					return (
+						new Date(m1.createdAt).getTime() -
+						new Date(m2.createdAt).getTime()
+					);
+				})
+				.map((message, i) => (
+					<div key={i}>
+						<Message
+							login={message.userLogin}
+							date={message.createdAt}
+							content={message.content}
+							relation={
+								message.userLogin === user.login
+									? {
+											isBlocked: false,
+											isFriend: false,
+									  }
+									: relations[message.userLogin]
+							}
+							avatar={avatars[message.userLogin]}
+							toggleBlock={toggleBlock}
+							toggleFriendship={toggleFriendship}
+						/>
+					</div>
+				))}
 			<input
 				value={message}
 				type='text'
-				placeholder='message'
+				placeholder={
+					canSendMessage
+						? "Type your message here..."
+						: "You cannot send messages here"
+				}
+				disabled={!canSendMessage}
 				onChange={(e) => {
 					setMessage(e.target.value);
 				}}
 				onKeyDown={handleKeyPress}
 			/>
-			<button onClick={sendMessage}>send message</button>
+			<button onClick={sendMessage} disabled={!canSendMessage}>
+				Send
+			</button>
 		</div>
 	);
 };
@@ -606,9 +690,13 @@ const Message = ({
 				alt='avatar'
 				style={{ width: 40, height: 40 }}
 			/>
-			<button onClick={toggleBox}>
-				{login} {relation.isBlocked ? "(bloqué)" : ""}
-			</button>
+			{user.login !== login ? (
+				<button onClick={toggleBox}>
+					{login} {relation.isBlocked ? "(bloqué)" : ""}
+				</button>
+			) : (
+				<label>{login}</label>
+			)}
 			{isToggleBox && (
 				<div>
 					<Link to={`/profile/${login}`}>
@@ -635,7 +723,20 @@ const Message = ({
 					</button>
 				</div>
 			)}
-			<label>{date}</label>
+			<label>
+				{new Date(date).toLocaleDateString() ===
+				new Date().toLocaleDateString()
+					? new Date(date).toISOString().slice(11, 16) //if today, get an ISO string (YYYY-MM-DDTHH:mm:ss.sssZ) and slice it to only get HH:mm
+					: new Date(date)
+							.toLocaleString("fr-FR", {
+								hour: "2-digit",
+								minute: "2-digit",
+								day: "2-digit",
+								month: "2-digit",
+								year: "2-digit",
+							})
+							.replace(",", "")}
+			</label>
 			<p>{relation.isBlocked ? "Ce message est masquée" : content}</p>
 		</>
 	);

@@ -32,10 +32,13 @@ export class MembershipService {
 	 */
 	async findByUser(login: string): Promise<Membership[]> {
 		try {
-			return await this.membershipRepository.findAll<Membership>({
+			const ret = await this.membershipRepository.findAll<Membership>({
 				where: { userLogin: login },
 				include: [{ all: true }],
 			});
+			return ret.filter(
+				(m) => !m.dataValues.channel.dataValues.isPrivate,
+			);
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

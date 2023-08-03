@@ -24,6 +24,7 @@ import {
 	AdminChannelusersGuardCookies,
 	AdminChannelusersGuardPost,
 } from 'src/guards/admin_channelusers.guard';
+import { BlockService } from 'src/block/block.service';
 
 @Controller('message')
 export class MessageController {
@@ -34,6 +35,7 @@ export class MessageController {
 		private readonly membershipService: MembershipService,
 		private readonly banService: BanService,
 		private readonly muteService: MuteService,
+		private readonly blockService: BlockService,
 	) {}
 
 	/**
@@ -189,6 +191,17 @@ export class MessageController {
 				'User is banned from the channel',
 				HttpStatus.FORBIDDEN,
 			);
+		if (
+			channel.isPrivate ||
+			(await this.blockService.findBlockersOf(userLogin)).some(
+				(block) =>
+					block.dataValues.blockerLogin ===
+						chanName.substring(1).split('_')[0] ||
+					block.dataValues.blockerLogin ===
+						chanName.substring(1).split('_')[1],
+			)
+		)
+			throw new HttpException('User is blocked', HttpStatus.FORBIDDEN);
 		let mute = await this.muteService.findByLoginAndChannel(
 			userLogin,
 			chanName,

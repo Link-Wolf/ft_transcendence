@@ -7,6 +7,7 @@ import { BanModule } from 'src/ban/ban.module';
 import { MuteModule } from 'src/mute/mute.module';
 import { UserModule } from 'src/user/user.module';
 import { ChannelModule } from 'src/channel/channel.module';
+import { BlockModule } from 'src/block/block.module';
 
 @Module({
 	controllers: [MessageController],
@@ -18,6 +19,7 @@ import { ChannelModule } from 'src/channel/channel.module';
 		MembershipModule,
 		BanModule,
 		MuteModule,
+		BlockModule,
 	],
 })
 export class MessageModule {}
