@@ -57,7 +57,7 @@ export class PrivateMessageController {
 			isPrivate: true,
 			name: `_${[me, otherMember].sort()[0]}&${
 				[me, otherMember].sort()[1]
-			}`, //NOTE: _loginA&loginB
+			}`, //NOTE:  loginA&loginB
 		});
 		await this.membershipService.create({ user: me, channel: channel });
 		await this.membershipService.create({

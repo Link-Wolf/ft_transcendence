@@ -54,7 +54,7 @@ export class BlockController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('of/:login')
-	@UseGuards(AdminClearanceGuard)
+	@UseGuards(AdminUserGuard)
 	async findBlockersOf(@Param('login') login: string): Promise<Block[]> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);

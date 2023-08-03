@@ -46,7 +46,6 @@ export class AdminOwnerAdminGuard implements CanActivate {
 			jwt_data.login,
 			channel,
 		);
-		//TODO: tester
 		if (isAdminOfChannel) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else if (isOwnerOfChannel) return true;

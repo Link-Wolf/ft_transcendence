@@ -20,6 +20,7 @@ import { Mute } from './mute.entity';
 import { ParseDatePipe } from './mute.pipe';
 import { AdminOwnerAdminGuard } from 'src/guards/admin_owner_admin.guard';
 import { Request } from 'express';
+import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guard';
 
 @Controller('mute')
 export class MuteController {
@@ -113,18 +114,18 @@ export class MuteController {
 	 * @param {string} login The user login
 	 * @param {string} channelName The channel name
 	 * @return {Mute[]} The mutes
-	 * @security Admin only OR channel admin
+	 * @security Admin only OR channel admin OR user himself
 	 * @response 200 - OK
 	 * @response 401 - Unauthorized
 	 * @response 403 - Forbidden
 	 * @response 404 - Not found
 	 * @response 500 - Internal Server Error
 	 */
-	@Get('user/:login/channel/:channelName')
-	@UseGuards(AdminOwnerAdminGuard)
+	@Get('user/:login/channel/:chann_name')
+	@UseGuards(AdminOwnerAdminUserGuard)
 	async findByUserAndChannel(
 		@Param('login') login: string,
-		@Param('channelName') channelName: string,
+		@Param('chann_name') channelName: string,
 	): Promise<Mute[]> {
 		const user = await this.userService.findByLogin(login);
 		if (!user)

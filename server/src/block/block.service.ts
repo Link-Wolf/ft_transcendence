@@ -33,7 +33,7 @@ export class BlockService {
 	async findBlockersOf(login: string): Promise<Block[]> {
 		try {
 			return await this.blockRepository.findAll<Block>({
-				where: { blocked: login },
+				where: { blockedLogin: login },
 				include: [{ all: true }],
 			});
 		} catch (error) {

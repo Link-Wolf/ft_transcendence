@@ -124,6 +124,26 @@ export class ChannelController {
 	}
 
 	/**
+	 * @brief Get all private channels of a user
+	 * @param {string} login The user's login
+	 * @returns {Channel[]} All private channels of the user
+	 * @security Clearance admin OR user himself
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('dm/:login')
+	@UseGuards(AdminUserGuard)
+	async getDM(@Param('login') login: string): Promise<Channel[]> {
+		let user = await this.userService.findByLogin(login);
+		if (!user)
+			throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
+		return await this.channelService.findDM(login);
+	}
+
+	/**
 	 * @brief Create a channel
 	 * @param {string} ownerLogin The owner's login
 	 * @param {string} name The channel name
