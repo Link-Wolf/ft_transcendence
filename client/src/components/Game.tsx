@@ -52,6 +52,7 @@ const Game = () => {
 			"quitWaitRoom",
 			{
 				auth: Cookies.get("token"),
+				isRanked: true, //TODO: add option for ranked mode
 			},
 			(res: any) => {
 				console.log("canceling search callback");
