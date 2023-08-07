@@ -6,7 +6,7 @@ import axios from "axios";
 import GameRender from "./GameRender/GameRender";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { use } from "matter-js";
-import { redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const Game = () => {
 	const [hasFoundGame, setHasFoundGame] = useState(false);
@@ -18,6 +18,7 @@ const Game = () => {
 		players: [],
 	});
 	const user = useContext(UserContext);
+	const [mustGoHome, setMustGoHome] = useState(false);
 
 	//listen to history or smth to send quitRoom (/quitGame) when leaving the page
 
@@ -55,15 +56,17 @@ const Game = () => {
 				isRanked: true, //TODO: add option for ranked mode
 			},
 			(res: any) => {
-				console.log("canceling search callback");
-				if (res.status === 200) {
+				console.log("canceling search callback", res);
+				if (res === 200) {
+					console.log("search canceled");
 					setHasFoundGame(false);
-					redirect("/");
+					setMustGoHome(true);
 				}
 			}
 		);
 	};
 
+	if (mustGoHome) return <Navigate to='/' />;
 	if (!hasFoundGame) return <WaitingForMatch cancelSearch={cancelSearch} />;
 	return <GameRender {...gameInfo} />;
 };

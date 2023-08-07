@@ -673,7 +673,7 @@ const Message = ({
 	const user = useContext(UserContext);
 
 	const toggleBox = async () => {
-		if (login == user.login) redirect("/me");
+		if (login == user.login) return redirect("/me");//TODO: replace the redirect by something else that works
 		setIsToggleBox(!isToggleBox);
 	};
 
