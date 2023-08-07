@@ -406,42 +406,37 @@ export class AppGateway
 	}
 
 	@SubscribeMessage('quitWaitRoom')
-	async handleQuitWaitRoom(client: Socket, payload: any): Promise<void> {
+	async handleQuitWaitRoom(client: Socket, payload: any): Promise<number> {
 		console.log('quitWaitRoom', payload);
 		if (!payload.auth) {
 			console.log('no auth');
-			payload.callback({ status: 400 });
-			return;
+			return 400;
 		}
 		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
 		if (!session) {
 			console.log('no session');
-			payload.callback({ status: 400 });
-			return;
+			return 400;
 		}
 		let user = await this.userService.findByLogin(session.login);
 		if (!user) {
 			console.log('no user');
-			payload.callback({ status: 400 });
-			return;
+			return 400;
 		}
 
 		let waitingGame = await this.gameService.findWaiting(payload.isRanked);
 		if (!waitingGame) {
 			console.log('no waiting game', waitingGame);
-			payload.callback({ status: 400 });
-			return;
+			return 400;
 		}
 
 		if (waitingGame.dataValues.users.length === 1) {
 			console.log('delete game');
 			await this.gameService.delete(waitingGame.id);
-			payload.callback({ status: 200 });
-			return;
+			return 200;
 		}
 
 		console.log('nop');
-		payload.callback({ status: 400 });
+		return 400;
 	}
 
 	@SubscribeMessage('keys')
