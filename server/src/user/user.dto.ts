@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator';
 import { Membership } from 'src/membership/membership.entity';
 import { Message } from 'src/message/message.entity';
 import { UserGame } from 'src/user-game/user-game.entity';
@@ -35,4 +35,11 @@ export class UserDto {
 	channelsOwned?: Channel[];
 
 	hasConnected?: boolean;
+
+	@IsIn(['online', 'offline', 'ongame'])
+	status?: string;
+
+	pongKey?: string;
+
+	pingDelay?: number;
 }

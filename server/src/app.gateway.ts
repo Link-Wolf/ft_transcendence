@@ -13,6 +13,7 @@ import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { Game } from './game/game.entity';
+import { time } from 'console';
 
 type Player = {
 	paddle: {
@@ -446,5 +447,61 @@ export class AppGateway
 		let player = game.players.find((p) => p.login === payload.login);
 		if (!player) return;
 		player.inputs = payload.keys;
+	}
+
+	/*********************************************************
+	 * 														 *
+	 * 					STATUS HANDLING 					 *
+	 * 					            						 *
+	 ********************************************************/
+
+	private timeout = [] as any;
+	private pingLoop = setInterval(() => {
+		const pongKey = Math.random().toString(36).substring(2, 15);
+		this.server.emit('ping', { pongKey: pongKey, time: Date.now() });
+		this.userService.findAll().then((users) => {
+			users.forEach(async (user) => {
+				await this.userService.update({
+					...user.dataValues,
+					pongKey: pongKey,
+				});
+				if (!this.timeout[user.dataValues.login])
+					this.timeout[user.dataValues.login] = setTimeout(
+						async () => {
+							this.userService.update({
+								...user.dataValues,
+								status: 'offline',
+							});
+
+							const onGoingGames =
+								await this.gameService.findOngoing(
+									user.dataValues.login,
+								);
+							if (onGoingGames.length > 0) {
+								this.stopGame(this.game[onGoingGames[0].id]); //handle stop by deconnection
+							}
+						},
+						20000,
+					);
+			});
+		});
+	}, 10000);
+
+	@SubscribeMessage('pong')
+	async handlePong(client: Socket, payload: any): Promise<void> {
+		if (!payload.auth) return;
+		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
+		if (!session) return;
+		let user = await this.userService.findByLogin(session.login);
+		if (!user) return;
+
+		if (user.dataValues.pongKey !== payload.pongKey) return;
+		this.userService.update({
+			...user.dataValues,
+			pingDelay: Date.now() - payload.time,
+			pongKey: null,
+			status: payload.status,
+		});
+		this.timeout[user.dataValues.login] = null;
 	}
 }
