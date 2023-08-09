@@ -17,6 +17,7 @@ import { MuteModule } from './mute/mute.module';
 import { PrivateMessageModule } from './private-message/private-message.module';
 import { AuthModule } from './auth/auth.module';
 import { AppGateway } from './app.gateway';
+import{ ToxicRelationsModule } from './toxic-relations/toxic-relations.module';
 
 @Module({
 	imports: [
@@ -35,6 +36,7 @@ import { AppGateway } from './app.gateway';
 		MuteModule,
 		PrivateMessageModule,
 		AuthModule,
+		ToxicRelationsModule
 	],
 	controllers: [AppController],
 	providers: [AppService, AppGateway],

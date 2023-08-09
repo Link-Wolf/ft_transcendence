@@ -12,7 +12,7 @@ const Header = () => {
 					<img src={logo} alt='Logo' className={style.logo} />
 				</Link>
 			</li>
-			<li>P L A T Y P O N G D</li>
+			<li>P L A T Y P O N G</li>
 			<li>
 				<ul className={style.right_section}>
 					<li>

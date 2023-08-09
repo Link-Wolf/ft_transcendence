@@ -12,9 +12,6 @@ import * as jwt from 'jsonwebtoken';
 import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
-import { Game } from './game/game.entity';
-import { time } from 'console';
-import { on } from 'stream';
 
 type Player = {
 	paddle: {
@@ -60,7 +57,11 @@ type GameData = {
 	lastTimestamp: number;
 	height: number;
 	width: number;
-	isOver: boolean;
+	status: {
+		ended: boolean;
+		winner: number;
+		gonePlayer: number;
+	};
 	loop: NodeJS.Timeout;
 };
 @WebSocketGateway({
@@ -80,9 +81,7 @@ export class AppGateway
 	@WebSocketServer() server: Server;
 	private logger: Logger = new Logger('AppGateway');
 
-	afterInit(server: Server) {
-		this.logger.log('Init');
-	}
+	afterInit(server: Server) {}
 
 	handleDisconnect(client: Socket) {
 		this.logger.log(`Client disconnected: ${client.id}`);
@@ -251,7 +250,10 @@ export class AppGateway
 			game.isTurnStarted = false;
 			this.resetBall(game);
 			// this.resetPaddles();
-			if (game.players[n].score >= 11) game.isOver = true;
+			if (game.players[n].score >= 11) {
+				game.status.ended = true;
+				game.status.winner = n;
+			}
 		};
 		//score on player 0 goal
 		if (game.ball.position.x < -game.width / 2) checkForScore(1);
@@ -307,7 +309,11 @@ export class AppGateway
 			playerToStart: 0,
 			isTurnStarted: false,
 			turn: 0,
-			isOver: false,
+			status: {
+				ended: false,
+				winner: null,
+				gonePlayer: null,
+			},
 			loop: null,
 		};
 	}
@@ -326,7 +332,8 @@ export class AppGateway
 
 			// check for final score
 			if (game.players[0].score >= 11 || game.players[1].score >= 11) {
-				game.isOver = true;
+				game.status.ended = true;
+				game.status.winner = game.players[0].score >= 11 ? 0 : 1;
 				this.server.to(`game-${gameId}`).emit('gameUpdate', game);
 				this.stopGame(game);
 				return;
@@ -450,73 +457,5 @@ export class AppGateway
 		let player = game.players.find((p) => p.login === payload.login);
 		if (!player) return;
 		player.inputs = payload.keys;
-	}
-
-	/*********************************************************
-	 * 														 *
-	 * 					STATUS HANDLING 					 *
-	 * 					            						 *
-	 ********************************************************/
-
-	private timeout = [] as any;
-	private pingLoop = setInterval(() => {
-		const pongKey = Math.random().toString(36).substring(2, 15);
-		this.server.emit('ping', { pongKey: pongKey, time: Date.now() });
-		this.userService.findAll().then((users) => {
-			users.forEach(async (user) => {
-				await this.userService.update({
-					...user.dataValues,
-					pongKey: pongKey,
-				});
-				if (!this.timeout[user.dataValues.login])
-					this.timeout[user.dataValues.login] = setTimeout(
-						async () => {
-							console.log('timeout');
-							await this.userService.update({
-								...user.dataValues,
-								status: 'offline',
-							});
-
-							const onGoingGames =
-								await this.gameService.findOngoing(
-									user.dataValues.login,
-								);
-							if (onGoingGames.length > 0) {
-								this.stopGame(
-									this.game[onGoingGames[0].dataValues.id],
-								);
-								this.server
-									.to(`game-${onGoingGames[0].dataValues.id}`)
-									.emit('updateGame', {
-										...this.game[
-											onGoingGames[0].dataValues.id
-										],
-										isOver: true, //TODO: change stuff so that the front know it was from a abort
-									});
-							}
-						},
-						20000,
-					);
-			});
-		});
-	}, 10000);
-
-	@SubscribeMessage('pong')
-	async handlePong(client: Socket, payload: any): Promise<void> {
-		console.log('pong');
-		if (!payload.auth) return;
-		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		if (!session) return;
-		let user = await this.userService.findByLogin(session.login);
-		if (!user) return;
-
-		if (user.dataValues.pongKey !== payload.pongKey) return;
-		await this.userService.update({
-			...user.dataValues,
-			pingDelay: Date.now() - payload.time,
-			pongKey: null,
-			status: payload.status,
-		});
-		this.timeout[user.dataValues.login] = null;
 	}
 }

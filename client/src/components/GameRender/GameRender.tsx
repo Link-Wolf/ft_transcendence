@@ -87,7 +87,11 @@ const GameRender = ({
 		height: 600,
 		width: 800,
 		myIndex: -1,
-		isOver: false,
+		status: {
+			ended: false,
+			winner: null,
+			gonePlayer: null,
+		},
 	};
 
 	useEffect(() => {

@@ -2,6 +2,9 @@ import axios from "axios";
 import Routage from "./components/Routage";
 import { ChangeEvent, createContext, useEffect, useState } from "react";
 import style from "./style/App.module.scss";
+import socket from "./socket";
+import { use } from "matter-js";
+import Cookies from "js-cookie";
 
 export const UserContext = createContext({
 	login: "",
@@ -16,6 +19,20 @@ const App = () => {
 		clearance: 0,
 		theme: "light",
 	});
+
+	useEffect(() => {
+		socket.on("ping", (data) => {
+			socket.emit("pong", {
+				...data,
+				auth: Cookies.get("token"),
+				status: "online",
+			}); //TODO: status ingame if needed
+		});
+
+		return () => {
+			socket.off("ping");
+		};
+	}, []);
 
 	const toggleTheme = () => {
 		setClearance((clearance) => {

@@ -68,52 +68,6 @@ export class UserController {
 	}
 
 	/**
-	 * @brief Create a user
-	 * @param {string} login - The user's login
-	 * @param {string} name - The user's name
-	 * @param {boolean} hasTFA - The user's 2AF status
-	 * @param {Buffer} avatar - The user's avatar
-	 * @return {User} - The created user
-	 * @security Clearance admin
-	 * @response 201 - Created
-	 * @response 400 - Bad Request
-	 * @response 409 - Conflict
-	 * @response 500 - Internal Server Error
-	 */
-	@Post()
-	@UseGuards(AdminClearanceGuard)
-	async create(
-		@Body('login') login: string,
-		@Body('name') name: string,
-	): Promise<User> {
-		if (!login || !name) {
-			throw new HttpException(
-				'Missing parameters',
-				HttpStatus.BAD_REQUEST,
-			);
-		}
-		if (await this.userService.findByLogin(login)) {
-			throw new HttpException('User already exists', HttpStatus.CONFLICT);
-		}
-		if (await this.userService.findByName(name)) {
-			throw new HttpException(
-				'Name is already taken',
-				HttpStatus.CONFLICT,
-			);
-		}
-		const default_avatar_buffer = readFileSync(
-			'../assets/default_avatar.jpg',
-		);
-		return this.userService.create({
-			login: login,
-			name: name,
-			hasTFA: false,
-			clearance: Number(process.env.USER_CLEARANCE),
-			avatar: default_avatar_buffer.toString('base64'),
-		});
-	}
-
-	/**
 	 * @brief Update a user
 	 * @param {string} login - The user's login
 	 * @param {string} name - The user's name
