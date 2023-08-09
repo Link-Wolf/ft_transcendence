@@ -19,6 +19,7 @@ const Game = () => {
 	});
 	const user = useContext(UserContext);
 	const [mustGoHome, setMustGoHome] = useState(false);
+	const [loop, setLoop] = useState<NodeJS.Timer>();
 
 	//listen to history or smth to send quitRoom (/quitGame) when leaving the page
 
@@ -29,12 +30,14 @@ const Game = () => {
 			setHasFoundGame(true);
 		};
 
-		let loop = setInterval(() => {
-			socket.emit("joinWaitRoom", {
-				auth: Cookies.get("token"),
-				isRanked: true, //TODO: add option for ranked mode
-			});
-		}, 1000);
+		setLoop(
+			setInterval(() => {
+				socket.emit("joinWaitRoom", {
+					auth: Cookies.get("token"),
+					isRanked: true, //TODO: add option for ranked mode
+				});
+			}, 1000)
+		);
 
 		socket.on("startGame", startGame);
 
@@ -43,6 +46,11 @@ const Game = () => {
 			clearInterval(loop);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!hasFoundGame) return;
+		clearInterval(loop);
+	}, [hasFoundGame]);
 
 	if (!user.clearance || user.clearance === 0)
 		return <ThereIsNotEnoughPermsBro />;

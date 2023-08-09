@@ -192,7 +192,11 @@ export class MessageController {
 				HttpStatus.FORBIDDEN,
 			);
 		if (
-			channel.isPrivate ||
+			(channel.isPrivate &&
+				!channel.dataValues.memberships.some(
+					(membership) =>
+						membership.dataValues.userLogin === userLogin,
+				)) ||
 			(await this.blockService.findBlockersOf(userLogin)).some(
 				(block) =>
 					block.dataValues.blockerLogin ===

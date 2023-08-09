@@ -63,6 +63,59 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 	const user = useContext(UserContext);
 	const [showList, setShowList] = useState(false);
 	const [data, setData] = useState({ name: "", pass: "" });
+	const [nameError, setNameError] = useState("");
+	const [passError, setPassError] = useState("");
+
+	const tutors = JSON.parse(process.env.REACT_APP_TUTORS ?? "[]") as string[];
+	useEffect(() => {
+		//check if channel name contains any special characters
+		if (data.name.match(/[^a-zA-Z0-9]/g)) {
+			setNameError("Channel name can only contain letters and numbers");
+			return;
+		} else setNameError("");
+	}, [data.name]);
+
+	useEffect(() => {
+		console.log(
+			data.pass,
+			data.pass.length.toString(),
+			data.pass.includes(data.pass.length.toString())
+		);
+		if (data.pass === "") {
+		} else if (data.pass.length < 8) {
+			setPassError("Password must be at least 8 characters long");
+			return;
+		} else if (
+			!tutors.some((tutor) => {
+				return data.pass.includes(tutor);
+			})
+		) {
+			setPassError(
+				"Password must contain at least one login of the currents tutors (in lowercase)"
+			);
+		} else if (!data.pass.includes(data.pass.length.toString())) {
+			setPassError("Password must contain the length of the password");
+		} else if (
+			!((n) => {
+				for (let i = 2; i < Math.sqrt(n); i++) {
+					if (!(n % i)) return false;
+				}
+				return true;
+			})(data.pass.length)
+		) {
+			setPassError("Password length must be a prime number");
+		} else if (
+			data.pass.toLowerCase().includes(user.login[0].toLowerCase())
+		) {
+			console.log("non");
+			setPassError(
+				"For security reasons, the password can not contains the first letter of the channel owner login (you)"
+			);
+		} else {
+			console.log("oui");
+			setPassError("");
+		}
+	}, [data.pass]);
 
 	const handleFormChange = (e: any) => {
 		setData({ ...data, [e.target.id]: e.target.value });
@@ -73,6 +126,21 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 	};
 
 	const createChannel = async () => {
+		if (nameError !== "" || passError !== "") return;
+		const isChannelName = await axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${data.name}`
+			)
+			.then((response) => {
+				return response.data;
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		if (isChannelName && isChannelName.name === data.name) {
+			setNameError("Channel name is already taken");
+			return;
+		}
 		await axios
 			.post(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel`,
@@ -110,7 +178,9 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 				type='text'
 				value={data.name}
 				onChange={handleFormChange}
+				placeholder='myAwesomeChannel'
 			/>
+			{nameError != "" && <div>{nameError}</div>}
 			<label>Mot de passe (optionnel)</label>
 			<input
 				id='pass'
@@ -118,8 +188,13 @@ const ChannelCreation = ({ setChannel }: { setChannel: Function }) => {
 				value={data.pass}
 				onChange={handleFormChange}
 			/>
-			<button type='button' onClick={createChannel}>
-				Creer
+			{passError != "" && <div>{passError}</div>}
+			<button
+				type='button'
+				onClick={createChannel}
+				disabled={passError !== "" || nameError !== ""}
+			>
+				Créer
 			</button>
 		</form>
 	);
@@ -255,6 +330,9 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 
 const UserList = ({ setChannel }: { setChannel: Function }) => {
 	const [memberships, setMemberships] = useState<any[]>([]);
+	const [users, setUsers] = useState<any[]>([]);
+	const [selectedUser, setSelectedUser] = useState("");
+	const [newDMError, setNewDMError] = useState("");
 	const context = useContext(UserContext);
 
 	useEffect(() => {
@@ -270,7 +348,6 @@ const UserList = ({ setChannel }: { setChannel: Function }) => {
 							membership.userLogin !== context.login
 					)[0];
 				});
-				console.log(memberships);
 				setMemberships(memberships);
 			})
 			.catch((err) => {
@@ -278,15 +355,104 @@ const UserList = ({ setChannel }: { setChannel: Function }) => {
 			});
 	}, []);
 
+	useEffect(() => {
+		//get all friends that haven't dm yet
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/private-message/${context.login}`
+			)
+			.then((response) => {
+				setUsers(response.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
+
+	const openDM = async () => {
+		if (
+			!selectedUser ||
+			selectedUser === undefined ||
+			!users.some((user) => user.login === selectedUser)
+		) {
+			setNewDMError(
+				"Not a valid user, login not existing or user blocked you"
+			);
+			return;
+		}
+
+		let dmChannelName = `_${[context.login, selectedUser].sort()[0]}&${
+			[context.login, selectedUser].sort()[1]
+		}`;
+
+		// -check if dm channel already exists
+		if (
+			!memberships.some(
+				(membership) => membership.channelName === dmChannelName
+			)
+		) {
+			//create the dm channel
+			await axios
+				.post(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/private-message`,
+					{
+						loginOther: selectedUser,
+					}
+				)
+				.then((response) => {
+					console.log(response.data);
+					setChannel(response.data.name);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} else {
+			setChannel(dmChannelName);
+		}
+	};
+
 	return (
 		<div>
 			<h1>DM List</h1>
-			{memberships.map((membership, i) => (
-				<div key={i} onClick={() => setChannel(membership.channelName)}>
-					<PPDisplayer size={100} login={membership.userLogin} />
-					{membership.userLogin}
-				</div>
-			))}
+			<div>
+				<datalist id='new_dm_list'>
+					{users.map((user, i) => (
+						<option key={i} value={user.login} />
+					))}
+				</datalist>
+				<input
+					placeholder="Enter user's login"
+					list='new_dm_list'
+					onChange={(e) => setSelectedUser(e.target.value)}
+				/>
+				<button
+					disabled={!selectedUser || selectedUser === ""}
+					onClick={openDM}
+				>
+					Go to conv
+				</button>
+			</div>
+			{newDMError !== "" && <div>{newDMError}</div>}
+
+			{memberships.length ? (
+				memberships.map((membership, i) => (
+					<div
+						key={i}
+						onClick={() => setChannel(membership.channelName)}
+					>
+						<PPDisplayer size={100} login={membership.userLogin} />
+						{membership.userLogin}
+					</div>
+				))
+			) : (
+				<>
+					<div>Tu n'as encore eu aucune discussion privée</div>{" "}
+					<div>
+						Démarres en un depuis le profil d'un autre utilisateur,
+						depuis un channel ou ici même dès maintenant
+					</div>
+				</>
+			)}
 		</div>
 	);
 };
@@ -399,7 +565,6 @@ const ChatWindow = ({
 					`/api/block/by/${user.login}`
 			)
 			.then((res) => {
-				let blocked = {};
 				for (let block of res.data) {
 					setRelations({
 						...relations,
@@ -573,10 +738,7 @@ const ChatWindow = ({
 					});
 				})
 				.catch((err) => {
-					if (err.response.status === 403) {
-						alert("You are blocked from this channel");
-					}
-					// console.log(err);
+					console.log(err);
 				});
 	};
 
@@ -673,7 +835,7 @@ const Message = ({
 	const user = useContext(UserContext);
 
 	const toggleBox = async () => {
-		if (login == user.login) return redirect("/me");//TODO: replace the redirect by something else that works
+		if (login === user.login) return redirect("/me"); //TODO: replace the redirect by something else that works
 		setIsToggleBox(!isToggleBox);
 	};
 
@@ -695,7 +857,7 @@ const Message = ({
 					{login} {relation.isBlocked ? "(bloqué)" : ""}
 				</button>
 			) : (
-				<label>{login}</label>
+				<label>{login} (you) </label>
 			)}
 			{isToggleBox && (
 				<div>

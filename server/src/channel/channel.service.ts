@@ -117,25 +117,6 @@ export class ChannelService {
 	}
 
 	/**
-	 * @brief Get all channels where the password is the same as pass2check
-	 *        (yeah it's a really bad idea to prevent same password for different
-	 *        channels but it's for fun, trust)
-	 * @param {string} pass2check The channel's password
-	 * @return {Channel[]} All channels where the password is pass2check
-	 * @throws {HttpException} 500 - Internal server error
-	 */
-	async findByPassword(pass2check: string): Promise<Channel[]> {
-		try {
-			return await this.channelRepository.findAll<Channel>({
-				where: { password: pass2check },
-				include: [{ all: true }],
-			});
-		} catch (error) {
-			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	/**
 	 * @brief Get all private channels where the login's user is a member
 	 * @param {string} login The user's login
 	 * @return {Channel[]} All private channels of the user

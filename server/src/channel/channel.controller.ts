@@ -98,8 +98,6 @@ export class ChannelController {
 	@UseGuards(PublicOrPrivateGuard)
 	async getByName(@Param('name') name: string): Promise<Channel> {
 		let channel = await this.channelService.findByName(name);
-		if (!channel)
-			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		return channel;
 	}
 
@@ -167,12 +165,6 @@ export class ChannelController {
 		let owner = await this.userService.findByLogin(ownerLogin);
 		if (!owner)
 			throw new HttpException('Owner not Found', HttpStatus.NOT_FOUND);
-		let chan_with_pass = await this.channelService.findByPassword(password);
-		if (password && chan_with_pass.length != 0)
-			throw new HttpException(
-				'Password already in use',
-				HttpStatus.CONFLICT,
-			);
 		if (!name.match(/^[a-zA-Z0-9]+$/))
 			throw new HttpException(
 				'Invalid channel name',
@@ -183,6 +175,34 @@ export class ChannelController {
 				'Channel name already in use',
 				HttpStatus.CONFLICT,
 			);
+		if (name.match(/[^a-zA-Z0-9]/g))
+			throw new HttpException(
+				'Invalid channel name',
+				HttpStatus.BAD_REQUEST,
+			);
+		if (password && password !== '') {
+			if (
+				(password && password.length < 8) ||
+				!(
+					JSON.parse(process.env.REACT_APP_TUTORS ?? '[]') as string[]
+				).some((tutor) => {
+					return password.includes(tutor);
+				}) ||
+				!password.includes(password.length.toString()) ||
+				!((n) => {
+					for (let i = 2; i < Math.sqrt(n); i++) {
+						if (!(n % i)) return false;
+					}
+					return true;
+				})(password.length) ||
+				password.toLowerCase().includes(ownerLogin[0].toLowerCase())
+			) {
+				throw new HttpException(
+					'Invalid password',
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+		}
 		return await this.channelService.create({
 			isPrivate: false,
 			name: name,
@@ -216,11 +236,6 @@ export class ChannelController {
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		if (channel.isPrivate)
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		if (password && (await this.channelService.findByPassword(password)))
-			throw new HttpException(
-				'Password already in use',
-				HttpStatus.CONFLICT,
-			);
 		return this.channelService.update({ name: name, password: password });
 	}
 
