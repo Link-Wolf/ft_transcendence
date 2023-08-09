@@ -14,6 +14,7 @@ import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { Game } from './game/game.entity';
 import { time } from 'console';
+import { on } from 'stream';
 
 type Player = {
 	paddle: {
@@ -326,7 +327,7 @@ export class AppGateway
 			// check for final score
 			if (game.players[0].score >= 11 || game.players[1].score >= 11) {
 				game.isOver = true;
-				this.server.to(`game-${gameId}`).emit('gameUpdate', this.game);
+				this.server.to(`game-${gameId}`).emit('gameUpdate', game);
 				this.stopGame(game);
 				return;
 			}
@@ -343,6 +344,8 @@ export class AppGateway
 	}
 
 	stopGame(game: GameData) {
+		//TODO: add a argument to abort instead of finish
+		if (!game) return;
 		clearInterval(game.loop);
 		this.game[game.gameId] = null;
 		this.gameService.update({
@@ -468,7 +471,8 @@ export class AppGateway
 				if (!this.timeout[user.dataValues.login])
 					this.timeout[user.dataValues.login] = setTimeout(
 						async () => {
-							this.userService.update({
+							console.log('timeout');
+							await this.userService.update({
 								...user.dataValues,
 								status: 'offline',
 							});
@@ -478,7 +482,17 @@ export class AppGateway
 									user.dataValues.login,
 								);
 							if (onGoingGames.length > 0) {
-								this.stopGame(this.game[onGoingGames[0].id]); //handle stop by deconnection
+								this.stopGame(
+									this.game[onGoingGames[0].dataValues.id],
+								);
+								this.server
+									.to(`game-${onGoingGames[0].dataValues.id}`)
+									.emit('updateGame', {
+										...this.game[
+											onGoingGames[0].dataValues.id
+										],
+										isOver: true, //TODO: change stuff so that the front know it was from a abort
+									});
 							}
 						},
 						20000,
@@ -489,6 +503,7 @@ export class AppGateway
 
 	@SubscribeMessage('pong')
 	async handlePong(client: Socket, payload: any): Promise<void> {
+		console.log('pong');
 		if (!payload.auth) return;
 		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
 		if (!session) return;
@@ -496,7 +511,7 @@ export class AppGateway
 		if (!user) return;
 
 		if (user.dataValues.pongKey !== payload.pongKey) return;
-		this.userService.update({
+		await this.userService.update({
 			...user.dataValues,
 			pingDelay: Date.now() - payload.time,
 			pongKey: null,
