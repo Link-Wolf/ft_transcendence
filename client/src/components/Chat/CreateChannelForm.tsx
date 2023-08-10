@@ -4,7 +4,6 @@ import { UserContext } from "../../App";
 
 const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	const user = useContext(UserContext);
-	const [showList, setShowList] = useState(false);
 	const [data, setData] = useState({ name: "", pass: "" });
 	const [nameError, setNameError] = useState("");
 	const [passError, setPassError] = useState("");
@@ -62,10 +61,6 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 
 	const handleFormChange = (e: any) => {
 		setData({ ...data, [e.target.id]: e.target.value });
-	};
-
-	const toggleShowlist = () => {
-		setShowList(!showList);
 	};
 
 	const createChannel = async () => {
