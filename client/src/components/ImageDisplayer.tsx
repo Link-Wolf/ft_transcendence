@@ -20,7 +20,11 @@ const PPDisplayer = ({ login, size }: { login: string; size: number }) => {
 	return (
 		<div>
 			{imageURL ? (
-				<img src={imageURL} style={{ width: size, height: size }} />
+				<img
+					src={imageURL}
+					alt='pp'
+					style={{ width: size, height: size }}
+				/>
 			) : (
 				<p>Loading image...</p>
 			)}
@@ -51,7 +55,7 @@ const ImageDisplayer = ({ what }: { what: string }) => {
 	return (
 		<div>
 			{imageURL ? (
-				<img src={imageURL} style={{ maxWidth: "300px" }} />
+				<img src={imageURL} alt='' style={{ maxWidth: "300px" }} />
 			) : (
 				<p>Loading image...</p>
 			)}

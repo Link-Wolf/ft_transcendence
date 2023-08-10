@@ -28,7 +28,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [context.login]);
 
 	useEffect(() => {
 		//get all friends that haven't dm yet
@@ -42,7 +42,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [context.login]);
 
 	const openDM = async () => {
 		if (

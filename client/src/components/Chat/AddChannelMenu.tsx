@@ -51,7 +51,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 			.catch((error) => {
 				console.log(error);
 			});
-	}, [joinChannel]);
+	}, [joinChannel, setChannel, user.login]);
 
 	const createChannel = () => {
 		setChannelCreation(!channelCreation);

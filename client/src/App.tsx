@@ -1,9 +1,8 @@
 import axios from "axios";
 import Routage from "./components/Routage";
-import { ChangeEvent, createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import style from "./style/App.module.scss";
 import socket from "./socket";
-import { use } from "matter-js";
 import Cookies from "js-cookie";
 
 export const UserContext = createContext({
@@ -73,10 +72,10 @@ const App = () => {
 			.catch((err) => {
 				setClearance({ ...clearance, login: "", clearance: 0 });
 			});
-	}, []);
+	}, [clearance]);
 
 	return (
-		<div className={clearance.theme == "light" ? style.light : style.dark}>
+		<div className={clearance.theme === "light" ? style.light : style.dark}>
 			<UserContext.Provider
 				value={{ ...clearance, toggleTheme: toggleTheme }}
 			>
