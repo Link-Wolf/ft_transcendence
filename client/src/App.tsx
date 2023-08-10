@@ -11,6 +11,7 @@ export const UserContext = createContext({
 	clearance: 0,
 	theme: "light",
 	toggleTheme: () => {},
+	status: {} as any,
 });
 
 const App = () => {
@@ -18,19 +19,25 @@ const App = () => {
 		login: "",
 		clearance: 0,
 		theme: "light",
+		status: {} as any,
 	});
 
 	useEffect(() => {
-		socket.on("ping", (data) => {
-			socket.emit("pong", {
-				...data,
-				auth: Cookies.get("token"),
-				status: "online",
-			}); //TODO: status ingame if needed
+		let pingInterval = setInterval(() => {
+			socket.emit("ping", { auth: Cookies.get("token") });
+		}, 10000);
+
+		socket.on("status", (data) => {
+			setClearance((clearance) => {
+				return {
+					...clearance,
+					status: data,
+				};
+			});
 		});
 
 		return () => {
-			socket.off("ping");
+			clearInterval(pingInterval);
 		};
 	}, []);
 
