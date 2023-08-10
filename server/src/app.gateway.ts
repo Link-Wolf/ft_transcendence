@@ -434,7 +434,7 @@ export class AppGateway
 			return 400;
 		}
 
-		let waitingGame = await this.gameService.findWaiting(payload.isRanked);
+		let waitingGame = await this.gameService.findWaiting(payload.isRanked); //XXX: wtf?
 		if (!waitingGame) {
 			console.log('no waiting game', waitingGame);
 			return 400;
@@ -457,5 +457,48 @@ export class AppGateway
 		let player = game.players.find((p) => p.login === payload.login);
 		if (!player) return;
 		player.inputs = payload.keys;
+	}
+
+	/*********************************************************
+	 * 														 *
+	 * 					STATUS HANDLING						 *
+	 * 					            						 *
+	 ********************************************************/
+
+	private statusList = {} as any;
+
+	@SubscribeMessage('ping')
+	async handlePing(client: Socket, payload: any): Promise<void> {
+		// //verifiy the user
+		if (!payload.auth) return;
+		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
+		if (!session) return;
+		let user = await this.userService.findByLogin(session.login);
+		if (!user) return;
+
+		// check if user is in a game
+		let isInGame = false;
+		for (let game of this.game) {
+			if (!game) continue;
+			for (let player of game.players) {
+				if (player.login === user.dataValues.login) {
+					isInGame = true;
+					break;
+				}
+			}
+		}
+
+		this.statusList[user.dataValues.login] = {
+			time: Date.now(),
+			status: isInGame ? 'playing' : 'online',
+		};
+
+		for (let login in this.statusList) {
+			if (Date.now() - this.statusList[login].time > 10000) {
+				delete this.statusList[login];
+			}
+		}
+
+		this.server.emit('status', this.statusList);
 	}
 }
