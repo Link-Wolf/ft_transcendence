@@ -18,13 +18,21 @@ const Update = () => {
 	if (!user.clearance || user.clearance === 0)
 		return <ThereIsNotEnoughPermsBro />;
 
+	const handleFormChange = (e: any) => {
+		setForm({ ...form, [e.target.name]: e.target.value });
+	};
+
 	return (
 		<>
 			<h2>Update</h2>
 			<form>
 				<div>
 					<label>Username</label>
-					<input type='text' value={form.name} />
+					<input
+						type='text'
+						value={form.name}
+						onChange={handleFormChange}
+					/>
 				</div>
 				<div>
 					<PPDisplayer login={user.login} size={400} />
