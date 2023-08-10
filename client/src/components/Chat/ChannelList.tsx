@@ -24,7 +24,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [context.login]);
 
 	const addChannel = () => {
 		setNewChannelVisibility(!newChannelVisibility);

@@ -1,11 +1,9 @@
-import { MouseEventHandler, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import socket from "../socket";
 import Cookies from "js-cookie";
 import { UserContext } from "../App";
-import axios from "axios";
 import GameRender from "./GameRender/GameRender";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
-import { use } from "matter-js";
 import { Navigate } from "react-router-dom";
 
 const Game = () => {
@@ -45,7 +43,7 @@ const Game = () => {
 			socket.off("startGame", startGame);
 			clearInterval(loop);
 		};
-	}, []);
+	}, [user]);
 
 	useEffect(() => {
 		if (!hasFoundGame) return;

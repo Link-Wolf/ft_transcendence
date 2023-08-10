@@ -1,5 +1,4 @@
 import p5Types from "p5";
-import Movable from "./Movable";
 
 /**
  *	seven segment display (X are the interesctions, so both segments)

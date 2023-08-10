@@ -14,7 +14,7 @@ nocache: env
 	docker-compose build --no-cache
 	docker-compose up
 
-clean:
+clean: stop
 	docker-compose down
 
 stop:
@@ -22,5 +22,8 @@ stop:
 
 start:
 	docker-compose start
+
+fclean: clean
+	docker-compose rm -f
 
 .PHONY: all env up re clean stop start

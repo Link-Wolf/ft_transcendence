@@ -57,7 +57,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 			console.log("oui");
 			setPassError("");
 		}
-	}, [data.pass]);
+	}, [data.pass, tutors, user.login]);
 
 	const handleFormChange = (e: any) => {
 		setData({ ...data, [e.target.id]: e.target.value });
@@ -118,7 +118,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 				onChange={handleFormChange}
 				placeholder='myAwesomeChannel'
 			/>
-			{nameError != "" && <div>{nameError}</div>}
+			{nameError !== "" && <div>{nameError}</div>}
 			<label>Mot de passe (optionnel)</label>
 			<input
 				id='pass'
@@ -126,7 +126,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 				value={data.pass}
 				onChange={handleFormChange}
 			/>
-			{passError != "" && <div>{passError}</div>}
+			{passError !== "" && <div>{passError}</div>}
 			<button
 				type='button'
 				onClick={createChannel}

@@ -5,7 +5,7 @@ import drawMovables from "./drawMovables";
 import drawMiddleLine from "./drawMiddleLine";
 import drawScore from "./drawScore";
 import displayTurnText from "./displayTurnText";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { UserContext } from "../../App";
 import socket from "../../socket";
 
@@ -13,10 +13,6 @@ let playerKeys = new Set<number>();
 
 const GameRender = ({
 	gameId,
-	isNew,
-	modifiers,
-	playerToStart,
-	players,
 }: {
 	gameId: number;
 	isNew: boolean;
@@ -94,14 +90,8 @@ const GameRender = ({
 		},
 	};
 
-	useEffect(() => {
-		socket.on("gameUpdate", (data) => {
-			game = { ...game, ...data };
-		});
-
-		return () => {
-			socket.off("gameUpdate");
-		};
+	socket.on("gameUpdate", (data) => {
+		game = { ...game, ...data };
 	});
 
 	const setup = (p5: p5Types, canvasParentRef: Element) => {

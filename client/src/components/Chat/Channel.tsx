@@ -60,7 +60,7 @@ const Channel = ({
 				});
 		}
 		setUpdate(false);
-	}, [update]);
+	}, [update, channel, user.login]);
 
 	//	Listen to the server for new messages
 	useEffect(() => {
@@ -71,7 +71,7 @@ const Channel = ({
 		return () => {
 			socket.off("youGotMail", clic);
 		};
-	}, []);
+	}, [channel]);
 
 	//	Load the messages from the server
 	useEffect(() => {
@@ -89,7 +89,7 @@ const Channel = ({
 				console.log(err);
 			});
 		setUpdate(false);
-	}, [update]);
+	}, [update, channel]);
 
 	//Load the relations from the server
 	useEffect(() => {
@@ -148,7 +148,7 @@ const Channel = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [messages]);
+	}, [messages, relations, user.login]);
 
 	useEffect(() => {
 		for (let login in { ...relations, [user.login]: {} }) {
@@ -167,7 +167,7 @@ const Channel = ({
 				})
 				.catch(() => console.log("error"));
 		}
-	}, [relations]);
+	}, [relations, user.login, avatars]);
 
 	const toggleBlock = (login: string) => {
 		if (relations[login].isBlocked) {

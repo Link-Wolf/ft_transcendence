@@ -1,5 +1,4 @@
 import axios from "axios";
-import Update from "./Update";
 import { useContext } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
