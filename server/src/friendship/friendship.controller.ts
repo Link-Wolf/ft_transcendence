@@ -137,7 +137,6 @@ export class FriendshipController {
 
 	/**
 	 * @brief Create a friendship
-	 * @param {string} senderLogin - The sender's login
 	 * @param {string} receiverLogin - The receiver's login
 	 * @returns {Friendship} The created friendship
 	 * @security Clearance user
