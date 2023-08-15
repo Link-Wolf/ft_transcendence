@@ -12,6 +12,7 @@ import * as jwt from 'jsonwebtoken';
 import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
+import { stat } from 'fs';
 
 type Player = {
 	paddle: {
@@ -457,6 +458,11 @@ export class AppGateway
 		let player = game.players.find((p) => p.login === payload.login);
 		if (!player) return;
 		player.inputs = payload.keys;
+
+		this.statusList[payload.login] = {
+			...this.statusList[payload.login],
+			lastGameInteraction: Date.now(),
+		};
 	}
 
 	/*********************************************************
@@ -477,23 +483,41 @@ export class AppGateway
 		if (!user) return;
 
 		// check if user is in a game
-		let isInGame = false;
-		for (let game of this.game) {
-			if (!game) continue;
-			for (let player of game.players) {
-				if (player.login === user.dataValues.login) {
-					isInGame = true;
-					break;
+		let status = 'online';
+
+		console.log(payload.path);
+
+		if (payload.path === '/game') {
+			status = 'waiting-for-game';
+
+			for (let game of this.game) {
+				if (!game) continue;
+				for (let player of game.players) {
+					if (player.login === user.dataValues.login) {
+						status = 'playing';
+						break;
+					}
 				}
 			}
 		}
 
 		this.statusList[user.dataValues.login] = {
 			time: Date.now(),
-			status: isInGame ? 'playing' : 'online',
+			status: status,
 		};
 
 		for (let login in this.statusList) {
+			if (login === user.dataValues.login) continue;
+
+			if (
+				Date.now() - this.statusList[login].lastGameInteraction >
+					5000 &&
+				this.statusList[login].status === 'playing'
+			) {
+				this.statusList[login].status = 'online';
+				// TODO: somehow check for the game they are playing and make them abort
+			}
+
 			if (Date.now() - this.statusList[login].time > 10000) {
 				delete this.statusList[login];
 			}

@@ -26,6 +26,7 @@ const App = () => {
 		let pingInterval = setInterval(() => {
 			socket.emit("ping", {
 				auth: Cookies.get("token"),
+				path: window.location.pathname,
 			});
 		}, 10000);
 
