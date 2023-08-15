@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { redirect, Link } from "react-router-dom";
 import { UserContext } from "../../App";
+import StatusIcon from "../StatusIcon";
 
 const Message = ({
 	login,
@@ -38,8 +39,14 @@ const Message = ({
 			<img
 				src={`data:image/*;base64,${avatar}`}
 				alt='avatar'
-				style={{ width: 40, height: 40 }}
+				style={{
+					width: 40,
+					height: 40,
+					borderRadius: "50%",
+					marginRight: "5px",
+				}}
 			/>
+			<StatusIcon login={login} />
 			{user.login !== login ? (
 				<button onClick={toggleBox}>
 					{login} {relation.isBlocked ? "(bloqué)" : ""}

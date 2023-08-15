@@ -11,7 +11,11 @@ const Chat = () => {
 		setChat(!chat);
 	};
 
-	if (!user.clearance || user.clearance === 0) return <></>;
+	//enable chat only if the clearance > 0 and pathis not /game
+	console.log(window.location.pathname)
+	if (!user.clearance || user.clearance === 0 || window.location.pathname === "/game") {
+		return <></>;
+	}
 
 	return (
 		<div className={style.chat}>

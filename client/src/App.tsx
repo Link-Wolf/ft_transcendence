@@ -22,15 +22,22 @@ const App = () => {
 	});
 
 	useEffect(() => {
+		socket.emit("ping", { auth: Cookies.get("token") });
 		let pingInterval = setInterval(() => {
-			socket.emit("ping", { auth: Cookies.get("token") });
+			socket.emit("ping", {
+				auth: Cookies.get("token"),
+				status:
+					document.location.pathname === "/game"
+						? "in-game"
+						: "online",
+			});
 		}, 10000);
 
 		socket.on("status", (data) => {
 			setClearance((clearance) => {
 				return {
 					...clearance,
-					status: data,
+					status: { ...clearance.status, ...data },
 				};
 			});
 		});
@@ -67,12 +74,24 @@ const App = () => {
 				return response;
 			})
 			.then((response) => {
-				setClearance(response.data);
+				setClearance((clearance) => {
+					return {
+						...clearance,
+						login: response.data.login,
+						clearance: response.data.clearance,
+					};
+				});
 			})
 			.catch((err) => {
-				setClearance({ ...clearance, login: "", clearance: 0 });
+				setClearance((clearance) => {
+					return {
+						...clearance,
+						login: "",
+						clearance: 0,
+					};
+				});
 			});
-	}, [clearance]);
+	}, []);
 
 	return (
 		<div className={clearance.theme === "light" ? style.light : style.dark}>

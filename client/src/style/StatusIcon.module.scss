@@ -1,0 +1,11 @@
+.status {
+	--width: 12px;
+
+	width: var(--width);
+	height: var(--width);
+	border-radius: 50%;
+	display: inline-block;
+	position: absolute;
+	margin-top: calc(40px - var(--width));
+	margin-left: calc(-5px - var(--width));
+}
