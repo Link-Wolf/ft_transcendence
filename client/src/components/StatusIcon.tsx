@@ -7,7 +7,7 @@ const StatusIcon = ({ login }: { login: string }) => {
 	const colorTheme = (status: string) => {
 		if (status === "online") return { background: "#00ff00" };
 		if (status === "offline") return { background: "#ff0000" };
-		if (status === "in-game") return { background: "#ffff00" };
+		if (status === "playing") return { background: "#0000ff" };
 	};
 
 	return (
