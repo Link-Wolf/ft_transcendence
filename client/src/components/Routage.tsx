@@ -21,7 +21,7 @@ const Routage = () => {
 				<Route path='/me/update' element={<Update />} />
 				<Route path='/me' element={<Profile />} />
 				<Route path='/login' element={<Login />} />
-				<Route path='/game' element={<Game />} />
+				<Route path='/game/*' element={<Game />} />
 
 				<Route path='*' element={<ThereIsNoFuckingPageBro />} />
 			</Routes>
