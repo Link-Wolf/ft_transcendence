@@ -5,7 +5,6 @@ import { UserContext } from "../App";
 import GameRender from "./GameRender/GameRender";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { Navigate } from "react-router-dom";
-import { clear } from "console";
 
 const Game = () => {
 	const [hasFoundGame, setHasFoundGame] = useState(false);
@@ -29,27 +28,22 @@ const Game = () => {
 			setHasFoundGame(true);
 		};
 
-		setLoop(
-			setInterval(() => {
-				socket.emit("joinWaitRoom", {
-					auth: Cookies.get("token"),
-					isRanked: true, //TODO: add option for ranked mode
-				});
-			}, 1000)
-		);
+		const local_loop = setInterval(() => {
+			socket.emit("joinWaitRoom", {
+				auth: Cookies.get("token"),
+				isRanked: true, //TODO: add option for ranked mode
+			});
+		}, 1000);
+
+		setLoop(local_loop);
 
 		socket.on("startGame", startGame);
 
 		return () => {
 			socket.off("startGame", startGame);
-			clearInterval(loop);
+			clearInterval(local_loop);
 		};
 	}, [user]);
-
-	useEffect(() => {
-		if (!hasFoundGame) return;
-		clearInterval(loop);
-	}, [hasFoundGame]);
 
 	if (!user.clearance || user.clearance === 0)
 		return <ThereIsNotEnoughPermsBro />;
@@ -75,6 +69,7 @@ const Game = () => {
 
 	if (mustGoHome) return <Navigate to='/' />;
 	if (!hasFoundGame) return <WaitingForMatch cancelSearch={cancelSearch} />;
+	clearInterval(loop);
 	return <GameRender {...gameInfo} />;
 };
 
