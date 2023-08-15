@@ -59,8 +59,10 @@ const Message = ({
 					<Link to={`/profile/${login}`}>
 						<label>Profil</label>
 					</Link>
-					<button onClick={askForGame}>Faire une partie</button>
-					<button
+					{!relation.isBlocked && (
+						<button onClick={askForGame}>Faire une partie</button>
+					)}
+					{!relation.isBlocked && <button
 						onClick={() => {
 							toggleFriendship(login);
 							toggleBox();
@@ -69,7 +71,7 @@ const Message = ({
 						{relation.isFriend
 							? "Message privé"
 							: "Demander en ami"}
-					</button>
+					</button>}
 					<button
 						onClick={() => {
 							toggleBlock(login);
