@@ -120,7 +120,7 @@ const Friends = ({ isMe, login }: { isMe: boolean; login: string }) => {
 							friendShips.map((friendShip, i) => {
 								return (
 									<li key={i}>
-										{friendShip.senderLogin === user.login
+										{friendShip.senderLogin !== user.login
 											? friendShip.senderLogin
 											: friendShip.receiverLogin}
 									</li>
@@ -164,7 +164,7 @@ const Blocked = ({ isMe, login }: { isMe: boolean; login: string }) => {
 		<div>
 			<h2>Blocked users</h2>
 			<ul>
-				{blockedUsers.length &&
+				{blockedUsers.length > 0 &&
 					blockedUsers.map((blockedUser, i) => {
 						return <li key={i}>{blockedUser.blockedLogin}</li>;
 					})}
