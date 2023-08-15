@@ -26,10 +26,6 @@ const App = () => {
 		let pingInterval = setInterval(() => {
 			socket.emit("ping", {
 				auth: Cookies.get("token"),
-				status:
-					document.location.pathname === "/game"
-						? "in-game"
-						: "online",
 			});
 		}, 10000);
 
