@@ -260,13 +260,22 @@ const Channel = ({
 			});
 	};
 
-	const friendSomeone = (login: string) => {
+	const friendSomeone = async (login: string) => {
+		let block = await axios.get(
+			`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
+		);
+		if (block.data.length !== 0) {
+			//TODO: cancel friendship request (front-end side) because the target blocked the user
+			console.log(
+				`${login} blocked ${user.login}, so no u can't be friend with him !`
+			);
+		}
 		console.log(`${user.login} wants to be friend with ${login}`); //TODO: implement friendship request
 	};
 
 	const sendMessage = async () => {
 		if (!canSendMessage) return;
-		let printableRegexButNoSpace = /[!-~]/; // Matches any printable ASCII characters except space
+		let printableRegexButNoSpace = /[\S\x21-\x7E\u{A0}-\u{FFFF}]/gu; // Matches any printable characters (including Unicode) except space
 		if (printableRegexButNoSpace.test(message))
 			await axios
 				.post(
@@ -354,7 +363,10 @@ const Channel = ({
 				}}
 				onKeyDown={handleKeyPress}
 			/>
-			<button onClick={sendMessage} disabled={!canSendMessage}>
+			<button
+				onClick={sendMessage}
+				disabled={!canSendMessage}
+			>
 				Send
 			</button>
 		</div>
