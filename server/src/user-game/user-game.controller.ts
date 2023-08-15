@@ -96,6 +96,32 @@ export class UserGameController {
 	}
 
 	/**
+	 * @brief Get all user's game results by user login
+	 * @param {string} login - User login
+	 * @returns  {{wins: number, losses: number}} All user's game results by user login
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('results/:login')
+	@UseGuards(UserClearanceGuard)
+	async findResultsByUser(
+		@Param('login') login: string,
+	): Promise<{ wins: number; losses: number }> {
+		if (!(await this.userService.findByLogin(login)))
+			throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
+		let games = await this.userGameService.findByUser(login);
+		let ret = { wins: 0, losses: 0 };
+		games.forEach((element) => {
+			if (element.score === 11) ret.wins++;
+			else ret.losses++;
+		});
+		return ret;
+	}
+
+	/**
 	 * @brief Get all user games by game id
 	 * @param {number} id - Game id
 	 * @returns {UserGame[]} All user games by game id
