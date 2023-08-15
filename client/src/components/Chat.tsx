@@ -2,10 +2,12 @@ import { useContext, useState } from "react";
 import { UserContext } from "../App";
 import ChatBox from "./Chat/ChatBox";
 import style from "../style/Chat.module.scss";
+import { useLocation } from "react-router-dom";
 
 const Chat = () => {
 	const [chat, setChat] = useState(false);
 	const user = useContext(UserContext);
+	const location = useLocation();
 
 	const toggleChat = () => {
 		setChat(!chat);
@@ -14,7 +16,7 @@ const Chat = () => {
 	if (
 		!user.clearance ||
 		user.clearance === 0 ||
-		window.location.pathname === "/game"
+		location.pathname === "/game"
 	) {
 		return <></>;
 	}
@@ -32,10 +34,7 @@ const Chat = () => {
 
 const ChatButton = (props: any) => {
 	return (
-		<button
-			className={style.toggleChat}
-			onClick={props.onClick}
-		>
+		<button className={style.toggleChat} onClick={props.onClick}>
 			Toggle Chat
 		</button>
 	);
