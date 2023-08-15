@@ -5,6 +5,7 @@ import { UserContext } from "../App";
 import GameRender from "./GameRender/GameRender";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { Navigate } from "react-router-dom";
+import { clear } from "console";
 
 const Game = () => {
 	const [hasFoundGame, setHasFoundGame] = useState(false);
@@ -64,7 +65,7 @@ const Game = () => {
 			(res: any) => {
 				console.log("canceling search callback", res);
 				if (res === 200) {
-					console.log("search canceled");
+					clearInterval(loop);
 					setHasFoundGame(false);
 					setMustGoHome(true);
 				}

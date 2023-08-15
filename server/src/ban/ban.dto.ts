@@ -3,14 +3,14 @@ import { Channel } from 'src/channel/channel.entity';
 import { User } from 'src/user/user.entity';
 
 export class BanDto {
-    @IsNumber()
-    id?: number;
+	@IsNumber()
+	id?: number;
 
-    @IsString()
-    @IsNotEmpty()
-    reason?: string;
+	@IsString()
+	@IsNotEmpty()
+	reason?: string;
 
-    user?: User;
+	user?: User;
 
-    channel?: Channel;
+	channel?: Channel;
 }
