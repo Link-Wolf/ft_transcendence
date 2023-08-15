@@ -11,9 +11,11 @@ const Chat = () => {
 		setChat(!chat);
 	};
 
-	//enable chat only if the clearance > 0 and pathis not /game
-	console.log(window.location.pathname)
-	if (!user.clearance || user.clearance === 0 || window.location.pathname === "/game") {
+	if (
+		!user.clearance ||
+		user.clearance === 0 ||
+		window.location.pathname === "/game"
+	) {
 		return <></>;
 	}
 
@@ -30,7 +32,10 @@ const Chat = () => {
 
 const ChatButton = (props: any) => {
 	return (
-		<button className={style.toggleChat} onClick={props.onClick}>
+		<button
+			className={style.toggleChat}
+			onClick={props.onClick}
+		>
 			Toggle Chat
 		</button>
 	);
