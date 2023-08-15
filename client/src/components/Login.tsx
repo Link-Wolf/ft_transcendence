@@ -2,10 +2,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// const wait = (ms: number) => {
-// 	return new Promise((resolve) => setTimeout(resolve, ms));
-// };
-
 const Login = () => {
 	const navigate = useNavigate();
 	const [done, setDone] = useState(false);

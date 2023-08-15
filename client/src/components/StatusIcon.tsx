@@ -1,18 +1,21 @@
 import { useContext } from "react";
 import { UserContext } from "../App";
-
-const checkStatus = (login: string) => {
-	const status = useContext(UserContext).status;
-
-	if (status[login] === undefined) return "offline";
-	return status[login].status;
-};
+import style from "../style/StatusIcon.module.scss";
 
 const StatusIcon = ({ login }: { login: string }) => {
-	if (checkStatus(login) === "offline") return <div>offline</div>;
-	if (checkStatus(login) === "online") return <div>online</div>;
-	if (checkStatus(login) === "playing") return <div>playing</div>;
+	const status = useContext(UserContext).status;
+	const colorTheme = (status: string) => {
+		if (status === "online") return { background: "#00ff00" };
+		if (status === "offline") return { background: "#ff0000" };
+		if (status === "in-game") return { background: "#ffff00" };
+	};
+
+	return (
+		<div
+			className={style.status}
+			style={colorTheme(status[login].status)}
+		></div>
+	);
 };
 
 export default StatusIcon;
-export { checkStatus, StatusIcon };
