@@ -16,14 +16,31 @@ const Routage = () => {
 		<BrowserRouter>
 			<Header />
 			<Routes>
-				<Route path='/' element={<Home />} />
-				<Route path='/profile/:login' element={<Profile />} />
-				<Route path='/me/update' element={<Update />} />
-				<Route path='/me' element={<Profile />} />
-				<Route path='/login' element={<Login />} />
-				<Route path='/game' element={<Game />} />
+				<Route
+					path='/'
+					element={<Home />}
+				/>
+				<Route
+					path='/profile/:login'
+					element={<Profile />}
+				/>
+				<Route
+					path='/me/update'
+					element={<Update />}
+				/>
+				<Route
+					path='/login'
+					element={<Login />}
+				/>
+				<Route
+					path='/game'
+					element={<Game />}
+				/>
 
-				<Route path='*' element={<ThereIsNoFuckingPageBro />} />
+				<Route
+					path='*'
+					element={<ThereIsNoFuckingPageBro />}
+				/>
 			</Routes>
 			<Chat />
 		</BrowserRouter>

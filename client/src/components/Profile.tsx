@@ -2,9 +2,10 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
-const Profile = ({ profileLogin }: { profileLogin: string }) => {
+const Profile = () => {
+	const profileLogin = useParams<{ login: string }>().login ?? "";
 	const user = useContext(UserContext);
 	const isMe = user.login === profileLogin;
 
