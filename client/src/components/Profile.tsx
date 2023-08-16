@@ -63,8 +63,14 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				let ranked = Array<any>();
 				let normal = Array<any>();
 				res.data.forEach((game: any) => {
-					if (game.game.isRanked) ranked.push(game);
-					else normal.push(game);
+					console.log(game);
+					if (game.game.isRanked && game.game.status !== "waiting")
+						ranked.push(game);
+					else if (
+						!game.game.isRanked &&
+						game.game.status !== "waiting"
+					)
+						normal.push(game);
 				});
 				setRankedGames(ranked);
 				setNormalGames(normal);
@@ -79,34 +85,99 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<h2>Match history</h2>
 			<h3>Ranked</h3>
 			<ul>
-				{rankedGames.length > 0 &&
+				{rankedGames.length > 0 ? (
 					rankedGames.map((game, i) => {
+						if (game.game.status === "ongoing")
+							return (
+								<>
+									Oui oui je ferai un cas particulier TODO:
+									tout ca tout ca
+								</>
+							);
 						return (
 							<li key={i}>
+								{/* Status */}
+								{game.game.status === "abandoned" &&
+									(game.score === 11
+										? "Victory (by abandonment)"
+										: "Defeat (by abandonment)")}
+								{game.game.status === "finished" &&
+									(game.score === 11 ? "Victory" : "Defeat")}
 								{/* PP du user */}
-								{<PPDisplayer login={user.login} avatar={game.user.avatar} size={69} />}
+								{
+									<PPDisplayer
+										login={user.login}
+										avatar={{ data: game.user.avatar }}
+										size={69}
+									/>
+								}
+								{/* Nom du user */}
+								{game.user.name}
 								{/* Score du user */}
-								{game}
-								{game.opp}
-								{game.score === 11 ? "You won" : "You lost"}{" "}
-								against{" "}
-								{game.winnerLogin !== user.login
-									? game.winnerLogin
-									: game.loserLogin}{" "}
-								on {game.date}
+								{game.score}
+								{/* Score de l'adversaire */}
+								{game.opponentUserGame.score}
+								{/* Nom de l'adversaire */}
+								{game.opponentUserGame.userLogin}
+								{/* PP de l'adversaire */}
+								{
+									<PPDisplayer
+										login={game.opponentUserGame.userLogin}
+										size={69}
+									/>
+								}
 							</li>
 						);
-					})}
+					})
+				) : (
+					<li>No ranked games played</li>
+				)}
 			</ul>
 			<h3>Not ranked</h3>
 			<ul>
-				{/* {normalGames.length > 0 &&
+				{normalGames.length > 0 ? (
 					normalGames.map((game, i) => {
+						console.log(game);
+						if (game.game.status === "waiting") return;
+						if (game.game.status === "ongoing")
+							return (
+								<>
+									Oui oui je ferai un cas particulier TODO:
+									tout ca tout ca
+								</>
+							);
 						return (
 							<li key={i}>
+								{/* Status */}
+								{game.game.status === "abandoned" &&
+									(game.score === 11
+										? "Victory (by abandonment)"
+										: "Defeat (by abandonment)")}
+								{game.game.status === "finished" &&
+									(game.score === 11 ? "Victory" : "Defeat")}
+								{/* PP du user */}
+								{<PPDisplayer login={user.login} size={69} />}
+								{/* Nom du user */}
+								{game.user.name}
+								{/* Score du user */}
+								{game.score}
+								{/* Score de l'adversaire */}
+								{game.opponentUserGame.score}
+								{/* Nom de l'adversaire */}
+								{game.opponentUserGame.userLogin}
+								{/* PP de l'adversaire */}
+								{
+									<PPDisplayer
+										login={game.opponentUserGame.userLogin}
+										size={69}
+									/>
+								}
 							</li>
 						);
-					})} */}
+					})
+				) : (
+					<li>No friendly games played</li>
+				)}
 			</ul>
 			<MatchStats isMe={isMe} login={login} />
 		</div>

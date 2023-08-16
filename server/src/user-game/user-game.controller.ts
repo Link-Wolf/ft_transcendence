@@ -86,16 +86,26 @@ export class UserGameController {
 	 */
 	@Get('user/:login')
 	@UseGuards(UserClearanceGuard)
-	async findByUser(@Param('login') login: string): Promise<UserGame[]> {
+	async findByUser(@Param('login') login: string): Promise<any[]> {
 		if (!(await this.userService.findByLogin(login)))
 			throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
-		let ret = await this.userGameService.findByUser(login);
+		let ret = (await this.userGameService.findByUser(login)) as any[];
 		if (!ret)
 			throw new HttpException('UserGame Not Found', HttpStatus.NOT_FOUND);
 		for (let i = 0; i < ret.length; i++) {
 			ret[i].dataValues.game = await this.gameService.findById(
 				ret[i].gameId,
 			);
+			if (ret[i].dataValues.game.status !== 'waiting')
+				ret[i].dataValues.opponentUserGame =
+					await this.userGameService.findByUserAndGame({
+						game: ret[i].dataValues.game,
+						user: ret[i].dataValues.game.users.find(
+							(element: any) => {
+								return element.dataValues.login !== login;
+							},
+						),
+					});
 		}
 		return ret;
 	}

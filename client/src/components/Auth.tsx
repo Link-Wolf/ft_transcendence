@@ -9,7 +9,11 @@ const Auth = () => {
 	useEffect(() => {
 		setIsLoggedIn(user.clearance !== 0);
 	}, [user]);
-	return <>{isLoggedIn ? <ProfileButton /> : <AuthButton />}</>;
+	return (
+		<>
+			{isLoggedIn ? <ProfileButton login={user.login} /> : <AuthButton />}
+		</>
+	);
 };
 
 const AuthButton = () => {
@@ -34,11 +38,11 @@ const AuthButton = () => {
 	);
 };
 
-const ProfileButton = () => {
+const ProfileButton = ({ login }: { login: string }) => {
 	/**
 	 * Redirect the user to their profile page
 	 */
-	return <Link to='/me'>Profile</Link>;
+	return <Link to={`/profile/${login}`}>Profile</Link>;
 };
 
 export default Auth;
