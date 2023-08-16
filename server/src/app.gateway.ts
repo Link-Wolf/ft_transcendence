@@ -68,6 +68,7 @@ type GameData = {
 	cors: {
 		origin: '*',
 	},
+	cookie: true,
 })
 export class AppGateway
 	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -82,14 +83,6 @@ export class AppGateway
 	private logger: Logger = new Logger('AppGateway');
 
 	afterInit(server: Server) {}
-
-	handleDisconnect(client: Socket) {
-		this.logger.log(`Client disconnected: ${client.id}`);
-	}
-
-	handleConnection(client: Socket, ...args: any[]) {
-		this.logger.log(`Client connected: ${client.id}`);
-	}
 
 	/*********************************************************
 	 * 														 *
@@ -350,8 +343,8 @@ export class AppGateway
 		}, 16);
 	}
 
-	stopGame(game: GameData) {
-		//TODO: add a argument to abort instead of finish
+	stopGame(game: GameData, abort: boolean = false) {
+		//TODO: uaw argument to abort instead of finish
 		if (!game) return;
 		clearInterval(game.loop);
 		this.game[game.gameId] = null;
@@ -465,40 +458,11 @@ export class AppGateway
 	 * 					            						 *
 	 ********************************************************/
 
-	private statusList = {} as any;
+	handleConnection(client: Socket, payload: any) {
+		console.log('connection', payload);
+	}
 
-	@SubscribeMessage('ping')
-	async handlePing(client: Socket, payload: any): Promise<void> {
-		// //verifiy the user
-		if (!payload.auth) return;
-		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		if (!session) return;
-		let user = await this.userService.findByLogin(session.login);
-		if (!user) return;
-
-		// check if user is in a game
-		let isInGame = false;
-		for (let game of this.game) {
-			if (!game) continue;
-			for (let player of game.players) {
-				if (player.login === user.dataValues.login) {
-					isInGame = true;
-					break;
-				}
-			}
-		}
-
-		this.statusList[user.dataValues.login] = {
-			time: Date.now(),
-			status: isInGame ? 'playing' : 'online',
-		};
-
-		for (let login in this.statusList) {
-			if (Date.now() - this.statusList[login].time > 10000) {
-				delete this.statusList[login];
-			}
-		}
-
-		this.server.emit('status', this.statusList);
+	handleDisconnect(client: Socket, ...args: any[]) {
+		console.log('disconnection', args);
 	}
 }
