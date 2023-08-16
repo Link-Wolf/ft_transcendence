@@ -79,6 +79,15 @@ export class User extends Model<User> {
 	})
 	pingDelay: number;
 
+	@Column({
+		type: DataType.STRING,
+		allowNull: true,
+		unique: true,
+	})
+	socketId: string;
+
+	/* RELATIONS */
+
 	@BelongsToMany(() => Game, () => UserGame)
 	games: Game[];
 
