@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { Link, useParams } from "react-router-dom";
+import { PPDisplayer } from "./ImageDisplayer";
 
 const Profile = () => {
 	const profileLogin = useParams<{ login: string }>().login ?? "";
@@ -35,28 +36,84 @@ const Profile = () => {
 		<div>
 			<h1>Profile</h1>
 			<p>This is ur profile buddy </p>
-			<Stats
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<Friends
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<Blocked
-				isMe={isMe}
-				login={profileLogin}
-			/>
+			<MatchHistory isMe={isMe} login={profileLogin} />
+			<Friends isMe={isMe} login={profileLogin} />
+			<Blocked isMe={isMe} login={profileLogin} />
+			<Settings isMe={isMe} login={profileLogin} />
 			<Link to='/me/update'>Update</Link>
 			<button onClick={logout}>Log out</button>
 		</div>
 	);
 };
 
-const Stats = ({ isMe, login }: { isMe: boolean; login: string }) => {
+const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 	/**
-	 * Stats infos
+	 * History of games played
 	 */
+	const user = useContext(UserContext);
+	const [rankedGames, setRankedGames] = useState<any[]>([]);
+	const [normalGames, setNormalGames] = useState<any[]>([]);
+
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user-game/user/${login}`
+			)
+			.then((res) => {
+				let ranked = Array<any>();
+				let normal = Array<any>();
+				res.data.forEach((game: any) => {
+					if (game.game.isRanked) ranked.push(game);
+					else normal.push(game);
+				});
+				setRankedGames(ranked);
+				setNormalGames(normal);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
+
+	return (
+		<div>
+			<h2>Match history</h2>
+			<h3>Ranked</h3>
+			<ul>
+				{rankedGames.length > 0 &&
+					rankedGames.map((game, i) => {
+						return (
+							<li key={i}>
+								{/* PP du user */}
+								{<PPDisplayer login={user.login} avatar={game.user.avatar} size={69} />}
+								{/* Score du user */}
+								{game}
+								{game.opp}
+								{game.score === 11 ? "You won" : "You lost"}{" "}
+								against{" "}
+								{game.winnerLogin !== user.login
+									? game.winnerLogin
+									: game.loserLogin}{" "}
+								on {game.date}
+							</li>
+						);
+					})}
+			</ul>
+			<h3>Not ranked</h3>
+			<ul>
+				{/* {normalGames.length > 0 &&
+					normalGames.map((game, i) => {
+						return (
+							<li key={i}>
+							</li>
+						);
+					})} */}
+			</ul>
+			<MatchStats isMe={isMe} login={login} />
+		</div>
+	);
+};
+
+const MatchStats = ({ isMe, login }: { isMe: boolean; login: string }) => {
 	const user = useContext(UserContext);
 	const [gameResults, setGameResults] = useState({
 		wins: 0,
@@ -168,6 +225,21 @@ const Blocked = ({ isMe, login }: { isMe: boolean; login: string }) => {
 					blockedUsers.map((blockedUser, i) => {
 						return <li key={i}>{blockedUser.blockedLogin}</li>;
 					})}
+			</ul>
+		</div>
+	);
+};
+const Settings = ({ isMe, login }: { isMe: boolean; login: string }) => {
+	/**
+	 * Settings
+	 */
+	return (
+		<div>
+			<h2>Settings</h2>
+			<ul>
+				<li>Change name</li>
+				<li>Change avatar</li>
+				<li>Change TFA</li>
 			</ul>
 		</div>
 	);

@@ -92,6 +92,11 @@ export class UserGameController {
 		let ret = await this.userGameService.findByUser(login);
 		if (!ret)
 			throw new HttpException('UserGame Not Found', HttpStatus.NOT_FOUND);
+		for (let i = 0; i < ret.length; i++) {
+			ret[i].dataValues.game = await this.gameService.findById(
+				ret[i].gameId,
+			);
+		}
 		return ret;
 	}
 

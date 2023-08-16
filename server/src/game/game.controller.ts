@@ -97,6 +97,35 @@ export class GameController {
 	}
 
 	/**
+	 * @brief Get all games by player, ranked or not
+	 * @param {string} login - Player login
+	 * @return {Game[]} Games
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 400 - Bad Request
+	 * @response 401 - Unauthorized
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('all/player/:login')
+	@UseGuards(UserClearanceGuard)
+	async findAllByPlayer(@Param('login') login: string): Promise<Game[]> {
+		if (!login) {
+			throw new HttpException(
+				'Missing parameters',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		let player = await this.userService.findByLogin(login);
+		if (!player) {
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		}
+		let ret = await this.gameService.findByPlayer(login, true);
+		ret = ret.concat(await this.gameService.findByPlayer(login, false));
+		return ret;
+	}
+
+	/**
 	 * @brief Create a game
 	 * @param {boolean} isRanked - Ranked game
 	 * @param {string} playerALogin - Player A login

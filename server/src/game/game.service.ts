@@ -75,13 +75,13 @@ export class GameService {
 	 */
 	async findByPlayer(
 		login: string,
-		ranked: boolean = false,
+		isRanked: boolean = false,
 	): Promise<Game[]> {
 		try {
 			let ret = await this.gameRepository.findAll<Game>({
 				include: [{ all: true }],
 				where: {
-					...(ranked ? { ranked: ranked } : {}),
+					...(isRanked ? { isRanked: isRanked } : {}),
 				},
 			});
 			return ret.filter((game) => {
