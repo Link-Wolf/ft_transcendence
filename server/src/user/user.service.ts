@@ -58,6 +58,17 @@ export class UserService {
 		}
 	}
 
+	async findBySocketId(id: string): Promise<User> {
+		try {
+			return await this.userRepository.findOne<User>({
+				where: { socketId: id },
+				include: [{ all: true }],
+			});
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	/**
 	 * @brief   Create a user with sequelize
 	 * @param   {UserDto} userDto   The user to create

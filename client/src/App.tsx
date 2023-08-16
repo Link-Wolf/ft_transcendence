@@ -22,25 +22,32 @@ const App = () => {
 	});
 
 	useEffect(() => {
-		socket.emit("ping", { auth: Cookies.get("token") });
-		let pingInterval = setInterval(() => {
-			socket.emit("ping", {
+		socket.on("connect", () => {
+			socket.emit("log", {
 				auth: Cookies.get("token"),
-				path: window.location.pathname,
-			});
-		}, 10000);
-
-		socket.on("status", (data) => {
-			setClearance((clearance) => {
-				return {
-					...clearance,
-					status: { ...clearance.status, ...data },
-				};
 			});
 		});
 
+		const emitBlur = () => {
+			socket.emit("blur", {
+				auth: Cookies.get("token"),
+			});
+		};
+
+		const emitFocus = () => {
+			socket.emit("focus", {
+				auth: Cookies.get("token"),
+			});
+		};
+
+		window.addEventListener("blur", emitBlur);
+
+		window.addEventListener("focus", emitFocus);
+
 		return () => {
-			clearInterval(pingInterval);
+			socket.off("connect");
+			window.removeEventListener("blur", emitBlur);
+			window.removeEventListener("focus", emitFocus);
 		};
 	}, []);
 

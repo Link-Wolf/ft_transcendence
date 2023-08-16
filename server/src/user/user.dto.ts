@@ -42,4 +42,6 @@ export class UserDto {
 	pongKey?: string;
 
 	pingDelay?: number;
+
+	socketId?: string;
 }

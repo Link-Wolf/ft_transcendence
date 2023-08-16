@@ -357,6 +357,7 @@ export class AppGateway
 
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
+		//TODO: change status to waiting
 		// //verifiy the user
 		if (!payload.auth) return;
 		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
@@ -412,6 +413,7 @@ export class AppGateway
 
 	@SubscribeMessage('quitWaitRoom')
 	async handleQuitWaitRoom(client: Socket, payload: any): Promise<number> {
+		// TODO: change status to online
 		console.log('quitWaitRoom', payload);
 		if (!payload.auth) {
 			console.log('no auth');
@@ -451,11 +453,6 @@ export class AppGateway
 		let player = game.players.find((p) => p.login === payload.login);
 		if (!player) return;
 		player.inputs = payload.keys;
-
-		this.statusList[payload.login] = {
-			...this.statusList[payload.login],
-			lastGameInteraction: Date.now(),
-		};
 	}
 
 	/*********************************************************
@@ -464,11 +461,74 @@ export class AppGateway
 	 * 					            						 *
 	 ********************************************************/
 
-	handleConnection(client: Socket, payload: any) {
-		console.log('connection', payload);
+	handleConnection(client: Socket) {}
+
+	async handleDisconnect(client: Socket, ...args: any[]) {
+		let user = await this.userService.findBySocketId(client.id);
+		if (!user) return;
+
+		let game = this.game.find((g) => {
+			return g.players.find((p) => p.login === user.login);
+		});
+		if (game) this.stopGame(this.game[game.gameId]);
+
+		this.userService.update({
+			//NOTE: might store it in RAM
+			login: user.login,
+			socketId: null,
+			status: 'offline',
+		});
+		this.logger.log(`${user.dataValues.login} is now offline`);
+		//TODO: tell ppl there is a new update of status
 	}
 
-	handleDisconnect(client: Socket, ...args: any[]) {
-		console.log('disconnection', args);
+	@SubscribeMessage('log')
+	async handleLog(client: Socket, payload: any): Promise<void> {
+		if (!payload.auth) return;
+		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
+		if (!session) return;
+		let user = await this.userService.findByLogin(session.login);
+		if (!user) return;
+
+		this.userService.update({
+			//NOTE: might store it in RAM
+			login: user.login,
+			socketId: client.id,
+			status: 'online',
+		});
+		this.logger.log(`${user.dataValues.login} is now online`);
+		//TODO: tell ppl there is a new update of status
+	}
+
+	@SubscribeMessage('away')
+	async handleAway(client: Socket, payload: any): Promise<void> {
+		if (!payload.auth) return;
+		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
+		if (!session) return;
+		let user = await this.userService.findByLogin(session.login);
+		if (!user) return;
+
+		this.userService.update({
+			//NOTE: might store it in RAM
+			login: user.login,
+			status: 'away',
+		});
+		this.logger.log(`${user.dataValues.login} is now away`);
+	}
+
+	@SubscribeMessage('back')
+	async handleBack(client: Socket, payload: any): Promise<void> {
+		if (!payload.auth) return;
+		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
+		if (!session) return;
+		let user = await this.userService.findByLogin(session.login);
+		if (!user) return;
+
+		this.userService.update({
+			//NOTE: might store it in RAM
+			login: user.login,
+			status: 'online',
+		});
+		this.logger.log(`${user.dataValues.login} is back online`);
 	}
 }
