@@ -36,7 +36,7 @@ const Message = ({
 	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
-			<img
+			{/* <img
 				src={`data:image/*;base64,${avatar}`}
 				alt='avatar'
 				style={{
@@ -46,7 +46,7 @@ const Message = ({
 					marginRight: "5px",
 				}}
 			/>
-			<StatusIcon login={login} />
+			<StatusIcon login={login} /> */}
 			{user.login !== login ? (
 				<button onClick={toggleBox}>
 					{login} {relation.isBlocked ? "(bloqué)" : ""}
@@ -62,16 +62,18 @@ const Message = ({
 					{!relation.isBlocked && (
 						<button onClick={askForGame}>Faire une partie</button>
 					)}
-					{!relation.isBlocked && <button
-						onClick={() => {
-							toggleFriendship(login);
-							toggleBox();
-						}}
-					>
-						{relation.isFriend
-							? "Message privé"
-							: "Demander en ami"}
-					</button>}
+					{!relation.isBlocked && (
+						<button
+							onClick={() => {
+								toggleFriendship(login);
+								toggleBox();
+							}}
+						>
+							{relation.isFriend
+								? "Message privé"
+								: "Demander en ami"}
+						</button>
+					)}
 					<button
 						onClick={() => {
 							toggleBlock(login);

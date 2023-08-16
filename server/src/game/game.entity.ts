@@ -27,7 +27,7 @@ export class Game extends Model<Game> {
     isRanked: boolean;
 
     @Column({
-        type: DataType.ENUM('ongoing', 'finished', 'aborted', 'waiting'),
+        type: DataType.ENUM('ongoing', 'finished', 'abandoned', 'waiting'),
         allowNull: false
     })
     status: string;

@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import StatusIcon from "./StatusIcon";
 
-const PPDisplayer = ({ login, size }: { login: string; size: number }) => {
-	const [imageURL, setImageURL] = useState("");
+const PPDisplayer = ({
+	login,
+	size,
+	avatar,
+}: {
+	login: string;
+	size: number;
+	avatar?: {
+		data: string;
+	};
+}) => {
+	const [imageURL, setImageURL] = useState(avatar?.data);
 
 	useEffect(() => {
+		if (avatar) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
@@ -15,16 +27,23 @@ const PPDisplayer = ({ login, size }: { login: string; size: number }) => {
 			.catch((error) => {
 				console.error("Error fetching image:", error);
 			});
-	}, [login]);
+	}, [login, avatar]);
 
 	return (
 		<div>
 			{imageURL ? (
-				<img
-					src={imageURL}
-					alt='pp'
-					style={{ width: size, height: size }}
-				/>
+				<>
+					<img
+						src={imageURL}
+						alt='pp'
+						style={{
+							width: size,
+							height: size,
+							borderRadius: "50%",
+						}}
+					/>
+					<StatusIcon login={login} size={size} />
+				</>
 			) : (
 				<p>Loading image...</p>
 			)}

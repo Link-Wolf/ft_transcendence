@@ -346,6 +346,7 @@ export class AppGateway
 
 	stopGame(game: GameData, abort: boolean = false) {
 		//TODO: uaw argument to abort instead of finish
+		//TODO: update score in db
 		if (!game) return;
 		clearInterval(game.loop);
 		this.game[game.gameId] = null;
