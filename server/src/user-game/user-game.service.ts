@@ -79,12 +79,12 @@ export class UserGameService {
 		}
 	}
 
-    /**
-     * @brief   Find the (unique) user game of login that is not finished
-     * @param   {string} login  The user's login
-     * @return  {UserGame}      The user game
-     * @throws  {HttpException} 500 if an error occured
-     */
+	/**
+	 * @brief   Find the (unique) user game of login that is not finished
+	 * @param   {string} login  The user's login
+	 * @return  {UserGame}      The user game
+	 * @throws  {HttpException} 500 if an error occured
+	 */
 	async findNotFinishedByLogin(login: string): Promise<UserGame> {
 		try {
 			let ret = await this.userGameRepository.findAll<UserGame>({
