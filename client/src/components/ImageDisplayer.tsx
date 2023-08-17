@@ -1,53 +1,55 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import StatusIcon from "./StatusIcon";
+import style from "../style/PPDisplayer.module.scss";
 
 const PPDisplayer = ({
 	login,
 	size,
-	avatar,
+	children,
+	status,
 }: {
 	login: string;
 	size: number;
-	avatar?: {
-		data: string;
-	};
+	status: boolean;
+	children?: React.ReactNode;
 }) => {
-	const [imageURL, setImageURL] = useState(avatar?.data);
+	const [image, setImage] = useState(children);
 
 	useEffect(() => {
-		if (avatar) return;
+		if (children) return;
+		if (!login) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
 			)
 			.then((response) => {
-				setImageURL(`data:image/*;base64,${response.data.avatar}`);
+				setImage(
+					<img src={`data:image/*;base64,${response.data.avatar}`} />
+				);
 			})
 			.catch((error) => {
 				console.error("Error fetching image:", error);
 			});
-	}, [login, avatar]);
+	}, [login, children]);
 
 	return (
-		<div>
-			{imageURL ? (
-				<>
-					<img
-						src={imageURL}
-						alt='pp'
-						style={{
-							width: size,
-							height: size,
-							borderRadius: "50%",
-						}}
-					/>
-					<StatusIcon login={login} size={size} />
-				</>
+		<>
+			{image ? (
+				<div
+					style={{
+						width: size,
+						height: size,
+					}}
+					className={style.PPDisplayer}
+				>
+					{image}
+					{status && <StatusIcon login={login} size={size} />}
+				</div>
 			) : (
 				<p>Loading image...</p>
 			)}
-		</div>
+		</>
 	);
 };
 

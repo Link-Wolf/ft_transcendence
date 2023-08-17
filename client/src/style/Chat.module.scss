@@ -11,7 +11,7 @@
 	max-width: calc(var(--height) / 1.618);
 	max-height: var(--height);
 
-	position: absolute;
+	position: fixed;
 	bottom: calc(50px);
 	right: calc(50px);
 	// overflow: hidden;

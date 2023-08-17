@@ -39,16 +39,20 @@ export class FriendshipService {
 		try {
 			return await this.friendshipRepository.findOne<Friendship>({
 				where: {
-					[Op.or]: {
-						[Op.and]: [
-							{ senderLogin: loginA },
-							{ receiverLogin: loginB },
-						],
-						[Op.and]: [
-							{ senderLogin: loginB },
-							{ receiverLogin: loginA },
-						],
-					},
+					[Op.or]: [
+						{
+							[Op.and]: [
+								{ senderLogin: loginA },
+								{ receiverLogin: loginB },
+							],
+						},
+						{
+							[Op.and]: [
+								{ senderLogin: loginB },
+								{ receiverLogin: loginA },
+							],
+						},
+					],
 				},
 				include: [{ all: true }],
 			});

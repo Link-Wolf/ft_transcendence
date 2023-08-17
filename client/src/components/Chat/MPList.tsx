@@ -115,7 +115,11 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 						key={i}
 						onClick={() => setChannel(membership.channelName)}
 					>
-						<PPDisplayer size={100} login={membership.userLogin} />
+						<PPDisplayer
+							size={100}
+							login={membership.userLogin}
+							status={true}
+						/>
 						{membership.userLogin}
 					</div>
 				))
