@@ -18,7 +18,6 @@ import { Col } from 'sequelize/types/utils';
 
 @Table({ tableName: 'User' })
 export class User extends Model<User> {
-	//TODO: ajouter un status (online, offline, playing, etc.)
 	@PrimaryKey
 	@Column({
 		type: DataType.STRING,
