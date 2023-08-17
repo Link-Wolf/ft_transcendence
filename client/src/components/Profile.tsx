@@ -5,6 +5,7 @@ import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { Link, useParams } from "react-router-dom";
 import { PPDisplayer } from "./ImageDisplayer";
 import { use } from "matter-js";
+import Update from "./Update";
 
 const Profile = () => {
 	const profileLogin = useParams<{ login: string }>().login ?? "";
@@ -46,9 +47,9 @@ const Profile = () => {
 			/>
 			{isMe && (
 				<>
-					<Friends login={profileLogin} />
-					<Blocked login={profileLogin} />
-					<Settings login={profileLogin} />
+					<Friends />
+					<Blocked />
+					<Update />
 				</>
 			)}
 			{!isMe && <SocialInterractions login={profileLogin} />}
@@ -338,7 +339,7 @@ const MatchStats = ({
 	);
 };
 
-const Friends = ({ login }: { login: string }) => {
+const Friends = () => {
 	/**
 	 * Friends management, list and requests
 	 */
@@ -350,7 +351,7 @@ const Friends = ({ login }: { login: string }) => {
 		if (!update) return;
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}`
 			)
 			.then((res) => {
 				setFriendShips(res.data);
@@ -442,7 +443,7 @@ const Friends = ({ login }: { login: string }) => {
 	);
 };
 
-const Blocked = ({ login }: { login: string }) => {
+const Blocked = () => {
 	/**
 	 * Blocked users management and list
 	 */
@@ -454,7 +455,7 @@ const Blocked = ({ login }: { login: string }) => {
 		if (!update) return;
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/by/${login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/by/${user.login}`
 			)
 			.then((res) => {
 				setBlocks(res.data);
@@ -532,27 +533,22 @@ const Blocked = ({ login }: { login: string }) => {
 	);
 };
 
-const Settings = ({ login }: { login: string }) => {
-	/**
-	 * Settings
-	 */
-	const context = useContext(UserContext);
-	const [user, setUser] = useState<any>({});
-	const [nameError, setNameError] = useState<string>("");
-	const [form, setForm] = useState({
-		name: "",
-		avatar: "",
-		hasTFA: false,
-		TFASecret: "",
-	});
+const SocialInterractions = ({ login }: { login: string }) => {
+	//TODO: component only loaded on another user's profile, with buttons to block him, add him as friend, ask for a game, etc
+
+	const user = useContext(UserContext);
+	const [isFriend, setIsFriend] = useState<boolean>(false);
+	const [isBlocked, setIsBlocked] = useState<boolean>(false);
+	const [isBlockedBy, setIsBlockedBy] = useState<boolean>(false);
+	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
 			)
 			.then((res) => {
-				setUser(res.data);
+				setIsFriend(res.data.length > 0);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -560,68 +556,74 @@ const Settings = ({ login }: { login: string }) => {
 	}, []);
 
 	useEffect(() => {
-		if (form.name === "" || form.name === user.name) return;
-		if (form.name.length < 3) {
-			setNameError("Username must be at least 3 characters long");
-		} else if (!/^[a-zA-Z]+$/.test(form.name)) {
-			setNameError("Username must only contain letters");
-		} else {
-			setNameError("");
-		}
-	}, [form.name]);
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
+			)
+			.then((res) => {
+				setIsBlocked(res.data.length > 0);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
 
-	if (
-		!context.clearance ||
-		context.clearance === 0 ||
-		context.login !== login
-	)
-		return <ThereIsNotEnoughPermsBro />;
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
+			)
+			.then((res) => {
+				setIsBlockedBy(res.data.length > 0);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
 
-	const handleFormChange = (e: any) => {
-		setForm({ ...form, [e.target.id]: e.target.value });
+	const toggleBlock = async () => {
+		//TODO:
 	};
 
-	const updateProfile = async () => {
-		//TODO: update profile
-		return;
+	const blockUser = async () => {
+		//TODO:
+	};
+
+	const unblockUser = async () => {
+		//TODO:
+	};
+
+	const toggleFriend = async () => {
+		//TODO:
+	};
+
+	const addFriend = async () => {
+		//TODO:
+	};
+
+	const removeFriend = async () => {
+		//TODO:
+	};
+
+	const askForGame = async () => {
+		//TODO:
 	};
 
 	return (
 		<>
-			<h2>Settings</h2>
-			<form>
-				<div>
-					<label>Username</label>
-					<input
-						id='name'
-						type='text'
-						value={form.name}
-						onChange={handleFormChange}
-						placeholder='myAwesomeNewUsername'
-					/>
-					{nameError !== "" && <div>{nameError}</div>}
-				</div>
-				<div>
-					<PPDisplayer
-						login={context.login}
-						size={400}
-						status={false}
-					/>
-					<input type='file' />
-				</div>
-				<div>
-					<label>TFA</label>
-					<input type='text' />
-				</div>
-				<button onChange={updateProfile}>Update</button>
-			</form>
+			{!isBlockedBy && (
+				<button onClick={askForGame}>Ask for a game</button>
+			)}
+			{!isBlockedBy && (
+				<button onClick={toggleFriend}>
+					{isFriend ? "Remove friend" : "Add friend"}
+				</button>
+			)}
+			<button onClick={toggleBlock}>
+				{isBlocked ? "Unblock" : "Block"}
+			</button>
 		</>
 	);
-};
-
-const SocialInterractions = ({ login }: { login: string }) => {
-	//TODO: component only loads on another user's profile, with buttons to block him, add him as friend, ask for a game, etc
-	return <></>;
 };
 
 export default Profile;
