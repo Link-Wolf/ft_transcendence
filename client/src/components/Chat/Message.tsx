@@ -24,7 +24,7 @@ const Message = ({
 	const user = useContext(UserContext);
 
 	const toggleBox = async () => {
-		if (login === user.login) return redirect("/me"); //TODO: replace the redirect by something else that works
+		if (login === user.login) return redirect(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
 		setIsToggleBox(!isToggleBox);
 	};
 
