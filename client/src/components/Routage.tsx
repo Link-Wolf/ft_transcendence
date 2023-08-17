@@ -6,6 +6,7 @@ import Login from "./Login";
 import ThereIsNoFuckingPageBro from "./ThereIsNoFuckingPageBro";
 import Chat from "./Chat";
 import Game from "./Game";
+import Update from "./Update";
 
 const Routage = () => {
 	/**
@@ -28,10 +29,13 @@ const Routage = () => {
 					element={<Login />}
 				/>
 				<Route
+					path='/me/update'
+					element={<Update />}
+				/>
+				<Route
 					path='/game'
 					element={<Game />}
 				/>
-
 				<Route
 					path='*'
 					element={<ThereIsNoFuckingPageBro />}
