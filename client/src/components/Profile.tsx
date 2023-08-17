@@ -36,27 +36,16 @@ const Profile = () => {
 	return (
 		<div>
 			<h1>Profile</h1>
-			<Resume
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<MatchHistory
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<Friends
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<Blocked
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<Settings
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<Link to='/me/update'>Update</Link>
+			<Resume isMe={isMe} login={profileLogin} />
+			<MatchHistory isMe={isMe} login={profileLogin} />
+			{isMe && (
+				<>
+					<Friends login={profileLogin} />
+					<Blocked login={profileLogin} />
+					<Settings login={profileLogin} />
+				</>
+			)}
+			{!isMe && <SocialInterractions login={profileLogin} />}
 			<button onClick={logout}>Log out</button>
 		</div>
 	);
@@ -72,7 +61,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
 			)
 			.then((res) => {
-				console.log(res.data);
+				setUser(res.data);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -81,10 +70,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 
 	return (
 		<>
-			<PPDisplayer
-				login={user.login}
-				size={420}
-			/>
+			<PPDisplayer login={user.login} size={420} status={true} />
 			<div>
 				{user.name} ({user.login})
 			</div>
@@ -163,9 +149,14 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 								{
 									<PPDisplayer
 										login={user.login}
-										avatar={{ data: game.user.avatar }}
 										size={69}
-									/>
+										status={false}
+									>
+										<img
+											src={`data:image/*;base64,${game.user.avatar}`}
+											alt='Profile picture'
+										/>
+									</PPDisplayer>
 								}
 								{/* Nom du user */}
 								<div>{game.user.name}</div>
@@ -180,6 +171,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 									<PPDisplayer
 										login={game.opponentUserGame.userLogin}
 										size={69}
+										status={false}
 									/>
 								}
 							</li>
@@ -220,6 +212,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 									<PPDisplayer
 										login={user.login}
 										size={69}
+										status={false}
 									/>
 								}
 								{/* Nom du user */}
@@ -235,6 +228,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 									<PPDisplayer
 										login={game.opponentUserGame.userLogin}
 										size={69}
+										status={false}
 									/>
 								}
 							</li>
@@ -334,25 +328,56 @@ const MatchStats = ({
 	);
 };
 
-const Friends = ({ isMe, login }: { isMe: boolean; login: string }) => {
+const Friends = ({ login }: { login: string }) => {
 	/**
 	 * Friends management, list and requests
 	 */
 	const user = useContext(UserContext);
 	const [friendShips, setFriendShips] = useState<any[]>([]);
+	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
+		if (!update) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${login}`
 			)
 			.then((res) => {
 				setFriendShips(res.data);
+				setUpdate(false);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [update]);
+
+	const removeFriend = async (friendLogin: string) => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${friendLogin}/${user.login}`
+			)
+			.then(async (res) => {
+				if (res.data) {
+					await axios
+						.delete(
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${friendLogin}/${user.login}`,
+							{
+								withCredentials: true,
+							}
+						)
+
+						.catch((err) => {
+							console.log(err);
+						});
+				}
+			})
+			.then(() => {
+				setUpdate(true);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
 	return (
 		<div>
@@ -361,13 +386,29 @@ const Friends = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				<li>
 					Friend List (default)
 					<ul>
-						{friendShips.length &&
+						{friendShips.length > 0 &&
 							friendShips.map((friendShip, i) => {
+								let friend: any;
+								if (friendShip.sender.login === user.login)
+									friend = friendShip.receiver;
+								else friend = friendShip.sender;
 								return (
 									<li key={i}>
-										{friendShip.senderLogin !== user.login
-											? friendShip.senderLogin
-											: friendShip.receiverLogin}
+										<PPDisplayer
+											login={friend.login}
+											size={69}
+											status={true}
+										/>
+										<div>{friend.name}</div>
+										<div>{friend.login}</div>
+										<button
+											onClick={() => {
+												removeFriend(friend.login);
+											}}
+										>
+											{" "}
+											Remove friend{" "}
+										</button>
 									</li>
 								);
 							})}
@@ -385,7 +426,7 @@ const Friends = ({ isMe, login }: { isMe: boolean; login: string }) => {
 	);
 };
 
-const Blocked = ({ isMe, login }: { isMe: boolean; login: string }) => {
+const Blocked = ({ login }: { login: string }) => {
 	/**
 	 * Blocked users management
 	 */
@@ -417,20 +458,56 @@ const Blocked = ({ isMe, login }: { isMe: boolean; login: string }) => {
 		</div>
 	);
 };
-const Settings = ({ isMe, login }: { isMe: boolean; login: string }) => {
+const Settings = ({ login }: { login: string }) => {
 	/**
 	 * Settings
 	 */
+	const user = useContext(UserContext);
+
+	const [form, setForm] = useState({
+		name: "",
+		avatar: "",
+		hasTFA: false,
+		TFASecret: "",
+	});
+
+	useEffect(() => {}, []);
+
+	if (!user.clearance || user.clearance === 0 || user.login !== login)
+		return <ThereIsNotEnoughPermsBro />;
+
+	const handleFormChange = (e: any) => {
+		setForm({ ...form, [e.target.name]: e.target.value });
+	};
+
 	return (
-		<div>
+		<>
 			<h2>Settings</h2>
-			<ul>
-				<li>Change name</li>
-				<li>Change avatar</li>
-				<li>Change TFA</li>
-			</ul>
-		</div>
+			<form>
+				<div>
+					<label>Username</label>
+					<input
+						type='text'
+						value={form.name}
+						onChange={handleFormChange}
+					/>
+				</div>
+				<div>
+					<PPDisplayer login={user.login} size={400} status={false} />
+					<input type='file' />
+				</div>
+				<div>
+					<label>TFA</label>
+					<input type='text' />
+				</div>
+				<button>Update</button>
+			</form>
+		</>
 	);
+};
+
+const SocialInterractions = ({ login }: { login: string }) => {
+	return <></>;
 };
 
 export default Profile;
