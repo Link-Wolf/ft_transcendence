@@ -36,8 +36,14 @@ const Profile = () => {
 	return (
 		<div>
 			<h1>Profile</h1>
-			<Resume isMe={isMe} login={profileLogin} />
-			<MatchHistory isMe={isMe} login={profileLogin} />
+			<Resume
+				isMe={isMe}
+				login={profileLogin}
+			/>
+			<MatchHistory
+				isMe={isMe}
+				login={profileLogin}
+			/>
 			{isMe && (
 				<>
 					<Friends login={profileLogin} />
@@ -70,7 +76,11 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 
 	return (
 		<>
-			<PPDisplayer login={user.login} size={420} status={true} />
+			<PPDisplayer
+				login={user.login}
+				size={420}
+				status={true}
+			/>
 			<div>
 				{user.name} ({user.login})
 			</div>
@@ -401,6 +411,10 @@ const Friends = ({ login }: { login: string }) => {
 										/>
 										<div>{friend.name}</div>
 										<div>{friend.login}</div>
+										<div>
+											Friende since{" "}
+											{friendShip.created_at}
+										</div>
 										<button
 											onClick={() => {
 												removeFriend(friend.login);
@@ -418,7 +432,9 @@ const Friends = ({ login }: { login: string }) => {
 					Requests
 					<ul>
 						<li>Sent</li>
+						{/* TODO: friend requests sent by the user */}
 						<li>Received</li>
+						{/* TODO: friend requests received by the user and not accepted nor refused yet */}
 					</ul>
 				</li>
 			</ul>
@@ -428,42 +444,101 @@ const Friends = ({ login }: { login: string }) => {
 
 const Blocked = ({ login }: { login: string }) => {
 	/**
-	 * Blocked users management
+	 * Blocked users management and list
 	 */
 	const user = useContext(UserContext);
-	const [blockedUsers, setBlockedUsers] = useState<any[]>([]);
+	const [blocks, setBlocks] = useState<any[]>([]);
+	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
+		if (!update) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/by/${login}`
 			)
 			.then((res) => {
-				setBlockedUsers(res.data);
+				setBlocks(res.data);
+				setUpdate(false);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [update]);
+
+	const unblock = async (friendLogin: string) => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${friendLogin}`
+			)
+			.then(async (res) => {
+				if (res.data) {
+					await axios
+						.delete(
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${friendLogin}`,
+							{
+								withCredentials: true,
+							}
+						)
+
+						.catch((err) => {
+							console.log(err);
+						});
+				}
+			})
+			.then(() => {
+				setUpdate(true);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
 	return (
 		<div>
 			<h2>Blocked users</h2>
 			<ul>
-				{blockedUsers.length > 0 &&
-					blockedUsers.map((blockedUser, i) => {
-						return <li key={i}>{blockedUser.blockedLogin}</li>;
-					})}
+				<li>
+					Block List (default)
+					<ul>
+						{blocks.length > 0 &&
+							blocks.map((block, i) => {
+								let blocked = block.blocked;
+								return (
+									<li key={i}>
+										<PPDisplayer
+											login={blocked.login}
+											size={69}
+											status={false}
+										/>
+										<div>{blocked.name}</div>
+										<div>{blocked.login}</div>
+										<div>
+											Blocked since {blocked.created_at}
+										</div>
+										<button
+											onClick={() => {
+												unblock(blocked.login);
+											}}
+										>
+											Unblock
+										</button>
+									</li>
+								);
+							})}
+					</ul>
+				</li>
 			</ul>
 		</div>
 	);
 };
+
 const Settings = ({ login }: { login: string }) => {
 	/**
 	 * Settings
 	 */
-	const user = useContext(UserContext);
-
+	const context = useContext(UserContext);
+	const [user, setUser] = useState<any>({});
+	const [nameError, setNameError] = useState<string>("");
 	const [form, setForm] = useState({
 		name: "",
 		avatar: "",
@@ -471,13 +546,44 @@ const Settings = ({ login }: { login: string }) => {
 		TFASecret: "",
 	});
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
+			)
+			.then((res) => {
+				setUser(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
 
-	if (!user.clearance || user.clearance === 0 || user.login !== login)
+	useEffect(() => {
+		if (form.name === "" || form.name === user.name) return;
+		if (form.name.length < 3) {
+			setNameError("Username must be at least 3 characters long");
+		} else if (!/^[a-zA-Z]+$/.test(form.name)) {
+			setNameError("Username must only contain letters");
+		} else {
+			setNameError("");
+		}
+	}, [form.name]);
+
+	if (
+		!context.clearance ||
+		context.clearance === 0 ||
+		context.login !== login
+	)
 		return <ThereIsNotEnoughPermsBro />;
 
 	const handleFormChange = (e: any) => {
-		setForm({ ...form, [e.target.name]: e.target.value });
+		setForm({ ...form, [e.target.id]: e.target.value });
+	};
+
+	const updateProfile = async () => {
+		//TODO: update profile
+		return;
 	};
 
 	return (
@@ -487,26 +593,34 @@ const Settings = ({ login }: { login: string }) => {
 				<div>
 					<label>Username</label>
 					<input
+						id='name'
 						type='text'
 						value={form.name}
 						onChange={handleFormChange}
+						placeholder='myAwesomeNewUsername'
 					/>
+					{nameError !== "" && <div>{nameError}</div>}
 				</div>
 				<div>
-					<PPDisplayer login={user.login} size={400} status={false} />
+					<PPDisplayer
+						login={context.login}
+						size={400}
+						status={false}
+					/>
 					<input type='file' />
 				</div>
 				<div>
 					<label>TFA</label>
 					<input type='text' />
 				</div>
-				<button>Update</button>
+				<button onChange={updateProfile}>Update</button>
 			</form>
 		</>
 	);
 };
 
 const SocialInterractions = ({ login }: { login: string }) => {
+	//TODO: component only loads on another user's profile, with buttons to block him, add him as friend, ask for a game, etc
 	return <></>;
 };
 
