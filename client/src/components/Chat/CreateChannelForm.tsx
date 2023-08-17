@@ -18,11 +18,6 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	}, [data.name]);
 
 	useEffect(() => {
-		console.log(
-			data.pass,
-			data.pass.length.toString(),
-			data.pass.includes(data.pass.length.toString())
-		);
 		if (data.pass === "") {
 		} else if (data.pass.length < 8) {
 			setPassError("Password must be at least 8 characters long");
@@ -49,12 +44,10 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 		} else if (
 			data.pass.toLowerCase().includes(user.login[0].toLowerCase())
 		) {
-			console.log("non");
 			setPassError(
 				"For security reasons, the password can not contains the first letter of the channel owner login (you)"
 			);
 		} else {
-			console.log("oui");
 			setPassError("");
 		}
 	}, [data.pass, tutors, user.login]);
