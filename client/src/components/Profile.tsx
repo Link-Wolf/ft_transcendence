@@ -136,17 +136,13 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<ul>
 				{rankedGames.length > 0 ? (
 					rankedGames.map((game, i) => {
-						if (game.game.status === "ongoing")
-							return (
-								<>
-									Oui oui je ferai un cas particulier pour les
-									ongoing TODO: tout ca tout ca
-								</>
-							);
+						if (game.game.status === "waiting") return;
 						return (
 							<li key={i}>
 								{/* Status */}
 								<div>
+									{game.game.status === "ongoing" &&
+										"Ongoing"}
 									{game.game.status === "abandoned" &&
 										(game.score === 11
 											? "Victory (by abandonment)"
@@ -162,19 +158,18 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 										login={user.login}
 										size={69}
 										status={false}
-									>
-										<img
-											src={`data:image/*;base64,${game.user.avatar}`}
-											alt='Profile picture'
-										/>
-									</PPDisplayer>
+									/>
 								}
 								{/* Nom du user */}
 								<div>{game.user.name}</div>
-								{/* Score du user */}
-								<div>{game.score}</div>
-								{/* Score de l'adversaire */}
-								<div>{game.opponentUserGame.score}</div>
+								{game.game.status !== "ongoing" && (
+									<>
+										{/* Score du user */}
+										<div>{game.score}</div>
+										{/* Score de l'adversaire */}
+										<div>{game.opponentUserGame.score}</div>
+									</>
+								)}
 								{/* Nom de l'adversaire */}
 								<div>{game.opponentUserGame.userLogin}</div>
 								{/* PP de l'adversaire */}
@@ -198,17 +193,12 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 					normalGames.map((game, i) => {
 						console.log(game);
 						if (game.game.status === "waiting") return;
-						if (game.game.status === "ongoing")
-							return (
-								<>
-									Oui oui je ferai un cas particulier pour les
-									ongoing TODO: tout ca tout ca
-								</>
-							);
 						return (
 							<li key={i}>
 								{/* Status */}
 								<div>
+									{game.game.status === "ongoing" &&
+										"Ongoing"}
 									{game.game.status === "abandoned" &&
 										(game.score === 11
 											? "Victory (by abandonment)"
@@ -228,10 +218,14 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 								}
 								{/* Nom du user */}
 								<div>{game.user.name}</div>
-								{/* Score du user */}
-								<div>{game.score}</div>
-								{/* Score de l'adversaire */}
-								<div>{game.opponentUserGame.score}</div>
+								{game.game.status !== "ongoing" && (
+									<>
+										{/* Score du user */}
+										<div>{game.score}</div>
+										{/* Score de l'adversaire */}
+										<div>{game.opponentUserGame.score}</div>
+									</>
+								)}
 								{/* Nom de l'adversaire */}
 								<div>{game.opponentUserGame.userLogin}</div>
 								{/* PP de l'adversaire */}
