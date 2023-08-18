@@ -2,12 +2,14 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { PPDisplayer } from "./ImageDisplayer";
-import { use } from "matter-js";
 import Update from "./Update";
 
 const Profile = () => {
+	/**
+	 * Profile page, display the user's profile if the user is logged in and has enough clearance
+	 */
 	const profileLogin = useParams<{ login: string }>().login ?? "";
 	const user = useContext(UserContext);
 	const isMe = user.login === profileLogin;

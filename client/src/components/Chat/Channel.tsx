@@ -13,6 +13,9 @@ const Channel = ({
 	toggleShowlist: Function;
 	setChannel: Function;
 }) => {
+	/**
+	 * Channel component itself, display the messages and the input to send messages, and handle the messages
+	 */
 	const user = useContext(UserContext);
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);

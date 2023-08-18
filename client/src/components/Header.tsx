@@ -5,6 +5,9 @@ import style from "../style/Header.module.scss";
 import ThemeSwitcher from "./ThemeSwitcher";
 
 const Header = () => {
+	/**
+	 * Header component, display the logo, the name of the app and the auth component
+	 */
 	return (
 		<ul className={style.banner}>
 			<li>

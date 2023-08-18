@@ -5,6 +5,9 @@ import style from "../style/Chat.module.scss";
 import { useLocation } from "react-router-dom";
 
 const Chat = () => {
+	/**
+	 * Chat component, display the chatbox if the user is logged in and not on the game page
+	 */
 	const [chat, setChat] = useState(false);
 	const user = useContext(UserContext);
 	const location = useLocation();
@@ -34,7 +37,10 @@ const Chat = () => {
 
 const ChatButton = (props: any) => {
 	return (
-		<button className={style.toggleChat} onClick={props.onClick}>
+		<button
+			className={style.toggleChat}
+			onClick={props.onClick}
+		>
 			Toggle Chat
 		</button>
 	);

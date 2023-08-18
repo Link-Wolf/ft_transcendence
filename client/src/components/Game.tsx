@@ -5,9 +5,11 @@ import { UserContext } from "../App";
 import GameRender from "./GameRender/GameRender";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { Navigate } from "react-router-dom";
-import { clear } from "console";
 
 const Game = () => {
+	/**
+	 * Game component, display the game if the user is logged in and has the required clearance
+	 */
 	const [hasFoundGame, setHasFoundGame] = useState(false);
 	const [gameInfo, setGameInfo] = useState({
 		gameId: 0,

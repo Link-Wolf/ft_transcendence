@@ -5,6 +5,9 @@ import AddChannelMenu from "./AddChannelMenu";
 import style from "../../style/Chat.module.scss";
 
 const ChannelList = ({ setChannel }: { setChannel: Function }) => {
+	/**
+	 * List of channels, either display the list of channels the user is in, or the menu to join/create a channel
+	 */
 	const [channels, setChannels] = useState<String[]>([]);
 	const [newChannelVisibility, setNewChannelVisibility] = useState(false);
 	const context = useContext(UserContext);

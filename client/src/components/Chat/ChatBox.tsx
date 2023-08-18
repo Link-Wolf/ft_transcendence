@@ -5,6 +5,9 @@ import ChannelList from "./ChannelList";
 import MPList from "./MPList";
 
 const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
+	/**
+	 * Chatbox component, either call the current Channel component, or list the channels the user is in (both channels and dms)
+	 */
 	const [channel, setChannel] = useState<string | null>(null);
 	const [showList, setShowList] = useState(false);
 

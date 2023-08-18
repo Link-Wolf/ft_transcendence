@@ -6,7 +6,7 @@ import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 
 const Update = () => {
 	/**
-	 * Settings
+	 * Update component, display the user's settings
 	 */
 	const context = useContext(UserContext);
 	const [user, setUser] = useState<any>({});
