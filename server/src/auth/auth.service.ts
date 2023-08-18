@@ -49,16 +49,4 @@ export class AuthService {
 			});
 		return intraUser;
 	}
-
-	/**
-	 * @brief Verify the TOTP
-	 * @param {number} totp TOTP given by the user
-	 * @param {string} TFASecret Secret of the user
-	 * @returns {boolean} True if the TOTP is valid, false otherwise
-	 * @response 200 - OK
-	 * @response 500 - Internal server error
-	 */
-	async verifyTOTP(totp: number, TFASecret: string): Promise<boolean> {
-		return true;
-	}
 }

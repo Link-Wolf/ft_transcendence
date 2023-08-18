@@ -18,6 +18,7 @@ import { Request, Response } from 'express';
 import { JWTService } from './jwt.service';
 import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import axios from 'axios';
+import * as otplib from 'otplib';
 
 @Controller('auth')
 export class AuthController {
@@ -47,8 +48,9 @@ export class AuthController {
 	): Promise<{
 		status: string;
 		needToTFA: boolean;
+		login: string;
 	}> {
-		let status = 'logged';
+		let status = 'disconnected';
 		let intraUser = await this.authService.getIntraUser(code);
 		if (!intraUser)
 			throw new HttpException('Invalid code', HttpStatus.BAD_REQUEST);
@@ -91,6 +93,7 @@ export class AuthController {
 				clearance: Number(process.env.USER_CLEARANCE),
 				avatar: default_avatar_buffer,
 				name: randomString,
+				TFASecret: otplib.authenticator.generateSecret(),
 			});
 		}
 
@@ -112,7 +115,8 @@ export class AuthController {
 			},
 		);
 		return {
-			status: status,
+			login: user.dataValues.login,
+			status: user.dataValues.hasTFA ? 'connecting' : 'logged',
 			needToTFA: user.dataValues.hasTFA,
 		};
 	}
@@ -151,37 +155,37 @@ export class AuthController {
 		};
 	}
 
-	/**
-	 * @brief verify the TOTP code
-	 * @param {number} TOTP TOTP code
-	 * @param {Record<string, any>} session Session (redis)
-	 * @returns { {
-	 * 				status: 'logged'
-	 * 		} } Status of the login
-	 * @security Clearance user
-	 * @response 200 - OK
-	 * @response 400 - Bad request
-	 * @response 404 - Not found
-	 * @response 500 - Internal server error
-	 */
-	@Post('TFA')
-	@UseGuards(UserClearanceGuard)
-	async verifyTFA(
-		@Body('TOTP') TOTP: number,
-		@Req() req: Request,
-	): Promise<{ status: 'logged' }> {
-		let user = await this.userService.findByLogin(req.cookies.userLogin);
-		if (!user)
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		if (
-			!(await this.authService.verifyTOTP(
-				TOTP,
-				user.dataValues.TFASecret,
-			))
-		)
-			throw new HttpException('Invalid TOTP', HttpStatus.BAD_REQUEST);
-		return {
-			status: 'logged',
-		};
-	}
+	// /**
+	//  * @brief verify the TOTP code
+	//  * @param {number} TOTP TOTP code
+	//  * @param {Record<string, any>} session Session (redis)
+	//  * @returns { {
+	//  * 				status: 'logged'
+	//  * 		} } Status of the login
+	//  * @security Clearance user
+	//  * @response 200 - OK
+	//  * @response 400 - Bad request
+	//  * @response 404 - Not found
+	//  * @response 500 - Internal server error
+	//  */
+	// @Post('TFA')
+	// @UseGuards(UserClearanceGuard)
+	// async verifyTFA(
+	// 	@Body('TOTP') TOTP: number,
+	// 	@Req() req: Request,
+	// ): Promise<{ status: 'logged' }> {
+	// 	let user = await this.userService.findByLogin(req.cookies.userLogin);
+	// 	if (!user)
+	// 		throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+	// 	if (
+	// 		!(await this.authService.verifyTOTP(
+	// 			TOTP,
+	// 			user.dataValues.TFASecret,
+	// 		))
+	// 	)
+	// 		throw new HttpException('Invalid TOTP', HttpStatus.BAD_REQUEST);
+	// 	return {
+	// 		status: 'logged',
+	// 	};
+	// }
 }

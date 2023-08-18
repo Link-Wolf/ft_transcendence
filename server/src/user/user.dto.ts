@@ -22,6 +22,8 @@ export class UserDto {
 	@IsBoolean()
 	hasTFA?: boolean;
 
+	TFASecret?: string;
+
 	userGames?: UserGame[];
 
 	messages?: Message[];
@@ -45,3 +47,4 @@ export class UserDto {
 
 	socketId?: string;
 }
+
