@@ -4,6 +4,9 @@ import { UserContext } from "../../App";
 import CreateChannelForm from "./CreateChannelForm";
 
 const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
+	/**
+	 * Add channel menu, either create a channel or join one
+	 */
 	const [channels, setChannels] = useState<any[]>([]);
 	const [channelCreation, setChannelCreation] = useState(false);
 	const [joinChannel, setJoinChannel] = useState<any>(null);

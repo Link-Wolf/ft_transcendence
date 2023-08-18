@@ -4,6 +4,9 @@ import { UserContext } from "../../App";
 import { PPDisplayer } from "../ImageDisplayer";
 
 const MPList = ({ setChannel }: { setChannel: Function }) => {
+	/**
+	 * List of DMs, either display the list of DMs the user is in, or the menu to create a DM
+	 */
 	const [memberships, setMemberships] = useState<any[]>([]);
 	const [users, setUsers] = useState<any[]>([]);
 	const [selectedUser, setSelectedUser] = useState("");
@@ -92,7 +95,10 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 			<div>
 				<datalist id='new_dm_list'>
 					{users.map((user, i) => (
-						<option key={i} value={user.login} />
+						<option
+							key={i}
+							value={user.login}
+						/>
 					))}
 				</datalist>
 				<input

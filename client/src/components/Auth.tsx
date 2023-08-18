@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../App";
 
 const Auth = () => {
+	/**
+	 * Display the login button if the user is not logged in, or the profile button if the user is logged in
+	 */
 	const user = useContext(UserContext);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 

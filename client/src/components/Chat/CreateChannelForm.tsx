@@ -3,6 +3,9 @@ import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../App";
 
 const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
+	/**
+	 * Form to create a channel
+	 */
 	const user = useContext(UserContext);
 	const [data, setData] = useState({ name: "", pass: "" });
 	const [nameError, setNameError] = useState("");

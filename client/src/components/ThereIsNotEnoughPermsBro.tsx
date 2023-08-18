@@ -1,6 +1,6 @@
 const ThereIsNotEnoughPermsBro = () => {
 	/**
-	 * 401 Page
+	 * 401/403 Page
 	 */
 	return (
 		<>

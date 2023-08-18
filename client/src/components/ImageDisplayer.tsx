@@ -14,6 +14,9 @@ const PPDisplayer = ({
 	status: boolean;
 	children?: React.ReactNode;
 }) => {
+	/**
+	 * PPDisplayer component, display the user's avatar and status
+	 */
 	const [image, setImage] = useState(children);
 
 	useEffect(() => {

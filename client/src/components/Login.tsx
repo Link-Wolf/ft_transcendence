@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+	/**
+	 * Login component
+	 */
 	const navigate = useNavigate();
 	const [done, setDone] = useState(false);
 	const [needTFA, setNeedTFA] = useState(false);

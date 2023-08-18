@@ -5,7 +5,7 @@ import { PPDisplayer } from "./ImageDisplayer";
 
 const Home = () => {
 	/**
-	 * Home page
+	 * Home page, display a link to the game page if the user is logged in, or a link to the login page if the user is not logged in
 	 */
 
 	const user = useContext(UserContext);
@@ -17,7 +17,11 @@ const Home = () => {
 			{user.clearance > 0 ? (
 				<>
 					<Link to='/game'>Play</Link>
-					<PPDisplayer login={user.login} size={200} status={true} />
+					<PPDisplayer
+						login={user.login}
+						size={200}
+						status={true}
+					/>
 				</>
 			) : (
 				<Link

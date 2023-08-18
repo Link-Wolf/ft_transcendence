@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { redirect, Link } from "react-router-dom";
 import { UserContext } from "../../App";
-import StatusIcon from "../StatusIcon";
 
 const Message = ({
 	login,
@@ -20,6 +19,9 @@ const Message = ({
 	toggleBlock: Function;
 	toggleFriendship: Function;
 }) => {
+	/**
+	 * Message component, display a message with the user's avatar, name, date, content and a button to interact with the user
+	 */
 	const [isToggleBox, setIsToggleBox] = useState(false);
 	const user = useContext(UserContext);
 
@@ -36,17 +38,6 @@ const Message = ({
 	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
-			{/* <img
-				src={`data:image/*;base64,${avatar}`}
-				alt='avatar'
-				style={{
-					width: 40,
-					height: 40,
-					borderRadius: "50%",
-					marginRight: "5px",
-				}}
-			/>
-			<StatusIcon login={login} /> */}
 			{user.login !== login ? (
 				<button onClick={toggleBox}>
 					{login} {relation.isBlocked ? "(bloqué)" : ""}
