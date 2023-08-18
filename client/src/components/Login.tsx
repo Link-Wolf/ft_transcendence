@@ -7,11 +7,13 @@ const Login = () => {
 	 * Login component
 	 */
 	const navigate = useNavigate();
+	const [login, setLogin] = useState("");
 	const [done, setDone] = useState(false);
 	const [needTFA, setNeedTFA] = useState(false);
 	const [errorCode, setErrorCode] = useState(0);
 	const [isConnected, setIsConnected] = useState(false);
 	const [isFirstTime, setIsFirstTime] = useState(false);
+	const [form, setForm] = useState({ code: "" });
 	const code = new URLSearchParams(window.location.search).get("code");
 
 	/**
@@ -38,6 +40,7 @@ const Login = () => {
 				}
 			)
 			.then((res) => {
+				setLogin(res.data.login);
 				setNeedTFA(res.data.needToTFA);
 				setIsFirstTime(res.data.status === "registered");
 				setIsConnected(!res.data.needToTFA);
@@ -60,14 +63,58 @@ const Login = () => {
 			navigate(`/error/${errorCode}`);
 		} else if (isFirstTime) {
 			window.location.href = "/me/update";
-		} else if (isConnected) {
-			window.location.href = "/";
 		}
+		// else if (isConnected) {
+		// 	window.location.href = "/";
+		// }
 	}, [done, errorCode, isFirstTime, isConnected, navigate]);
+
+	const checkTFA = async () => {
+		axios
+			.post(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/verifyTFA/${login}`,
+				{
+					code: form.code,
+				}
+			)
+			.then((res) => {
+				if (res.data) {
+					setIsConnected(true);
+
+					//to replace
+					window.location.href = "/";
+				} else {
+					alert("Wrong TFA code");
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const handleFormChange = (e: any) => {
+		setForm({ ...form, [e.target.id]: e.target.value });
+	};
 
 	if (errorCode > 0) return <p>Something went wrong: {errorCode}</p>;
 	if (!done) return <p>Loading...</p>;
-	if (needTFA) return <form></form>; // Manage TFA
+	if (needTFA)
+		return (
+			<form>
+				<input
+					id='tfacode'
+					type='text'
+					onChange={handleFormChange}
+					placeholder='ur tfa number'
+				/>
+				<button
+					type='button'
+					onClick={checkTFA}
+				>
+					Submit
+				</button>
+			</form>
+		); // Manage TFA
 	return <></>;
 };
 

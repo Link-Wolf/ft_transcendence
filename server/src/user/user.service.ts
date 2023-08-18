@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { UserDto } from './user.dto';
 import { User } from './user.entity';
+import * as otplib from 'otplib';
 
 @Injectable()
 export class UserService {
@@ -53,6 +54,33 @@ export class UserService {
 				where: { name: name },
 				include: [{ all: true }],
 			});
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async generateOTP(secret: string): Promise<string> {
+		try {
+			return otplib.authenticator.generate(secret);
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async generateSecret(login: string): Promise<string> {
+		try {
+			let secret = otplib.authenticator.generateSecret();
+			await this.update({ login, TFASecret: secret });
+			return secret;
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async verifyTFA(login: string, token: string): Promise<boolean> {
+		try {
+			let secret = (await this.findByLogin(login)).TFASecret;
+			return otplib.authenticator.verify({ token, secret });
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

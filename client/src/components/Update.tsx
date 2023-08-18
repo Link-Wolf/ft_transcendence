@@ -54,6 +54,20 @@ const Update = () => {
 		return;
 	};
 
+	const enableTFA = async () => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/generateSecret/${context.login}`
+			)
+			.then((res) => {
+				// setForm({ ...form, TFASecret: res.data.secret });
+				console.log(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
 	return (
 		<>
 			<h2>Settings</h2>
@@ -77,12 +91,10 @@ const Update = () => {
 					/>
 					<input type='file' />
 				</div>
-				<div>
-					<label>TFA</label>
-					<input type='text' />
-				</div>
+				<div></div>
 				<button onChange={updateProfile}>Update</button>
 			</form>
+			<button onClick={enableTFA}>TFA</button>
 		</>
 	);
 };
