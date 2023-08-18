@@ -37,6 +37,7 @@
     "express-session": "^1.17.3",
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.0",
+    "otplib": "^12.0.1",
     "pg": "^8.11.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
