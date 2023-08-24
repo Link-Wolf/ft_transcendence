@@ -65,51 +65,6 @@ export class UserController {
 		return ret;
 	}
 
-	@Get('generateSecret/:login')
-	@UseGuards(AdminUserGuard)
-	async generateSecret(@Param('login') login: string): Promise<string> {
-		if (!login) {
-			throw new HttpException(
-				'Missing parameters',
-				HttpStatus.BAD_REQUEST,
-			);
-		}
-		let user = await this.userService.findByLogin(login);
-		if (!user) {
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		}
-		this.userService.update({
-			login: login,
-			hasTFA: true,
-		});
-		return user.TFASecret;
-	}
-
-	@Post('verifyTFA/:login')
-	@UseGuards(AdminUserGuard)
-	async verifyTFA(
-		@Body() token: string,
-		@Param('login') login: string,
-	): Promise<boolean> {
-		if (!token || !login) {
-			throw new HttpException(
-				'Missing parameters',
-				HttpStatus.BAD_REQUEST,
-			);
-		}
-		const user = await this.userService.findByLogin(login);
-		if (!user) {
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		}
-		if (!user.TFASecret) {
-			throw new HttpException(
-				'User has no TFA secret',
-				HttpStatus.BAD_REQUEST,
-			);
-		}
-		return await this.userService.verifyTFA(login, token);
-	}
-
 	/**
 	 * @brief Update a user
 	 * @param {string} login - The user's login

@@ -7,6 +7,7 @@ import ThereIsNoFuckingPageBro from "./ThereIsNoFuckingPageBro";
 import Chat from "./Chat";
 import Game from "./Game";
 import Update from "./Update";
+import TFA from "./TFA";
 
 const Routage = () => {
 	/**
@@ -35,6 +36,10 @@ const Routage = () => {
 				<Route
 					path='/game'
 					element={<Game />}
+				/>
+				<Route
+					path='/tfa/:login'
+					element={<TFA />}
 				/>
 				<Route
 					path='*'

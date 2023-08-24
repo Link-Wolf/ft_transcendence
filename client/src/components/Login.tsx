@@ -7,14 +7,10 @@ const Login = () => {
 	 * Login component
 	 */
 	const navigate = useNavigate();
-	const [login, setLogin] = useState("");
-	const [done, setDone] = useState(false);
-	const [needTFA, setNeedTFA] = useState(false);
-	const [errorCode, setErrorCode] = useState(0);
-	const [isConnected, setIsConnected] = useState(false);
-	const [isFirstTime, setIsFirstTime] = useState(false);
-	const [form, setForm] = useState({ code: "" });
 	const code = new URLSearchParams(window.location.search).get("code");
+
+	const [done, setDone] = useState(false);
+	const [data, setData] = useState<any>();
 
 	/**
 	 * If the user is not logged in, redirect him to the 42 intra login page
@@ -40,13 +36,10 @@ const Login = () => {
 				}
 			)
 			.then((res) => {
-				setLogin(res.data.login);
-				setNeedTFA(res.data.needToTFA);
-				setIsFirstTime(res.data.status === "registered");
-				setIsConnected(!res.data.needToTFA);
+				setData(res.data);
 			})
 			.catch((error) => {
-				setErrorCode(500);
+				setData({ error: error });
 			})
 			.finally(() => {
 				setDone(true);
@@ -57,64 +50,22 @@ const Login = () => {
 	 * If it's the first time the user is logging in, redirect him to his profile update page
 	 * Else, if the user is connected, redirect him to the home page
 	 */
+	console.log(data, done);
 	useEffect(() => {
 		if (!done) return;
-		if (errorCode > 0) {
-			navigate(`/error/${errorCode}`);
-		} else if (isFirstTime) {
-			window.location.href = "/me/update";
+		if (data.error) return; //TODO: do something with the error
+		if (data.needTFA) {
+			window.location.href = `/tfa/${data.login}`;
+			return;
 		}
-		// else if (isConnected) {
-		// 	window.location.href = "/";
-		// }
-	}, [done, errorCode, isFirstTime, isConnected, navigate]);
+		if (data.firstConnection) {
+			window.location.href = `/profile/${data.login}`;
+			return;
+		}
+		window.location.href = "/";
+	}, [done, data]);
 
-	const checkTFA = async () => {
-		axios
-			.post(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/verifyTFA/${login}`,
-				{
-					code: form.code,
-				}
-			)
-			.then((res) => {
-				if (res.data) {
-					setIsConnected(true);
-
-					//to replace
-					window.location.href = "/";
-				} else {
-					alert("Wrong TFA code");
-				}
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
-	const handleFormChange = (e: any) => {
-		setForm({ ...form, [e.target.id]: e.target.value });
-	};
-
-	if (errorCode > 0) return <p>Something went wrong: {errorCode}</p>;
 	if (!done) return <p>Loading...</p>;
-	if (needTFA)
-		return (
-			<form>
-				<input
-					id='tfacode'
-					type='text'
-					onChange={handleFormChange}
-					placeholder='ur tfa number'
-				/>
-				<button
-					type='button'
-					onClick={checkTFA}
-				>
-					Submit
-				</button>
-			</form>
-		); // Manage TFA
 	return <></>;
 };
 

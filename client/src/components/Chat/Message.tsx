@@ -10,6 +10,7 @@ const Message = ({
 	avatar,
 	toggleBlock,
 	toggleFriendship,
+	askForGame,
 }: {
 	login: string;
 	date: string;
@@ -18,6 +19,7 @@ const Message = ({
 	avatar: string;
 	toggleBlock: Function;
 	toggleFriendship: Function;
+	askForGame: Function;
 }) => {
 	/**
 	 * Message component, display a message with the user's avatar, name, date, content and a button to interact with the user
@@ -28,11 +30,6 @@ const Message = ({
 	const toggleBox = async () => {
 		if (login === user.login) return redirect(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
 		setIsToggleBox(!isToggleBox);
-	};
-
-	const askForGame = () => {
-		//TODO: ask the other person for game
-		toggleBox();
 	};
 
 	if (!relation) return <>loading... {login}</>;
@@ -51,7 +48,9 @@ const Message = ({
 						<label>Profil</label>
 					</Link>
 					{!relation.isBlocked && (
-						<button onClick={askForGame}>Faire une partie</button>
+						<button onClick={() => askForGame()}>
+							Faire une partie
+						</button>
 					)}
 					{!relation.isBlocked && (
 						<button
