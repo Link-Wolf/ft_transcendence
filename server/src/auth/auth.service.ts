@@ -1,9 +1,13 @@
 import { Inject, Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { UserService } from 'src/user/user.service';
+import { createCanvas, loadImage } from 'canvas';
+import { User } from 'src/user/user.entity';
 const axios = require('axios');
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
-	constructor() {}
+	constructor(private userService: UserService) {}
 
 	/**
 	 * @brief Get the intra user from the code given by intra
@@ -48,5 +52,47 @@ export class AuthService {
 				);
 			});
 		return intraUser;
+	}
+
+	async generateProfilePicture(): Promise<string> {
+		let pp: string;
+
+		await axios
+			.get(`https://thispersondoesnotexist.com/`, {
+				responseType: 'arraybuffer',
+			})
+			.then(async (res) => {
+				const buffer = Buffer.from(res.data);
+				const image = await loadImage(buffer);
+				const canvas = createCanvas(500, 500);
+				canvas.getContext('2d').drawImage(image, 0, 0, 500, 500);
+				pp = canvas.toDataURL().split(',')[1];
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		return pp;
+	}
+
+	async generateName(): Promise<string> {
+		let name: string;
+
+		do {
+			name = '';
+			const lenght = Math.floor(Math.random() * 9) + 8; // Random length between 8 and 16
+
+			for (let i = 0; i < lenght; i++) {
+				const nextChar = Math.floor(Math.random() * 26) + 97; // ASCII code for lowercase 'a' to 'z'
+				name += String.fromCharCode(nextChar);
+			}
+		} while (await this.userService.findByName(name));
+		return name;
+	}
+
+	verifyToken(token: string): Promise<User> {
+		const { login, needTFA } = jwt.verify(token, process.env.JWT_SECRET);
+		if (needTFA)
+			return null;
+		return this.userService.findByLogin(login);
 	}
 }

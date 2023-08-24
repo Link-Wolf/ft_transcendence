@@ -3,14 +3,14 @@ import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../App";
 import socket from "../../socket";
 import Message from "./Message";
+import { PPDisplayer } from "../ImageDisplayer";
+import { Link, redirect } from "react-router-dom";
 
 const Channel = ({
 	channel,
-	toggleShowlist,
 	setChannel,
 }: {
 	channel: string;
-	toggleShowlist: Function;
 	setChannel: Function;
 }) => {
 	/**
@@ -21,8 +21,10 @@ const Channel = ({
 	const [update, setUpdate] = useState(true);
 	const [message, setMessage] = useState("");
 	const [relations, setRelations] = useState<any>({});
-	const [avatars, setAvatars] = useState<any>({});
+	const [users, setUsers] = useState<any>({});
 	const [canSendMessage, setCanSendMessage] = useState(false);
+	const [showUserList, setShowUserList] = useState(false);
+	const [isToggleBox, setIsToggleBox] = useState(false);
 
 	useEffect(() => {
 		if (channel[0] === "_") {
@@ -163,14 +165,14 @@ const Channel = ({
 						`/api/user/${login}`
 				)
 				.then((res) => {
-					setAvatars({
-						...avatars,
-						[login]: res.data.avatar,
+					setUsers({
+						...users,
+						[login]: res.data,
 					});
 				})
 				.catch(() => console.log("error"));
 		}
-	}, [relations, user.login, avatars]);
+	}, [relations, user.login, users]);
 
 	const toggleBlock = (login: string) => {
 		if (relations[login].isBlocked) {
@@ -312,66 +314,136 @@ const Channel = ({
 		return names[0] === user.login ? names[1] : names[0];
 	};
 
+	const toggleBox = async (login = user.login) => {
+		if (login === user.login) return redirect(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
+		setIsToggleBox(!isToggleBox);
+	};
+
+	const askForGame = () => {
+		//TODO: ask the other person for game
+		toggleBox();
+	};
+
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
 			{channel[0] !== "_" && (
-				<button
-					onClick={() => {
-						toggleShowlist();
-					}}
-				>
-					User List
+				<button onClick={() => setShowUserList(!showUserList)}>
+					{showUserList ? "X" : "User List"}
 				</button>
 			)}
-			<h1>{channel[0] !== "_" ? channel : getNameOfTheOther(channel)}</h1>
-			{messages
-				.sort((m1, m2) => {
-					return (
-						new Date(m1.createdAt).getTime() -
-						new Date(m2.createdAt).getTime()
-					);
-				})
-				.map((message, i) => (
-					<div key={i}>
-						<Message
-							login={message.userLogin}
-							date={message.createdAt}
-							content={message.content}
-							relation={
-								message.userLogin === user.login
-									? {
-											isBlocked: false,
-											isFriend: false,
-									  }
-									: relations[message.userLogin]
-							}
-							avatar={avatars[message.userLogin]}
-							toggleBlock={toggleBlock}
-							toggleFriendship={toggleFriendship}
-						/>
-					</div>
-				))}
-			<input
-				value={message}
-				type='text'
-				placeholder={
-					canSendMessage
-						? "Type your message here..."
-						: "You cannot send messages here"
-				}
-				disabled={!canSendMessage}
-				onChange={(e) => {
-					setMessage(e.target.value);
-				}}
-				onKeyDown={handleKeyPress}
-			/>
-			<button
-				onClick={sendMessage}
-				disabled={!canSendMessage}
-			>
-				Send
-			</button>
+			{!showUserList ? (
+				<>
+					<h1>
+						{channel[0] !== "_"
+							? channel
+							: getNameOfTheOther(channel)}
+					</h1>
+					{messages
+						.sort((m1, m2) => {
+							return (
+								new Date(m1.createdAt).getTime() -
+								new Date(m2.createdAt).getTime()
+							);
+						})
+						.map((message, i) => (
+							<div key={i}>
+								<Message
+									login={message.userLogin}
+									date={message.createdAt}
+									content={message.content}
+									relation={
+										message.userLogin === user.login
+											? {
+													isBlocked: false,
+													isFriend: false,
+											  }
+											: relations[message.userLogin]
+									}
+									avatar={users[message.userLogin].avatar}
+									toggleBlock={toggleBlock}
+									toggleFriendship={toggleFriendship}
+									askForGame={askForGame}
+								/>
+							</div>
+						))}
+					<input
+						value={message}
+						type='text'
+						placeholder={
+							canSendMessage
+								? "Type your message here..."
+								: "You cannot send messages here"
+						}
+						disabled={!canSendMessage}
+						onChange={(e) => {
+							setMessage(e.target.value);
+						}}
+						onKeyDown={handleKeyPress}
+					/>
+					<button
+						onClick={sendMessage}
+						disabled={!canSendMessage}
+					>
+						Send
+					</button>
+				</>
+			) : (
+				<>
+					{Object.keys(users).map((login, i) => (
+						<div key={i}>
+							<button onClick={() => toggleBox(login)}>
+								{isToggleBox && (
+									<div>
+										<Link to={`/profile/${login}`}>
+											<label>Profil</label>
+										</Link>
+										{!relations[login].isBlocked && (
+											<button onClick={askForGame}>
+												Faire une partie
+											</button>
+										)}
+										{!relations[login].isBlocked && (
+											<button
+												onClick={() => {
+													toggleFriendship(login);
+													toggleBox();
+												}}
+											>
+												{relations[login].isFriend
+													? "Message privé"
+													: "Demander en ami"}
+											</button>
+										)}
+										<button
+											onClick={() => {
+												toggleBlock(login);
+												toggleBox();
+											}}
+										>
+											{relations[login].isBlocked
+												? "Débloquer"
+												: "Bloquer"}
+										</button>
+										{/* TODO: button to promote/demote to admin*/}
+									</div>
+								)}
+								<PPDisplayer
+									login={login}
+									size={50}
+									status={true}
+								>
+									<img
+										src={`data:image/*;base64,${users[login].avatar}`}
+									/>
+								</PPDisplayer>
+								{login}
+								{/* TODO: voir si admin/owner/kedall */}
+							</button>
+						</div>
+					))}
+				</>
+			)}
 		</div>
 	);
 };

@@ -9,11 +9,6 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 	 * Chatbox component, either call the current Channel component, or list the channels the user is in (both channels and dms)
 	 */
 	const [channel, setChannel] = useState<string | null>(null);
-	const [showList, setShowList] = useState(false);
-
-	const toggleShowlist = () => {
-		setShowList(!showList);
-	};
 
 	return (
 		<div className={style.chatbox}>
@@ -28,7 +23,6 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 			) : (
 				<Channel
 					channel={channel}
-					toggleShowlist={toggleShowlist}
 					setChannel={setChannel}
 				/>
 			)}

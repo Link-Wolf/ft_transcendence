@@ -59,14 +59,6 @@ export class UserService {
 		}
 	}
 
-	async generateOTP(secret: string): Promise<string> {
-		try {
-			return otplib.authenticator.generate(secret);
-		} catch (error) {
-			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
 	async generateSecret(login: string): Promise<string> {
 		try {
 			let secret = otplib.authenticator.generateSecret();
@@ -80,6 +72,7 @@ export class UserService {
 	async verifyTFA(login: string, token: string): Promise<boolean> {
 		try {
 			let secret = (await this.findByLogin(login)).TFASecret;
+			console.log(secret, token);
 			return otplib.authenticator.verify({ token, secret });
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);

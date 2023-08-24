@@ -57,7 +57,7 @@ const Update = () => {
 	const enableTFA = async () => {
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/generateSecret/${context.login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/generateSecret/${context.login}`
 			)
 			.then((res) => {
 				// setForm({ ...form, TFASecret: res.data.secret });
