@@ -7,6 +7,7 @@ import {
 	Inject,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { AuthService } from 'src/auth/auth.service';
 import { MembershipService } from 'src/membership/membership.service';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
@@ -22,18 +23,18 @@ export class AdminChannelusersGuard implements CanActivate {
 		private readonly userService: UserService,
 		@Inject(MembershipService)
 		private readonly membershipService: MembershipService,
+		@Inject(AuthService)
+		private readonly authService: AuthService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		let jwt_data: any;
 		const userLogin = context.switchToHttp().getRequest().params.login;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		const channelName = context.switchToHttp().getRequest()
 			.params.chan_name;
 		let clearance = 0;
 		if (cookies.token) {
-			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
-			const user = await this.userService.findByLogin(jwt_data.login);
+			let user = await this.authService.verify(cookies.auth);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
@@ -56,17 +57,17 @@ export class AdminChannelusersGuardCookies implements CanActivate {
 		private readonly userService: UserService,
 		@Inject(MembershipService)
 		private readonly membershipService: MembershipService,
+		@Inject(AuthService)
+		private readonly authService: AuthService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		let jwt_data: any;
 		let user: User;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		const channelName = context.switchToHttp().getRequest().params.chanName;
 		let clearance = 0;
 		if (cookies.token) {
-			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
-			user = await this.userService.findByLogin(jwt_data.login);
+			user = await this.authService.verify(cookies.auth);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
@@ -89,17 +90,17 @@ export class AdminChannelusersGuardPost implements CanActivate {
 		private readonly userService: UserService,
 		@Inject(MembershipService)
 		private readonly membershipService: MembershipService,
+		@Inject(AuthService)
+		private readonly authService: AuthService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		let jwt_data: any;
 		const userLogin = context.switchToHttp().getRequest().body.userLogin;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		const channelName = context.switchToHttp().getRequest().body.chanName;
 		let clearance = 0;
 		if (cookies.token) {
-			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
-			const user = await this.userService.findByLogin(jwt_data.login);
+			let user = await this.authService.verify(cookies.auth);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;

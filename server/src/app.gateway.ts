@@ -13,6 +13,7 @@ import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { stat } from 'fs';
+import { AuthService } from './auth/auth.service';
 
 type Player = {
 	paddle: {
@@ -78,6 +79,7 @@ export class AppGateway
 		private userService: UserService,
 		private gameService: GameService,
 		private usergameService: UserGameService,
+		private authService: AuthService,
 	) {}
 
 	@WebSocketServer() server: Server;
@@ -360,10 +362,8 @@ export class AppGateway
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
 		//TODO: change status to waiting
 		// //verifiy the user
-		if (!payload.auth) return;
-		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		if (!session) return;
-		let user = await this.userService.findByLogin(session.login);
+
+		let user = await this.authService.verify(payload.auth);
 		if (!user) return;
 
 		let ongoingGames = await this.gameService.findOngoing(
@@ -416,20 +416,8 @@ export class AppGateway
 	async handleQuitWaitRoom(client: Socket, payload: any): Promise<number> {
 		// TODO: change status to online
 		console.log('quitWaitRoom', payload);
-		if (!payload.auth) {
-			console.log('no auth');
-			return 400;
-		}
-		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		if (!session) {
-			console.log('no session');
-			return 400;
-		}
-		let user = await this.userService.findByLogin(session.login);
-		if (!user) {
-			console.log('no user');
-			return 400;
-		}
+		let user = await this.authService.verify(payload.auth);
+		if (!user) return 400;
 
 		let waitingGame = await this.gameService.findWaiting(payload.isRanked); //XXX: wtf?
 		if (!waitingGame) {
@@ -485,10 +473,7 @@ export class AppGateway
 
 	@SubscribeMessage('log')
 	async handleLog(client: Socket, payload: any): Promise<void> {
-		if (!payload.auth) return;
-		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		if (!session) return;
-		let user = await this.userService.findByLogin(session.login);
+		let user = await this.authService.verify(payload.auth);
 		if (!user) return;
 
 		this.userService.update({
@@ -503,10 +488,7 @@ export class AppGateway
 
 	@SubscribeMessage('away')
 	async handleAway(client: Socket, payload: any): Promise<void> {
-		if (!payload.auth) return;
-		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		if (!session) return;
-		let user = await this.userService.findByLogin(session.login);
+		let user = await this.authService.verify(payload.auth);
 		if (!user) return;
 
 		this.userService.update({
@@ -519,10 +501,7 @@ export class AppGateway
 
 	@SubscribeMessage('back')
 	async handleBack(client: Socket, payload: any): Promise<void> {
-		if (!payload.auth) return;
-		let session = await jwt.verify(payload.auth, process.env.JWT_KEY);
-		if (!session) return;
-		let user = await this.userService.findByLogin(session.login);
+		let user = await this.authService.verify(payload.auth);
 		if (!user) return;
 
 		this.userService.update({

@@ -1,4 +1,4 @@
-import { Inject, Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { createCanvas, loadImage } from 'canvas';
 import { User } from 'src/user/user.entity';
@@ -7,7 +7,7 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
-	constructor(private userService: UserService) {}
+	constructor(private readonly userService: UserService) {}
 
 	/**
 	 * @brief Get the intra user from the code given by intra
@@ -89,10 +89,13 @@ export class AuthService {
 		return name;
 	}
 
-	verifyToken(token: string): Promise<User> {
-		const { login, needTFA } = jwt.verify(token, process.env.JWT_SECRET);
-		if (needTFA)
-			return null;
-		return this.userService.findByLogin(login);
+	async verify(token: string): Promise<User> {
+		//COMBAK: move this shit to user cause WE ARE A FUCKING CIRCUS
+		const { login, needTFA } = await jwt.verify(
+			token,
+			process.env.JWT_SECRET,
+		);
+		if (needTFA) return null;
+		return await this.userService.findByLogin(login);
 	}
 }

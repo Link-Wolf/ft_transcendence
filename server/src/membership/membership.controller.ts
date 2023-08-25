@@ -113,6 +113,16 @@ export class MembershipController {
 		return this.membershipService.findByUserAndChannel(login, chan_name);
 	}
 
+	@Get('channel/:chan_name/admins')
+	@UseGuards(AdminUserChannelusersGuard)
+	async getAdminsByChannel(
+		@Param('chan_name') chan_name: string,
+	): Promise<Membership[]> {
+		if (!this.channelService.findByName(chan_name))
+			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
+		return this.membershipService.findAdminsByChannel(chan_name);
+	}
+
 	/**
 	 * @brief Create a membership
 	 * @param {string} channelName The channel name

@@ -17,15 +17,57 @@ const Channel = ({
 	 * Channel component itself, display the messages and the input to send messages, and handle the messages
 	 */
 	const user = useContext(UserContext);
+	const [owner, setOwner] = useState("");
 	const [messages, setMessages] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
+	const [updateRelations, setUpdateRelations] = useState(true);
 	const [message, setMessage] = useState("");
 	const [relations, setRelations] = useState<any>({});
 	const [users, setUsers] = useState<any>({});
 	const [canSendMessage, setCanSendMessage] = useState(false);
 	const [showUserList, setShowUserList] = useState(false);
 	const [isToggleBox, setIsToggleBox] = useState(false);
+	const [admins, setAdmins] = useState<any[]>([]);
 
+	// Load the owner of the channel
+	useEffect(() => {
+		if (channel[0] === "_" || !updateRelations) return;
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${channel}`
+			)
+			.then((res) => {
+				setOwner(res.data.ownerLogin);
+			})
+			.then(() => {
+				setUpdateRelations(false);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [channel, updateRelations]);
+
+	//  Load the admins of the channel
+	useEffect(() => {
+		if (channel[0] === "_" || !updateRelations) return;
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/channel/${channel}/admins`
+			)
+			.then((res) => {
+				setAdmins(
+					res.data.map((membership: any) => membership.userLogin)
+				);
+			})
+			.then(() => {
+				setUpdateRelations(false);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [channel, updateRelations]);
+
+	//  Load the possibility to send messages or not depending on whether the user is blocked or not, or if the user is muted
 	useEffect(() => {
 		if (channel[0] === "_") {
 			axios
@@ -98,31 +140,19 @@ const Channel = ({
 
 	//Load the relations from the server
 	useEffect(() => {
-		for (let message of messages) {
-			if (message.userLogin === user.login) continue;
-			if (message.userLogin in relations) continue;
-			setRelations({
-				...relations,
-				[message.userLogin]: {
-					isBlocked: false,
-					isFriend: false,
-				},
-			});
-		}
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}` +
-					`://${process.env.REACT_APP_HOSTNAME}` +
-					`:${process.env.REACT_APP_BACKEND_PORT}` +
-					`/api/block/by/${user.login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/channel/${channel}`
 			)
-			.then((res) => {
-				for (let block of res.data) {
+			.then((memberships) => {
+				for (let membership of memberships.data) {
+					if (membership.userLogin === user.login) continue;
+					if (membership.userLogin in relations) continue;
 					setRelations({
 						...relations,
-						[block.blockedLogin]: {
-							...relations[block.blockedLogin],
-							isBlocked: true,
+						[membership.userLogin]: {
+							isBlocked: false,
+							isFriend: false,
 						},
 					});
 				}
@@ -133,24 +163,46 @@ const Channel = ({
 						`${process.env.REACT_APP_PROTOCOL}` +
 							`://${process.env.REACT_APP_HOSTNAME}` +
 							`:${process.env.REACT_APP_BACKEND_PORT}` +
-							`/api/friendship/${user.login}`
+							`/api/block/by/${user.login}`
 					)
 					.then((res) => {
-						for (let friend of res.data) {
+						for (let block of res.data) {
 							setRelations({
 								...relations,
-								[friend.userLogin]: {
-									...relations[friend.userLogin],
-									isFriend: true,
+								[block.blockedLogin]: {
+									...relations[block.blockedLogin],
+									isBlocked: true,
 								},
 							});
 						}
 					})
+					.then(() => {
+						axios
+							.get(
+								`${process.env.REACT_APP_PROTOCOL}` +
+									`://${process.env.REACT_APP_HOSTNAME}` +
+									`:${process.env.REACT_APP_BACKEND_PORT}` +
+									`/api/friendship/${user.login}`
+							)
+							.then((res) => {
+								for (let friend of res.data) {
+									setRelations({
+										...relations,
+										[friend.userLogin]: {
+											...relations[friend.userLogin],
+											isFriend: true,
+										},
+									});
+								}
+							})
+							.catch((err) => {
+								console.log(err);
+							});
+					})
 					.catch((err) => {
 						console.log(err);
 					});
-			})
-			.catch((err) => {
+			}).catch((err) => {
 				console.log(err);
 			});
 	}, [messages, relations, user.login]);
@@ -324,6 +376,60 @@ const Channel = ({
 		toggleBox();
 	};
 
+	const promote = (login: string) => {
+		axios
+			.patch(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`,
+				{
+					isAdmin: true,
+				}
+			)
+			.then(() => {
+				setUpdateRelations(true);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const demote = (login: string) => {
+		axios
+			.patch(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`,
+				{
+					isAdmin: false,
+				}
+			)
+			.then(() => {
+				setUpdateRelations(true);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const kick = (login: string) => {
+		//TODO: kick someone from the channel
+		axios
+			.delete(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`
+			)
+			.then(() => {
+				//TODO: update the channel list containing all the users
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const mute = (login: string) => {
+		//TODO: mute someone from the channel
+	};
+
+	const ban = (login: string) => {
+		//TODO: ban someone from the channel
+	};
+
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
@@ -381,10 +487,7 @@ const Channel = ({
 						}}
 						onKeyDown={handleKeyPress}
 					/>
-					<button
-						onClick={sendMessage}
-						disabled={!canSendMessage}
-					>
+					<button onClick={sendMessage} disabled={!canSendMessage}>
 						Send
 					</button>
 				</>
@@ -392,7 +495,14 @@ const Channel = ({
 				<>
 					{Object.keys(users).map((login, i) => (
 						<div key={i}>
-							<button onClick={() => toggleBox(login)}>
+							<button
+								onClick={() => {
+									{
+										login !== user.login &&
+											toggleBox(login);
+									}
+								}}
+							>
 								{isToggleBox && (
 									<div>
 										<Link to={`/profile/${login}`}>
@@ -425,8 +535,63 @@ const Channel = ({
 												? "Débloquer"
 												: "Bloquer"}
 										</button>
-										{/* TODO: button to promote/demote to admin*/}
+										{user.login === owner &&
+											(admins.includes(login) ? (
+												<button
+													onClick={() => {
+														demote(login);
+													}}
+												>
+													Demote
+												</button>
+											) : (
+												<button
+													onClick={() => {
+														promote(login);
+													}}
+												>
+													Promote
+												</button>
+											))}
+										{(user.login === owner ||
+											(admins.includes(user.login) &&
+												login !== owner &&
+												!admins.includes(login))) && (
+											<>
+												<button
+													onClick={() => {
+														kick(login);
+													}}
+												>
+													Kick
+												</button>
+												<button
+													onClick={() => {
+														mute(login);
+													}}
+												>
+													Mute
+												</button>
+												<button
+													onClick={() => {
+														ban(login);
+													}}
+												>
+													Ban
+												</button>
+											</>
+										)}
 									</div>
+								)}
+								{user.login !== login ? (
+									<label>
+										{login}{" "}
+										{relations[login].isBlocked
+											? "(bloqué)"
+											: ""}
+									</label>
+								) : (
+									<label>{login} (you) </label>
 								)}
 								<PPDisplayer
 									login={login}
@@ -438,7 +603,9 @@ const Channel = ({
 									/>
 								</PPDisplayer>
 								{login}
-								{/* TODO: voir si admin/owner/kedall */}
+								{login === owner
+									? " (owner)"
+									: admins.includes(login) && " (admin)"}
 							</button>
 						</div>
 					))}

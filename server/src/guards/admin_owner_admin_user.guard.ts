@@ -10,6 +10,7 @@ import * as jwt from 'jsonwebtoken';
 import { UserService } from '../user/user.service';
 import { MembershipService } from '../membership/membership.service';
 import { ChannelService } from 'src/channel/channel.service';
+import { AuthService } from 'src/auth/auth.service';
 
 /**
  * This guard is used to check whether the user has the clearance needed to access
@@ -19,12 +20,12 @@ import { ChannelService } from 'src/channel/channel.service';
 @Injectable()
 export class AdminOwnerAdminUserGuard implements CanActivate {
 	constructor(
-		@Inject(UserService)
-		private readonly userService: UserService,
 		@Inject(MembershipService)
 		private readonly membershipService: MembershipService,
 		@Inject(ChannelService)
 		private readonly channelService: ChannelService,
+		@Inject(AuthService)
+		private readonly authService: AuthService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,8 +36,7 @@ export class AdminOwnerAdminUserGuard implements CanActivate {
 		let jwt_data: any;
 		let clearance = 0;
 		if (cookies.token) {
-			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
-			user = await this.userService.findByLogin(jwt_data.login);
+			let user = await this.authService.verify(cookies.auth);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;

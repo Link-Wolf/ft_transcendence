@@ -22,6 +22,7 @@ import { AdminUserUserGuard } from 'src/guards/admin_user_user.guard';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { AdminInvitedUserGuard } from 'src/guards/admin_invited_user.guard';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('friendship')
 export class FriendshipController {
@@ -29,6 +30,7 @@ export class FriendshipController {
 		private readonly friendshipService: FriendshipService,
 		private readonly userService: UserService,
 		private readonly blockService: BlockService,
+		private readonly authService: AuthService,
 	) {}
 
 	/**
@@ -153,15 +155,13 @@ export class FriendshipController {
 		@Req() req: Request,
 		@Body('receiverLogin') receiverLogin: string,
 	): Promise<Friendship> {
-		let senderLogin = jwt.verify(
-			req.cookies.token,
-			process.env.JWT_KEY,
-		).login;
+		let sender = await this.authService.verify(req.cookies.auth);
 		let receiver = await this.userService.findByLogin(receiverLogin);
-		let sender = await this.userService.findByLogin(senderLogin);
 		if (!receiver || !sender)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		let senderBlockList = await this.blockService.findBlocksBy(senderLogin);
+		let senderBlockList = await this.blockService.findBlocksBy(
+			sender.dataValues.login,
+		);
 		let receiverBlockList = await this.blockService.findBlocksBy(
 			receiverLogin,
 		);
@@ -175,7 +175,7 @@ export class FriendshipController {
 		)
 			throw new HttpException('Friendship blocked', HttpStatus.FORBIDDEN);
 		let friendship = await this.friendshipService.findByBothFriends(
-			senderLogin,
+			sender.dataValues.login,
 			receiverLogin,
 		);
 		if (friendship) {
@@ -240,8 +240,8 @@ export class FriendshipController {
 				HttpStatus.NOT_FOUND,
 			);
 		if (
-			friendship.dataValues.receiver !=
-			jwt.verify(req.cookies.token, process.env.JWT_KEY).login
+			friendship.dataValues.receiver !==
+			(await this.authService.verify(req.cookies.auth))
 		)
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (!friendship.dataValues.isPending)
