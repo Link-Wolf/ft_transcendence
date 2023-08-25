@@ -17,12 +17,13 @@ import { MuteModule } from './mute/mute.module';
 import { PrivateMessageModule } from './private-message/private-message.module';
 import { AuthModule } from './auth/auth.module';
 import { AppGateway } from './app.gateway';
-import{ ToxicRelationsModule } from './toxic-relations/toxic-relations.module';
+import { ToxicRelationsModule } from './toxic-relations/toxic-relations.module';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
 		UserModule,
+		AuthModule,
 		DatabaseModule,
 		ChannelModule,
 		GameModule,
@@ -35,8 +36,7 @@ import{ ToxicRelationsModule } from './toxic-relations/toxic-relations.module';
 		BanModule,
 		MuteModule,
 		PrivateMessageModule,
-		AuthModule,
-		ToxicRelationsModule
+		ToxicRelationsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, AppGateway],
