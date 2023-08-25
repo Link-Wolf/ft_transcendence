@@ -6,8 +6,7 @@ import {
 	HttpException,
 	Inject,
 } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
-import { UserService } from 'src/user/user.service';
+import { AuthService } from 'src/auth/auth.service';
 
 /**
  * This guard is used to check if the user has the clearance needed to access
@@ -16,17 +15,15 @@ import { UserService } from 'src/user/user.service';
 @Injectable()
 export class AdminClearanceGuard implements CanActivate {
 	constructor(
-		@Inject(UserService)
-		private readonly userService: UserService,
+		@Inject(AuthService)
+		private readonly authService: AuthService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let clearance = 0;
 		if (cookies.token) {
-			const jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
-
-			const user = await this.userService.findByLogin(jwt_data.login);
+			let user = await this.authService.verify(cookies.auth);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
@@ -34,6 +31,5 @@ export class AdminClearanceGuard implements CanActivate {
 		if (clearance < Number(process.env.ADMIN_CLEARANCE))
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		return true;
-		//TODO: test
 	}
 }

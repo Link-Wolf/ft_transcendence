@@ -7,6 +7,7 @@ import {
 	Inject,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { AuthService } from 'src/auth/auth.service';
 import { MembershipService } from 'src/membership/membership.service';
 import { UserService } from 'src/user/user.service';
 
@@ -17,10 +18,10 @@ import { UserService } from 'src/user/user.service';
 @Injectable()
 export class AdminUserChannelusersGuard implements CanActivate {
 	constructor(
-		@Inject(UserService)
-		private readonly userService: UserService,
 		@Inject(MembershipService)
 		private readonly membershipService: MembershipService,
+		@Inject(AuthService)
+		private readonly authService: AuthService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -31,8 +32,7 @@ export class AdminUserChannelusersGuard implements CanActivate {
 			.params.chan_name;
 		let clearance = 0;
 		if (cookies.token) {
-			jwt_data = jwt.verify(cookies['token'], process.env.JWT_KEY);
-			const user = await this.userService.findByLogin(jwt_data.login);
+			const user = await this.authService.verify(cookies.auth);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;

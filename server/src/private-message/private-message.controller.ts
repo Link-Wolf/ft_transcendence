@@ -20,6 +20,7 @@ import * as jwt from 'jsonwebtoken';
 import { User } from 'src/user/user.entity';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { FriendshipService } from 'src/friendship/friendship.service';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('private-message')
 export class PrivateMessageController {
@@ -28,6 +29,7 @@ export class PrivateMessageController {
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
 		private readonly friendshipService: FriendshipService,
+		private readonly authService: AuthService,
 	) {}
 
 	/**
@@ -84,11 +86,7 @@ export class PrivateMessageController {
 		@Req() req: Request,
 		@Body('loginOther') loginOther: string,
 	): Promise<Channel> {
-		let senderLogin = jwt.verify(
-			req.cookies.token,
-			process.env.JWT_KEY,
-		).login;
-		let me = await this.userService.findByLogin(senderLogin);
+		let me = await this.authService.verify(req.cookies.token);
 		let otherMember = await this.userService.findByLogin(loginOther);
 		if (!otherMember || !me)
 			throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
@@ -102,7 +100,7 @@ export class PrivateMessageController {
 			isPrivate: true,
 			name: `_${
 				[me.dataValues.login, otherMember.dataValues.login].sort()[0]
-			}&${[me.dataValues.login, otherMember.dataValues.login].sort()[1]}`, //NOTE:  loginA&loginB
+			}&${[me.dataValues.login, otherMember.dataValues.login].sort()[1]}`, //NOTE: _loginA&loginB
 		});
 		await this.membershipService.create({ user: me, channel: channel });
 		await this.membershipService.create({

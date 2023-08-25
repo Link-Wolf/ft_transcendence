@@ -25,12 +25,14 @@ import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { readFileSync } from 'fs';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('channel')
 export class ChannelController {
 	constructor(
 		private readonly channelService: ChannelService,
 		private readonly userService: UserService,
+		private readonly authService: AuthService,
 	) {}
 
 	/**
@@ -73,11 +75,7 @@ export class ChannelController {
 	@Get('public/me')
 	@UseGuards(UserClearanceGuard)
 	async getPublicWithoutMine(@Req() req: Request): Promise<Channel[]> {
-		let senderLogin = jwt.verify(
-			req.cookies.token,
-			process.env.JWT_KEY,
-		).login;
-		let sender = await this.userService.findByLogin(senderLogin);
+		let sender = await this.authService.verify(req.cookies.auth);
 		if (!sender)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		return await this.channelService.findPublicWithoutMine(sender.login);

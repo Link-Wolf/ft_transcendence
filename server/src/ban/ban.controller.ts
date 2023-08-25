@@ -16,9 +16,13 @@ import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { MembershipService } from 'src/membership/membership.service';
-import { AdminOwnerAdminGuard, AdminOwnerAdminGuardPost } from 'src/guards/admin_owner_admin.guard';
+import {
+	AdminOwnerAdminGuard,
+	AdminOwnerAdminGuardPost,
+} from 'src/guards/admin_owner_admin.guard';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('ban')
 export class BanController {
@@ -27,6 +31,7 @@ export class BanController {
 		private readonly userService: UserService,
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
+		private readonly authService: AuthService,
 	) {}
 
 	/**
@@ -165,11 +170,7 @@ export class BanController {
 		let chan = await this.channelService.findByName(chann_name);
 		if (!chan)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		let senderLogin = jwt.verify(
-			req.cookies.token,
-			process.env.JWT_KEY,
-		).login;
-		let me = await this.userService.findByLogin(senderLogin);
+		let me = await this.authService.verify(req.cookies.auth);
 		if (!me)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let my_membership = await this.membershipService.findByUserAndChannel(
@@ -239,11 +240,7 @@ export class BanController {
 		)[0];
 		if (!ban)
 			throw new HttpException('Ban not found', HttpStatus.NOT_FOUND);
-		let senderLogin = jwt.verify(
-			req.cookies.token,
-			process.env.JWT_KEY,
-		).login;
-		let me = await this.userService.findByLogin(senderLogin);
+		let me = await this.authService.verify(req.cookies.auth);
 		if (!me)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let my_membership = await this.membershipService.findByUserAndChannel(
