@@ -31,29 +31,43 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 
 	useEffect(() => {
 		if (!joinChannel) return;
-		if (joinChannel.password) {
-			const password = prompt("Password");
-			if (password !== joinChannel.password) {
-				alert("Wrong password");
-				return;
-			}
-		}
+		if (joinChannel.password === "yesyesno") {
+			const password = prompt("Password"); //TODO: replace
 
-		axios
-			.post(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
-				{
-					chanName: joinChannel.name,
-					userLogin: user.login,
-					isAdmin: false,
-				}
-			)
-			.then((joined_channel) => {
-				setChannel(joined_channel.data.channelName);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+			axios
+				.post(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${joinChannel.name}/passwd`,
+					{
+						password: password,
+						userLogin: user.login,
+					}
+				)
+				.then((response) => {
+					if (!response.data) {
+						//TODO: ouioui pas bon passwd
+						alert("Wrong password");
+					} else {
+						axios
+							.post(
+								`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
+								{
+									chanName: joinChannel.name,
+									userLogin: user.login,
+									isAdmin: false,
+								}
+							)
+							.then((joined_channel) => {
+								setChannel(joined_channel.data.channelName);
+							})
+							.catch((error) => {
+								console.log(error);
+							});
+					}
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
 	}, [joinChannel, setChannel, user.login]);
 
 	const createChannel = () => {

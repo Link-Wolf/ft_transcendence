@@ -6,9 +6,9 @@ import {
 	HttpException,
 	Inject,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
 import { FriendshipService } from 'src/friendship/friendship.service';
 import { User } from 'src/user/user.entity';
+import { UserService } from 'src/user/user.service';
 
 /**
  * This guard is used to check if the user has the clearance needed to access
@@ -18,8 +18,8 @@ import { User } from 'src/user/user.entity';
 export class AdminInvitedUserGuard implements CanActivate {
 	constructor(
 		private readonly friendshipService: FriendshipService,
-		@Inject(AuthService)
-		private readonly authService: AuthService,
+		@Inject(UserService)
+		private readonly userService: UserService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -29,7 +29,7 @@ export class AdminInvitedUserGuard implements CanActivate {
 		const loginB = context.switchToHttp().getRequest().params.loginB;
 		let clearance = 0;
 		if (cookies.token) {
-			let user = await this.authService.verify(cookies.auth);
+			let user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;

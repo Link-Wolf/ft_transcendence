@@ -170,7 +170,7 @@ export class BanController {
 		let chan = await this.channelService.findByName(chann_name);
 		if (!chan)
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		let me = await this.authService.verify(req.cookies.auth);
+		let me = await this.userService.verify(req.cookies.token);
 		if (!me)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let my_membership = await this.membershipService.findByUserAndChannel(
@@ -240,7 +240,7 @@ export class BanController {
 		)[0];
 		if (!ban)
 			throw new HttpException('Ban not found', HttpStatus.NOT_FOUND);
-		let me = await this.authService.verify(req.cookies.auth);
+		let me = await this.userService.verify(req.cookies.token);
 		if (!me)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		let my_membership = await this.membershipService.findByUserAndChannel(

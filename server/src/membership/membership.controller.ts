@@ -23,7 +23,10 @@ import {
 import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
 import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guard';
 import { AdminUserChannelusersGuard } from 'src/guards/admin_user_channelusers.guard';
-import { AdminChannelusersGuardCookies } from 'src/guards/admin_channelusers.guard';
+import {
+	AdminChannelusersGuard,
+	AdminChannelusersGuardCookies,
+} from 'src/guards/admin_channelusers.guard';
 
 @Controller('membership')
 export class MembershipController {
@@ -78,7 +81,7 @@ export class MembershipController {
 	 * @response 404 - Not Found
 	 * @response 500 - Internal Server Error
 	 */
-	@Get('channel/:chan_name')
+	@Get('channel/:chanName')
 	@UseGuards(AdminChannelusersGuardCookies)
 	async getByChannel(
 		@Param('chanName') chan_name: string,
@@ -113,10 +116,10 @@ export class MembershipController {
 		return this.membershipService.findByUserAndChannel(login, chan_name);
 	}
 
-	@Get('channel/:chan_name/admins')
-	@UseGuards(AdminUserChannelusersGuard)
+	@Get('channel/:chanName/admins')
+	@UseGuards(AdminChannelusersGuardCookies)
 	async getAdminsByChannel(
-		@Param('chan_name') chan_name: string,
+		@Param('chanName') chan_name: string,
 	): Promise<Membership[]> {
 		if (!this.channelService.findByName(chan_name))
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);

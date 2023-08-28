@@ -6,8 +6,7 @@ import {
 	HttpException,
 	Inject,
 } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
-import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 
 /**
@@ -17,23 +16,23 @@ import { UserService } from 'src/user/user.service';
 @Injectable()
 export class AdminUserGuard implements CanActivate {
 	constructor(
-		@Inject(AuthService)
-		private readonly authService: AuthService,
+		@Inject(UserService)
+		private readonly userService: UserService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		let jwt_data: any;
+		let user: User;
 		const userLogin = context.switchToHttp().getRequest().params.login;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let clearance = 0;
 		if (cookies.token) {
-			const user = await this.authService.verify(cookies.token);
+			user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 
-		if (userLogin === jwt_data.login) return true;
+		if (userLogin === user.dataValues.login) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		//TODO: tester lol
@@ -43,22 +42,22 @@ export class AdminUserGuard implements CanActivate {
 @Injectable()
 export class AdminUserGuardPost implements CanActivate {
 	constructor(
-		@Inject(AuthService)
-		private readonly authService: AuthService,
+		@Inject(UserService)
+		private readonly userService: UserService,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		let jwt_data: any;
+		let user: User;
 		const userLogin = context.switchToHttp().getRequest().body.userLogin;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let clearance = 0;
 		if (cookies.token) {
-			const user = await this.authService.verify(cookies.token);
+			user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		if (userLogin === jwt_data.login) return true;
+		if (userLogin === user.dataValues.login) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		//TODO: tester lol

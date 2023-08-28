@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { Channel } from './channel.entity';
 import { ChannelDto } from './channel.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -151,6 +152,26 @@ export class ChannelService {
 			let ret = await this.channelRepository.create<Channel>(channelDto);
 			await ret.$set('owner', channelDto.owner);
 			return ret;
+		} catch (error) {
+			console.log(error);
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @brief Check if the password is correct
+	 * @param {string} name The channel's name
+	 * @param {string} passwd The password to check
+	 * @return {boolean} True if the password is correct, false otherwise
+	 * @throws {HttpException} 500 - Internal server error
+	 */
+	async checkPasswd(name: string, passwd: string): Promise<boolean> {
+		try {
+			let channel = await this.channelRepository.findOne<Channel>({
+				where: { name: name },
+				include: [{ all: true }],
+			});
+			return await bcrypt.compare(passwd, channel.password);
 		} catch (error) {
 			console.log(error);
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -34,7 +34,7 @@ export class AdminChannelusersGuard implements CanActivate {
 			.params.chan_name;
 		let clearance = 0;
 		if (cookies.token) {
-			let user = await this.authService.verify(cookies.auth);
+			let user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
@@ -67,7 +67,7 @@ export class AdminChannelusersGuardCookies implements CanActivate {
 		const channelName = context.switchToHttp().getRequest().params.chanName;
 		let clearance = 0;
 		if (cookies.token) {
-			user = await this.authService.verify(cookies.auth);
+			user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
@@ -76,9 +76,12 @@ export class AdminChannelusersGuardCookies implements CanActivate {
 			user.login,
 			channelName,
 		);
+
 		if (membership) return true;
-		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
-		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+		if (clearance >= Number(process.env.ADMIN_CLEARANCE)) {
+			return true;
+		}
+		throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		//TODO: tester lol
 	}
 }
@@ -100,7 +103,7 @@ export class AdminChannelusersGuardPost implements CanActivate {
 		const channelName = context.switchToHttp().getRequest().body.chanName;
 		let clearance = 0;
 		if (cookies.token) {
-			let user = await this.authService.verify(cookies.auth);
+			let user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
