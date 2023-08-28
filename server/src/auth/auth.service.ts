@@ -88,14 +88,4 @@ export class AuthService {
 		} while (await this.userService.findByName(name));
 		return name;
 	}
-
-	async verify(token: string): Promise<User> {
-		//COMBAK: move this shit to user cause WE ARE A FUCKING CIRCUS
-		const { login, needTFA } = await jwt.verify(
-			token,
-			process.env.JWT_SECRET,
-		);
-		if (needTFA) return null;
-		return await this.userService.findByLogin(login);
-	}
 }

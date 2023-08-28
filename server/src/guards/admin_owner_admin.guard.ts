@@ -33,10 +33,9 @@ export class AdminOwnerAdminGuard implements CanActivate {
 		const channel = context.switchToHttp().getRequest().params.chann_name;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let user: any;
-		let jwt_data: any;
 		let clearance = 0;
 		if (cookies.token) {
-			user = await this.authService.verify(cookies.auth);
+			user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
@@ -45,7 +44,7 @@ export class AdminOwnerAdminGuard implements CanActivate {
 			await this.membershipService.findAdminsByChannel(channel)
 		).includes(user);
 		let isOwnerOfChannel = await this.channelService.isOwner(
-			jwt_data.login,
+			user.dataValues.login,
 			channel,
 		);
 		if (isAdminOfChannel) return true;
@@ -72,10 +71,9 @@ export class AdminOwnerAdminGuardPost implements CanActivate {
 		const channel = context.switchToHttp().getRequest().body.chann_name;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let user: any;
-		let jwt_data: any;
 		let clearance = 0;
 		if (cookies.token) {
-			user = await this.authService.verify(cookies.auth);
+			user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
@@ -84,7 +82,7 @@ export class AdminOwnerAdminGuardPost implements CanActivate {
 			await this.membershipService.findAdminsByChannel(channel)
 		).includes(user);
 		let isOwnerOfChannel = await this.channelService.isOwner(
-			jwt_data.login,
+			user.dataValues.login,
 			channel,
 		);
 		//TODO: tester

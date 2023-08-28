@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { UserDto } from './user.dto';
 import { User } from './user.entity';
 import * as otplib from 'otplib';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -72,7 +73,6 @@ export class UserService {
 	async verifyTFA(login: string, token: string): Promise<boolean> {
 		try {
 			let secret = (await this.findByLogin(login)).TFASecret;
-			console.log(secret, token);
 			return otplib.authenticator.verify({ token, secret });
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -150,5 +150,12 @@ export class UserService {
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	async verify(token: string): Promise<User> {
+		if (!token) return null;
+		const { login, needTFA } = await jwt.verify(token, process.env.JWT_KEY);
+		if (needTFA) return null;
+		return await this.findByLogin(login);
 	}
 }

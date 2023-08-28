@@ -86,7 +86,7 @@ export class PrivateMessageController {
 		@Req() req: Request,
 		@Body('loginOther') loginOther: string,
 	): Promise<Channel> {
-		let me = await this.authService.verify(req.cookies.token);
+		let me = await this.userService.verify(req.cookies.token);
 		let otherMember = await this.userService.findByLogin(loginOther);
 		if (!otherMember || !me)
 			throw new HttpException('User not Found', HttpStatus.NOT_FOUND);

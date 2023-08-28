@@ -50,7 +50,6 @@ const Login = () => {
 	 * If it's the first time the user is logging in, redirect him to his profile update page
 	 * Else, if the user is connected, redirect him to the home page
 	 */
-	console.log(data, done);
 	useEffect(() => {
 		if (!done) return;
 		if (data.error) return; //TODO: do something with the error

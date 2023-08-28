@@ -122,7 +122,10 @@ export class AuthController {
 		const login = (await this.jwtService.verify(req.cookies.token)).login;
 		let user = await this.userService.findByLogin(login);
 		if (!user)
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			return {
+				clearance: Number(process.env.GUEST_CLEARANCE),
+				login: 'guest',
+			};
 		return {
 			clearance: user.dataValues.clearance,
 			login: user.dataValues.login,
@@ -150,12 +153,12 @@ export class AuthController {
 	}
 
 	@Post('verifyTFA/:login')
-	@UseGuards(AdminUserGuard)
 	async verifyTFA(
 		@Body('code') token: string,
 		@Param('login') login: string,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<boolean> {
+		console.log(login, token);
 		if (!token || !login) {
 			throw new HttpException(
 				'Missing parameters',

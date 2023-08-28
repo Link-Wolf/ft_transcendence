@@ -26,6 +26,7 @@ import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { readFileSync } from 'fs';
 import { AuthService } from 'src/auth/auth.service';
+import * as bcrypt from 'bcrypt';
 
 @Controller('channel')
 export class ChannelController {
@@ -75,7 +76,7 @@ export class ChannelController {
 	@Get('public/me')
 	@UseGuards(UserClearanceGuard)
 	async getPublicWithoutMine(@Req() req: Request): Promise<Channel[]> {
-		let sender = await this.authService.verify(req.cookies.auth);
+		let sender = await this.userService.verify(req.cookies.token);
 		if (!sender)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		return await this.channelService.findPublicWithoutMine(sender.login);
@@ -178,6 +179,7 @@ export class ChannelController {
 				'Invalid channel name',
 				HttpStatus.BAD_REQUEST,
 			);
+		let hashedPasswd: string;
 		if (password && password !== '') {
 			if (
 				(password && password.length < 8) ||
@@ -200,13 +202,43 @@ export class ChannelController {
 					HttpStatus.BAD_REQUEST,
 				);
 			}
+			hashedPasswd = await bcrypt.hash(password, 2);
 		}
 		return await this.channelService.create({
 			isPrivate: false,
 			name: name,
-			password: password,
+			password: hashedPasswd,
 			owner: owner,
 		});
+	}
+
+
+	/**
+	 * @brief Check if a password is correct
+	 * @param {string} userLogin The user's login
+	 * @param {string} channelName The channel name
+	 * @param {string} password The channel password
+	 * @returns {boolean} Whether the password is correct or not
+	 * @security Admin clearance OR user himself
+	 * @response 200 - OK
+	 * @response 400 - Bad Request
+	 * @response 401 - Unauthorized
+	 * @response 404 - Not Found
+	 * @response 409 - Conflict
+	 * @response 500 - Internal Server Error
+	 */
+	@Post(':channelName/passwd')
+	@UseGuards(AdminUserGuardPost)
+	async checkPasswd(
+		@Param('channelName') channelName: string,
+		@Body('password') password: string,
+		@Body('userLogin') userLogin: string,
+	): Promise<boolean> {
+		if(!password || password === '' || !userLogin || userLogin === '')
+			throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+		if(!(await this.channelService.findByName(channelName)) || !(await this.userService.findByLogin(userLogin)))
+			throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+		return await this.channelService.checkPasswd(channelName, password);
 	}
 
 	/**

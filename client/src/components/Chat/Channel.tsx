@@ -17,21 +17,37 @@ const Channel = ({
 	 * Channel component itself, display the messages and the input to send messages, and handle the messages
 	 */
 	const user = useContext(UserContext);
+
+	const [update, setUpdate] = useState(true); //TODO: split that bad boy into multiple update states
+
 	const [owner, setOwner] = useState("");
+	const [admins, setAdmins] = useState<any[]>([]);
+	const [members, setMembers] = useState<any>({});
+
 	const [messages, setMessages] = useState<any[]>([]);
-	const [update, setUpdate] = useState(true);
-	const [updateRelations, setUpdateRelations] = useState(true);
 	const [message, setMessage] = useState("");
-	const [relations, setRelations] = useState<any>({});
-	const [users, setUsers] = useState<any>({});
+
 	const [canSendMessage, setCanSendMessage] = useState(false);
 	const [showUserList, setShowUserList] = useState(false);
 	const [isToggleBox, setIsToggleBox] = useState(false);
-	const [admins, setAdmins] = useState<any[]>([]);
+	const [userStatus, setUserStatus] = useState<any>({
+		isMuted: false,
+	});
+
+	//	Listen to the server for new messages
+	useEffect(() => {
+		function clic(payload: String) {
+			if (payload === channel) setUpdate(true);
+		}
+		socket.on("youGotMail", clic);
+		return () => {
+			socket.off("youGotMail", clic);
+		};
+	}, [channel]);
 
 	// Load the owner of the channel
 	useEffect(() => {
-		if (channel[0] === "_" || !updateRelations) return;
+		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${channel}`
@@ -39,17 +55,15 @@ const Channel = ({
 			.then((res) => {
 				setOwner(res.data.ownerLogin);
 			})
-			.then(() => {
-				setUpdateRelations(false);
-			})
+
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [channel, updateRelations]);
+	}, [channel]);
 
 	//  Load the admins of the channel
 	useEffect(() => {
-		if (channel[0] === "_" || !updateRelations) return;
+		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/channel/${channel}/admins`
@@ -59,13 +73,11 @@ const Channel = ({
 					res.data.map((membership: any) => membership.userLogin)
 				);
 			})
-			.then(() => {
-				setUpdateRelations(false);
-			})
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [channel, updateRelations]);
+		setUpdate(false);
+	}, [channel]);
 
 	//  Load the possibility to send messages or not depending on whether the user is blocked or not, or if the user is muted
 	useEffect(() => {
@@ -109,17 +121,6 @@ const Channel = ({
 		setUpdate(false);
 	}, [update, channel, user.login]);
 
-	//	Listen to the server for new messages
-	useEffect(() => {
-		function clic(payload: String) {
-			if (payload === channel) setUpdate(true);
-		}
-		socket.on("youGotMail", clic);
-		return () => {
-			socket.off("youGotMail", clic);
-		};
-	}, [channel]);
-
 	//	Load the messages from the server
 	useEffect(() => {
 		axios
@@ -138,24 +139,42 @@ const Channel = ({
 		setUpdate(false);
 	}, [update, channel]);
 
-	//Load the relations from the server
+	//Load the members from the server
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/channel/${channel}`
+				`${process.env.REACT_APP_PROTOCOL}` +
+					`://${process.env.REACT_APP_HOSTNAME}` +
+					`:${process.env.REACT_APP_BACKEND_PORT}` +
+					`/api/membership/channel/${channel}`
 			)
-			.then((memberships) => {
-				for (let membership of memberships.data) {
-					if (membership.userLogin === user.login) continue;
-					if (membership.userLogin in relations) continue;
-					setRelations({
-						...relations,
-						[membership.userLogin]: {
-							isBlocked: false,
-							isFriend: false,
-						},
-					});
-				}
+			.then((res) => {
+				console.log(
+					res.data.reduce((acc: any, membership: any) => {
+						/*XXX: unintelegible oises of suffuring */
+						return {
+							...acc,
+							[membership.userLogin]: {
+								login: membership.userLogin,
+								isAdmin: membership.isAdmin,
+								user: membership.user,
+								hasBlocked: false,
+								isBlocked: false,
+								isFriend: false,
+							},
+						};
+					}, {})
+				);
+				setMembers(
+					res.data.reduce((acc: any, membership: any) => {
+						return {
+							...acc,
+							[membership.userLogin]: {
+								...membership,
+							},
+						};
+					})
+				);
 			})
 			.then(() => {
 				axios
@@ -163,16 +182,18 @@ const Channel = ({
 						`${process.env.REACT_APP_PROTOCOL}` +
 							`://${process.env.REACT_APP_HOSTNAME}` +
 							`:${process.env.REACT_APP_BACKEND_PORT}` +
-							`/api/block/by/${user.login}`
+							`/api/block/of/${user.login}`
 					)
 					.then((res) => {
-						for (let block of res.data) {
-							setRelations({
-								...relations,
-								[block.blockedLogin]: {
-									...relations[block.blockedLogin],
-									isBlocked: true,
-								},
+						for (let blocked of res.data) {
+							setMembers((members: any) => {
+								return {
+									...members,
+									[blocked.blockedLogin]: {
+										...members[blocked.blockedLogin],
+										isBlocked: true,
+									},
+								};
 							});
 						}
 					})
@@ -182,18 +203,51 @@ const Channel = ({
 								`${process.env.REACT_APP_PROTOCOL}` +
 									`://${process.env.REACT_APP_HOSTNAME}` +
 									`:${process.env.REACT_APP_BACKEND_PORT}` +
-									`/api/friendship/${user.login}`
+									`/api/block/by/${user.login}`
 							)
 							.then((res) => {
-								for (let friend of res.data) {
-									setRelations({
-										...relations,
-										[friend.userLogin]: {
-											...relations[friend.userLogin],
-											isFriend: true,
-										},
+								for (let blocker of res.data) {
+									setMembers((members: any) => {
+										return {
+											...members,
+											[blocker.blockerLogin]: {
+												...members[
+													blocker.blockerLogin
+												],
+												hasBlocked: true,
+											},
+										};
 									});
 								}
+							})
+							.then(() => {
+								axios
+									.get(
+										`${process.env.REACT_APP_PROTOCOL}` +
+											`://${process.env.REACT_APP_HOSTNAME}` +
+											`:${process.env.REACT_APP_BACKEND_PORT}` +
+											`/api/friendship/${user.login}`
+									)
+									.then((res) => {
+										for (let friend of res.data) {
+											setMembers((members: any) => {
+												console.log(friend);
+												return {
+													...members,
+													[friend.loginA]: {
+														...members[
+															friend.loginA
+														],
+														isFriend: true,
+													},
+												};
+											});
+										}
+									})
+									.then(() => {})
+									.catch((err) => {
+										console.log(err);
+									});
 							})
 							.catch((err) => {
 								console.log(err);
@@ -202,48 +256,35 @@ const Channel = ({
 					.catch((err) => {
 						console.log(err);
 					});
-			}).catch((err) => {
+			})
+			.catch((err) => {
 				console.log(err);
 			});
-	}, [messages, relations, user.login]);
-
-	useEffect(() => {
-		for (let login in { ...relations, [user.login]: {} }) {
-			axios
-				.get(
-					`${process.env.REACT_APP_PROTOCOL}` +
-						`://${process.env.REACT_APP_HOSTNAME}` +
-						`:${process.env.REACT_APP_BACKEND_PORT}` +
-						`/api/user/${login}`
-				)
-				.then((res) => {
-					setUsers({
-						...users,
-						[login]: res.data,
-					});
-				})
-				.catch(() => console.log("error"));
-		}
-	}, [relations, user.login, users]);
+		setUpdate(false);
+	}, [channel, update, user]);
 
 	const toggleBlock = (login: string) => {
-		if (relations[login].isBlocked) {
+		if (members[login].isBlocked) {
 			unblockSomeone(login);
-			setRelations({
-				...relations,
-				[login]: {
-					...relations[login],
-					isBlocked: false,
-				},
+			setMembers((members: any) => {
+				return {
+					...members,
+					[login]: {
+						...members[login],
+						isBlocked: false,
+					},
+				};
 			});
 		} else {
 			blockSomeone(login);
-			setRelations({
-				...relations,
-				[login]: {
-					...relations[login],
-					isBlocked: true,
-				},
+			setMembers((members: any) => {
+				return {
+					...members,
+					[login]: {
+						...members[login],
+						isBlocked: true,
+					},
+				};
 			});
 		}
 	};
@@ -283,23 +324,26 @@ const Channel = ({
 	};
 
 	const toggleFriendship = (login: string) => {
-		if (relations[login].isFriend) {
+		if (members[login].isFriend) {
 			unfriendSomeone(login);
-			setRelations({
-				...relations,
-				[login]: {
-					...relations[login],
-					isFriend: false,
-				},
+			setMembers((members: any) => {
+				return {
+					...members,
+					[login]: {
+						...members[login],
+						isFriend: false,
+					},
+				};
 			});
 		} else {
-			friendSomeone(login);
-			setRelations({
-				...relations,
-				[login]: {
-					...relations[login],
-					isFriend: true,
-				},
+			setMembers((members: any) => {
+				return {
+					...members,
+					[login]: {
+						...members[login],
+						isFriend: true,
+					},
+				};
 			});
 		}
 	};
@@ -368,7 +412,23 @@ const Channel = ({
 
 	const toggleBox = async (login = user.login) => {
 		if (login === user.login) return redirect(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
-		setIsToggleBox(!isToggleBox);
+		if (!isToggleBox) {
+			axios
+				.get(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
+				)
+				.then((res) => {
+					setUserStatus({
+						isMuted: res.data.length !== 0,
+					});
+				})
+				.then(() => {
+					setIsToggleBox(!isToggleBox);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} else setIsToggleBox(!isToggleBox);
 	};
 
 	const askForGame = () => {
@@ -384,9 +444,6 @@ const Channel = ({
 					isAdmin: true,
 				}
 			)
-			.then(() => {
-				setUpdateRelations(true);
-			})
 			.catch((err) => {
 				console.log(err);
 			});
@@ -400,9 +457,6 @@ const Channel = ({
 					isAdmin: false,
 				}
 			)
-			.then(() => {
-				setUpdateRelations(true);
-			})
 			.catch((err) => {
 				console.log(err);
 			});
@@ -422,13 +476,33 @@ const Channel = ({
 			});
 	};
 
-	const mute = (login: string) => {
+	const mute = async (login: string) => {
+		if (userStatus.isMuted) {
+			await unmuteSomeone(login);
+			setUserStatus({
+				isMuted: false,
+			});
+		} else {
+			await muteSomeone(login);
+			setUserStatus({
+				isMuted: true,
+			});
+		}
+	};
+
+	const muteSomeone = async (login: string) => {
 		//TODO: mute someone from the channel
+	};
+
+	const unmuteSomeone = async (login: string) => {
+		//TODO: unmute someone from the channel
 	};
 
 	const ban = (login: string) => {
 		//TODO: ban someone from the channel
 	};
+
+	console.log(members);
 
 	return (
 		<div>
@@ -464,9 +538,14 @@ const Channel = ({
 													isBlocked: false,
 													isFriend: false,
 											  }
-											: relations[message.userLogin]
+											: members[message.userLogin] ?? {
+													isBlocked: false,
+													isFriend: false,
+											  }
 									}
-									avatar={users[message.userLogin].avatar}
+									avatar={
+										members[message.userLogin].avatar ?? ""
+									}
 									toggleBlock={toggleBlock}
 									toggleFriendship={toggleFriendship}
 									askForGame={askForGame}
@@ -493,7 +572,7 @@ const Channel = ({
 				</>
 			) : (
 				<>
-					{Object.keys(users).map((login, i) => (
+					{Object.keys(members).map((login, i) => (
 						<div key={i}>
 							<button
 								onClick={() => {
@@ -508,19 +587,19 @@ const Channel = ({
 										<Link to={`/profile/${login}`}>
 											<label>Profil</label>
 										</Link>
-										{!relations[login].isBlocked && (
+										{!members[login].isBlocked && (
 											<button onClick={askForGame}>
 												Faire une partie
 											</button>
 										)}
-										{!relations[login].isBlocked && (
+										{!members[login].isBlocked && (
 											<button
 												onClick={() => {
 													toggleFriendship(login);
 													toggleBox();
 												}}
 											>
-												{relations[login].isFriend
+												{members[login].isFriend
 													? "Message privé"
 													: "Demander en ami"}
 											</button>
@@ -531,7 +610,7 @@ const Channel = ({
 												toggleBox();
 											}}
 										>
-											{relations[login].isBlocked
+											{members[login].isBlocked
 												? "Débloquer"
 												: "Bloquer"}
 										</button>
@@ -570,7 +649,9 @@ const Channel = ({
 														mute(login);
 													}}
 												>
-													Mute
+													{userStatus.isMuted
+														? "Unmute"
+														: "Mute"}
 												</button>
 												<button
 													onClick={() => {
@@ -586,7 +667,7 @@ const Channel = ({
 								{user.login !== login ? (
 									<label>
 										{login}{" "}
-										{relations[login].isBlocked
+										{members[login].isBlocked
 											? "(bloqué)"
 											: ""}
 									</label>
@@ -599,10 +680,11 @@ const Channel = ({
 									status={true}
 								>
 									<img
-										src={`data:image/*;base64,${users[login].avatar}`}
+										src={`data:image/*;base64,${
+											members[login].avatar ?? ""
+										}`}
 									/>
 								</PPDisplayer>
-								{login}
 								{login === owner
 									? " (owner)"
 									: admins.includes(login) && " (admin)"}

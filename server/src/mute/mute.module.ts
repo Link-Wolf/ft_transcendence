@@ -8,15 +8,12 @@ import { UserService } from 'src/user/user.service';
 import { ChannelModule } from 'src/channel/channel.module';
 import { MembershipModule } from 'src/membership/membership.module';
 import { UserModule } from 'src/user/user.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
 	controllers: [MuteController],
 	providers: [MuteService, ...muteProviders],
 	exports: [MuteService, ...muteProviders],
-	imports: [
-		UserModule,
-		ChannelModule,
-		MembershipModule
-	]
+	imports: [UserModule, ChannelModule, MembershipModule, AuthModule],
 })
 export class MuteModule {}

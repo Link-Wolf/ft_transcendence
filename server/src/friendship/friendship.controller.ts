@@ -155,7 +155,7 @@ export class FriendshipController {
 		@Req() req: Request,
 		@Body('receiverLogin') receiverLogin: string,
 	): Promise<Friendship> {
-		let sender = await this.authService.verify(req.cookies.auth);
+		let sender = await this.userService.verify(req.cookies.token);
 		let receiver = await this.userService.findByLogin(receiverLogin);
 		if (!receiver || !sender)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -241,7 +241,7 @@ export class FriendshipController {
 			);
 		if (
 			friendship.dataValues.receiver !==
-			(await this.authService.verify(req.cookies.auth))
+			(await this.userService.verify(req.cookies.token))
 		)
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (!friendship.dataValues.isPending)

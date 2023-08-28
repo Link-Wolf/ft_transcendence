@@ -52,10 +52,11 @@ export class MembershipService {
 	 */
 	async findByChannel(chan_name: string): Promise<Membership[]> {
 		try {
-			return await this.membershipRepository.findAll<Membership>({
+			let ret = await this.membershipRepository.findAll<Membership>({
 				where: { channelName: chan_name },
 				include: [{ all: true }],
 			});
+			return ret;
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -91,10 +92,11 @@ export class MembershipService {
 	 */
 	async findAdminsByChannel(chan_name: string): Promise<Membership[]> {
 		try {
-			return await this.membershipRepository.findAll<Membership>({
+			let ret = await this.membershipRepository.findAll<Membership>({
 				where: { channelName: chan_name, isAdmin: true },
 				include: [{ all: true }],
 			});
+			return ret;
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

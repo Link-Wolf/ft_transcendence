@@ -78,7 +78,6 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 					}
 				)
 				.then((response) => {
-					console.log(response.data);
 					setChannel(response.data.name);
 				})
 				.catch((err) => {

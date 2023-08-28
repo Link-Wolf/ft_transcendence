@@ -43,7 +43,7 @@ export class MessageService {
      * @param   {string} chanName   The channel's name
      * @return  {Message[]}         List of messages
      * @throws  {HttpException}     500 if an error occured
-     */ 
+     */
     async findByChannel(chanName: string): Promise<Message[]> {
         try {
             return await this.messageRepository

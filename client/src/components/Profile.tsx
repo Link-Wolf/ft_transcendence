@@ -108,7 +108,6 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				let ranked = Array<any>();
 				let normal = Array<any>();
 				res.data.forEach((game: any) => {
-					console.log(game);
 					if (game.game.isRanked && game.game.status !== "waiting")
 						ranked.push(game);
 					else if (
@@ -193,7 +192,6 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<ul>
 				{normalGames.length > 0 ? (
 					normalGames.map((game, i) => {
-						console.log(game);
 						if (game.game.status === "waiting") return;
 						return (
 							<li key={i}>
