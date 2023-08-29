@@ -149,32 +149,21 @@ const Channel = ({
 					`/api/membership/channel/${channel}`
 			)
 			.then((res) => {
-				console.log(
-					res.data.reduce((acc: any, membership: any) => {
-						/*XXX: unintelegible oises of suffuring */
-						return {
-							...acc,
-							[membership.userLogin]: {
-								login: membership.userLogin,
-								isAdmin: membership.isAdmin,
-								user: membership.user,
-								hasBlocked: false,
-								isBlocked: false,
-								isFriend: false,
-							},
-						};
-					}, {})
-				);
-				setMembers(
-					res.data.reduce((acc: any, membership: any) => {
-						return {
-							...acc,
-							[membership.userLogin]: {
-								...membership,
-							},
-						};
-					})
-				);
+				const members = res.data.reduce((acc: any, membership: any) => {
+					/*XXX: unintelegible oises of suffuring */
+					return {
+						...acc,
+						[membership.userLogin]: {
+							login: membership.userLogin,
+							isAdmin: membership.isAdmin,
+							user: membership.user,
+							hasBlocked: false,
+							isBlocked: false,
+							isFriend: false,
+						},
+					};
+				}, {});
+				setMembers(members);
 			})
 			.then(() => {
 				axios
