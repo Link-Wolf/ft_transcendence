@@ -40,7 +40,7 @@ export class AdminOwnerAdminUserGuard implements CanActivate {
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		let isAdminOfChannel = (
 			await this.membershipService.findAdminsByChannel(channel)
-		).includes(user);
+		).some((admin) => admin.dataValues.userLogin === user.dataValues.login);
 		let isOwnerOfChannel = await this.channelService.isOwner(
 			user.dataValues.login,
 			channel,

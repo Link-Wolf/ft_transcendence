@@ -216,6 +216,7 @@ export class BlockController {
 		@Body('userLogin') blockerLogin: string,
 		@Body('blocked') blockedLogin: string,
 	): Promise<Block> {
+		console.log("bonour, je bloque a vue des bisous")
 		if (!blockedLogin || !blockerLogin)
 			throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
 		let blocker = await this.userService.findByLogin(blockerLogin);
@@ -260,6 +261,7 @@ export class BlockController {
 		@Param('login') blockerLogin: string,
 		@Param('blocked') blockedLogin: string,
 	): Promise<number> {
+		console.log("bizou je menvoooole")
 		let blocker = await this.userService.findByLogin(blockerLogin);
 		let blocked = await this.userService.findByLogin(blockedLogin);
 		if (!blocker || !blocked)

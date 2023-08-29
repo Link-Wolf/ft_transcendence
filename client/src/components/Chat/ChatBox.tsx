@@ -1,6 +1,6 @@
 import { useState } from "react";
 import style from "../../style/Chat.module.scss";
-import Channel from "./Channel";
+import Channel from "./Channel/Channel";
 import ChannelList from "./ChannelList";
 import MPList from "./MPList";
 
@@ -21,10 +21,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					<MPList setChannel={setChannel} />
 				</>
 			) : (
-				<Channel
-					channel={channel}
-					setChannel={setChannel}
-				/>
+				<Channel channel={channel} setChannel={setChannel} />
 			)}
 		</div>
 	);

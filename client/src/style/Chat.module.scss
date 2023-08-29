@@ -14,7 +14,8 @@
 	position: fixed;
 	bottom: calc(50px);
 	right: calc(50px);
-	// overflow: hidden;
+	overflow-y: scroll;
+	overflow-x: hidden;
 
 	.toggleChat {
 		border: fuchsia 1px solid;
