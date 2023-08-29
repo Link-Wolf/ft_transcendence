@@ -11,6 +11,8 @@ const Message = ({
 	toggleBlock,
 	toggleFriendship,
 	askForGame,
+	admins,
+	owner,
 }: {
 	login: string;
 	date: string;
@@ -20,6 +22,8 @@ const Message = ({
 	toggleBlock: Function;
 	toggleFriendship: Function;
 	askForGame: Function;
+	admins: string[];
+	owner: string;
 }) => {
 	/**
 	 * Message component, display a message with the user's avatar, name, date, content and a button to interact with the user
@@ -34,10 +38,15 @@ const Message = ({
 
 	if (!relation) return <>loading... {login}</>;
 	return (
+		//TODO: addback pp
 		<>
 			{user.login !== login ? (
 				<button onClick={toggleBox}>
-					{login} {relation.isBlocked ? "(bloqué)" : ""}
+					{login}{" "}
+					{
+					login === owner ? "[owner]" : admins.includes(login)
+						&& "[admin]"}
+					{relation.isBlocked ? "(bloqué)" : ""}
 				</button>
 			) : (
 				<label>{login} (you) </label>

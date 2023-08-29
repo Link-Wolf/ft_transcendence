@@ -10,6 +10,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	const [channels, setChannels] = useState<any[]>([]);
 	const [channelCreation, setChannelCreation] = useState(false);
 	const [joinChannel, setJoinChannel] = useState<any>(null);
+	const [canIBebouPlz, setCanIBebouPlz] = useState(false);
 	const user = useContext(UserContext);
 
 	useEffect(() => {
@@ -46,29 +47,35 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 					if (!response.data) {
 						//TODO: ouioui pas bon passwd
 						alert("Wrong password");
-					} else {
-						axios
-							.post(
-								`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
-								{
-									chanName: joinChannel.name,
-									userLogin: user.login,
-									isAdmin: false,
-								}
-							)
-							.then((joined_channel) => {
-								setChannel(joined_channel.data.channelName);
-							})
-							.catch((error) => {
-								console.log(error);
-							});
-					}
+					} else setCanIBebouPlz(true);
 				})
 				.catch((err) => {
 					console.log(err);
 				});
-		}
+		} else setCanIBebouPlz(true);
 	}, [joinChannel, setChannel, user.login]);
+
+	useEffect(() => {
+		if (!canIBebouPlz) return;
+		axios
+			.post(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
+				{
+					chanName: joinChannel.name,
+					userLogin: user.login,
+					isAdmin: false,
+				}
+			)
+			.then((joined_channel) => {
+				setChannel(joined_channel.data.channelName);
+			})
+			.then(() => {
+				setCanIBebouPlz(false);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}, [canIBebouPlz]);
 
 	const createChannel = () => {
 		setChannelCreation(!channelCreation);
