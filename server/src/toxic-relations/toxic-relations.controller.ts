@@ -1,8 +1,10 @@
 import {
 	Body,
 	Controller,
+	Get,
 	HttpException,
 	HttpStatus,
+	Param,
 	Post,
 	Req,
 	UseGuards,
@@ -16,6 +18,10 @@ import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import { UserService } from 'src/user/user.service';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
+import { MembershipService } from 'src/membership/membership.service';
+import { MessageService } from 'src/message/message.service';
+import { ToxicGuard } from 'src/guards/toxic.guard';
+import { isMACAddress } from 'class-validator';
 
 @Controller('toxic-relations')
 export class ToxicRelationsController {
@@ -23,7 +29,60 @@ export class ToxicRelationsController {
 		private readonly blockService: BlockService,
 		private readonly friendshipService: FriendshipService,
 		private readonly userService: UserService,
+		private readonly membershipService: MembershipService,
+		private readonly messageService: MessageService,
 	) {}
+
+	@Get('user/:login/channel/:chann_name')
+	@UseGuards(ToxicGuard)
+	async getToxicity(
+		@Param('login') login: string,
+		@Param('chann_name') chann_name: string,
+	): Promise<any> {
+		if (!login || !chann_name)
+			throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+		if (!(await this.userService.findByLogin(login)))
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		if (!(await this.membershipService.findByChannel(chann_name)))
+			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
+		let trueMembers = await this.membershipService.findByChannel(
+			chann_name,
+		);
+		let messageAuthors = await this.messageService.findByUser(login);
+		let blocked = await this.blockService.findBlocksBy(login);
+		let blockers = await this.blockService.findBlockersOf(login);
+		let friends = await this.friendshipService.findFriends(login);
+
+		const reducer = (isMember: boolean) => (acc: any, cur: any) => {
+			return {
+				...acc,
+				[cur.user.login]: {
+					user: cur.user,
+					isMember: isMember,
+					isBlocked: blocked.some(
+						(block) => block.blockedLogin === cur.user.login,
+					),
+					isBlocker: blockers.some(
+						(block) => block.blockerLogin === cur.user.login,
+					),
+					isFriend: friends.some(
+						(friend) =>
+							friend.dataValues.senderLogin === cur.user.login ||
+							friend.dataValues.receiverLogin === cur.user.login,
+					),
+				},
+			};
+		};
+
+		let ret = {
+			...messageAuthors.reduce(reducer(false), {}),
+			...trueMembers.reduce(reducer(true), {}),
+		};
+
+		console.log(ret);
+
+		return ret;
+	}
 
 	/**
 	 * @brief Create a new block and if a friendship exists between the two users, delete it

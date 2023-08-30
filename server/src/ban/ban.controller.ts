@@ -182,7 +182,10 @@ export class BanController {
 				"User can't ban if he's not in channel",
 				HttpStatus.NOT_FOUND,
 			);
-		if (!my_membership.dataValues.isAdmin)
+		if (
+			!my_membership.dataValues.isAdmin &&
+			chan.dataValues.owner.dataValues.login !== me.dataValues.login
+		)
 			throw new HttpException("You can't do this", HttpStatus.FORBIDDEN);
 		let user = await this.userService.findByLogin(login);
 		if (!user)

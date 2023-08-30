@@ -7,6 +7,7 @@ import { PPDisplayer } from "../../ImageDisplayer";
 import { Link, redirect } from "react-router-dom";
 import MessagesManager from "./MessagesManager";
 import ChannelUser from "./ChannelUser";
+import ChannelSettings from "./ChannelSettings";
 
 const Channel = ({
 	channel,
@@ -25,7 +26,6 @@ const Channel = ({
 	const [owner, setOwner] = useState("");
 	const [admins, setAdmins] = useState<string[]>([]);
 	const [members, setMembers] = useState<any>({});
-	const [areMembersLoaded, setAreMembersLoaded] = useState(false);
 
 	const [showThingsAboutChannel, setShowThingsAboutChannel] = useState("");
 
@@ -82,107 +82,10 @@ const Channel = ({
 				`${process.env.REACT_APP_PROTOCOL}` +
 					`://${process.env.REACT_APP_HOSTNAME}` +
 					`:${process.env.REACT_APP_BACKEND_PORT}` +
-					`/api/membership/channel/${channel}`
+					`/api/toxic-relations/user/${user.login}/channel/${channel}`
 			)
 			.then((res) => {
-				const members = res.data.reduce((acc: any, membership: any) => {
-					return {
-						...acc,
-						[membership.userLogin]: {
-							login: membership.userLogin,
-							isAdmin: membership.isAdmin,
-							user: membership.user,
-							hasBlocked: false,
-							isBlocked: false,
-							isFriend: false,
-						},
-					};
-				}, {});
-				console.log(members);
-				setMembers(members);
-			})
-			.then(() => {
-				axios
-					.get(
-						`${process.env.REACT_APP_PROTOCOL}` +
-							`://${process.env.REACT_APP_HOSTNAME}` +
-							`:${process.env.REACT_APP_BACKEND_PORT}` +
-							`/api/block/by/${user.login}`
-					)
-					.then((res) => {
-						for (let blocked of res.data) {
-							setMembers((members: any) => {
-								return {
-									...members,
-									[blocked.blockedLogin]: {
-										...members[blocked.blockedLogin],
-										isBlocked: true,
-									},
-								};
-							});
-						}
-					})
-					.then(() => {
-						axios
-							.get(
-								`${process.env.REACT_APP_PROTOCOL}` +
-									`://${process.env.REACT_APP_HOSTNAME}` +
-									`:${process.env.REACT_APP_BACKEND_PORT}` +
-									`/api/block/of/${user.login}`
-							)
-							.then((res) => {
-								for (let blocker of res.data) {
-									setMembers((members: any) => {
-										return {
-											...members,
-											[blocker.blockerLogin]: {
-												...members[
-													blocker.blockerLogin
-												],
-												hasBlocked: true,
-											},
-										};
-									});
-								}
-							})
-							.then(() => {
-								axios
-									.get(
-										`${process.env.REACT_APP_PROTOCOL}` +
-											`://${process.env.REACT_APP_HOSTNAME}` +
-											`:${process.env.REACT_APP_BACKEND_PORT}` +
-											`/api/friendship/${user.login}`
-									)
-									.then((res) => {
-										for (let friend of res.data) {
-											setMembers((members: any) => {
-												console.log(friend);
-												return {
-													...members,
-													[friend.loginA]: {
-														...members[
-															friend.loginA
-														],
-														isFriend: true,
-													},
-												};
-											});
-										}
-									})
-									.then(() => {
-										setAreMembersLoaded(true);
-									})
-									.catch((err) => {
-										console.log(err);
-									});
-							})
-							.catch((err) => {
-								console.log(err);
-							});
-					})
-					.catch((err) => {
-						console.log(err);
-					});
+				setMembers(res.data);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -287,8 +190,6 @@ const Channel = ({
 		//TODO: ask the other person for game
 	};
 
-	console.log(members);
-
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
@@ -305,17 +206,21 @@ const Channel = ({
 							? "X"
 							: "User List"}
 					</button>
-					<button
-						onClick={() =>
-							showThingsAboutChannel === "channelSettings"
-								? setShowThingsAboutChannel("")
-								: setShowThingsAboutChannel("channelSettings")
-						}
-					>
-						{showThingsAboutChannel === "channelSettings"
-							? "X"
-							: "Channel Settings"}
-					</button>
+					{owner === user.login && (
+						<button
+							onClick={() =>
+								showThingsAboutChannel === "channelSettings"
+									? setShowThingsAboutChannel("")
+									: setShowThingsAboutChannel(
+											"channelSettings"
+									  )
+							}
+						>
+							{showThingsAboutChannel === "channelSettings"
+								? "X"
+								: "Channel Settings"}
+						</button>
+					)}
 				</>
 			)}
 			{showThingsAboutChannel === "userList" ? (
@@ -335,20 +240,23 @@ const Channel = ({
 						</div>
 					))}
 				</>
-			) : showThingsAboutChannel === "channelSettings" ? (
-				<>Ui les settings</>
+			) : showThingsAboutChannel === "channelSettings" &&
+			  owner === user.login ? (
+				<ChannelSettings
+					channelName={channel}
+					owner={owner}
+					admins={admins}
+				/>
 			) : (
-				areMembersLoaded && (
-					<MessagesManager
-						channel={channel}
-						members={members}
-						toggleBlock={toggleBlock}
-						toggleFriendship={toggleFriendship}
-						askForGame={askForGame}
-						admins={admins}
-						owner={owner}
-					/>
-				)
+				<MessagesManager
+					channel={channel}
+					members={members}
+					toggleBlock={toggleBlock}
+					toggleFriendship={toggleFriendship}
+					askForGame={askForGame}
+					admins={admins}
+					owner={owner}
+				/>
 			)}
 		</div>
 	);
