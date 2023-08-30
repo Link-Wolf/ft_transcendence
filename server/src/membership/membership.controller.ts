@@ -222,11 +222,11 @@ export class MembershipController {
 	 * @response 404 - Not Found
 	 * @response 500 - Internal Server Error
 	 */
-	@Delete('user/:login/channel/:chan_name')
+	@Delete('user/:login/channel/:chann_name')
 	@UseGuards(AdminOwnerAdminUserGuard)
 	async delete(
 		@Param('login') login: string,
-		@Param('chan_name') chan_name: string,
+		@Param('chann_name') chan_name: string,
 	) {
 		if (!this.userService.findByLogin(login))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
