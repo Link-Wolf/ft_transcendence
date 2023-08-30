@@ -101,40 +101,6 @@ const Channel = ({
 		}
 	};
 
-	const unblockSomeone = (login: string) => {
-		axios
-			.delete(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
-			)
-			.then(() => {
-				socket.emit("newMessageDaddy", {
-					channel: channel,
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
-	const blockSomeone = (login: string) => {
-		axios
-			.post(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block`,
-				{
-					userLogin: user.login,
-					blocked: login,
-				}
-			)
-			.then(() => {
-				socket.emit("newMessageDaddy", {
-					channel: channel,
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
 	const toggleFriendship = (login: string) => {
 		if (members[login].isFriend) {
 			unfriendSomeone(login);
@@ -158,36 +124,6 @@ const Channel = ({
 				};
 			});
 		}
-	};
-
-	const unfriendSomeone = (login: string) => {
-		axios
-			.delete(
-				`${process.env.REACT_APP_PROTOCOL}` +
-					`://${process.env.REACT_APP_HOSTNAME}` +
-					`:${process.env.REACT_APP_BACKEND_PORT}` +
-					`/api/friendship/${user.login}/${login}`
-			)
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
-	const friendSomeone = async (login: string) => {
-		let block = await axios.get(
-			`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
-		);
-		if (block.data.length !== 0) {
-			//TODO: cancel friendship request (front-end side) because the target blocked the user
-			console.log(
-				`${login} blocked ${user.login}, so no u can't be friend with him !`
-			);
-		}
-		console.log(`${user.login} wants to be friend with ${login}`); //TODO: implement friendship request
-	};
-
-	const askForGame = () => {
-		//TODO: ask the other person for game
 	};
 
 	return (
@@ -233,7 +169,6 @@ const Channel = ({
 								owner={owner}
 								login={login}
 								members={members}
-								askForGame={askForGame}
 								toggleFriendship={toggleFriendship}
 								toggleBlock={toggleBlock}
 							/>
@@ -253,9 +188,9 @@ const Channel = ({
 					members={members}
 					toggleBlock={toggleBlock}
 					toggleFriendship={toggleFriendship}
-					askForGame={askForGame}
 					admins={admins}
 					owner={owner}
+					setChannel={setChannel}
 				/>
 			)}
 		</div>

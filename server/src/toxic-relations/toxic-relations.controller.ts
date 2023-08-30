@@ -79,8 +79,6 @@ export class ToxicRelationsController {
 			...trueMembers.reduce(reducer(true), {}),
 		};
 
-		console.log(ret);
-
 		return ret;
 	}
 

@@ -12,6 +12,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	const [passError, setPassError] = useState("");
 
 	const tutors = JSON.parse(process.env.REACT_APP_TUTORS ?? "[]") as string[];
+
 	useEffect(() => {
 		//check if channel name contains any special characters
 		if (data.name.match(/[^a-zA-Z0-9]/g)) {
