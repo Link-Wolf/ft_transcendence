@@ -32,15 +32,21 @@ export class AdminOwnerAdminUserGuard implements CanActivate {
 		const cookies = context.switchToHttp().getRequest().cookies;
 		let user: any;
 		let clearance = 0;
+
 		if (cookies.token) {
 			user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		let isAdminOfChannel = (
-			await this.membershipService.findAdminsByChannel(channel)
-		).some((admin) => admin.dataValues.userLogin === user.dataValues.login);
+
+		const admins = await this.membershipService.findAdminsByChannel(
+			channel,
+		);
+		let isAdminOfChannel = admins.some(
+			(admin) => admin.dataValues.userLogin === user.dataValues.login,
+		);
+
 		let isOwnerOfChannel = await this.channelService.isOwner(
 			user.dataValues.login,
 			channel,

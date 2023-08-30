@@ -4,6 +4,7 @@ import { Link, redirect } from "react-router-dom";
 import socket from "../../../socket";
 import { PPDisplayer } from "../../ImageDisplayer";
 import { UserContext } from "../../../App";
+import MuteBanForm from "./MuteBanForm";
 
 const ChannelUser = ({
 	admins,
@@ -32,11 +33,6 @@ const ChannelUser = ({
 	const [toggleAdminBox, setToggleAdminBox] = useState({
 		isActive: false,
 		type: "" as "" | "mute" | "ban",
-	});
-	const [adminForm, setAdminForm] = useState<any>({
-		login: "",
-		reason: "",
-		end_date: "",
 	});
 
 	const toggleBox = async (login = user.login) => {
@@ -105,6 +101,7 @@ const ChannelUser = ({
 			)
 			.then(() => {
 				socket.emit("newMessageDaddy", {
+					//TODO: change it to a kick message so that the user knows he got kicked
 					channel: channel,
 				});
 			})
@@ -131,90 +128,51 @@ const ChannelUser = ({
 		}
 	};
 
-	const muteSomeone = async (login: string) => {
-		//TODO: mute someone from the channel
-		setUserStatus({
-			isMuted: true,
-		});
-		socket.emit("newMessageDaddy", {
-			channel: channel,
-		});
-	};
-
 	const unmuteSomeone = async (login: string) => {
-		//TODO: unmute someone from the channel
-		setUserStatus({
-			isMuted: false,
-		});
-		socket.emit("newMessageDaddy", {
-			channel: channel,
-		});
-	};
-
-	const ban = (login: string) => {
-		setToggleAdminBox({
-			isActive: true,
-			type: "ban",
-		});
-		//TODO: ban someone from the channel
-		socket.emit("newMessageDaddy", {
-			channel: channel,
-		});
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
+			)
+			.then((res) => {
+				if (res.data.length !== 0) {
+					axios
+						.delete(
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
+						)
+						.then(() => {
+							setIsToggleBox(false);
+							setToggleAdminBox({
+								isActive: false,
+								type: "",
+							});
+							setUserStatus({
+								isMuted: false,
+							});
+							socket.emit("newMessageDaddy", {
+								channel: channel,
+							});
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
 
 	return (
 		<>
 			{toggleAdminBox.isActive && (
-				<div /*RELATIVE */>
-					<div>{/* FIXED INFINITE */}</div>
-					<div /* ignore sa petite soeurs*/>
-						<form>
-							{toggleAdminBox.type === "mute" && (
-								<select value={0}>
-									<option value={0} disabled>
-										Choisis la duree du mute
-									</option>
-									<option value={5}>5 minutes</option>
-									<option value={10}>10 minutes</option>
-									<option value={30}>30 minutes</option>
-									<option value={60}>1 heure</option>
-									<option value={12 * 60}>12 heures</option>
-									<option value={24 * 60}>24 heures</option>
-									<option
-										value={
-											(0.00000036 *
-												40 *
-												7 *
-												3 *
-												1 *
-												2 *
-												10) ^
-											8
-										}
-									>
-										42 jours
-									</option>
-								</select>
-							)}
-							<input
-								value=''
-								name='reason'
-								placeholder='why tho ?'
-							/>
-							<button
-								onClick={() => {
-									toggleAdminBox.type === "mute"
-										? muteSomeone(login)
-										: ban(login);
-								}}
-							>
-								{toggleAdminBox.type === "mute"
-									? "Censor him"
-									: "Apply the banhammer"}
-							</button>
-						</form>
-					</div>
-				</div>
+				<MuteBanForm
+					channel={channel}
+					login={login}
+					boxType={toggleAdminBox.type}
+					setToggleAdminBox={setToggleAdminBox}
+					setIsToggleBox={setIsToggleBox}
+					setUserStatus={setUserStatus}
+				/>
 			)}
 			<div>
 				{isToggleBox && (
@@ -293,7 +251,10 @@ const ChannelUser = ({
 									</button>
 									<button
 										onClick={() => {
-											ban(login);
+											setToggleAdminBox({
+												isActive: true,
+												type: "ban",
+											});
 										}}
 									>
 										Ban

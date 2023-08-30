@@ -18,7 +18,10 @@ import { MuteService } from './mute.service';
 import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { Mute } from './mute.entity';
 import { ParseDatePipe } from './mute.pipe';
-import { AdminOwnerAdminGuard } from 'src/guards/admin_owner_admin.guard';
+import {
+	AdminOwnerAdminGuard,
+	AdminOwnerAdminGuardPost,
+} from 'src/guards/admin_owner_admin.guard';
 import { Request } from 'express';
 import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guard';
 
@@ -153,7 +156,7 @@ export class MuteController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Post()
-	@UseGuards(AdminOwnerAdminGuard)
+	@UseGuards(AdminOwnerAdminGuardPost)
 	async create(
 		@Body('login') login: string,
 		@Body('chann_name') channelName: string,
@@ -161,9 +164,10 @@ export class MuteController {
 		@Body('reason') reason: string,
 		@Req() req: Request,
 	): Promise<Mute> {
+		console.log(login, channelName, end, reason);
 		if (!req.cookies.token)
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		const my_login = (await this.jwtService.verify(req.cookies.token))
+		const my_login = (await this.userService.verify(req.cookies.token))
 			.login;
 		let me = await this.userService.findByLogin(my_login);
 		let user = await this.userService.findByLogin(login);
@@ -190,7 +194,10 @@ export class MuteController {
 				'User not in channel',
 				HttpStatus.FORBIDDEN,
 			);
-		if (!my_membership.dataValues.isAdmin)
+		if (
+			!my_membership.dataValues.isAdmin &&
+			channel.dataValues.owner.dataValues.login !== my_login
+		)
 			throw new HttpException("You can't do this", HttpStatus.FORBIDDEN);
 		if (
 			user_membership.dataValues.isAdmin &&

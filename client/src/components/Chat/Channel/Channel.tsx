@@ -25,8 +25,9 @@ const Channel = ({
 	const [owner, setOwner] = useState("");
 	const [admins, setAdmins] = useState<string[]>([]);
 	const [members, setMembers] = useState<any>({});
+	const [areMembersLoaded, setAreMembersLoaded] = useState(false);
 
-	const [showUserList, setShowUserList] = useState(false);
+	const [showThingsAboutChannel, setShowThingsAboutChannel] = useState("");
 
 	//	Listen to the server for new messages
 	useEffect(() => {
@@ -97,6 +98,7 @@ const Channel = ({
 						},
 					};
 				}, {});
+				console.log(members);
 				setMembers(members);
 			})
 			.then(() => {
@@ -167,7 +169,9 @@ const Channel = ({
 											});
 										}
 									})
-									.then(() => {})
+									.then(() => {
+										setAreMembersLoaded(true);
+									})
 									.catch((err) => {
 										console.log(err);
 									});
@@ -283,25 +287,38 @@ const Channel = ({
 		//TODO: ask the other person for game
 	};
 
+	console.log(members);
+
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
 			{channel[0] !== "_" && (
-				<button onClick={() => setShowUserList(!showUserList)}>
-					{showUserList ? "X" : "User List"}
-				</button>
+				<>
+					<button
+						onClick={() =>
+							showThingsAboutChannel === "userList"
+								? setShowThingsAboutChannel("")
+								: setShowThingsAboutChannel("userList")
+						}
+					>
+						{showThingsAboutChannel === "userList"
+							? "X"
+							: "User List"}
+					</button>
+					<button
+						onClick={() =>
+							showThingsAboutChannel === "channelSettings"
+								? setShowThingsAboutChannel("")
+								: setShowThingsAboutChannel("channelSettings")
+						}
+					>
+						{showThingsAboutChannel === "channelSettings"
+							? "X"
+							: "Channel Settings"}
+					</button>
+				</>
 			)}
-			{!showUserList ? (
-				<MessagesManager
-					channel={channel}
-					members={members}
-					toggleBlock={toggleBlock}
-					toggleFriendship={toggleFriendship}
-					askForGame={askForGame}
-					admins={admins}
-					owner={owner}
-				/>
-			) : (
+			{showThingsAboutChannel === "userList" ? (
 				<>
 					{Object.keys(members).map((login, i) => (
 						<div key={i}>
@@ -318,6 +335,20 @@ const Channel = ({
 						</div>
 					))}
 				</>
+			) : showThingsAboutChannel === "channelSettings" ? (
+				<>Ui les settings</>
+			) : (
+				areMembersLoaded && (
+					<MessagesManager
+						channel={channel}
+						members={members}
+						toggleBlock={toggleBlock}
+						toggleFriendship={toggleFriendship}
+						askForGame={askForGame}
+						admins={admins}
+						owner={owner}
+					/>
+				)
 			)}
 		</div>
 	);
