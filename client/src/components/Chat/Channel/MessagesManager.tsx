@@ -9,17 +9,17 @@ const MessagesManager = ({
 	members,
 	toggleBlock,
 	toggleFriendship,
-	askForGame,
 	admins,
 	owner,
+	setChannel
 }: {
 	channel: string;
 	members: any;
 	toggleBlock: Function;
 	toggleFriendship: Function;
-	askForGame: Function;
 	admins: string[];
 	owner: string;
+	setChannel: Function;
 }) => {
 	const user = useContext(UserContext);
 	const [messages, setMessages] = useState<any[]>([]);
@@ -160,9 +160,9 @@ const MessagesManager = ({
 								avatar={members[message.userLogin].user.avatar}
 								toggleBlock={toggleBlock}
 								toggleFriendship={toggleFriendship}
-								askForGame={askForGame}
 								admins={admins}
 								owner={owner}
+								setChannel={setChannel}
 							/>
 						)}
 					</div>

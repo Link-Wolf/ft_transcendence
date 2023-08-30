@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { redirect, Link } from "react-router-dom";
 import { UserContext } from "../../App";
+import { AskForGameButton, BlockButton, FriendButton, PMButton, UnblockButton } from "../ActionsButtons";
 
 const Message = ({
 	login,
@@ -10,9 +11,9 @@ const Message = ({
 	avatar,
 	toggleBlock,
 	toggleFriendship,
-	askForGame,
 	admins,
 	owner,
+	setChannel
 }: {
 	login: string;
 	date: string;
@@ -21,9 +22,9 @@ const Message = ({
 	avatar: string;
 	toggleBlock: Function;
 	toggleFriendship: Function;
-	askForGame: Function;
 	admins: string[];
 	owner: string;
+	setChannel: Function;
 }) => {
 	/**
 	 * Message component, display a message with the user's avatar, name, date, content and a button to interact with the user
@@ -57,30 +58,14 @@ const Message = ({
 						<label>Profil</label>
 					</Link>
 					{!relation.isBlocked && (
-						<button onClick={() => askForGame()}>
-							Faire une partie
-						</button>
+						<AskForGameButton login={login}/>
 					)}
 					{!relation.isBlocked && (
-						<button
-							onClick={() => {
-								toggleFriendship(login);
-								toggleBox();
-							}}
-						>
-							{relation.isFriend
-								? "Message privé"
-								: "Demander en ami"}
-						</button>
+						relation.isFriend
+								? <PMButton login={login} setChannel={setChannel}/>
+								: <FriendButton login={login}/>
 					)}
-					<button
-						onClick={() => {
-							toggleBlock(login);
-							toggleBox();
-						}}
-					>
-						{relation.isBlocked ? "Débloquer" : "Bloquer"}
-					</button>
+						{relation.isBlocked ? <UnblockButton login={login}/> : <BlockButton login={login}/>}
 				</div>
 			)}
 			<label>

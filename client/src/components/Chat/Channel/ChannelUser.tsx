@@ -5,12 +5,12 @@ import socket from "../../../socket";
 import { PPDisplayer } from "../../ImageDisplayer";
 import { UserContext } from "../../../App";
 import MuteBanForm from "./MuteBanForm";
+import { AskForGameButton, DemoteButton, PromoteButton } from "../../ActionsButtons";
 
 const ChannelUser = ({
 	admins,
 	login,
 	members,
-	askForGame,
 	toggleFriendship,
 	toggleBlock,
 	owner,
@@ -21,7 +21,6 @@ const ChannelUser = ({
 	members: any;
 	owner: string;
 	channel: string;
-	askForGame: Function;
 	toggleFriendship: Function;
 	toggleBlock: Function;
 }) => {
@@ -57,44 +56,6 @@ const ChannelUser = ({
 					console.log(err);
 				});
 		} else setIsToggleBox(!isToggleBox);
-	};
-
-	const promote = async (login: string) => {
-		await axios
-			.patch(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`,
-				{
-					isAdmin: true,
-				}
-			)
-			.then(() => {
-				setIsToggleBox(false);
-				socket.emit("newMessageDaddy", {
-					channel: channel,
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
-	const demote = async (login: string) => {
-		await axios
-			.patch(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`,
-				{
-					isAdmin: false,
-				}
-			)
-			.then(() => {
-				setIsToggleBox(false);
-				socket.emit("newMessageDaddy", {
-					channel: channel,
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
 	};
 
 	const kick = async (login: string) => {
@@ -194,13 +155,7 @@ const ChannelUser = ({
 								<label>Profil</label>
 							</Link>
 							{!members[login].isBlocked && (
-								<button
-									onClick={() => {
-										askForGame();
-									}}
-								>
-									Faire une partie
-								</button>
+								<AskForGameButton login={login}/>
 							)}
 							{!members[login].isBlocked && (
 								<button
@@ -226,21 +181,9 @@ const ChannelUser = ({
 							</button>
 							{user.login === owner &&
 								(admins.includes(login) ? (
-									<button
-										onClick={() => {
-											demote(login);
-										}}
-									>
-										Demote
-									</button>
+									<DemoteButton login={login} channel={channel}/>
 								) : (
-									<button
-										onClick={() => {
-											promote(login);
-										}}
-									>
-										Promote
-									</button>
+									<PromoteButton login={login} channel={channel}/>
 								))}
 							{(user.login === owner ||
 								(admins.includes(user.login) &&
