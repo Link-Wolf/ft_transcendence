@@ -27,7 +27,6 @@ import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guar
 
 @Controller('mute')
 export class MuteController {
-	jwtService: any;
 	constructor(
 		private readonly muteService: MuteService,
 		private readonly membershipService: MembershipService,
@@ -234,31 +233,48 @@ export class MuteController {
 	 * @response 404 - Not found
 	 * @response 500 - Internal Server Error
 	 */
-	@Delete(':id')
+	@Delete('user/:login/channel/:chann_name')
 	@UseGuards(AdminOwnerAdminGuard)
 	async delete(
-		@Param('id', ParseIntPipe) id: number,
+		@Param('login') login: string,
+		@Param('chann_name') channelName: string,
 		@Req() req: Request,
 	): Promise<number> {
-		let ret = await this.muteService.findById(id);
+		const channel = await this.channelService.findByName(channelName);
+		if (!channel)
+			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
+		const user = await this.userService.findByLogin(login);
+		if (!user)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		let ret = await this.muteService.findByLoginAndChannel(
+			login,
+			channelName,
+		);
 		if (!ret)
 			throw new HttpException('Mute not found', HttpStatus.NOT_FOUND);
 		if (!req.cookies.token)
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		const my_login = (await this.jwtService.verify(req.cookies.token))
+		const my_login = (await this.userService.verify(req.cookies.token))
 			.login;
 		let me = await this.userService.findByLogin(my_login);
 		let my_membership = await this.membershipService.findByUserAndChannel(
 			me.dataValues.login,
-			ret.dataValues.channelName,
+			channelName,
 		);
 		if (!my_membership)
 			throw new HttpException(
 				"User can't mute if he's not in channel",
 				HttpStatus.FORBIDDEN,
 			);
-		if (!my_membership.dataValues.isAdmin)
+		if (
+			!my_membership.dataValues.isAdmin &&
+			channel.dataValues.owner.dataValues.login !== my_login
+		)
 			throw new HttpException("You can't do this", HttpStatus.FORBIDDEN);
-		return await this.muteService.delete(id);
+		return await this.muteService.delete(
+			ret.sort((a: any, b: any) => {
+				return a.id - b.id;
+			})[0].id,
+		);
 	}
 }

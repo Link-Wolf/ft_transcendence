@@ -37,8 +37,11 @@ const ChannelUser = ({
 
 	const toggleBox = async (login = user.login) => {
 		if (login === user.login) return redirect(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
-		if (!isToggleBox && admins.includes(user.login)) {
-			axios
+		if (
+			!isToggleBox &&
+			(admins.includes(user.login) || user.login === owner)
+		) {
+			await axios
 				.get(
 					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
 				)
@@ -56,8 +59,8 @@ const ChannelUser = ({
 		} else setIsToggleBox(!isToggleBox);
 	};
 
-	const promote = (login: string) => {
-		axios
+	const promote = async (login: string) => {
+		await axios
 			.patch(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`,
 				{
@@ -75,8 +78,8 @@ const ChannelUser = ({
 			});
 	};
 
-	const demote = (login: string) => {
-		axios
+	const demote = async (login: string) => {
+		await axios
 			.patch(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`,
 				{
@@ -94,27 +97,31 @@ const ChannelUser = ({
 			});
 	};
 
-	const kick = (login: string) => {
-		axios
-			.delete(
+	const kick = async (login: string) => {
+		await axios
+			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`
 			)
-			.then(() => {
-				socket.emit("newMessageDaddy", {
-					//TODO: change it to a kick message so that the user knows he got kicked
-					channel: channel,
-				});
+			.then((res) => {
+				if (res.data.length !== 0) {
+					axios
+						.delete(
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`
+						)
+						.then(() => {
+							socket.emit("newMessageDaddy", {
+								//TODO: change it to a kick message so that the user knows he got kicked
+								channel: channel,
+							});
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-	};
-
-	const toggleBan = (login: string) => {
-		setToggleAdminBox({
-			isActive: true,
-			type: "ban",
-		});
 	};
 
 	const mute = async (login: string) => {
@@ -135,9 +142,13 @@ const ChannelUser = ({
 			)
 			.then((res) => {
 				if (res.data.length !== 0) {
+					console.log(res.data);
+					const muteToUnmute = res.data.sort((a: any, b: any) => {
+						return a.id - b.id;
+					})[0];
 					axios
 						.delete(
-							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${muteToUnmute.user.login}/channel/${muteToUnmute.channel.name}`
 						)
 						.then(() => {
 							setIsToggleBox(false);
@@ -172,6 +183,7 @@ const ChannelUser = ({
 					setToggleAdminBox={setToggleAdminBox}
 					setIsToggleBox={setIsToggleBox}
 					setUserStatus={setUserStatus}
+					kick={kick}
 				/>
 			)}
 			<div>

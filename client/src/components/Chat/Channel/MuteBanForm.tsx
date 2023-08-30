@@ -9,6 +9,7 @@ const MuteBanForm = ({
 	setIsToggleBox,
 	setToggleAdminBox,
 	setUserStatus,
+	kick,
 }: {
 	channel: string;
 	login: any;
@@ -16,6 +17,7 @@ const MuteBanForm = ({
 	setIsToggleBox: Function;
 	setToggleAdminBox: Function;
 	setUserStatus: Function;
+	kick: Function;
 }) => {
 	const [adminForm, setAdminForm] = useState<any>({
 		login: login,
@@ -31,7 +33,7 @@ const MuteBanForm = ({
 	};
 
 	const muteSomeone = async (login: string) => {
-		axios
+		await axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
 			)
@@ -71,8 +73,8 @@ const MuteBanForm = ({
 			});
 	};
 
-	const ban = (login: string) => {
-		axios
+	const ban = async (login: string) => {
+		await axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/user/${login}/channel/${channel}`
 			)
@@ -80,7 +82,7 @@ const MuteBanForm = ({
 				if (res.data.length === 0) {
 					axios
 						.post(
-							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/user/${login}/channel/${channel}`,
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban`,
 							{
 								login: adminForm.login,
 								chann_name: channel,
@@ -93,9 +95,9 @@ const MuteBanForm = ({
 								isActive: false,
 								type: "",
 							});
-							socket.emit("newMessageDaddy", {
-								channel: channel,
-							});
+						})
+						.then(() => {
+							kick(login);
 						})
 						.catch((err) => {
 							console.log(err);

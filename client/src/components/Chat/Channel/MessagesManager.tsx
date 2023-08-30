@@ -144,25 +144,27 @@ const MessagesManager = ({
 				})
 				.map((message, i) => (
 					<div key={i}>
-						<Message
-							login={message.userLogin}
-							date={message.createdAt}
-							content={message.content}
-							relation={
-								message.user.login === user.login
-									? {
-											isBlocked: false,
-											isFriend: false,
-									  }
-									: members[message.userLogin]
-							}
-							avatar={members[message.userLogin].user.avatar}
-							toggleBlock={toggleBlock}
-							toggleFriendship={toggleFriendship}
-							askForGame={askForGame}
-							admins={admins}
-							owner={owner}
-						/>
+						{members[message.userLogin] !== undefined && (
+							<Message
+								login={message.userLogin}
+								date={message.createdAt}
+								content={message.content}
+								relation={
+									message.user.login === user.login
+										? {
+												isBlocked: false,
+												isFriend: false,
+										  }
+										: members[message.userLogin]
+								}
+								avatar={members[message.userLogin].user.avatar}
+								toggleBlock={toggleBlock}
+								toggleFriendship={toggleFriendship}
+								askForGame={askForGame}
+								admins={admins}
+								owner={owner}
+							/>
+						)}
 					</div>
 				))}
 			<input
