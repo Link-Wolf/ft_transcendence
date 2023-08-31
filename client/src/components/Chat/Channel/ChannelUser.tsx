@@ -5,24 +5,28 @@ import socket from "../../../socket";
 import { PPDisplayer } from "../../ImageDisplayer";
 import { UserContext } from "../../../App";
 import MuteBanForm from "./MuteBanForm";
-import { AskForGameButton, DemoteButton, PromoteButton } from "../../ActionsButtons";
+import {
+	AskForGameButton,
+	BlockUnblockButton,
+	DemoteButton,
+	FriendPMButton,
+	PromoteButton,
+} from "../../ActionsButtons";
 
 const ChannelUser = ({
 	admins,
 	login,
 	members,
-	toggleFriendship,
-	toggleBlock,
 	owner,
 	channel,
+	setChannel,
 }: {
 	admins: string[];
 	login: string;
 	members: any;
 	owner: string;
 	channel: string;
-	toggleFriendship: Function;
-	toggleBlock: Function;
+	setChannel: Function;
 }) => {
 	const user = useContext(UserContext);
 	const [isToggleBox, setIsToggleBox] = useState(false);
@@ -155,35 +159,30 @@ const ChannelUser = ({
 								<label>Profil</label>
 							</Link>
 							{!members[login].isBlocked && (
-								<AskForGameButton login={login}/>
+								<AskForGameButton login={login} />
 							)}
 							{!members[login].isBlocked && (
-								<button
-									onClick={() => {
-										toggleFriendship(login);
-										toggleBox();
-									}}
-								>
-									{members[login].isFriend
-										? "Message privé"
-										: "Demander en ami"}
-								</button>
+								<FriendPMButton
+									login={login}
+									isFriend={members[login].isFriend}
+									setChannel={setChannel}
+								/>
 							)}
-							<button
-								onClick={() => {
-									toggleBlock(login);
-									toggleBox();
-								}}
-							>
-								{members[login].isBlocked
-									? "Débloquer"
-									: "Bloquer"}
-							</button>
+							<BlockUnblockButton
+								login={login}
+								isBlocked={members[login].isBlocked}
+							/>
 							{user.login === owner &&
 								(admins.includes(login) ? (
-									<DemoteButton login={login} channel={channel}/>
+									<DemoteButton
+										login={login}
+										channel={channel}
+									/>
 								) : (
-									<PromoteButton login={login} channel={channel}/>
+									<PromoteButton
+										login={login}
+										channel={channel}
+									/>
 								))}
 							{(user.login === owner ||
 								(admins.includes(user.login) &&

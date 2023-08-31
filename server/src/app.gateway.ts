@@ -12,6 +12,7 @@ import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { AuthService } from './auth/auth.service';
+import { async } from 'rxjs';
 
 type Player = {
 	paddle: {
@@ -76,8 +77,6 @@ export class AppGateway
 	constructor(
 		private userService: UserService,
 		private gameService: GameService,
-		private usergameService: UserGameService,
-		private authService: AuthService,
 	) {}
 
 	@WebSocketServer() server: Server;
@@ -90,9 +89,19 @@ export class AppGateway
 	 * 					MESSAGES HANDLING 					 *
 	 * 					            						 *
 	 ********************************************************/
-	@SubscribeMessage('newMessageDaddy')
+	@SubscribeMessage('newMessage')
 	async notifyUpdate(client: Socket, payload: any) {
-		this.server.emit('youGotMail', payload.channel);
+		this.server.emit('newMessage', payload.channel);
+	}
+
+	@SubscribeMessage('relationUpdate')
+	async handleRelationUpdate(client: Socket, payload: any) {
+		this.server.emit('relationUpdate', payload);
+	}
+
+	@SubscribeMessage('membershipUpdate')
+	async handleMembershipUpdate(client: Socket, payload: any) {
+		this.server.emit('membershipUpdate', payload);
 	}
 
 	/*********************************************************
@@ -102,7 +111,6 @@ export class AppGateway
 	 ********************************************************/
 
 	//TODO: handle properly quittage de game en cours -> plein de trucs a devoir gerer
-
 	private game: GameData[] = [];
 
 	handleInputs(game: GameData) {
@@ -377,7 +385,7 @@ export class AppGateway
 		}
 
 		let waitingGame = await this.gameService.findWaiting(payload.isRanked);
-		if (!waitingGame) {
+		userA: if (!waitingGame) {
 			waitingGame = await this.gameService.create({
 				isRanked: payload.isRanked,
 				status: 'waiting',
