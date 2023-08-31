@@ -74,10 +74,10 @@ const ChannelUser = ({
 							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`
 						)
 						.then(() => {
-							socket.emit("newMessageDaddy", {
-								//TODO: change it to a kick message so that the user knows he got kicked
+							socket.emit("membershipUpdate", {
 								channel: channel,
 							});
+							setIsToggleBox(false);
 						})
 						.catch((err) => {
 							console.log(err);
