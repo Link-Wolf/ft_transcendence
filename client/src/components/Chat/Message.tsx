@@ -8,6 +8,7 @@ import {
 	PMButton,
 	UnblockButton,
 } from "../ActionsButtons";
+import { PPDisplayer } from "../ImageDisplayer";
 
 const Message = ({
 	login,
@@ -41,8 +42,10 @@ const Message = ({
 
 	if (!relation) return <>loading... {login}</>;
 	return (
-		//TODO: addback pp
 		<>
+			<PPDisplayer login={login} size={40} status={true}>
+				<img src={`data:image/*;base64,${avatar}`} />
+			</PPDisplayer>
 			{user.login !== login ? (
 				<button onClick={toggleBox}>
 					{login}{" "}
