@@ -89,7 +89,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 				console.log("bonjour, non", response);
 				try {
 					const created_channel = await axios.post(
-						`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
+						`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/toxic-relations/membership`,
 						{
 							chanName: response.data.name,
 							userLogin: user.login,

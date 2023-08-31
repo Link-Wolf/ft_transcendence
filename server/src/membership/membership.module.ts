@@ -3,6 +3,7 @@ import { MembershipController } from './membership.controller';
 import { MembershipService } from './membership.service';
 import { membershipProviders } from './membership.providers';
 import { UserModule } from '../user/user.module';
+import { BanModule } from '../ban/ban.module';
 import { ChannelModule } from '../channel/channel.module';
 import { AuthModule } from 'src/auth/auth.module';
 

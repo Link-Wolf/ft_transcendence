@@ -59,7 +59,8 @@ const MuteBanForm = ({
 							setUserStatus({
 								isMuted: true,
 							});
-							socket.emit("newMessageDaddy", {
+							socket.emit("newMessage", {
+								//TODO: change
 								channel: channel,
 							});
 						})

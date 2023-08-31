@@ -39,6 +39,11 @@ const Channel = ({
 
 		const membershipUpdate = (payload: any) => {
 			if (payload.channel === channel) {
+				if (payload.what === "kick" && payload.who === user.login) {
+					setChannel(null);
+					return;
+				}
+				console.log("membershipUpdate");
 				setMembersUpdate(true);
 				setAdminsUpdate(true);
 			}
@@ -103,7 +108,7 @@ const Channel = ({
 			)
 			.then((res) => {
 				setMembers(res.data);
-				if (!res.data[user.login])
+				if (!res.data[user.login] || !res.data[user.login].isMember)
 					//If i got kick. i go back to the home page
 					setChannel(null);
 			})
@@ -148,18 +153,28 @@ const Channel = ({
 			)}
 			{showThingsAboutChannel === "userList" ? (
 				<>
-					{Object.keys(members).map((login, i) => (
-						<div key={i}>
-							<ChannelUser
-								channel={channel}
-								admins={admins}
-								owner={owner}
-								login={login}
-								members={members}
-								setChannel={setChannel}
-							/>
-						</div>
-					))}
+					{/* if usr is an admin or the owner, have a button to see ban members */}
+					{admins.includes(user.login) ||
+						(owner === user.login && (
+							<button onClick={() => {}}>Lébany</button>
+						))}
+					{Object.keys(members)
+						.map((login) => members[login])
+						.filter((member) => {
+							return member.isMember;
+						})
+						.map((member, i) => (
+							<div key={i}>
+								<ChannelUser
+									channel={channel}
+									admins={admins}
+									owner={owner}
+									login={member.user.login}
+									members={members}
+									setChannel={setChannel}
+								/>
+							</div>
+						))}
 				</>
 			) : showThingsAboutChannel === "channelSettings" &&
 			  owner === user.login ? (

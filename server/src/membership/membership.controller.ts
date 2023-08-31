@@ -16,6 +16,7 @@ import { MembershipService } from './membership.service';
 import { UserService } from '../user/user.service';
 import { Membership } from './membership.entity';
 import { ChannelService } from '../channel/channel.service';
+import { BanService } from '../ban/ban.service';
 import {
 	AdminUserGuard,
 	AdminUserGuardPost,
@@ -124,50 +125,6 @@ export class MembershipController {
 		if (!this.channelService.findByName(chan_name))
 			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		return this.membershipService.findAdminsByChannel(chan_name);
-	}
-
-	/**
-	 * @brief Create a membership
-	 * @param {string} channelName The channel name
-	 * @param {string} userLogin The user login
-	 * @param {boolean} isAdmin Whether the user is admin or not
-	 * @return {Membership} The created membership
-	 * @security Clearance admin or being the user
-	 * @response 200 - OK
-	 * @response 401 - Unauthorized
-	 * @response 403 - Forbidden
-	 * @response 404 - Not Found
-	 * @response 409 - Conflict
-	 * @response 500 - Internal Server Error
-	 */
-	@Post()
-	@UseGuards(AdminUserGuardPost)
-	async create(
-		@Body('chanName') channelName: string,
-		@Body('userLogin') userLogin: string,
-		@Body('isAdmin', ParseBoolPipe) isAdmin: boolean = false,
-	): Promise<Membership> {
-		let user = await this.userService.findByLogin(userLogin);
-		if (!user)
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		let channel = await this.channelService.findByName(channelName);
-		if (!channel)
-			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
-		if (
-			await this.membershipService.findByUserAndChannel(
-				userLogin,
-				channelName,
-			)
-		)
-			throw new HttpException(
-				'Membership already exists',
-				HttpStatus.CONFLICT,
-			);
-		return await this.membershipService.create({
-			user: user,
-			channel: channel,
-			isAdmin: isAdmin,
-		});
 	}
 
 	/**
