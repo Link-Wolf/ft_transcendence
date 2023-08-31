@@ -9,7 +9,17 @@ const ActionsButtons = () => {
 
 export default ActionsButtons;
 
-const BlockButton = ({ login }: { login: string }) => {
+/*******************************************************************************
+ *******************************  BLOCK BUTTONS  *******************************
+ ******************************************************************************/
+
+const BlockButton = ({
+	login,
+	effect,
+}: {
+	login: string;
+	effect?: Function;
+}) => {
 	const user = useContext(UserContext);
 
 	const block = (login: string) => {
@@ -22,7 +32,10 @@ const BlockButton = ({ login }: { login: string }) => {
 				}
 			)
 			.then(() => {
-				socket.emit("blockUpdate"); //TODO: had receptors
+				socket.emit("relationUpdate", {
+					userA: user.login,
+					userB: login,
+				});
 			})
 			.catch((err) => {
 				console.log(err);
@@ -41,7 +54,13 @@ const BlockButton = ({ login }: { login: string }) => {
 	);
 };
 
-const UnblockButton = ({ login }: { login: string }) => {
+const UnblockButton = ({
+	login,
+	effect,
+}: {
+	login: string;
+	effect?: Function;
+}) => {
 	const user = useContext(UserContext);
 
 	const unblock = (login: string) => {
@@ -50,7 +69,10 @@ const UnblockButton = ({ login }: { login: string }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
 			)
 			.then(() => {
-				socket.emit("blockUpdate");
+				socket.emit("relationUpdate", {
+					userA: user.login,
+					userB: login,
+				});
 			})
 			.catch((err) => {
 				console.log(err);
@@ -69,12 +91,31 @@ const UnblockButton = ({ login }: { login: string }) => {
 	);
 };
 
+const BlockUnblockButton = ({
+	login,
+	effect,
+	isBlocked,
+}: {
+	login: string;
+	effect?: Function;
+	isBlocked: boolean;
+}) => {
+	if (isBlocked) return <UnblockButton login={login} effect={effect} />;
+	else return <BlockButton login={login} effect={effect} />;
+};
+
+/*******************************************************************************
+ ******************************  PROMOTE BUTTONS  ******************************
+ ******************************************************************************/
+
 const PromoteButton = ({
 	login,
 	channel,
+	effect,
 }: {
 	login: string;
 	channel: string;
+	effect?: Function;
 }) => {
 	const promote = async (login: string) => {
 		await axios
@@ -85,8 +126,7 @@ const PromoteButton = ({
 				}
 			)
 			.then(() => {
-				socket.emit("promotionUpdate", {
-					//TODO: had receptors
+				socket.emit("membershipUpdate", {
 					channel: channel,
 				});
 			})
@@ -96,7 +136,12 @@ const PromoteButton = ({
 	};
 
 	return (
-		<button type='button' onClick={() => {}}>
+		<button
+			type='button'
+			onClick={() => {
+				promote(login);
+			}}
+		>
 			Promote
 		</button>
 	);
@@ -105,9 +150,11 @@ const PromoteButton = ({
 const DemoteButton = ({
 	login,
 	channel,
+	effect,
 }: {
 	login: string;
 	channel: string;
+	effect?: Function;
 }) => {
 	const demote = async (login: string) => {
 		await axios
@@ -118,7 +165,7 @@ const DemoteButton = ({
 				}
 			)
 			.then(() => {
-				socket.emit("promotionUpdate", {
+				socket.emit("membershipUpdate", {
 					channel: channel,
 				});
 			})
@@ -139,7 +186,17 @@ const DemoteButton = ({
 	);
 };
 
-const FriendButton = ({ login }: { login: string }) => {
+/*******************************************************************************
+ *******************************  FRIEND BUTTONS  ******************************
+ ******************************************************************************/
+
+const FriendButton = ({
+	login,
+	effect,
+}: {
+	login: string;
+	effect?: Function;
+}) => {
 	const user = useContext(UserContext);
 
 	const friend = async (login: string) => {
@@ -153,6 +210,10 @@ const FriendButton = ({ login }: { login: string }) => {
 			);
 		}
 		console.log(`${user.login} wants to be friend with ${login}`); //TODO: implement friendship request
+		socket.emit("relationUpdate", {
+			userA: user.login,
+			userB: login,
+		});
 	};
 
 	return (
@@ -170,9 +231,11 @@ const FriendButton = ({ login }: { login: string }) => {
 const PMButton = ({
 	login,
 	setChannel,
+	effect,
 }: {
 	login: string;
 	setChannel: Function;
+	effect?: Function;
 }) => {
 	const user = useContext(UserContext);
 
@@ -189,7 +252,33 @@ const PMButton = ({
 	);
 };
 
-const UnfriendButton = ({ login }: { login: string }) => {
+const FriendPMButton = ({
+	login,
+	effect,
+	setChannel,
+	isFriend,
+}: {
+	login: string;
+	effect?: Function;
+	setChannel: Function;
+	isFriend: boolean;
+}) => {
+	const user = useContext(UserContext);
+
+	if (isFriend)
+		return (
+			<PMButton login={login} setChannel={setChannel} effect={effect} />
+		);
+	else return <FriendButton login={login} effect={effect} />;
+};
+
+const UnfriendButton = ({
+	login,
+	effect,
+}: {
+	login: string;
+	effect?: Function;
+}) => {
 	const user = useContext(UserContext);
 
 	const unfriendSomeone = (login: string) => {
@@ -217,7 +306,13 @@ const UnfriendButton = ({ login }: { login: string }) => {
 	);
 };
 
-const AskForGameButton = ({ login }: { login: string }) => {
+const AskForGameButton = ({
+	login,
+	effect,
+}: {
+	login: string;
+	effect?: Function;
+}) => {
 	const askForGame = (login: string) => {
 		//TODO: ask the other person for game
 	};
@@ -244,4 +339,6 @@ export {
 	FriendButton,
 	UnfriendButton,
 	PMButton,
+	FriendPMButton,
+	BlockUnblockButton,
 };

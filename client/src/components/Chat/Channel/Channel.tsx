@@ -21,7 +21,8 @@ const Channel = ({
 	 */
 	const user = useContext(UserContext);
 
-	const [update, setUpdate] = useState(true); //TODO: split that bad boy into multiple update states
+	const [membersUpdate, setMembersUpdate] = useState(true);
+	const [adminsUpdate, setAdminsUpdate] = useState(true);
 
 	const [owner, setOwner] = useState("");
 	const [admins, setAdmins] = useState<string[]>([]);
@@ -31,17 +32,30 @@ const Channel = ({
 
 	//	Listen to the server for new messages
 	useEffect(() => {
-		function clic(payload: String) {
-			if (payload === channel) setUpdate(true);
-		}
-		socket.on("youGotMail", clic);
+		const relationUpdate = (payload: any) => {
+			if (payload.userA === user.login || payload.userB === user.login)
+				setMembersUpdate(true);
+		};
+
+		const membershipUpdate = (payload: any) => {
+			if (payload.channel === channel) {
+				setMembersUpdate(true);
+				setAdminsUpdate(true);
+			}
+		};
+
+		socket.on("relationUpdate", relationUpdate);
+		socket.on("membershipUpdate", membershipUpdate);
+
 		return () => {
-			socket.off("youGotMail", clic);
+			socket.off("relationUpdate", relationUpdate);
+			socket.off("membershipUpdate", membershipUpdate);
 		};
 	}, [channel]);
 
 	// Load the owner of the channel
 	useEffect(() => {
+		if (!adminsUpdate) return;
 		if (channel[0] === "_") return;
 		axios
 			.get(
@@ -54,10 +68,12 @@ const Channel = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [channel]);
+		setAdminsUpdate(false);
+	}, [channel, admins]);
 
 	//  Load the admins of the channel
 	useEffect(() => {
+		if (!adminsUpdate) return;
 		if (channel[0] === "_") return;
 		axios
 			.get(
@@ -71,12 +87,13 @@ const Channel = ({
 			.catch((err) => {
 				console.log(err);
 			});
-		setUpdate(false);
-	}, [channel]);
+		setAdminsUpdate(false);
+	}, [channel, adminsUpdate]);
 
 	//Load the members from the server and their relations with the user
 	useEffect(() => {
-		if (!update) return;
+		if (!membersUpdate) return;
+		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}` +
@@ -86,45 +103,15 @@ const Channel = ({
 			)
 			.then((res) => {
 				setMembers(res.data);
+				if (!res.data[user.login])
+					//If i got kick. i go back to the home page
+					setChannel(null);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-		setUpdate(false);
-	}, [channel, update, user]);
-
-	const toggleBlock = (login: string) => {
-		if (members[login].isBlocked) {
-			unblockSomeone(login);
-		} else {
-			blockSomeone(login);
-		}
-	};
-
-	const toggleFriendship = (login: string) => {
-		if (members[login].isFriend) {
-			unfriendSomeone(login);
-			setMembers((members: any) => {
-				return {
-					...members,
-					[login]: {
-						...members[login],
-						isFriend: false,
-					},
-				};
-			});
-		} else {
-			setMembers((members: any) => {
-				return {
-					...members,
-					[login]: {
-						...members[login],
-						isFriend: true,
-					},
-				};
-			});
-		}
-	};
+		setMembersUpdate(false);
+	}, [channel, membersUpdate, user]);
 
 	return (
 		<div>
@@ -169,8 +156,7 @@ const Channel = ({
 								owner={owner}
 								login={login}
 								members={members}
-								toggleFriendship={toggleFriendship}
-								toggleBlock={toggleBlock}
+								setChannel={setChannel}
 							/>
 						</div>
 					))}
@@ -186,8 +172,6 @@ const Channel = ({
 				<MessagesManager
 					channel={channel}
 					members={members}
-					toggleBlock={toggleBlock}
-					toggleFriendship={toggleFriendship}
 					admins={admins}
 					owner={owner}
 					setChannel={setChannel}

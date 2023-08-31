@@ -7,16 +7,12 @@ import { UserContext } from "../../../App";
 const MessagesManager = ({
 	channel,
 	members,
-	toggleBlock,
-	toggleFriendship,
 	admins,
 	owner,
-	setChannel
+	setChannel,
 }: {
 	channel: string;
 	members: any;
-	toggleBlock: Function;
-	toggleFriendship: Function;
 	admins: string[];
 	owner: string;
 	setChannel: Function;
@@ -31,9 +27,9 @@ const MessagesManager = ({
 		function clic(payload: String) {
 			if (payload === channel) setUpdate(true);
 		}
-		socket.on("youGotMail", clic);
+		socket.on("newMessage", clic);
 		return () => {
-			socket.off("youGotMail", clic);
+			socket.off("newMessage", clic);
 		};
 	}, [channel]);
 
@@ -158,8 +154,6 @@ const MessagesManager = ({
 										: members[message.userLogin]
 								}
 								avatar={members[message.userLogin].user.avatar}
-								toggleBlock={toggleBlock}
-								toggleFriendship={toggleFriendship}
 								admins={admins}
 								owner={owner}
 								setChannel={setChannel}
