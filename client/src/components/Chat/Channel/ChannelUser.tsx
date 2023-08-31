@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useContext, useState } from "react";
-import { Link, redirect } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import socket from "../../../socket";
 import { PPDisplayer } from "../../ImageDisplayer";
 import { UserContext } from "../../../App";
@@ -12,6 +12,7 @@ import {
 	FriendPMButton,
 	PromoteButton,
 } from "../../ActionsButtons";
+import { use } from "matter-js";
 
 const ChannelUser = ({
 	admins,
@@ -28,6 +29,7 @@ const ChannelUser = ({
 	channel: string;
 	setChannel: Function;
 }) => {
+	const navigate = useNavigate();
 	const user = useContext(UserContext);
 	const [isToggleBox, setIsToggleBox] = useState(false);
 	const [userStatus, setUserStatus] = useState<any>({
@@ -39,7 +41,7 @@ const ChannelUser = ({
 	});
 
 	const toggleBox = async (login = user.login) => {
-		if (login === user.login) return redirect(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
+		if (login === user.login) return navigate(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
 		if (
 			!isToggleBox &&
 			(admins.includes(user.login) || user.login === owner)
@@ -220,9 +222,7 @@ const ChannelUser = ({
 				)}
 				<button
 					onClick={() => {
-						{
-							login !== user.login && toggleBox(login);
-						}
+						toggleBox(login);
 					}}
 				>
 					{user.login !== login ? (
