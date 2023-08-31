@@ -48,7 +48,9 @@ export class ToxicRelationsController {
 		let trueMembers = await this.membershipService.findByChannel(
 			chann_name,
 		);
-		let messageAuthors = await this.messageService.findByUser(login);
+		let messageAuthors = await this.messageService.findByChannel(
+			chann_name,
+		);
 		let blocked = await this.blockService.findBlocksBy(login);
 		let blockers = await this.blockService.findBlockersOf(login);
 		let friends = await this.friendshipService.findFriends(login);
@@ -56,8 +58,8 @@ export class ToxicRelationsController {
 		const reducer = (isMember: boolean) => (acc: any, cur: any) => {
 			return {
 				...acc,
-				[cur.user.login]: {
-					user: cur.user,
+				[cur.dataValues.user.login]: {
+					user: cur.dataValues.user,
 					isMember: isMember,
 					isBlocked: blocked.some(
 						(block) => block.blockedLogin === cur.user.login,
