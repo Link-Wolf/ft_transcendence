@@ -329,6 +329,41 @@ const AskForGameButton = ({
 	);
 };
 
+const UnbanButton = ({
+	login,
+	channel,
+	effect,
+}: {
+	login: string;
+	channel: string;
+	effect?: Function;
+}) => {
+const unban = (login: string, channel:string) => {
+		axios
+			.delete(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/user/${login}/channel/${channel}`
+			)
+			.then(() => {
+				socket.emit("banUpdate", { //TODO: better here plz
+					user: login,
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+}
+	return (
+		<button
+			type='button'
+			onClick={() => {
+				unban(login, channel);
+			}}
+		>
+			Unban
+		</button>
+	);
+};
+
 //export all components
 export {
 	BlockButton,
@@ -341,4 +376,5 @@ export {
 	PMButton,
 	FriendPMButton,
 	BlockUnblockButton,
+	UnbanButton,
 };
