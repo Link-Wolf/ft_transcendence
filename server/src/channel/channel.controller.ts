@@ -27,13 +27,13 @@ import * as jwt from 'jsonwebtoken';
 import { readFileSync } from 'fs';
 import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcrypt';
+import { BanService } from 'src/ban/ban.service';
 
 @Controller('channel')
 export class ChannelController {
 	constructor(
 		private readonly channelService: ChannelService,
 		private readonly userService: UserService,
-		private readonly authService: AuthService,
 	) {}
 
 	/**
@@ -63,23 +63,6 @@ export class ChannelController {
 	@UseGuards(UserClearanceGuard)
 	async getPublic(): Promise<Channel[]> {
 		return await this.channelService.findPublic();
-	}
-
-	/**
-	 * @brief Get all public channels without those already joined by the user
-	 * @returns {Channel[]} All public channels except those already joined by the user
-	 * @security Clearance user
-	 * @response 200 - OK
-	 * @response 401 - Unauthorized
-	 * @response 500 - Internal Server Error
-	 */
-	@Get('public/me')
-	@UseGuards(UserClearanceGuard)
-	async getPublicWithoutMine(@Req() req: Request): Promise<Channel[]> {
-		let sender = await this.userService.verify(req.cookies.token);
-		if (!sender)
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-		return await this.channelService.findPublicWithoutMine(sender.login);
 	}
 
 	/**
@@ -212,7 +195,6 @@ export class ChannelController {
 		});
 	}
 
-
 	/**
 	 * @brief Check if a password is correct
 	 * @param {string} userLogin The user's login
@@ -234,9 +216,12 @@ export class ChannelController {
 		@Body('password') password: string,
 		@Body('userLogin') userLogin: string,
 	): Promise<boolean> {
-		if(!password || password === '' || !userLogin || userLogin === '')
+		if (!password || password === '' || !userLogin || userLogin === '')
 			throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
-		if(!(await this.channelService.findByName(channelName)) || !(await this.userService.findByLogin(userLogin)))
+		if (
+			!(await this.channelService.findByName(channelName)) ||
+			!(await this.userService.findByLogin(userLogin))
+		)
 			throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 		return await this.channelService.checkPasswd(channelName, password);
 	}
@@ -254,19 +239,24 @@ export class ChannelController {
 	 * @response 409 - Conflict
 	 * @response 500 - Internal Server Error
 	 */
-	@Patch(':name')
+	@Patch(':chann_name')
 	@UseGuards(AdminOwnerGuard)
 	async update(
-		@Param('name') name: string,
+		@Param('chann_name') name: string,
 		@Body('password') password?: string,
 	): Promise<Number> {
-		//COMBAK: not done
 		let channel = await this.channelService.findByName(name);
 		if (!channel)
 			throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
 		if (channel.isPrivate)
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		return this.channelService.update({ name: name, password: password });
+		let hashedPasswd = null;
+		if (password && password !== '')
+			hashedPasswd = await bcrypt.hash(password, 2);
+		return this.channelService.update({
+			name: name,
+			password: hashedPasswd,
+		});
 	}
 
 	/**

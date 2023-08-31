@@ -65,6 +65,22 @@ export class UserController {
 		return ret;
 	}
 
+	@Get(':login/status')
+	@UseGuards(UserClearanceGuard)
+	async getStatus(@Param('login') login: string): Promise<string> {
+		if (!login) {
+			throw new HttpException(
+				'Missing parameters',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		let ret = await this.userService.findByLogin(login);
+		if (!ret) {
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		}
+		return ret.status;
+	}
+
 	/**
 	 * @brief Update a user
 	 * @param {string} login - The user's login

@@ -22,6 +22,11 @@ import { MembershipService } from 'src/membership/membership.service';
 import { MessageService } from 'src/message/message.service';
 import { ToxicGuard } from 'src/guards/toxic.guard';
 import { isMACAddress } from 'class-validator';
+import { Channel } from 'src/channel/channel.entity';
+import { ChannelService } from 'src/channel/channel.service';
+import { BanService } from 'src/ban/ban.service';
+import { ParseBoolPipe } from 'src/membership/membership.pipe';
+import { Membership } from 'src/membership/membership.entity';
 
 @Controller('toxic-relations')
 export class ToxicRelationsController {
@@ -31,7 +36,31 @@ export class ToxicRelationsController {
 		private readonly userService: UserService,
 		private readonly membershipService: MembershipService,
 		private readonly messageService: MessageService,
+		private readonly banService: BanService,
+		private readonly channelService: ChannelService,
 	) {}
+
+	/**
+	 * @brief Get all public channels without those already joined by the user
+	 * @returns {Channel[]} All public channels except those already joined by the user
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('public/me')
+	@UseGuards(UserClearanceGuard)
+	async getPublicWithoutMine(@Req() req: Request): Promise<Channel[]> {
+		let sender = await this.userService.verify(req.cookies.token);
+		if (!sender)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		let ret = await this.channelService.findPublicWithoutMine(sender.login);
+		let bans = await this.banService.findByLogin(sender.login);
+		ret = ret.filter((channel) => {
+			return !bans.some((ban) => ban.channelName === channel.name);
+		});
+		return ret;
+	}
 
 	@Get('user/:login/channel/:chann_name')
 	@UseGuards(ToxicGuard)
@@ -82,6 +111,62 @@ export class ToxicRelationsController {
 		};
 
 		return ret;
+	}
+
+	/**
+	 * @brief Create a membership
+	 * @param {string} channelName The channel name
+	 * @param {string} userLogin The user login
+	 * @param {boolean} isAdmin Whether the user is admin or not
+	 * @return {Membership} The created membership
+	 * @security Clearance admin or being the user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 409 - Conflict
+	 * @response 500 - Internal Server Error
+	 */
+	@Post('membership')
+	@UseGuards(AdminUserGuardPost)
+	async create(
+		@Body('chanName') channelName: string,
+		@Body('userLogin') userLogin: string,
+		@Body('isAdmin', ParseBoolPipe) isAdmin: boolean = false,
+	): Promise<Membership> {
+		let user = await this.userService.findByLogin(userLogin);
+		if (!user)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		let channel = await this.channelService.findByName(channelName);
+		if (!channel)
+			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
+		if (
+			await this.membershipService.findByUserAndChannel(
+				userLogin,
+				channelName,
+			)
+		)
+			throw new HttpException(
+				'Membership already exists',
+				HttpStatus.CONFLICT,
+			);
+		if (
+			(
+				await this.banService.findByLoginAndChannel(
+					userLogin,
+					channelName,
+				)
+			).length
+		)
+			throw new HttpException(
+				'User is banned from this channel',
+				HttpStatus.FORBIDDEN,
+			);
+		return await this.membershipService.create({
+			user: user,
+			channel: channel,
+			isAdmin: isAdmin,
+		});
 	}
 
 	/**

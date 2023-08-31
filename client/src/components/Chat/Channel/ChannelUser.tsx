@@ -78,6 +78,8 @@ const ChannelUser = ({
 						.then(() => {
 							socket.emit("membershipUpdate", {
 								channel: channel,
+								what: "kick",
+								who: login,
 							});
 							setIsToggleBox(false);
 						})
@@ -126,7 +128,8 @@ const ChannelUser = ({
 							setUserStatus({
 								isMuted: false,
 							});
-							socket.emit("newMessageDaddy", {
+							socket.emit("newMessage", {
+								//TODO: change
 								channel: channel,
 							});
 						})
@@ -139,6 +142,8 @@ const ChannelUser = ({
 				console.log(err);
 			});
 	};
+
+	console.log(login);
 
 	return (
 		<>

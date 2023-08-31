@@ -10,7 +10,6 @@ export const UserContext = createContext({
 	clearance: 0,
 	theme: "light",
 	toggleTheme: () => {},
-	status: {} as any,
 });
 
 const App = () => {
@@ -18,7 +17,6 @@ const App = () => {
 		login: "",
 		clearance: 0,
 		theme: "light",
-		status: {} as any,
 	});
 
 	useEffect(() => {

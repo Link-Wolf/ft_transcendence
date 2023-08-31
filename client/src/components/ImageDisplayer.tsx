@@ -47,12 +47,7 @@ const PPDisplayer = ({
 					className={style.PPDisplayer}
 				>
 					{image}
-					{status && (
-						<StatusIcon
-							login={login}
-							size={size}
-						/>
-					)}
+					{status && <StatusIcon login={login} size={size} />}
 				</div>
 			) : (
 				<p>Loading image...</p>

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../App";
 import CreateChannelForm from "./CreateChannelForm";
+import socket from "../../socket";
 
 const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -16,7 +17,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	useEffect(() => {
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/public/me`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/toxic-relations/public/me`
 			)
 			.then((response) => {
 				setChannels(
@@ -59,7 +60,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 		if (!canIBebouPlz) return;
 		axios
 			.post(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership`,
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/toxic-relations/membership`,
 				{
 					chanName: joinChannel.name,
 					userLogin: user.login,
@@ -71,6 +72,9 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 			})
 			.then(() => {
 				setCanIBebouPlz(false);
+				socket.emit("membershipUpdate", {
+					chanName: joinChannel.name,
+				});
 			})
 			.catch((error) => {
 				console.log(error);

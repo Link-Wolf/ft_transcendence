@@ -458,6 +458,36 @@ export class AppGateway
 
 	handleConnection(client: Socket) {}
 
+	private status: {
+		[login: string]: {
+			status: string;
+			socketId: string;
+		};
+	} = {};
+
+	@SubscribeMessage('getStatus')
+	async handleGetStatus(client: Socket, payload: any): Promise<string> {
+		if (!this.status[payload.login]) return 'offline';
+		return this.status[payload.login].status;
+	}
+
+	statusUpdate = (login: string, status: string, socketId: string) => {
+		this.userService.update({
+			login: login,
+			socketId: socketId,
+		});
+
+		this.status[login] = {
+			status: status,
+			socketId: socketId,
+		};
+
+		this.server.emit('statusUpdate', {
+			login: login,
+			status: status,
+		});
+	};
+
 	async handleDisconnect(client: Socket, ...args: any[]) {
 		let user = await this.userService.findBySocketId(client.id);
 		if (!user) return;
@@ -467,14 +497,7 @@ export class AppGateway
 		});
 		if (game) this.stopGame(this.game[game.gameId]);
 
-		this.userService.update({
-			//NOTE: might store it in RAM
-			login: user.login,
-			socketId: null,
-			status: 'offline',
-		});
-		this.logger.log(`${user.dataValues.login} is now offline`);
-		//TODO: tell ppl there is a new update of status
+		this.statusUpdate(user.login, 'offline', null);
 	}
 
 	@SubscribeMessage('log')
@@ -482,14 +505,7 @@ export class AppGateway
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return;
 
-		this.userService.update({
-			//NOTE: might store it in RAM
-			login: user.login,
-			socketId: client.id,
-			status: 'online',
-		});
-		this.logger.log(`${user.dataValues.login} is now online`);
-		//TODO: tell ppl there is a new update of status
+		this.statusUpdate(user.login, 'online', client.id);
 	}
 
 	@SubscribeMessage('away')
@@ -497,12 +513,7 @@ export class AppGateway
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return;
 
-		this.userService.update({
-			//NOTE: might store it in RAM
-			login: user.login,
-			status: 'away',
-		});
-		this.logger.log(`${user.dataValues.login} is now away`);
+		this.statusUpdate(user.login, 'away', client.id);
 	}
 
 	@SubscribeMessage('back')
@@ -510,11 +521,6 @@ export class AppGateway
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return;
 
-		this.userService.update({
-			//NOTE: might store it in RAM
-			login: user.login,
-			status: 'online',
-		});
-		this.logger.log(`${user.dataValues.login} is back online`);
+		this.statusUpdate(user.login, 'online', client.id);
 	}
 }

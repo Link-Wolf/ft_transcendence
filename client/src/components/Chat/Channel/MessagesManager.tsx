@@ -59,7 +59,7 @@ const MessagesManager = ({
 				)
 				.then(() => {
 					setMessage("");
-					socket.emit("newMessageDaddy", {
+					socket.emit("newMessage", {
 						channel: channel,
 					});
 				})
