@@ -143,8 +143,6 @@ const ChannelUser = ({
 			});
 	};
 
-	console.log(login);
-
 	return (
 		<>
 			{toggleAdminBox.isActive && (
@@ -237,11 +235,7 @@ const ChannelUser = ({
 					) : (
 						<label>{login} (you) </label>
 					)}
-					<PPDisplayer login={login} size={50} status={true}>
-						<img
-							src={`data:image/*;base64,${members[login].user.avatar}`}
-						/>
-					</PPDisplayer>
+					<PPDisplayer login={login} size={50} status={true} />
 					{login === owner
 						? " (owner)"
 						: admins.includes(login) && " (admin)"}
