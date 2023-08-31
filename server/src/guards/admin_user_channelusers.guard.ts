@@ -27,7 +27,7 @@ export class AdminUserChannelusersGuard implements CanActivate {
 		const userLogin = context.switchToHttp().getRequest().params.login;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		const channelName = context.switchToHttp().getRequest()
-			.params.chan_name;
+			.params.chann_name;
 		let clearance = 0;
 		let user: User;
 		if (cookies.token) {
