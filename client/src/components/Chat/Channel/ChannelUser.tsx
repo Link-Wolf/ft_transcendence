@@ -41,6 +41,7 @@ const ChannelUser = ({
 	});
 
 	const toggleBox = async (login = user.login) => {
+		console.log("here")
 		if (login === user.login) return navigate(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
 		if (
 			!isToggleBox &&
@@ -52,7 +53,10 @@ const ChannelUser = ({
 				)
 				.then((res) => {
 					setUserStatus({
-						isMuted: res.data.length !== 0,
+						isMuted: res.data.some(
+							(mute: any) =>
+								new Date(mute.end) >= new Date(Date.now())
+						),
 					});
 				})
 				.then(() => {

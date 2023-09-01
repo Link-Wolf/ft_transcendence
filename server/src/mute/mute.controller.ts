@@ -273,7 +273,7 @@ export class MuteController {
 			throw new HttpException("You can't do this", HttpStatus.FORBIDDEN);
 		return await this.muteService.delete(
 			ret.sort((a: any, b: any) => {
-				return a.id - b.id;
+				return b.id - a.id;
 			})[0].id,
 		);
 	}
