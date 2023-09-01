@@ -38,7 +38,16 @@ const MuteBanForm = ({
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
 			)
 			.then((res) => {
-				if (res.data.length === 0) {
+				if (
+					!res.data.some(
+						(mute: any) =>
+							new Date(mute.end) >= new Date(Date.now())
+					)
+				) {
+					console.log(
+						adminForm.duration,
+						new Date(adminForm.duration * 60 * 1000 + Date.now())
+					);
 					axios
 						.post(
 							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute`,
@@ -46,8 +55,9 @@ const MuteBanForm = ({
 								login: adminForm.login,
 								chann_name: channel,
 								reason: adminForm.reason,
-								end:
-									adminForm.duration * 60 * 1000 + Date.now(),
+								end: new Date(
+									adminForm.duration * 60 * 1000 + Date.now()
+								),
 							}
 						)
 						.then(() => {
@@ -59,8 +69,7 @@ const MuteBanForm = ({
 							setUserStatus({
 								isMuted: true,
 							});
-							socket.emit("newMessage", {
-								//TODO: change
+							socket.emit("membershipUpdate", {
 								channel: channel,
 							});
 						})
@@ -119,6 +128,7 @@ const MuteBanForm = ({
 						<select
 							value={adminForm.duration}
 							onChange={handleFormChange}
+							name='duration'
 						>
 							<option value={0} disabled>
 								Choisis la duree du mute
@@ -129,13 +139,7 @@ const MuteBanForm = ({
 							<option value={60}>1 heure</option>
 							<option value={12 * 60}>12 heures</option>
 							<option value={24 * 60}>24 heures</option>
-							<option
-								value={
-									(0.00000036 * 40 * 7 * 3 * 1 * 2 * 10) ^ 8
-								}
-							>
-								bcp jours
-							</option>
+							<option value={60 * 24 * 42}>42 jours</option>
 						</select>
 					)}
 					<input

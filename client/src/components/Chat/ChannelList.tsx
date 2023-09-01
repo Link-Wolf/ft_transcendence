@@ -3,6 +3,8 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../App";
 import AddChannelMenu from "./AddChannelMenu";
 import style from "../../style/Chat.module.scss";
+import { use } from "matter-js";
+import socket from "../../socket";
 
 const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -10,9 +12,23 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	 */
 	const [channels, setChannels] = useState<String[]>([]);
 	const [newChannelVisibility, setNewChannelVisibility] = useState(false);
+	const [update, setUpdate] = useState(true);
 	const context = useContext(UserContext);
 
 	useEffect(() => {
+		const channelUpdate = (payload: any) => {
+			setUpdate(true);
+		};
+
+		socket.on("membershipUpdate", channelUpdate);
+
+		return () => {
+			socket.off("membershipUpdate", channelUpdate);
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!update) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${context.login}`
@@ -27,7 +43,8 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [context.login]);
+		setUpdate(false);
+	}, [context.login, update]);
 
 	const addChannel = () => {
 		setNewChannelVisibility(!newChannelVisibility);

@@ -73,7 +73,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 			.then(() => {
 				setCanIBebouPlz(false);
 				socket.emit("membershipUpdate", {
-					chanName: joinChannel.name,
+					channel: joinChannel.name,
 				});
 			})
 			.catch((error) => {

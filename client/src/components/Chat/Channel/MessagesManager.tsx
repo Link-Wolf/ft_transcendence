@@ -24,12 +24,14 @@ const MessagesManager = ({
 	const [update, setUpdate] = useState(true); //TODO: split that bad boy into multiple update states
 
 	useEffect(() => {
-		function clic(payload: String) {
-			if (payload === channel) setUpdate(true);
+		function clic(payload: any) {
+			if (payload.channel === channel) setUpdate(true);
 		}
 		socket.on("newMessage", clic);
+		socket.on("membershipUpdate", clic);
 		return () => {
 			socket.off("newMessage", clic);
+			socket.off("membershipUpdate", clic);
 		};
 	}, [channel]);
 
@@ -47,7 +49,7 @@ const MessagesManager = ({
 	const sendMessage = async () => {
 		if (!canSendMessage) return;
 		let printableRegexButNoSpace = /[\S\x21-\x7E\u{A0}-\u{FFFF}]/gu; // Matches any printable characters (including Unicode) except space
-		if (printableRegexButNoSpace.test(message))
+		if (printableRegexButNoSpace.test(message) && message.length < 500)
 			await axios
 				.post(
 					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
@@ -70,6 +72,7 @@ const MessagesManager = ({
 
 	//	Load the messages from the server
 	useEffect(() => {
+		if (!update) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}` +
@@ -88,6 +91,7 @@ const MessagesManager = ({
 
 	//  Load the possibility to send messages or not depending on whether the user is blocked or not, or if the user is muted
 	useEffect(() => {
+		if (!update) return;
 		if (channel[0] === "_") {
 			axios
 				.get(
@@ -118,7 +122,22 @@ const MessagesManager = ({
 						`/api/mute/user/${user.login}/channel/${channel}`
 				)
 				.then((res) => {
-					setCanSendMessage(res.data.length === 0);
+					const timeouts = res.data
+						.filter(
+							(mute: any) =>
+								new Date(mute.end) > new Date(Date.now())
+						)
+						.sort((m1: any, m2: any) => {
+							return (
+								new Date(m1.end).getTime() -
+								new Date(m2.end).getTime()
+							);
+						});
+					if (timeouts.length)
+						setTimeout(() => {
+							setUpdate(true);
+						}, timeouts[0].end - Date.now());
+					setCanSendMessage(timeouts.length === 0);
 				})
 				.catch((err) => {
 					console.log(err);
@@ -126,8 +145,6 @@ const MessagesManager = ({
 		}
 		setUpdate(false);
 	}, [update, channel, user.login]);
-
-	console.log(members);
 
 	return (
 		<>

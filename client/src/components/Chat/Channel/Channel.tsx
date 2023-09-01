@@ -138,14 +138,6 @@ const Channel = ({
 		setMembersUpdate(false);
 	}, [channel, membersUpdate, user]);
 
-	console.log(
-		Object.keys(members)
-			.map((login) => members[login])
-			.filter((member) => {
-				return member.isMember;
-			})
-	);
-
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
