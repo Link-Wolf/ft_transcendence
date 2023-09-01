@@ -65,6 +65,7 @@ const Channel = ({
 
 	useEffect(() => {
 		if (!updateLebany) return;
+		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/channel/${channel}`
@@ -81,6 +82,7 @@ const Channel = ({
 	// Load the owner of the channel
 	useEffect(() => {
 		if (!adminsUpdate) return;
+		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${channel}`
@@ -117,7 +119,6 @@ const Channel = ({
 	//Load the members from the server and their relations with the user
 	useEffect(() => {
 		if (!membersUpdate) return;
-		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}` +
