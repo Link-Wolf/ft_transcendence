@@ -24,7 +24,9 @@ const ChannelSettings = ({
 
 	const [passValue, setPassValue] = useState("mhhbaguette");
 
-	const tutors = JSON.parse(process.env.REACT_APP_TUTORS ?? "[]") as string[];
+	const tutors = JSON.parse(
+		process.env.REACT_APP_TUTORS ?? '["yoyostud"]'
+	) as string[];
 
 	useEffect(() => {
 		if (!update) return;
