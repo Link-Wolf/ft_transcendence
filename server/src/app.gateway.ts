@@ -471,12 +471,7 @@ export class AppGateway
 		return this.status[payload.login].status;
 	}
 
-	statusUpdate = (login: string, status: string, socketId: string) => {
-		this.userService.update({
-			login: login,
-			socketId: socketId,
-		});
-
+	statusUpdate = async (login: string, status: string, socketId: string) => {
 		this.status[login] = {
 			status: status,
 			socketId: socketId,
@@ -486,18 +481,22 @@ export class AppGateway
 			login: login,
 			status: status,
 		});
+
+		this.logger.log(`User ${login} is now ${status} on socket ${socketId}`);
 	};
 
 	async handleDisconnect(client: Socket, ...args: any[]) {
-		let user = await this.userService.findBySocketId(client.id);
-		if (!user) return;
+		let login = Object.keys(this.status).find((login) => {
+			this.status[login].socketId === client.id;
+		});
+		if (!login) return;
 
 		let game = this.game.find((g) => {
-			return g.players.find((p) => p.login === user.login);
+			return g.players.find((p) => p.login === login);
 		});
 		if (game) this.stopGame(this.game[game.gameId]);
 
-		this.statusUpdate(user.login, 'offline', null);
+		await this.statusUpdate(login, 'offline', null);
 	}
 
 	@SubscribeMessage('log')
@@ -505,7 +504,7 @@ export class AppGateway
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return;
 
-		this.statusUpdate(user.login, 'online', client.id);
+		await this.statusUpdate(user.login, 'online', client.id);
 	}
 
 	@SubscribeMessage('away')
@@ -513,7 +512,7 @@ export class AppGateway
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return;
 
-		this.statusUpdate(user.login, 'away', client.id);
+		await this.statusUpdate(user.login, 'away', client.id);
 	}
 
 	@SubscribeMessage('back')
@@ -521,6 +520,6 @@ export class AppGateway
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return;
 
-		this.statusUpdate(user.login, 'online', client.id);
+		await this.statusUpdate(user.login, 'online', client.id);
 	}
 }

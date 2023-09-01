@@ -97,15 +97,14 @@ const MessagesManager = ({
 						`/api/block/of/${user.login}`
 				)
 				.then((res) => {
-					setCanSendMessage(
-						!res.data.some(
-							(blocker: any) =>
-								blocker.blockerLogin ===
-									channel.slice(1).split("&")[0] ||
-								blocker.blockerLogin ===
-									channel.slice(1).split("&")[1]
-						)
+					const blocked = res.data.some(
+						(blocker: any) =>
+							blocker.blockerLogin ===
+								channel.slice(1).split("&")[0] ||
+							blocker.blockerLogin ===
+								channel.slice(1).split("&")[1]
 					);
+					setCanSendMessage(!blocked);
 				})
 				.catch((err) => {
 					console.log(err);
@@ -127,6 +126,8 @@ const MessagesManager = ({
 		}
 		setUpdate(false);
 	}, [update, channel, user.login]);
+
+	console.log(members);
 
 	return (
 		<>
