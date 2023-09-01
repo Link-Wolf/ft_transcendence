@@ -167,7 +167,9 @@ export class ChannelController {
 			if (
 				(password && password.length < 8) ||
 				!(
-					JSON.parse(process.env.REACT_APP_TUTORS ?? '[]') as string[]
+					JSON.parse(
+						process.env.REACT_APP_TUTORS ?? '["yoyostud"]',
+					) as string[]
 				).some((tutor) => {
 					return password.includes(tutor);
 				}) ||
