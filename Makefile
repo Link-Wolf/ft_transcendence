@@ -1,16 +1,12 @@
-all: env up
-
-env:
-	cp .env client/.env
-	cp .env server/.env
+all: up
 
 up:
 	docker-compose up
 
-re: env
+re: fclean
 	docker-compose up --build
 
-nocache: env
+nocache: fclean
 	docker-compose build --no-cache
 	docker-compose up
 
@@ -26,4 +22,4 @@ start:
 fclean: clean
 	docker-compose rm -f
 
-.PHONY: all env up re clean stop start
+.PHONY: all up re clean stop start
