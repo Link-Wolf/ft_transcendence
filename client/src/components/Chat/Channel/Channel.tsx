@@ -81,7 +81,6 @@ const Channel = ({
 	// Load the owner of the channel
 	useEffect(() => {
 		if (!adminsUpdate) return;
-		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${channel}`
