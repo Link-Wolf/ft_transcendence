@@ -5,6 +5,13 @@ import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { useParams } from "react-router-dom";
 import { PPDisplayer } from "./ImageDisplayer";
 import Update from "./Update";
+import {
+	AskForGameButton,
+	BlockButton,
+	FriendButton,
+	UnblockButton,
+	UnfriendButton,
+} from "./ActionsButtons";
 
 const Profile = () => {
 	/**
@@ -39,14 +46,8 @@ const Profile = () => {
 	return (
 		<div>
 			<h1>Profile</h1>
-			<Resume
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<MatchHistory
-				isMe={isMe}
-				login={profileLogin}
-			/>
+			<Resume isMe={isMe} login={profileLogin} />
+			<MatchHistory isMe={isMe} login={profileLogin} />
 			{isMe && (
 				<>
 					<Friends />
@@ -79,11 +80,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 
 	return (
 		<>
-			<PPDisplayer
-				login={user.login}
-				size={420}
-				status={true}
-			/>
+			<PPDisplayer login={user.login} size={420} status={true} />
 			<div>
 				{user.name} ({user.login})
 			</div>
@@ -575,47 +572,21 @@ const SocialInterractions = ({ login }: { login: string }) => {
 			});
 	}, []);
 
-	const toggleBlock = async () => {
-		//TODO:
-	};
-
-	const blockUser = async () => {
-		//TODO:
-	};
-
-	const unblockUser = async () => {
-		//TODO:
-	};
-
-	const toggleFriend = async () => {
-		//TODO:
-	};
-
-	const addFriend = async () => {
-		//TODO:
-	};
-
-	const removeFriend = async () => {
-		//TODO:
-	};
-
-	const askForGame = async () => {
-		//TODO:
-	};
-
 	return (
 		<>
-			{!isBlockedBy && (
-				<button onClick={askForGame}>Ask for a game</button>
+			{!isBlockedBy && <AskForGameButton login={login} />}
+			{!isBlockedBy &&
+				(isFriend ? (
+					<UnfriendButton login={login} />
+				) : (
+					<FriendButton login={login} />
+				))}
+
+			{isBlocked ? (
+				<UnblockButton login={login} />
+			) : (
+				<BlockButton login={login} />
 			)}
-			{!isBlockedBy && (
-				<button onClick={toggleFriend}>
-					{isFriend ? "Remove friend" : "Add friend"}
-				</button>
-			)}
-			<button onClick={toggleBlock}>
-				{isBlocked ? "Unblock" : "Block"}
-			</button>
 		</>
 	);
 };
