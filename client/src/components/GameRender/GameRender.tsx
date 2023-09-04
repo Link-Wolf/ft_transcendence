@@ -125,33 +125,30 @@ const GameRender = ({
 			);
 			return;
 		}
-		p5.translate((game.width * scale) / 2, (game.height * scale) / 2);
+		p5.scale(scale);
+		p5.translate(game.width / 2, game.height / 2);
 		p5.background(0);
 		p5.rectMode(p5.CENTER);
 
-		drawMiddleLine(p5, scale);
+		drawMiddleLine(p5, game.height);
 		p5.push();
 		if (game.myIndex === 1) {
 			p5.scale(-1, 1);
 		}
-		drawMovables(
-			p5,
-			[
-				{
-					type: "rectangle",
-					...game.players[0].paddle,
-				},
-				{
-					type: "rectangle",
-					...game.players[1].paddle,
-				},
-				{
-					type: "circle",
-					...game.ball,
-				},
-			],
-			scale
-		);
+		drawMovables(p5, [
+			{
+				type: "rectangle",
+				...game.players[0].paddle,
+			},
+			{
+				type: "rectangle",
+				...game.players[1].paddle,
+			},
+			{
+				type: "circle",
+				...game.ball,
+			},
+		]);
 		p5.pop();
 		drawScore(
 			p5,
@@ -160,9 +157,10 @@ const GameRender = ({
 				advers: game.players[1].score,
 			},
 			game.myIndex === 0 ? 1 : -1,
-			scale
+			game.width,
+			game.height
 		);
-		displayTurnText(p5, game, scale);
+		displayTurnText(p5, game);
 	};
 
 	const windowResized = (p5: p5Types) => {
