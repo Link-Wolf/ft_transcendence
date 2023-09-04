@@ -396,9 +396,6 @@ export class AppGateway
 		waitingGame.$set('users', [...waitingGame.dataValues.users, user]);
 		await waitingGame.save();
 
-		console.log(
-			`User ${user.login} joined game ${waitingGame.id} which has ${waitingGame.dataValues.users.length} users`,
-		);
 		client.join(`game-${waitingGame.id}`);
 
 		if (waitingGame.dataValues.users.length === 2) {
@@ -421,7 +418,6 @@ export class AppGateway
 	@SubscribeMessage('quitWaitRoom')
 	async handleQuitWaitRoom(client: Socket, payload: any): Promise<number> {
 		// TODO: change status to online
-		console.log('quitWaitRoom', payload);
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return 400;
 
