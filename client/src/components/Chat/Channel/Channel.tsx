@@ -202,7 +202,8 @@ const Channel = ({
 										/>
 									</div>
 								))
-						: lebany.map((login, i) => (
+						: lebany.length
+						? lebany.map((login, i) => (
 								<div key={i}>
 									<PPDisplayer
 										login={login}
@@ -215,7 +216,8 @@ const Channel = ({
 										channel={channel}
 									/>
 								</div>
-						  ))}
+						  ))
+						: "There is no bany sir"}
 				</>
 			) : showThingsAboutChannel === "channelSettings" &&
 			  owner === user.login ? (

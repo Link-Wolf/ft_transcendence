@@ -181,12 +181,21 @@ const ChannelSettings = ({
 				)}
 			</div>
 			<div>
-				Ur admins sir' :
-				{admins.map((admin, i) => (
-					<div key={i}>
-						<AdminCardIdk login={admin} channel={channelName} />
-					</div>
-				))}
+				{admins.length ? (
+					<>
+						Ur admins sir' :
+						{admins.map((admin, i) => (
+							<div key={i}>
+								<AdminCardIdk
+									login={admin}
+									channel={channelName}
+								/>
+							</div>
+						))}
+					</>
+				) : (
+					"There is no admin sir"
+				)}
 			</div>
 		</>
 	);

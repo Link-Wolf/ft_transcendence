@@ -19,7 +19,9 @@ const Chat = () => {
 	if (
 		!user.clearance ||
 		user.clearance === 0 ||
-		location.pathname === "/game"
+		location.pathname.startsWith("/game") ||
+		location.pathname.startsWith("/login") ||
+		location.pathname.startsWith("/tfa")
 	) {
 		return <></>;
 	}
@@ -37,10 +39,7 @@ const Chat = () => {
 
 const ChatButton = (props: any) => {
 	return (
-		<button
-			className={style.toggleChat}
-			onClick={props.onClick}
-		>
+		<button className={style.toggleChat} onClick={props.onClick}>
 			Toggle Chat
 		</button>
 	);
