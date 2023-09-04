@@ -93,7 +93,7 @@ export class AppGateway
 	 ********************************************************/
 	@SubscribeMessage('newMessage')
 	async notifyUpdate(client: Socket, payload: any) {
-		this.server.emit('newMessage', payload.channel);
+		this.server.emit('newMessage', payload);
 	}
 
 	@SubscribeMessage('relationUpdate')

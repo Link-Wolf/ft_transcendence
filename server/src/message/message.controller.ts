@@ -210,7 +210,10 @@ export class MessageController {
 			userLogin,
 			chanName,
 		);
-		if (mute.length > 0)
+		if (
+			mute.filter((mute) => mute.dataValues.end > new Date(Date.now()))
+				.length > 0
+		)
 			throw new HttpException(
 				'User is muted from the channel',
 				HttpStatus.FORBIDDEN,
