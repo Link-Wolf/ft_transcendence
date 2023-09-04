@@ -396,23 +396,16 @@ export class AppGateway
 		let dbGame = await this.gameService.findById(game.gameId);
 		let dbUser0 = await this.userService.findByLogin(game.players[0].login);
 		let dbUser1 = await this.userService.findByLogin(game.players[1].login);
+
 		this.userGameService.update({
-			id: (
-				await this.userGameService.findByUserAndGame({
-					game: dbGame,
-					user: dbUser0,
-				})
-			).dataValues.id,
+			game: dbGame,
+			user: dbUser0,
 			score: game.players[0].score,
 		});
 		this.userGameService.update({
-			id: (
-				await this.userGameService.findByUserAndGame({
-					game: dbGame,
-					user: dbUser1,
-				})
-			).dataValues.id,
 			score: game.players[1].score,
+			game: dbGame,
+			user: dbUser1,
 		});
 	}
 

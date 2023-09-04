@@ -145,20 +145,15 @@ export class AuthController {
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
-		this.userService.update({
-			login: login,
-			hasTFA: true,
-		});
 		return user.TFASecret;
 	}
 
-	@Post('verifyTFA/:login')
-	async verifyTFA(
+	@Post('enableTFA/:login')
+	async enableTFA(
 		@Body('code') token: string,
 		@Param('login') login: string,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<boolean> {
-		console.log(login, token);
 		if (!token || !login) {
 			throw new HttpException(
 				'Missing parameters',
@@ -185,7 +180,82 @@ export class AuthController {
 					needTFA: false,
 				}),
 			);
+			this.userService.update({
+				login: login,
+				hasTFA: true,
+			});
 		}
 		return ret;
+	}
+
+	@Post('verifyTFA/:login')
+	async verifyTFA(
+		@Body('code') token: string,
+		@Param('login') login: string,
+		@Res({ passthrough: true }) res: Response,
+	): Promise<boolean> {
+		if (!token || !login) {
+			throw new HttpException(
+				'Missing parameters',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		const user = await this.userService.findByLogin(login);
+		if (!user) {
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		}
+		if (!user.TFASecret) {
+			throw new HttpException(
+				'User has no TFA secret',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		let ret = await this.userService.verifyTFA(login, token);
+		if (ret) {
+			res.cookie(
+				'token',
+				await this.jwtService.tokenise({
+					login: user.dataValues.login,
+					needTFA: false,
+				}),
+			);
+		}
+		return ret;
+	}
+
+	@Post('disableTFA/:login')
+	@UseGuards(AdminUserGuard)
+	async disableTFA(
+		@Param('login') login: string,
+		@Res({ passthrough: true }) res: Response,
+	): Promise<void> {
+		if (!login) {
+			throw new HttpException(
+				'Missing parameters',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		const user = await this.userService.findByLogin(login);
+		if (!user) {
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		}
+		if (!user.hasTFA) {
+			throw new HttpException(
+				'User has no active TFA',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		res.cookie(
+			'token',
+			await this.jwtService.tokenise({
+				login: user.dataValues.login,
+				needTFA: false,
+			}),
+		);
+		this.userService.update({
+			login: login,
+			hasTFA: false,
+		});
+		return;
 	}
 }
