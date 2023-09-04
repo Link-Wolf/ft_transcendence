@@ -89,13 +89,28 @@ const GameRender = ({
 			gonePlayer: null,
 		},
 	};
+	let scale = 1;
 
 	socket.on("gameUpdate", (data) => {
 		game = { ...game, ...data };
 	});
 
+	const calculateScale = () => {
+		const view_width = window.innerWidth;
+		const view_height = window.innerHeight;
+		const game_ratio = game.width / game.height;
+		const view_ratio = view_width / view_height;
+		scale =
+			view_ratio > game_ratio
+				? view_height / game.height
+				: view_width / game.width;
+	};
+
 	const setup = (p5: p5Types, canvasParentRef: Element) => {
-		p5.createCanvas(game.width, game.height).parent(canvasParentRef);
+		calculateScale();
+		p5.createCanvas(game.width * scale, game.height * scale).parent(
+			canvasParentRef
+		);
 		p5.frameRate(60);
 		p5.noStroke();
 		game.myIndex = game.players.findIndex(
@@ -110,29 +125,33 @@ const GameRender = ({
 			);
 			return;
 		}
-		p5.translate(game.width / 2, game.height / 2);
+		p5.translate((game.width * scale) / 2, (game.height * scale) / 2);
 		p5.background(0);
 		p5.rectMode(p5.CENTER);
 
-		drawMiddleLine(p5);
+		drawMiddleLine(p5, scale);
 		p5.push();
 		if (game.myIndex === 1) {
 			p5.scale(-1, 1);
 		}
-		drawMovables(p5, [
-			{
-				type: "rectangle",
-				...game.players[0].paddle,
-			},
-			{
-				type: "rectangle",
-				...game.players[1].paddle,
-			},
-			{
-				type: "circle",
-				...game.ball,
-			},
-		]);
+		drawMovables(
+			p5,
+			[
+				{
+					type: "rectangle",
+					...game.players[0].paddle,
+				},
+				{
+					type: "rectangle",
+					...game.players[1].paddle,
+				},
+				{
+					type: "circle",
+					...game.ball,
+				},
+			],
+			scale
+		);
 		p5.pop();
 		drawScore(
 			p5,
@@ -140,15 +159,22 @@ const GameRender = ({
 				player: game.players[0].score,
 				advers: game.players[1].score,
 			},
-			game.myIndex === 0 ? 1 : -1
+			game.myIndex === 0 ? 1 : -1,
+			scale
 		);
-		displayTurnText(p5, game);
+		displayTurnText(p5, game, scale);
+	};
+
+	const windowResized = (p5: p5Types) => {
+		calculateScale();
+		p5.resizeCanvas(game.width * scale, game.height * scale);
 	};
 
 	return (
 		<Sketch
 			setup={setup}
 			draw={draw}
+			windowResized={windowResized}
 			keyPressed={(p5) => {
 				playerKeys.add(p5.keyCode);
 				socket.volatile.emit("keys", {

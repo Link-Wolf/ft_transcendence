@@ -14,12 +14,17 @@ import p5Types from "p5";
  *		7		4			2
  *		7		X	3	3	X
  */
-const draw7Segment = (p5: p5Types, score: number, position: number) => {
+const draw7Segment = (
+	p5: p5Types,
+	score: number,
+	position: number,
+	scale: number
+) => {
 	const i4 = score % 10 & 1;
 	const i3 = (score % 10 >> 1) & 1;
 	const i2 = (score % 10 >> 2) & 1;
 	const i1 = (score % 10 >> 3) & 1;
-	const unit_size = 8;
+	const unit_size = 8 * scale;
 
 	const fillColors = [p5.color(0, 0, 0, 0), p5.color(255, 255, 255)];
 	p5.push();
@@ -86,10 +91,21 @@ const draw7Segment = (p5: p5Types, score: number, position: number) => {
 export default function drawScore(
 	p5: p5Types,
 	score: { player: number; advers: number },
-	isPlayerLeft: number
+	isPlayerLeft: number,
+	scale: number
 ) {
 	p5.push();
-	draw7Segment(p5, score.player, -isPlayerLeft * (p5.width / 2 - 160));
-	draw7Segment(p5, score.advers, isPlayerLeft * (p5.width / 2 - 160));
+	draw7Segment(
+		p5,
+		score.player,
+		-isPlayerLeft * (p5.width / 2 - 160 * scale),
+		scale
+	);
+	draw7Segment(
+		p5,
+		score.advers,
+		isPlayerLeft * (p5.width / 2 - 160 * scale),
+		scale
+	);
 	p5.pop();
 }
