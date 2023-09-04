@@ -32,6 +32,7 @@ type Player = {
 	score: number;
 	inputs: number[];
 	login: string;
+	lastInput: number;
 };
 
 type Ball = {
@@ -77,6 +78,7 @@ export class AppGateway
 	constructor(
 		private userService: UserService,
 		private gameService: GameService,
+		private userGameService: UserGameService,
 	) {}
 
 	@WebSocketServer() server: Server;
@@ -288,6 +290,7 @@ export class AppGateway
 						velocity: { dx: 0, dy: 0 },
 					},
 					inputs: [],
+					lastInput: Date.now(),
 				},
 				{
 					login: player2,
@@ -298,6 +301,7 @@ export class AppGateway
 						velocity: { dx: 0, dy: 0 },
 					},
 					inputs: [],
+					lastInput: Date.now(),
 				},
 			],
 			ball: {
@@ -320,17 +324,41 @@ export class AppGateway
 		};
 	}
 
+	abortGame(game: GameData, player: number | string) {
+		if (typeof player === 'string') {
+			player = game.players.findIndex((p) => p.login === player);
+		}
+
+		game.players[1 - player].score = 11;
+		game.status.winner = 1 - player;
+		game.players[player].score = 0;
+		game.status.ended = true;
+		this.server.to(`game-${game.gameId}`).emit('gameUpdate', game);
+		this.stopGame(game, true);
+	}
+
 	startGame(gameId: number, player1: string, player2: string) {
 		this.game.length = Math.max(this.game?.length | 0, gameId + 1);
 		this.game[gameId] = this.newGame(gameId, player1, player2);
 		let game = this.game[gameId];
 		this.resetBall(game);
 		this.resetPaddles(game);
+
+		this.status[player1].status = 'ingame';
+		this.status[player2].status = 'ingame';
+
 		game.loop = setInterval(() => {
 			//update dt
 			let now = Date.now();
 			let dt = now - game.lastTimestamp;
 			game.lastTimestamp = now;
+
+			if (game.players[0].lastInput + 1000 * 60 < now) {
+				this.abortGame(game, 0);
+			}
+			if (game.players[1].lastInput + 1000 * 60 < now) {
+				this.abortGame(game, 1);
+			}
 
 			// check for final score
 			if (game.players[0].score >= 11 || game.players[1].score >= 11) {
@@ -352,22 +380,45 @@ export class AppGateway
 		}, 16);
 	}
 
-	stopGame(game: GameData, abort: boolean = false) {
-		//TODO: uaw argument to abort instead of finish
-		//TODO: update score in db
+	stopGame(game: GameData, abandoned = false) {
 		if (!game) return;
 		clearInterval(game.loop);
 		this.game[game.gameId] = null;
 		this.gameService.update({
 			id: game.gameId,
-			status: 'finished',
+			status: abandoned ? 'abandoned' : 'finished',
+		});
+
+		this.saveScore(game);
+	}
+
+	async saveScore(game: GameData) {
+		let dbGame = await this.gameService.findById(game.gameId);
+		let dbUser0 = await this.userService.findByLogin(game.players[0].login);
+		let dbUser1 = await this.userService.findByLogin(game.players[1].login);
+		this.userGameService.update({
+			id: (
+				await this.userGameService.findByUserAndGame({
+					game: dbGame,
+					user: dbUser0,
+				})
+			).dataValues.id,
+			score: game.players[0].score,
+		});
+		this.userGameService.update({
+			id: (
+				await this.userGameService.findByUserAndGame({
+					game: dbGame,
+					user: dbUser1,
+				})
+			).dataValues.id,
+			score: game.players[1].score,
 		});
 	}
 
 	@SubscribeMessage('joinWaitRoom')
 	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
 		//TODO: change status to waiting
-		// //verifiy the user
 
 		let user = await this.userService.verify(payload.auth);
 		if (!user) return;
@@ -444,6 +495,7 @@ export class AppGateway
 		let player = game.players.find((p) => p.login === payload.login);
 		if (!player) return;
 		player.inputs = payload.keys;
+		player.lastInput = Date.now();
 	}
 
 	/*********************************************************
@@ -490,7 +542,9 @@ export class AppGateway
 		let game = this.game.find((g) => {
 			return g.players.find((p) => p.login === login);
 		});
-		if (game) this.stopGame(this.game[game.gameId]);
+		if (game) {
+			this.abortGame(game, login);
+		}
 
 		await this.statusUpdate(login, 'offline', null);
 	}
