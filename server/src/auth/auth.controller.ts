@@ -119,8 +119,8 @@ export class AuthController {
 				clearance: Number(process.env.GUEST_CLEARANCE),
 				login: 'guest',
 			};
-		const login = (await this.jwtService.verify(req.cookies.token)).login;
-		let user = await this.userService.findByLogin(login);
+
+		let user = await this.userService.verify(req.cookies.token);
 		if (!user)
 			return {
 				clearance: Number(process.env.GUEST_CLEARANCE),
