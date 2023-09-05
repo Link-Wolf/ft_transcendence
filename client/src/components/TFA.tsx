@@ -1,12 +1,11 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 
 const TFA = () => {
 	const [form, setForm] = useState({
 		tfacode: "",
 	});
-	const navigate = useNavigate();
 	const login = useParams().login;
 
 	const checkTFA = async () => {

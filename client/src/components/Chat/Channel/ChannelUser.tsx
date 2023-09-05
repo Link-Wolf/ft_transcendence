@@ -12,7 +12,6 @@ import {
 	FriendPMButton,
 	PromoteButton,
 } from "../../ActionsButtons";
-import { use } from "matter-js";
 
 const ChannelUser = ({
 	admins,
