@@ -3,7 +3,6 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../App";
 import AddChannelMenu from "./AddChannelMenu";
 import style from "../../style/Chat.module.scss";
-import { use } from "matter-js";
 import socket from "../../socket";
 
 const ChannelList = ({ setChannel }: { setChannel: Function }) => {

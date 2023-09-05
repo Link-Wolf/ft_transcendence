@@ -4,7 +4,6 @@ import { UserContext } from "../App";
 import { PPDisplayer } from "./ImageDisplayer";
 import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
-import TFA from "./TFA";
 
 const ISSUER = "Platypong";
 
@@ -94,7 +93,6 @@ const Update = () => {
 					setForm({ ...form, hasTFA: true });
 					setCodeError("");
 				} else {
-					alert("Wrong TFA code");
 					setCodeError("Wrong 2FA code");
 				}
 			})

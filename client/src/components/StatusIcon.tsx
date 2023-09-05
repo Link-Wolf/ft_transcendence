@@ -1,7 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../App";
+import {  useEffect, useState } from "react";
 import style from "../style/StatusIcon.module.scss";
-import axios from "axios";
 import socket from "../socket";
 
 const StatusIcon = ({ login, size }: { login: string; size: number }) => {
