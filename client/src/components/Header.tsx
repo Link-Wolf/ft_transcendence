@@ -9,7 +9,7 @@ const Header = () => {
 	 * Header component, display the logo, the name of the app and the auth component
 	 */
 	return (
-		<ul className={style.banner}>
+		<ul className={style.banner} id='header'>
 			<li>
 				<Link to='/'>
 					<img src={logo} alt='Logo' className={style.logo} />

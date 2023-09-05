@@ -97,7 +97,9 @@ const GameRender = ({
 
 	const calculateScale = () => {
 		const view_width = window.innerWidth;
-		const view_height = window.innerHeight; //TODO: prendre en compte la taille de la navbar
+		const view_height =
+			window.innerHeight -
+			(document.getElementById("header")?.offsetHeight || 0);
 		const game_ratio = game.width / game.height;
 		const view_ratio = view_width / view_height;
 		scale =
