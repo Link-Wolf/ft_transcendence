@@ -73,8 +73,9 @@ export class ModifierController {
 	async create(
 		@Body('name') name: string,
 		@Body('desc') desc: string,
+		@Body('code') code: string,
 	): Promise<Modifier> {
-		if (!name || !desc) {
+		if (!name || !desc || !code) {
 			throw new HttpException(
 				'Missing parameters',
 				HttpStatus.BAD_REQUEST,
@@ -86,41 +87,11 @@ export class ModifierController {
 				HttpStatus.CONFLICT,
 			);
 		}
-		return this.modifierService.create({ name: name, desc: desc });
-	}
-
-	/**
-	 * @brief Update a modifier
-	 * @param {number} id - The modifier's id
-	 * @param {string} name - The modifier's name
-	 * @param {string} desc - The modifier's description
-	 * @return {Modifier} - The updated modifier
-	 * @security Clearance admin
-	 * @response 200 - OK
-	 * @response 401 - Unauthorized
-	 * @response 403 - Forbidden
-	 * @response 404 - Not Found
-	 * @response 409 - Conflict
-	 * @response 500 - Internal Server Error
-	 */
-	@Patch(':id')
-	@UseGuards(AdminClearanceGuard)
-	async update(
-		@Param('id', ParseIntPipe) id: number,
-		@Body('name') name?: string,
-		@Body('desc') desc?: string,
-	): Promise<number> {
-		let modifier = await this.modifierService.findById(id);
-		if (!modifier) {
-			throw new HttpException('Modifier not found', HttpStatus.NOT_FOUND);
-		}
-		if (name && (await this.modifierService.findByName(name))) {
-			throw new HttpException(
-				'Name is already taken',
-				HttpStatus.CONFLICT,
-			);
-		}
-		return this.modifierService.update({ id: id, name: name, desc: desc });
+		return this.modifierService.create({
+			name: name,
+			desc: desc,
+			code: code,
+		});
 	}
 
 	/**
