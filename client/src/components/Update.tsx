@@ -4,6 +4,9 @@ import { UserContext } from "../App";
 import { PPDisplayer } from "./ImageDisplayer";
 import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
+import TFA from "./TFA";
+
+const ISSUER = "Platypong";
 
 const Update = () => {
 	/**
@@ -160,7 +163,11 @@ const Update = () => {
 							</li>
 						</ul>
 						<h3>Scan this QR code with your authenticator app</h3>
-						<QRCode value={TFASecret} size={256} level='H' />
+						<QRCode
+							value={`otpauth://totp/${user.login}?secret=${TFASecret}&issuer=${ISSUER}`}
+							size={256}
+							level='H'
+						/>
 						<h4>Or enter this code manually in your app</h4>
 						<label>Secret Key: {TFASecret}</label>
 						<h3>Verifiy code</h3>

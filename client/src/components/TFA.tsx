@@ -9,7 +9,6 @@ const TFA = () => {
 	const navigate = useNavigate();
 	const login = useParams().login;
 
-
 	const checkTFA = async () => {
 		axios
 			.post(
@@ -20,7 +19,7 @@ const TFA = () => {
 			)
 			.then((res) => {
 				if (res.data) {
-					navigate("/")
+					window.location.href = "/";
 				} else {
 					alert("Wrong TFA code");
 				}
@@ -35,22 +34,19 @@ const TFA = () => {
 	};
 
 	return (
-			<form>
-				<input
-					id='tfacode'
-					type='text'
-					onChange={handleFormChange}
-					value={form.tfacode}
-					placeholder='ur tfa number'
-				/>
-				<button
-					type='button'
-					onClick={checkTFA}
-				>
-					Submit
-				</button>
-			</form>
-		);
-}
+		<form>
+			<input
+				id='tfacode'
+				type='text'
+				onChange={handleFormChange}
+				value={form.tfacode}
+				placeholder='ur tfa number'
+			/>
+			<button type='button' onClick={checkTFA}>
+				Submit
+			</button>
+		</form>
+	);
+};
 
 export default TFA;
