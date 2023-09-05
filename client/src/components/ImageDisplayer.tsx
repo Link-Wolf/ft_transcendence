@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import StatusIcon from "./StatusIcon";
 import style from "../style/PPDisplayer.module.scss";
+import Loading from "./Loading";
 
 const PPDisplayer = ({
 	login,
@@ -47,10 +48,16 @@ const PPDisplayer = ({
 					className={style.PPDisplayer}
 				>
 					{image}
-					{status && <StatusIcon login={login} size={size} />}
+					{status && (
+						<StatusIcon
+							login={login}
+							size={size}
+						/>
+					)}
 				</div>
 			) : (
-				<p>Loading image...</p>
+				"Loading Image..."
+				//TODO: <Loading />
 			)}
 		</>
 	);
