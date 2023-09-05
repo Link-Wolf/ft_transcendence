@@ -10,6 +10,7 @@ export class SeedingService {
 
 	async seedModifiers() {
 		try {
+			await this.modifierRepository.destroy({ where: {} });
 			// Create all defaults modifiers
 			await this.modifierRepository.create<Modifier>({
 				code: 'padddle_size_plus',
@@ -25,6 +26,11 @@ export class SeedingService {
 				code: 'map_1',
 				name: 'Custom Map: The City',
 				desc: 'Replace the default map with a custom one with lot of obstacles that represent a city !',
+			});
+			await this.modifierRepository.create<Modifier>({
+				code: 'map_2',
+				name: 'Custom Map: The void',
+				desc: 'Replace the default map with .. void',
 			});
 			// await this.modifierRepository.create<Modifier>();
 			// await this.modifierRepository.create<Modifier>();

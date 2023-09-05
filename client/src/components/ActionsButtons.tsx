@@ -73,6 +73,7 @@ const UnblockButton = ({
 					userA: user.login,
 					userB: login,
 				});
+				effect && effect();
 			})
 			.catch((err) => {
 				console.log(err);
@@ -100,8 +101,20 @@ const BlockUnblockButton = ({
 	effect?: Function;
 	isBlocked: boolean;
 }) => {
-	if (isBlocked) return <UnblockButton login={login} effect={effect} />;
-	else return <BlockButton login={login} effect={effect} />;
+	if (isBlocked)
+		return (
+			<UnblockButton
+				login={login}
+				effect={effect}
+			/>
+		);
+	else
+		return (
+			<BlockButton
+				login={login}
+				effect={effect}
+			/>
+		);
 };
 
 /*******************************************************************************
@@ -267,9 +280,19 @@ const FriendPMButton = ({
 
 	if (isFriend)
 		return (
-			<PMButton login={login} setChannel={setChannel} effect={effect} />
+			<PMButton
+				login={login}
+				setChannel={setChannel}
+				effect={effect}
+			/>
 		);
-	else return <FriendButton login={login} effect={effect} />;
+	else
+		return (
+			<FriendButton
+				login={login}
+				effect={effect}
+			/>
+		);
 };
 
 const UnfriendButton = ({
@@ -338,20 +361,21 @@ const UnbanButton = ({
 	channel: string;
 	effect?: Function;
 }) => {
-const unban = (login: string, channel:string) => {
+	const unban = (login: string, channel: string) => {
 		axios
 			.delete(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/user/${login}/channel/${channel}`
 			)
 			.then(() => {
-				socket.emit("banUpdate", { //TODO: better here plz
+				socket.emit("banUpdate", {
+					//TODO: better here plz
 					user: login,
 				});
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-}
+	};
 	return (
 		<button
 			type='button'

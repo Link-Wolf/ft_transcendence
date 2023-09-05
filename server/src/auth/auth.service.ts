@@ -79,7 +79,19 @@ export class AuthService {
 
 		do {
 			name = '';
-			const lenght = Math.floor(Math.random() * 9) + 8; // Random length between 8 and 16
+			//generate random lenght between 5 and 12 characters
+			let lenght = 2;
+			//while the length is a prime number, generate a new one;
+			while (
+				lenght == 2 ||
+				lenght == 3 ||
+				lenght == 5 ||
+				lenght == 7 ||
+				lenght == 11 ||
+				lenght == 13
+			)
+				//generate random lenght between 3(inclusive)  and 15 (inclusive)
+				lenght = Math.floor(Math.random() * 13) + 3;
 
 			for (let i = 0; i < lenght; i++) {
 				const nextChar = Math.floor(Math.random() * 26) + 97; // ASCII code for lowercase 'a' to 'z'

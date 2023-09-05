@@ -51,10 +51,11 @@ export class UserService {
 	 */
 	async findByName(name: string): Promise<User> {
 		try {
-			return await this.userRepository.findOne<User>({
+			let ret = await this.userRepository.findOne<User>({
 				where: { name: name },
 				include: [{ all: true }],
 			});
+			return ret;
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
