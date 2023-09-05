@@ -1,14 +1,8 @@
-import { useContext, useEffect, useState } from "react";
-import socket from "../../../socket";
-import { UserContext } from "../../../App";
+import { useState, useContext, useEffect } from "react";
+import { UserContext } from "../../App";
+import socket from "../../socket";
 
-const NotificationsButton = ({
-	togglePopUp,
-	popUpStatus,
-}: {
-	togglePopUp: Function;
-	popUpStatus: boolean;
-}) => {
+const NotificationsIcon = () => {
 	const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 	const user = useContext(UserContext);
 
@@ -20,7 +14,7 @@ const NotificationsButton = ({
 
 	useEffect(() => {
 		const pop = (payload: any) => {
-			if (popUpStatus) return;
+			// if (popUpStatus) return;
 			if (payload.to === user.login) {
 				setHasUnreadNotifications(true);
 				localStorage.setItem("hasUnreadNotifications", "true");
@@ -36,13 +30,7 @@ const NotificationsButton = ({
 		};
 	}, []);
 
-	return (
-		<>
-			<button onClick={() => togglePopUp()} type='button'>
-				Notifications
-			</button>
-			{hasUnreadNotifications && <div>!</div>}
-		</>
-	);
+	return <></>; //TODO: return des trucs selon si y'a des nouvelles notifs ou pas
 };
-export default NotificationsButton;
+
+export default NotificationsIcon;

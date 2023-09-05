@@ -1,7 +1,8 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../App";
 import { PPDisplayer } from "./ImageDisplayer";
+import axios from "axios";
 
 const Home = () => {
 	/**
@@ -9,6 +10,20 @@ const Home = () => {
 	 */
 
 	const user = useContext(UserContext);
+	const [chooseMode, setChooseMode] = useState(false);
+	const [modifiers, setModifiers] = useState<any[]>([]);
+	const [selectedModifiers, setSelectedModifiers] = useState<any[]>([]);
+
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/modifier`
+			)
+			.then((res) => {
+				setModifiers(res.data);
+			})
+			.catch((err) => console.log(err));
+	}, []);
 
 	return (
 		<div>
@@ -16,12 +31,65 @@ const Home = () => {
 			<p>Home page buddy</p>
 			{user.clearance > 0 ? (
 				<>
-					<Link to='/game'>Play</Link>
-					<PPDisplayer
-						login={user.login}
-						size={200}
-						status={true}
-					/>
+					{!chooseMode && (
+						<button
+							type='button'
+							onClick={() => {
+								setChooseMode(true);
+							}}
+						>
+							Start a game
+						</button>
+					)}
+					{chooseMode && (
+						<>
+							<img src='https://media.giphy.com/media/3o7aDcz6Y0fzWYvU5G/giphy.gif' />
+							{modifiers.map((modifier, i) => (
+								<button
+									type='button'
+									key={i}
+									onClick={() => {
+										if (
+											selectedModifiers.includes(
+												modifier.code
+											)
+										)
+											setSelectedModifiers(
+												selectedModifiers.filter(
+													(e) => e !== modifier.code
+												)
+											);
+										else {
+											if (
+												modifier.code.startsWith("map_")
+											)
+												setSelectedModifiers(
+													(selectedModifiers) =>
+														selectedModifiers.filter(
+															(e) =>
+																!e.startsWith(
+																	"map_"
+																)
+														)
+												);
+											setSelectedModifiers(
+												(selectedModifiers) => [
+													...selectedModifiers,
+													modifier.code,
+												]
+											);
+										}
+									}}
+								>
+									{modifier.name}
+									{selectedModifiers.includes(
+										modifier.code
+									) && "✅"}
+								</button>
+							))}
+							<Link to='/game'>Play</Link>
+						</>
+					)}
 				</>
 			) : (
 				<Link

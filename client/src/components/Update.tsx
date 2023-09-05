@@ -4,8 +4,48 @@ import { UserContext } from "../App";
 import { PPDisplayer } from "./ImageDisplayer";
 import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
+import { useDropzone } from "react-dropzone";
 
 const ISSUER = "Platypong";
+
+const PPChanger = ({ login }: { login: string }) => {
+	const [imageSource, setImageSource] = useState<string>("");
+	const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+
+	const files = acceptedFiles.map((file) => (
+		<li key={file.name}>
+			{file.name} - {file.size} bytes
+		</li>
+	));
+
+	return (
+		<div>
+			<PPDisplayer
+				login={login}
+				size={400}
+				status={false}
+			>
+				<img
+					src={imageSource}
+					alt='profile picture'
+				/>
+			</PPDisplayer>
+
+			<section className='container'>
+				<div {...getRootProps({ className: "dropzone" })}>
+					<input {...getInputProps()} />
+					<p>
+						Drag 'n' drop some files here, or click to select files
+					</p>
+				</div>
+				<aside>
+					<h4>Files</h4>
+					{/* <ul>{files}</ul> */}
+				</aside>
+			</section>
+		</div>
+	);
+};
 
 const Update = () => {
 	/**
@@ -37,26 +77,66 @@ const Update = () => {
 			});
 	}, []);
 
-	useEffect(() => {
-		if (form.name === "" || form.name === user.name) return;
-		if (form.name.length < 3) {
-			setNameError("Username must be at least 3 characters long");
-		} else if (!/^[a-zA-Z]+$/.test(form.name)) {
-			setNameError("Username must only contain letters");
-		} else {
-			setNameError("");
-		}
-	}, [form.name]);
-
 	if (!context.clearance || context.clearance === 0)
 		return <ThereIsNotEnoughPermsBro />;
 
 	const handleFormChange = (e: any) => {
+		//if the input contains not only letters, log an error
+		if (e.target.id === "name") {
+			if (e.target.value.length < 3) {
+				setNameError("Username must be at least 3 characters long");
+			} else if (e.target.value.length > 15) {
+				setNameError("Username must be at most 15 characters long");
+			} else if (!/^[a-zA-Z]+$/.test(e.target.value)) {
+				setNameError("Username must only contain letters");
+			} else if (
+				e.target.value.length === 3 ||
+				e.target.value.length === 5 ||
+				e.target.value.length === 7 ||
+				e.target.value.length === 11 ||
+				e.target.value.length === 13
+			) {
+				setNameError("Username lenght must not be prime");
+			} else {
+				setNameError("");
+			}
+		}
 		setForm({ ...form, [e.target.id]: e.target.value });
 	};
 
-	const updateProfile = async () => {
-		//TODO: update profile
+	const updateUsername = async () => {
+		if (nameError !== "") return;
+		await axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/name/${form.name}`
+			)
+			.then((res) => {
+				if (res.data) {
+					if (res.data.login === context.login) {
+						setForm({ ...form, name: "" });
+						return;
+					}
+					setNameError("Username already taken");
+				} else {
+					axios
+						.patch(
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${context.login}`,
+							{
+								name: form.name,
+							}
+						)
+						.then(() => {
+							setForm({ ...form, name: "" });
+							//TODO: update the context somehow ??
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 		return;
 	};
 
@@ -66,7 +146,6 @@ const Update = () => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/generateSecret/${context.login}`
 			)
 			.then((res) => {
-				// setForm({ ...form, TFASecret: res.data.secret });
 				setTFASecret(res.data);
 			})
 			.catch((err) => {
@@ -122,6 +201,7 @@ const Update = () => {
 			<form>
 				<div>
 					<label>Username</label>
+					{nameError !== "" && <div>{nameError}</div>}
 					<input
 						id='name'
 						type='text'
@@ -129,22 +209,26 @@ const Update = () => {
 						onChange={handleFormChange}
 						placeholder='myAwesomeNewUsername'
 					/>
-					{nameError !== "" && <div>{nameError}</div>}
+					<button
+						type='button'
+						onClick={updateUsername}
+						disabled={nameError !== ""}
+					>
+						Change username
+					</button>
 				</div>
 				<div>
-					<PPDisplayer
-						login={context.login}
-						size={400}
-						status={false}
-					/>
-					<input type='file' />
+					<PPChanger login={user.login} />
 				</div>
-				<div></div>
-				<button onChange={updateProfile}>Update</button>
 			</form>
 			{!form.hasTFA ? (
 				TFASecret === "" ? (
-					<button onClick={wannaEnableTFA}>Activate 2FA</button>
+					<button
+						type='button'
+						onClick={wannaEnableTFA}
+					>
+						Activate 2FA
+					</button>
 				) : (
 					<div className='BONJOUR JE SUIS UN POP UP MERCI'>
 						<h1>Two-Factor Authentication (2FA) Activation</h1>
@@ -181,10 +265,14 @@ const Update = () => {
 							onChange={(e) => handleInputChange(e.target.value)}
 						/>
 						{codeError !== "" && <div>{codeError}</div>}
-						<button onClick={verifyTFA}>
+						<button
+							type='button'
+							onClick={verifyTFA}
+						>
 							Verify and activate 2FA
 						</button>
 						<button
+							type='button'
 							onClick={() => {
 								setTFASecret("");
 								setCodeValue("");
@@ -195,7 +283,12 @@ const Update = () => {
 					</div>
 				)
 			) : (
-				<button onClick={disableTFA}>Disable 2FA</button>
+				<button
+					type='button'
+					onClick={disableTFA}
+				>
+					Disable 2FA
+				</button>
 			)}
 		</>
 	);

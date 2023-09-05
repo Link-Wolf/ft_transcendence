@@ -58,10 +58,30 @@ export class UserController {
 				HttpStatus.BAD_REQUEST,
 			);
 		}
-		let ret = await this.userService.findByLogin(login);
-		if (!ret) {
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		return await this.userService.findByLogin(login);
+	}
+
+	/**
+	 * @brief Get a user by its name
+	 * @param {string} name - The user's name
+	 * @return {User} - The user
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 400 - Bad Request
+	 * @response 401 - Unauthorized
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('name/:name')
+	@UseGuards(UserClearanceGuard)
+	async findByName(@Param('name') name: string): Promise<User> {
+		if (!name) {
+			throw new HttpException(
+				'Missing parameters',
+				HttpStatus.BAD_REQUEST,
+			);
 		}
+		let ret = await this.userService.findByName(name);
 		return ret;
 	}
 

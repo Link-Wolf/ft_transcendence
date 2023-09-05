@@ -46,8 +46,14 @@ const Profile = () => {
 	return (
 		<div>
 			<h1>Profile</h1>
-			<Resume isMe={isMe} login={profileLogin} />
-			<MatchHistory isMe={isMe} login={profileLogin} />
+			<Resume
+				isMe={isMe}
+				login={profileLogin}
+			/>
+			<MatchHistory
+				isMe={isMe}
+				login={profileLogin}
+			/>
 			{isMe && (
 				<>
 					<Friends />
@@ -80,7 +86,11 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 
 	return (
 		<>
-			<PPDisplayer login={user.login} size={420} status={true} />
+			<PPDisplayer
+				login={user.login}
+				size={420}
+				status={true}
+			/>
 			<div>
 				{user.name} ({user.login})
 			</div>
@@ -279,7 +289,7 @@ const MatchStats = ({
 			else losses++;
 		});
 		setRankedGameResults({ wins, losses });
-	}, []);
+	}, [rankedGames]);
 
 	useEffect(() => {
 		let wins = 0;
@@ -289,7 +299,7 @@ const MatchStats = ({
 			else losses++;
 		});
 		setNormalGameResults({ wins, losses });
-	}, []);
+	}, [normalGames]);
 
 	useEffect(() => {
 		setGameResults({
@@ -457,33 +467,9 @@ const Blocked = () => {
 			});
 	}, [update]);
 
-	const unblock = async (friendLogin: string) => {
-		axios
-			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${friendLogin}`
-			)
-			.then(async (res) => {
-				if (res.data) {
-					await axios
-						.delete(
-							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${friendLogin}`,
-							{
-								withCredentials: true,
-							}
-						)
-
-						.catch((err) => {
-							console.log(err);
-						});
-				}
-			})
-			.then(() => {
-				setUpdate(true);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
+	const touchTheUpdate = () => {
+		setUpdate(true);
+	}
 
 	return (
 		<div>
@@ -507,13 +493,7 @@ const Blocked = () => {
 										<div>
 											Blocked since {blocked.created_at}
 										</div>
-										<button
-											onClick={() => {
-												unblock(blocked.login);
-											}}
-										>
-											Unblock
-										</button>
+										<UnblockButton login={blocked.login} effect={touchTheUpdate} />
 									</li>
 								);
 							})}

@@ -344,6 +344,8 @@ export class AppGateway
 		this.resetBall(game);
 		this.resetPaddles(game);
 
+		console.log(player1, player2)
+
 		this.status[player1].status = 'ingame';
 		this.status[player2].status = 'ingame';
 

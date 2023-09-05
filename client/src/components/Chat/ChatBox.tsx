@@ -3,7 +3,6 @@ import style from "../../style/Chat.module.scss";
 import Channel from "./Channel/Channel";
 import ChannelList from "./ChannelList";
 import MPList from "./MPList";
-import Notifications from "./Notifications/Notifications";
 
 const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 	/**
@@ -20,7 +19,6 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 				>
 					Close Chat
 				</button>
-				<Notifications />
 			</div>
 			{!channel ? (
 				<>
@@ -28,7 +26,10 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 					<MPList setChannel={setChannel} />
 				</>
 			) : (
-				<Channel channel={channel} setChannel={setChannel} />
+				<Channel
+					channel={channel}
+					setChannel={setChannel}
+				/>
 			)}
 		</div>
 	);

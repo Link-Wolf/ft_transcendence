@@ -1,6 +1,7 @@
 import { useState } from "react";
 import NotificationsButton from "./NotificationsButton";
 import NotificationsPopUp from "./NotificationsPopUp";
+import NotificationsIcon from "./NotificationIcon";
 
 const Notifications = () => {
 	const [showPopup, setShowPopup] = useState(false);
@@ -20,6 +21,7 @@ const Notifications = () => {
 				}}
 				popUpStatus={showPopup}
 			/>
+			<NotificationsIcon />
 			{showPopup && <NotificationsPopUp />}
 		</div>
 	);

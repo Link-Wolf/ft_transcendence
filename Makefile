@@ -12,6 +12,7 @@ nocache: fclean
 
 clean: stop
 	docker-compose down
+	docker-compose rm -f
 
 stop:
 	docker-compose stop
@@ -20,6 +21,6 @@ start:
 	docker-compose start
 
 fclean: clean
-	docker-compose rm -f
+	docker system prune -fa --volumes
 
 .PHONY: all up re clean stop start
