@@ -65,6 +65,16 @@ export class GameController {
 	}
 
 	/**
+	 *
+	 * @param login TODO:
+	 */
+	@Get('invitation/:login')
+	@UseGuards(UserClearanceGuard)
+	async findInvitation(@Param('login') login: string): Promise<Game[]> {
+		throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
+	}
+
+	/**
 	 * @brief Get games by player
 	 * @param {string} login - Player login
 	 * @param {boolean} ranked - Ranked games only

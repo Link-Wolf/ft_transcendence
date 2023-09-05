@@ -429,7 +429,7 @@ export class AppGateway
 		}
 
 		let waitingGame = await this.gameService.findWaiting(payload.isRanked);
-		userA: if (!waitingGame) {
+		if (!waitingGame) {
 			waitingGame = await this.gameService.create({
 				isRanked: payload.isRanked,
 				status: 'waiting',
