@@ -14,6 +14,7 @@ import {
 } from "../../ActionsButtons";
 
 const ChannelUser = ({
+	name,
 	admins,
 	login,
 	members,
@@ -21,10 +22,11 @@ const ChannelUser = ({
 	channel,
 	setChannel,
 }: {
-	admins: string[];
+	name: string;
+	admins: any[];
 	login: string;
 	members: any;
-	owner: string;
+	owner: any;
 	channel: string;
 	setChannel: Function;
 }) => {
@@ -40,11 +42,11 @@ const ChannelUser = ({
 	});
 
 	const toggleBox = async (login = user.login) => {
-		console.log("here")
+		console.log("here");
 		if (login === user.login) return navigate(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
 		if (
 			!isToggleBox &&
-			(admins.includes(user.login) || user.login === owner)
+			(admins.includes(user.login) || user.login === owner.login)
 		) {
 			await axios
 				.get(
@@ -180,8 +182,8 @@ const ChannelUser = ({
 								login={login}
 								isBlocked={members[login].isBlocked}
 							/>
-							{user.login === owner &&
-								(admins.includes(login) ? (
+							{user.login === owner.login &&
+								(admins.some((admin) => admin.login === login) ? (
 									<DemoteButton
 										login={login}
 										channel={channel}
@@ -192,10 +194,10 @@ const ChannelUser = ({
 										channel={channel}
 									/>
 								))}
-							{(user.login === owner ||
-								(admins.includes(user.login) &&
-									login !== owner &&
-									!admins.includes(login))) && (
+							{(user.login === owner.login ||
+								(admins.some((admin) => admin.login === user.login) &&
+									login !== owner.login &&
+									!admins.some((admin) => admin.login === login))) && (
 								<>
 									<button
 										onClick={() => {
@@ -233,15 +235,19 @@ const ChannelUser = ({
 				>
 					{user.login !== login ? (
 						<label>
-							{login} {members[login].isBlocked ? "(bloqué)" : ""}
+							{name} {members[login].isBlocked ? "(bloqué)" : ""}
 						</label>
 					) : (
-						<label>{login} (you) </label>
+						<label>{name} (you) </label>
 					)}
-					<PPDisplayer login={login} size={50} status={true} />
-					{login === owner
+					<PPDisplayer
+						login={login}
+						size={50}
+						status={true}
+					/>
+					{login === owner.login
 						? " (owner)"
-						: admins.includes(login) && " (admin)"}
+						: admins.some((admin) => admin.login === login) && " (admin)"}
 				</button>
 			</div>
 		</>

@@ -11,6 +11,7 @@ import {
 import { PPDisplayer } from "../ImageDisplayer";
 
 const Message = ({
+	name,
 	login,
 	date,
 	content,
@@ -20,13 +21,14 @@ const Message = ({
 	owner,
 	setChannel,
 }: {
+	name: string;
 	login: string;
 	date: string;
 	content: string;
 	relation: { isBlocked: boolean; isFriend: boolean };
 	avatar: string;
-	admins: string[];
-	owner: string;
+	admins: any[];
+	owner: any;
 	setChannel: Function;
 }) => {
 	/**
@@ -43,19 +45,24 @@ const Message = ({
 	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
-			<PPDisplayer login={login} size={40} status={true}>
+			<PPDisplayer
+				login={login}
+				size={40}
+				status={true}
+			>
 				<img src={`data:image/*;base64,${avatar}`} />
 			</PPDisplayer>
 			{user.login !== login ? (
 				<button onClick={toggleBox}>
-					{login}{" "}
-					{login === owner
+					{name}{" "}
+					{login === owner.login
 						? "[owner]"
-						: admins.includes(login) && "[admin]"}
+						: admins.some((admin) => admin.login === login) &&
+						  "[admin]"}
 					{relation.isBlocked ? "(bloqué)" : ""}
 				</button>
 			) : (
-				<label>{login} (you) </label>
+				<label>{name} (you) </label>
 			)}
 			{isToggleBox && (
 				<div>
@@ -65,7 +72,10 @@ const Message = ({
 					{!relation.isBlocked && <AskForGameButton login={login} />}
 					{!relation.isBlocked &&
 						(relation.isFriend ? (
-							<PMButton login={login} setChannel={setChannel} />
+							<PMButton
+								login={login}
+								setChannel={setChannel}
+							/>
 						) : (
 							<FriendButton login={login} />
 						))}
