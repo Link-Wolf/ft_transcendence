@@ -13,15 +13,15 @@ const MessagesManager = ({
 }: {
 	channel: string;
 	members: any;
-	admins: string[];
-	owner: string;
+	admins: any[];
+	owner: any;
 	setChannel: Function;
 }) => {
 	const user = useContext(UserContext);
 	const [messages, setMessages] = useState<any[]>([]);
 	const [message, setMessage] = useState<string>("");
 	const [canSendMessage, setCanSendMessage] = useState(false);
-	const [update, setUpdate] = useState(true); //TODO: split that bad boy into multiple update states
+	const [update, setUpdate] = useState(true);
 
 	useEffect(() => {
 		function clic(payload: any) {
@@ -160,6 +160,7 @@ const MessagesManager = ({
 					<div key={i}>
 						{members[message.userLogin] !== undefined && (
 							<Message
+								name={members[message.userLogin].user.name}
 								login={message.userLogin}
 								date={message.createdAt}
 								content={message.content}
@@ -173,7 +174,7 @@ const MessagesManager = ({
 								}
 								avatar={members[message.userLogin].user.avatar}
 								admins={admins}
-								owner={owner}
+								owner={owner.login}
 								setChannel={setChannel}
 							/>
 						)}
@@ -193,7 +194,10 @@ const MessagesManager = ({
 				}}
 				onKeyDown={handleKeyPress}
 			/>
-			<button onClick={sendMessage} disabled={!canSendMessage}>
+			<button
+				onClick={sendMessage}
+				disabled={!canSendMessage}
+			>
 				Send
 			</button>
 		</>

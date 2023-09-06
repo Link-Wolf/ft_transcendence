@@ -10,8 +10,8 @@ const ChannelSettings = ({
 	admins,
 }: {
 	channelName: string;
-	owner: string;
-	admins: string[];
+	owner: any;
+	admins: any[];
 }) => {
 	const user = useContext(UserContext);
 
@@ -132,7 +132,6 @@ const ChannelSettings = ({
 	};
 
 	if (!channel) return <></>;
-	console.log(channel, owner, admins, hasPassword, updatePassword, passValue);
 	return (
 		<>
 			<div>
@@ -148,17 +147,26 @@ const ChannelSettings = ({
 				)}
 				{hasPassword && !updatePassword ? (
 					<>
-						<button type='button' onClick={wannaEditPassword}>
+						<button
+							type='button'
+							onClick={wannaEditPassword}
+						>
 							Change password
 						</button>
-						<button type='button' onClick={removePassword}>
+						<button
+							type='button'
+							onClick={removePassword}
+						>
 							Remove password
 						</button>
 					</>
 				) : (
 					!updatePassword && (
 						<>
-							<button type='button' onClick={wannaEditPassword}>
+							<button
+								type='button'
+								onClick={wannaEditPassword}
+							>
 								Add password
 							</button>
 						</>
@@ -167,7 +175,10 @@ const ChannelSettings = ({
 				{hasPassword && updatePassword && (
 					<>
 						{passError !== "" && <p>{passError}</p>}
-						<button type='button' onClick={cancelChange}>
+						<button
+							type='button'
+							onClick={cancelChange}
+						>
 							Cancel
 						</button>
 						<button
@@ -187,7 +198,8 @@ const ChannelSettings = ({
 						{admins.map((admin, i) => (
 							<div key={i}>
 								<AdminCardIdk
-									login={admin}
+									name={admin.name}
+									login={admin.login}
 									channel={channelName}
 								/>
 							</div>
@@ -202,17 +214,26 @@ const ChannelSettings = ({
 };
 
 const AdminCardIdk = ({
+	name,
 	login,
 	channel,
 }: {
+	name: string;
 	login: string;
 	channel: string;
 }) => {
 	return (
 		<>
-			<PPDisplayer login={login} size={30} status={true} />
-			{login}
-			<DemoteButton login={login} channel={channel} />
+			<PPDisplayer
+				login={login}
+				size={30}
+				status={true}
+			/>
+			{name}
+			<DemoteButton
+				login={login}
+				channel={channel}
+			/>
 		</>
 	);
 };

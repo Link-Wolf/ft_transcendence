@@ -23,8 +23,8 @@ const Channel = ({
 	const [membersUpdate, setMembersUpdate] = useState(true);
 	const [adminsUpdate, setAdminsUpdate] = useState(true);
 
-	const [owner, setOwner] = useState("");
-	const [admins, setAdmins] = useState<string[]>([]);
+	const [owner, setOwner] = useState(undefined as any);
+	const [admins, setAdmins] = useState<any[]>([]);
 	const [members, setMembers] = useState<any>({});
 
 	const [updateLebany, setUpdateLebany] = useState(false);
@@ -86,7 +86,7 @@ const Channel = ({
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${channel}`
 			)
 			.then((res) => {
-				setOwner(res.data.ownerLogin);
+				setOwner(res.data.owner);
 			})
 
 			.catch((err) => {
@@ -104,9 +104,7 @@ const Channel = ({
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/channel/${channel}/admins`
 			)
 			.then((res) => {
-				setAdmins(
-					res.data.map((membership: any) => membership.userLogin)
-				);
+				setAdmins(res.data);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -136,6 +134,7 @@ const Channel = ({
 		setMembersUpdate(false);
 	}, [channel, membersUpdate, user]);
 
+	if (!owner) return <></>;
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
@@ -152,7 +151,7 @@ const Channel = ({
 							? "X"
 							: "User List"}
 					</button>
-					{owner === user.login && (
+					{owner.login === user.login && (
 						<button
 							onClick={() =>
 								showThingsAboutChannel === "channelSettings"
@@ -172,7 +171,8 @@ const Channel = ({
 			{showThingsAboutChannel === "userList" ? (
 				<>
 					{/* if usr is an admin or the owner, have a button to see ban members */}
-					{(admins.includes(user.login) || owner === user.login) && (
+					{(admins.includes(user.login) ||
+						owner.login === user.login) && (
 						<button
 							onClick={() => {
 								if (showLebany) setUpdateLebany(true);
@@ -191,6 +191,7 @@ const Channel = ({
 								.map((member, i) => (
 									<div key={i}>
 										<ChannelUser
+											name={member.user.name}
 											channel={channel}
 											admins={admins}
 											owner={owner}
@@ -218,7 +219,7 @@ const Channel = ({
 						: "There is no bany sir"}
 				</>
 			) : showThingsAboutChannel === "channelSettings" &&
-			  owner === user.login ? (
+			  owner.login === user.login ? (
 				<ChannelSettings
 					channelName={channel}
 					owner={owner}
