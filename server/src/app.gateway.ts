@@ -11,8 +11,6 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
-import { AuthService } from './auth/auth.service';
-import { async } from 'rxjs';
 
 type Player = {
 	paddle: {
@@ -88,7 +86,7 @@ export class AppGateway
 
 	/*********************************************************
 	 * 														 *
-	 * 					MESSAGES HANDLING 					 *
+	 * 				GLOBAL SOCKET HANDLING 					 *
 	 * 					            						 *
 	 ********************************************************/
 	@SubscribeMessage('newMessage')
@@ -104,6 +102,11 @@ export class AppGateway
 	@SubscribeMessage('membershipUpdate')
 	async handleMembershipUpdate(client: Socket, payload: any) {
 		this.server.emit('membershipUpdate', payload);
+	}
+
+	@SubscribeMessage('contextUpdate')
+	async handleContextUpdate(client: Socket, payload: any) {
+		this.server.emit('contextUpdate', payload);
 	}
 
 	/*********************************************************
@@ -344,7 +347,7 @@ export class AppGateway
 		this.resetBall(game);
 		this.resetPaddles(game);
 
-		console.log(player1, player2)
+		console.log(player1, player2);
 
 		this.status[player1].status = 'ingame';
 		this.status[player2].status = 'ingame';

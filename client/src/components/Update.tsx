@@ -5,6 +5,7 @@ import { PPDisplayer } from "./ImageDisplayer";
 import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import Dropzone, { useDropzone } from "react-dropzone";
+import socket from "../socket";
 
 const ISSUER = "Platypong";
 
@@ -58,8 +59,15 @@ const PPChanger = ({ login }: { login: string }) => {
 
 	return (
 		<>
-			<PPDisplayer login={login} size={400} status={false}>
-				<img src={imageSource} alt='profile picture' />
+			<PPDisplayer
+				login={login}
+				size={400}
+				status={false}
+			>
+				<img
+					src={imageSource}
+					alt='profile picture'
+				/>
 			</PPDisplayer>
 
 			<div className='container'>
@@ -155,6 +163,9 @@ const Update = () => {
 						.then(() => {
 							setForm({ ...form, name: "" });
 							//TODO: update the context somehow ??
+							// socket.emit("contextUpdate", {
+							// 	login: context.login,
+							// });
 						})
 						.catch((err) => {
 							console.log(err);
@@ -250,7 +261,10 @@ const Update = () => {
 			</form>
 			{!form.hasTFA ? (
 				TFASecret === "" ? (
-					<button type='button' onClick={wannaEnableTFA}>
+					<button
+						type='button'
+						onClick={wannaEnableTFA}
+					>
 						Activate 2FA
 					</button>
 				) : (
@@ -289,7 +303,10 @@ const Update = () => {
 							onChange={(e) => handleInputChange(e.target.value)}
 						/>
 						{codeError !== "" && <div>{codeError}</div>}
-						<button type='button' onClick={verifyTFA}>
+						<button
+							type='button'
+							onClick={verifyTFA}
+						>
 							Verify and activate 2FA
 						</button>
 						<button
@@ -304,7 +321,10 @@ const Update = () => {
 					</div>
 				)
 			) : (
-				<button type='button' onClick={disableTFA}>
+				<button
+					type='button'
+					onClick={disableTFA}
+				>
 					Disable 2FA
 				</button>
 			)}
