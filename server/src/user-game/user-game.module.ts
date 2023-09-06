@@ -4,7 +4,6 @@ import { userGameProviders } from './user-game.providers';
 import { UserGameService } from './user-game.service';
 import { UserModule } from '../user/user.module';
 import { GameModule } from '../game/game.module';
-import { GameService } from 'src/game/game.service';
 
 @Module({
   imports: [

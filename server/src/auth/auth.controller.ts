@@ -17,7 +17,6 @@ import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
 import { JWTService } from './jwt.service';
 import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
-import axios from 'axios';
 import * as otplib from 'otplib';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 

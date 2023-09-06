@@ -14,7 +14,6 @@ import { Mute } from 'src/mute/mute.entity';
 import { Ban } from 'src/ban/ban.entity';
 import { Channel } from 'src/channel/channel.entity';
 import { Game } from 'src/game/game.entity';
-import { Col } from 'sequelize/types/utils';
 
 @Table({ tableName: 'User' })
 export class User extends Model<User> {

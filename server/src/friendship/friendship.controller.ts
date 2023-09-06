@@ -20,9 +20,7 @@ import { BlockService } from 'src/block/block.service';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { AdminUserUserGuard } from 'src/guards/admin_user_user.guard';
 import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
 import { AdminInvitedUserGuard } from 'src/guards/admin_invited_user.guard';
-import { AuthService } from 'src/auth/auth.service';
 
 @Controller('friendship')
 export class FriendshipController {
@@ -30,7 +28,6 @@ export class FriendshipController {
 		private readonly friendshipService: FriendshipService,
 		private readonly userService: UserService,
 		private readonly blockService: BlockService,
-		private readonly authService: AuthService,
 	) {}
 
 	/**

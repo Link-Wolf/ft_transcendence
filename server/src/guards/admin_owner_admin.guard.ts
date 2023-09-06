@@ -6,7 +6,6 @@ import {
 	HttpException,
 	Inject,
 } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
 import { UserService } from '../user/user.service';
 import { MembershipService } from '../membership/membership.service';
 import { ChannelService } from 'src/channel/channel.service';

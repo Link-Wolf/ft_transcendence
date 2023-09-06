@@ -2,7 +2,6 @@ import {
 	Controller,
 	Get,
 	Param,
-	Post,
 	Body,
 	UseGuards,
 	Patch,
@@ -16,16 +15,13 @@ import { MembershipService } from './membership.service';
 import { UserService } from '../user/user.service';
 import { Membership } from './membership.entity';
 import { ChannelService } from '../channel/channel.service';
-import { BanService } from '../ban/ban.service';
 import {
 	AdminUserGuard,
-	AdminUserGuardPost,
 } from 'src/guards/admin_user.guard';
 import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
 import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guard';
 import { AdminUserChannelusersGuard } from 'src/guards/admin_user_channelusers.guard';
 import {
-	AdminChannelusersGuard,
 	AdminChannelusersGuardCookies,
 } from 'src/guards/admin_channelusers.guard';
 

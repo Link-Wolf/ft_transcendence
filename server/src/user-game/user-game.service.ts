@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Op } from 'sequelize';
 import { UserGameDto } from './user-game.dto';
 import { UserGame } from './user-game.entity';
 

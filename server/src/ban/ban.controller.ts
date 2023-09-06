@@ -21,8 +21,6 @@ import {
 	AdminOwnerAdminGuardPost,
 } from 'src/guards/admin_owner_admin.guard';
 import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { AuthService } from 'src/auth/auth.service';
 
 @Controller('ban')
 export class BanController {
@@ -31,7 +29,6 @@ export class BanController {
 		private readonly userService: UserService,
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
-		private readonly authService: AuthService,
 	) {}
 
 	/**

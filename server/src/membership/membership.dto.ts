@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsDateString } from 'class-validator';
+import { IsBoolean, IsNumber } from 'class-validator';
 import { Channel } from 'src/channel/channel.entity';
 import { User } from 'src/user/user.entity';
 

@@ -11,16 +11,13 @@ import {
 } from '@nestjs/common';
 import { Channel } from 'src/channel/channel.entity';
 import { ChannelService } from 'src/channel/channel.service';
-import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
 import { UserClearanceGuard } from 'src/guards/user_clearance.guard';
 import { MembershipService } from 'src/membership/membership.service';
 import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
 import { User } from 'src/user/user.entity';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { FriendshipService } from 'src/friendship/friendship.service';
-import { AuthService } from 'src/auth/auth.service';
 
 @Controller('private-message')
 export class PrivateMessageController {
@@ -29,7 +26,6 @@ export class PrivateMessageController {
 		private readonly channelService: ChannelService,
 		private readonly membershipService: MembershipService,
 		private readonly friendshipService: FriendshipService,
-		private readonly authService: AuthService,
 	) {}
 
 	/**
