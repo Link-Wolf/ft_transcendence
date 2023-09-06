@@ -37,7 +37,6 @@ export class AdminOwnerGuard implements CanActivate {
 			user.dataValues.login,
 			channel,
 		);
-		//TODO: tester
 		if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else if (isOwnerOfChannel) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);

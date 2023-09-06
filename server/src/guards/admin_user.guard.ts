@@ -35,7 +35,6 @@ export class AdminUserGuard implements CanActivate {
 		if (userLogin === user.dataValues.login) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		//TODO: tester lol
 	}
 }
 
@@ -60,6 +59,5 @@ export class AdminUserGuardPost implements CanActivate {
 		if (userLogin === user.dataValues.login) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		//TODO: tester lol
 	}
 }

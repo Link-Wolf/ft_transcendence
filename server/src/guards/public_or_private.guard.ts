@@ -34,7 +34,6 @@ export class PublicOrPrivateGuard implements CanActivate {
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
 			clearance = user.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-		//TODO: tester
 		const channel = await this.channelService.findByName(channel_name);
 		if (!channel) return true;
 		if (

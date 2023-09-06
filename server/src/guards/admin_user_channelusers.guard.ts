@@ -44,6 +44,5 @@ export class AdminUserChannelusersGuard implements CanActivate {
 		else if (membership) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		//TODO: tester lol
 	}
 }

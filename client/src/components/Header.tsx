@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Auth from "./Auth";
-import logo from "../assets/placeholder_logo.png"; // TODO: Replace with actual logo
+import logo from "../assets/placeholder_logo.png";
 import style from "../style/Header.module.scss";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { useContext } from "react";

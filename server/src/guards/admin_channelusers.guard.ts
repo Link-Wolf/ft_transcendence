@@ -45,7 +45,6 @@ export class AdminChannelusersGuard implements CanActivate {
 		if (membership) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		//TODO: tester lol
 	}
 }
 
@@ -81,7 +80,6 @@ export class AdminChannelusersGuardCookies implements CanActivate {
 			return true;
 		}
 		throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		//TODO: tester lol
 	}
 }
 
@@ -114,6 +112,5 @@ export class AdminChannelusersGuardPost implements CanActivate {
 		if (membership) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		//TODO: tester lol
 	}
 }

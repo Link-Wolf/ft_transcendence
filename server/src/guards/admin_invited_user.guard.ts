@@ -42,6 +42,5 @@ export class AdminInvitedUserGuard implements CanActivate {
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 		else if (friendship.dataValues.receiver == user) return true;
 		else throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		//TODO: test
 	}
 }

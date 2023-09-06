@@ -51,7 +51,6 @@ export class AdminOwnerAdminUserGuard implements CanActivate {
 			user.dataValues.login,
 			channel,
 		);
-		//TODO: tester
 		if (isAdminOfChannel) return true;
 		else if (clearance >= Number(process.env.ADMIN_CLEARANCE)) return true;
 		else if (isOwnerOfChannel) return true;
