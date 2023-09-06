@@ -12,6 +12,7 @@ import {
 	UnblockButton,
 	UnfriendButton,
 } from "./ActionsButtons";
+import socket from "../socket";
 
 const Profile = () => {
 	/**
@@ -68,10 +69,22 @@ const Profile = () => {
 };
 
 const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
-	const context = useContext(UserContext);
 	const [user, setUser] = useState<any>({});
+	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
+		socket.on("contextUpdate", (payload) => {
+			if (payload.login !== login) return;
+			setUpdate(true);
+		});
+
+		return () => {
+			socket.off("contextUpdate");
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!update) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
@@ -82,7 +95,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [update, login]);
 
 	return (
 		<>
@@ -129,7 +142,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [login]);
 
 	return (
 		<div>
@@ -163,7 +176,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 								{/* PP du user */}
 								{
 									<PPDisplayer
-										login={user.login}
+										login={login}
 										size={69}
 										status={false}
 									/>
@@ -179,7 +192,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 									</>
 								)}
 								{/* Nom de l'adversaire */}
-								<div>{game.opponentUserGame.userLogin}</div>
+								<div>{game.opponentUserGame.user.name}</div>
 								{/* PP de l'adversaire */}
 								{
 									<PPDisplayer
@@ -234,7 +247,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 									</>
 								)}
 								{/* Nom de l'adversaire */}
-								<div>{game.opponentUserGame.userLogin}</div>
+								<div>{game.opponentUserGame.user.name}</div>
 								{/* PP de l'adversaire */}
 								{
 									<PPDisplayer
@@ -469,7 +482,7 @@ const Blocked = () => {
 
 	const touchTheUpdate = () => {
 		setUpdate(true);
-	}
+	};
 
 	return (
 		<div>
@@ -493,7 +506,10 @@ const Blocked = () => {
 										<div>
 											Blocked since {blocked.created_at}
 										</div>
-										<UnblockButton login={blocked.login} effect={touchTheUpdate} />
+										<UnblockButton
+											login={blocked.login}
+											effect={touchTheUpdate}
+										/>
 									</li>
 								);
 							})}
@@ -505,8 +521,6 @@ const Blocked = () => {
 };
 
 const SocialInterractions = ({ login }: { login: string }) => {
-	//TODO: component only loaded on another user's profile, with buttons to block him, add him as friend, ask for a game, etc
-
 	const user = useContext(UserContext);
 	const [isFriend, setIsFriend] = useState<boolean>(false);
 	const [isBlocked, setIsBlocked] = useState<boolean>(false);
