@@ -1,14 +1,20 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { MembershipService } from "src/membership/membership.service";
-import { User } from "src/user/user.entity";
-import { UserService } from "src/user/user.service";
-
+import {
+	CanActivate,
+	ExecutionContext,
+	HttpException,
+	HttpStatus,
+	Inject,
+	Injectable,
+} from '@nestjs/common';
+import { MembershipService } from 'src/membership/membership.service';
+import { User } from 'src/user/user.entity';
+import { UserService } from 'src/user/user.service';
 
 /**
  *This guard is used for a specific case of toxic relations.
-* In a nutshell, it guarantees that the user calling the endpoint IS the user that is being called in the route
-* AND that the user is present in the channel that is being called in the route.
-* Of course, any Admin can cal this route too.
+ * In a nutshell, it guarantees that the user calling the endpoint IS the user that is being called in the route
+ * AND that the user is present in the channel that is being called in the route.
+ * Of course, any Admin can cal this route too.
  */
 @Injectable()
 export class ToxicGuard implements CanActivate {
@@ -20,7 +26,7 @@ export class ToxicGuard implements CanActivate {
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		return true;
+		//TODO: je viens de rm un return true mdr donc tester
 		const userLogin = context.switchToHttp().getRequest().params.login;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		const channelName = context.switchToHttp().getRequest()
