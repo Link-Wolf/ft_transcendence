@@ -52,7 +52,7 @@ const Login = () => {
 	 */
 	useEffect(() => {
 		if (!done) return;
-		if (data.error) return; //TODO: do something with the error
+		if (data.error) return;
 		if (data.needTFA) {
 			window.location.href = `/tfa/${data.login}`;
 			return;
