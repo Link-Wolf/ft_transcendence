@@ -106,7 +106,7 @@ export class AppGateway
 
 	@SubscribeMessage('contextUpdate')
 	async handleContextUpdate(client: Socket, payload: any) {
-		this.server.emit('contextUpdate', payload);
+		client.emit('contextUpdate', payload);
 	}
 
 	/*********************************************************
