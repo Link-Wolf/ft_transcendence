@@ -13,6 +13,7 @@ export const UserContext = createContext({
 });
 
 const App = () => {
+	const [update, setUpdate] = useState(false);
 	const [clearance, setClearance] = useState({
 		login: "",
 		clearance: 0,
@@ -25,6 +26,11 @@ const App = () => {
 				auth: Cookies.get("token"),
 			});
 		});
+
+		// socket.on("contextUpdate", (payload) => {
+		// 	if (payload.login !== clearance.login) return;
+		// 	setUpdate((update) => !update);
+		// });
 
 		const emitBlur = () => {
 			socket.emit("blur", {
@@ -44,6 +50,7 @@ const App = () => {
 
 		return () => {
 			socket.off("connect");
+			// socket.off("contextUpdate");
 			window.removeEventListener("blur", emitBlur);
 			window.removeEventListener("focus", emitFocus);
 		};
@@ -62,6 +69,7 @@ const App = () => {
 	 * Get the user's clearance level and store it in the context so it can be used in the whole app
 	 */
 	useEffect(() => {
+		if (!update) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/clearance`,
@@ -93,7 +101,7 @@ const App = () => {
 					};
 				});
 			});
-	}, []);
+	}, [update]);
 
 	return (
 		<div className={clearance.theme === "light" ? style.light : style.dark}>
