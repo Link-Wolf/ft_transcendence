@@ -6,81 +6,9 @@ import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import Dropzone, { useDropzone } from "react-dropzone";
 import socket from "../socket";
+import PPChanger from "./PPChanger";
 
 const ISSUER = "Platypong";
-
-const baseStyle = {
-	flex: 1,
-	display: "flex",
-	flexDirection: "column" as "column",
-	alignItems: "center",
-	padding: "20px",
-	borderWidth: 2,
-	borderRadius: 2,
-	borderColor: "#eeeeee",
-	borderStyle: "dashed",
-	backgroundColor: "#fafafa",
-	color: "#bdbdbd",
-	outline: "none",
-	transition: "border .24s ease-in-out",
-};
-
-const focusedStyle = {
-	borderColor: "#2196f3",
-};
-
-const acceptStyle = {
-	borderColor: "#00e676",
-};
-
-const rejectStyle = {
-	borderColor: "#ff1744",
-};
-
-const PPChanger = ({ login }: { login: string }) => {
-	const [imageSource, setImageSource] = useState<string>("");
-	const {
-		getRootProps,
-		getInputProps,
-		isFocused,
-		isDragAccept,
-		isDragReject,
-	} = useDropzone({ accept: { "image/*": [] } });
-
-	const style = useMemo(
-		() => ({
-			...baseStyle,
-			...(isFocused ? focusedStyle : {}),
-			...(isDragAccept ? acceptStyle : {}),
-			...(isDragReject ? rejectStyle : {}),
-		}),
-		[isFocused, isDragAccept, isDragReject]
-	);
-
-	return (
-		<>
-			<PPDisplayer
-				login={login}
-				size={400}
-				status={false}
-			>
-				<img
-					src={imageSource}
-					alt='profile picture'
-				/>
-			</PPDisplayer>
-
-			<div className='container'>
-				<div {...getRootProps({ style })}>
-					<input {...getInputProps()} />
-					<p>
-						Drag 'n' drop some files here, or click to select files
-					</p>
-				</div>
-			</div>
-		</>
-	);
-};
 
 const Update = () => {
 	/**
@@ -162,10 +90,9 @@ const Update = () => {
 						)
 						.then(() => {
 							setForm({ ...form, name: "" });
-							//TODO: update the context somehow ??
-							// socket.emit("contextUpdate", {
-							// 	login: context.login,
-							// });
+							socket.emit("contextUpdate", {
+								login: context.login,
+							});
 						})
 						.catch((err) => {
 							console.log(err);
