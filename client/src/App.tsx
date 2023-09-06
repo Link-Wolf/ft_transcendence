@@ -13,9 +13,10 @@ export const UserContext = createContext({
 });
 
 const App = () => {
-	const [update, setUpdate] = useState(false);
+	const [update, setUpdate] = useState(true);
 	const [clearance, setClearance] = useState({
 		login: "",
+		name: "",
 		clearance: 0,
 		theme: "light",
 	});
@@ -26,11 +27,6 @@ const App = () => {
 				auth: Cookies.get("token"),
 			});
 		});
-
-		// socket.on("contextUpdate", (payload) => {
-		// 	if (payload.login !== clearance.login) return;
-		// 	setUpdate((update) => !update);
-		// });
 
 		const emitBlur = () => {
 			socket.emit("blur", {
@@ -50,7 +46,6 @@ const App = () => {
 
 		return () => {
 			socket.off("connect");
-			// socket.off("contextUpdate");
 			window.removeEventListener("blur", emitBlur);
 			window.removeEventListener("focus", emitFocus);
 		};
@@ -88,15 +83,18 @@ const App = () => {
 					return {
 						...clearance,
 						login: response.data.login,
+						name: response.data.name,
 						clearance: response.data.clearance,
 					};
 				});
+				setUpdate(false);
 			})
 			.catch((err) => {
 				setClearance((clearance) => {
 					return {
 						...clearance,
 						login: "",
+						name: "",
 						clearance: 0,
 					};
 				});
