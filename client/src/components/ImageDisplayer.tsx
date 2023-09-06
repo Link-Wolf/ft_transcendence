@@ -18,7 +18,7 @@ const PPDisplayer = ({
 	/**
 	 * PPDisplayer component, display the user's avatar and status
 	 */
-	const [image, setImage] = useState(children);
+	const [image, setImage] = useState<string>("");
 
 	useEffect(() => {
 		if (children) return;
@@ -28,9 +28,7 @@ const PPDisplayer = ({
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
 			)
 			.then((response) => {
-				setImage(
-					<img src={`data:image/*;base64,${response.data.avatar}`} />
-				);
+				setImage(response.data.avatar);
 			})
 			.catch((error) => {
 				console.error("Error fetching image:", error);
@@ -39,7 +37,7 @@ const PPDisplayer = ({
 
 	return (
 		<>
-			{image ? (
+			{image || children ? (
 				<div
 					style={{
 						width: size,
@@ -47,7 +45,7 @@ const PPDisplayer = ({
 					}}
 					className={style.PPDisplayer}
 				>
-					{image}
+					{children ?? <img src={`data:image/*;base64,${image}`} />}
 					{status && (
 						<StatusIcon
 							login={login}
