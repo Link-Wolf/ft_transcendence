@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../App";
-import { PPDisplayer } from "./ImageDisplayer";
-import axios from "axios";
+import GameSelection from "./GameSelection";
 
 const Home = () => {
 	/**
@@ -11,19 +10,6 @@ const Home = () => {
 
 	const user = useContext(UserContext);
 	const [chooseMode, setChooseMode] = useState(false);
-	const [modifiers, setModifiers] = useState<any[]>([]);
-	const [selectedModifiers, setSelectedModifiers] = useState<any[]>([]);
-
-	useEffect(() => {
-		axios
-			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/modifier`
-			)
-			.then((res) => {
-				setModifiers(res.data);
-			})
-			.catch((err) => console.log(err));
-	}, []);
 
 	return (
 		<div>
@@ -31,7 +17,7 @@ const Home = () => {
 			<p>Home page buddy</p>
 			{user.clearance > 0 ? (
 				<>
-					{!chooseMode && (
+					{!chooseMode ? (
 						<button
 							type='button'
 							onClick={() => {
@@ -40,72 +26,8 @@ const Home = () => {
 						>
 							Start a game
 						</button>
-					)}
-					{chooseMode && (
-						<>
-							<img src='https://media.giphy.com/media/3o7aDcz6Y0fzWYvU5G/giphy.gif' />
-							{modifiers.map((modifier, i) => (
-								<label
-									key={i}
-									style={{
-										fontWeight: selectedModifiers.includes(
-											modifier.code
-										)
-											? "bold"
-											: "normal",
-										color: selectedModifiers.includes(
-											modifier.code
-										)
-											? "green"
-											: "black",
-									}}
-								>
-									<input
-										type='checkbox'
-										checked={selectedModifiers.includes(
-											modifier.code
-										)}
-										onChange={() => {
-											if (
-												selectedModifiers.includes(
-													modifier.code
-												)
-											)
-												setSelectedModifiers(
-													selectedModifiers.filter(
-														(e) =>
-															e !== modifier.code
-													)
-												);
-											else {
-												if (
-													modifier.code.startsWith(
-														"map_"
-													)
-												)
-													setSelectedModifiers(
-														(selectedModifiers) =>
-															selectedModifiers.filter(
-																(e) =>
-																	!e.startsWith(
-																		"map_"
-																	)
-															)
-													);
-												setSelectedModifiers(
-													(selectedModifiers) => [
-														...selectedModifiers,
-														modifier.code,
-													]
-												);
-											}
-										}}
-									/>
-									{modifier.name}
-								</label>
-							))}
-							<Link to='/game'>Play</Link>
-						</>
+					) : (
+						<GameSelection />
 					)}
 				</>
 			) : (
