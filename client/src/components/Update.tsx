@@ -1,49 +1,76 @@
 import axios from "axios";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { UserContext } from "../App";
 import { PPDisplayer } from "./ImageDisplayer";
 import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
-import { useDropzone } from "react-dropzone";
+import Dropzone, { useDropzone } from "react-dropzone";
 
 const ISSUER = "Platypong";
 
+const baseStyle = {
+	flex: 1,
+	display: "flex",
+	flexDirection: "column" as "column",
+	alignItems: "center",
+	padding: "20px",
+	borderWidth: 2,
+	borderRadius: 2,
+	borderColor: "#eeeeee",
+	borderStyle: "dashed",
+	backgroundColor: "#fafafa",
+	color: "#bdbdbd",
+	outline: "none",
+	transition: "border .24s ease-in-out",
+};
+
+const focusedStyle = {
+	borderColor: "#2196f3",
+};
+
+const acceptStyle = {
+	borderColor: "#00e676",
+};
+
+const rejectStyle = {
+	borderColor: "#ff1744",
+};
+
 const PPChanger = ({ login }: { login: string }) => {
 	const [imageSource, setImageSource] = useState<string>("");
-	const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+	const {
+		getRootProps,
+		getInputProps,
+		isFocused,
+		isDragAccept,
+		isDragReject,
+	} = useDropzone({ accept: { "image/*": [] } });
 
-	const files = acceptedFiles.map((file) => (
-		<li key={file.name}>
-			{file.name} - {file.size} bytes
-		</li>
-	));
+	const style = useMemo(
+		() => ({
+			...baseStyle,
+			...(isFocused ? focusedStyle : {}),
+			...(isDragAccept ? acceptStyle : {}),
+			...(isDragReject ? rejectStyle : {}),
+		}),
+		[isFocused, isDragAccept, isDragReject]
+	);
 
 	return (
-		<div>
-			<PPDisplayer
-				login={login}
-				size={400}
-				status={false}
-			>
-				<img
-					src={imageSource}
-					alt='profile picture'
-				/>
+		<>
+			<PPDisplayer login={login} size={400} status={false}>
+				<img src={imageSource} alt='profile picture' />
 			</PPDisplayer>
 
-			<section className='container'>
-				<div {...getRootProps({ className: "dropzone" })}>
+			<div className='container'>
+				<div {...getRootProps({ style })}>
 					<input {...getInputProps()} />
 					<p>
 						Drag 'n' drop some files here, or click to select files
 					</p>
 				</div>
-				<aside>
-					<h4>Files</h4>
-					{/* <ul>{files}</ul> */}
-				</aside>
-			</section>
-		</div>
+			</div>
+		</>
 	);
 };
 
@@ -223,10 +250,7 @@ const Update = () => {
 			</form>
 			{!form.hasTFA ? (
 				TFASecret === "" ? (
-					<button
-						type='button'
-						onClick={wannaEnableTFA}
-					>
+					<button type='button' onClick={wannaEnableTFA}>
 						Activate 2FA
 					</button>
 				) : (
@@ -265,10 +289,7 @@ const Update = () => {
 							onChange={(e) => handleInputChange(e.target.value)}
 						/>
 						{codeError !== "" && <div>{codeError}</div>}
-						<button
-							type='button'
-							onClick={verifyTFA}
-						>
+						<button type='button' onClick={verifyTFA}>
 							Verify and activate 2FA
 						</button>
 						<button
@@ -283,10 +304,7 @@ const Update = () => {
 					</div>
 				)
 			) : (
-				<button
-					type='button'
-					onClick={disableTFA}
-				>
+				<button type='button' onClick={disableTFA}>
 					Disable 2FA
 				</button>
 			)}
