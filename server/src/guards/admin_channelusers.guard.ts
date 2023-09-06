@@ -6,7 +6,6 @@ import {
 	HttpException,
 	Inject,
 } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
 import { AuthService } from 'src/auth/auth.service';
 import { MembershipService } from 'src/membership/membership.service';
 import { User } from 'src/user/user.entity';

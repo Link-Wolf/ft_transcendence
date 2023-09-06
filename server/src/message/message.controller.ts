@@ -8,7 +8,6 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
-	Req,
 	UseGuards,
 } from '@nestjs/common';
 import { MessageService } from './message.service';

@@ -9,7 +9,6 @@ import {
 	Post,
 	UseGuards,
 	Body,
-	Req,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
@@ -22,12 +21,7 @@ import {
 	AdminUserGuardPost,
 } from 'src/guards/admin_user.guard';
 import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
-import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { readFileSync } from 'fs';
-import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcrypt';
-import { BanService } from 'src/ban/ban.service';
 
 @Controller('channel')
 export class ChannelController {

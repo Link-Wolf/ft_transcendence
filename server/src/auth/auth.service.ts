@@ -1,9 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { createCanvas, loadImage } from 'canvas';
-import { User } from 'src/user/user.entity';
 const axios = require('axios');
-import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
