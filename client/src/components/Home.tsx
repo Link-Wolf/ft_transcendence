@@ -45,47 +45,64 @@ const Home = () => {
 						<>
 							<img src='https://media.giphy.com/media/3o7aDcz6Y0fzWYvU5G/giphy.gif' />
 							{modifiers.map((modifier, i) => (
-								<button
-									type='button'
+								<label
 									key={i}
-									onClick={() => {
-										if (
-											selectedModifiers.includes(
-												modifier.code
-											)
+									style={{
+										fontWeight: selectedModifiers.includes(
+											modifier.code
 										)
-											setSelectedModifiers(
-												selectedModifiers.filter(
-													(e) => e !== modifier.code
-												)
-											);
-										else {
-											if (
-												modifier.code.startsWith("map_")
-											)
-												setSelectedModifiers(
-													(selectedModifiers) =>
-														selectedModifiers.filter(
-															(e) =>
-																!e.startsWith(
-																	"map_"
-																)
-														)
-												);
-											setSelectedModifiers(
-												(selectedModifiers) => [
-													...selectedModifiers,
-													modifier.code,
-												]
-											);
-										}
+											? "bold"
+											: "normal",
+										color: selectedModifiers.includes(
+											modifier.code
+										)
+											? "green"
+											: "black",
 									}}
 								>
+									<input
+										type='checkbox'
+										checked={selectedModifiers.includes(
+											modifier.code
+										)}
+										onChange={() => {
+											if (
+												selectedModifiers.includes(
+													modifier.code
+												)
+											)
+												setSelectedModifiers(
+													selectedModifiers.filter(
+														(e) =>
+															e !== modifier.code
+													)
+												);
+											else {
+												if (
+													modifier.code.startsWith(
+														"map_"
+													)
+												)
+													setSelectedModifiers(
+														(selectedModifiers) =>
+															selectedModifiers.filter(
+																(e) =>
+																	!e.startsWith(
+																		"map_"
+																	)
+															)
+													);
+												setSelectedModifiers(
+													(selectedModifiers) => [
+														...selectedModifiers,
+														modifier.code,
+													]
+												);
+											}
+										}}
+									/>
 									{modifier.name}
-									{selectedModifiers.includes(
-										modifier.code
-									) && "✅"}
-								</button>
+								</label>
 							))}
 							<Link to='/game'>Play</Link>
 						</>
