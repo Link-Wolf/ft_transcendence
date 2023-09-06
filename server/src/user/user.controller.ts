@@ -2,7 +2,6 @@ import {
 	Controller,
 	Get,
 	UseGuards,
-	Post,
 	Body,
 	HttpException,
 	HttpStatus,
@@ -18,6 +17,7 @@ import { UserClearanceGuard } from '../guards/user_clearance.guard';
 import { ParseBoolPipe } from './user.pipe';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as gm from 'gm';
 
 @Controller('user')
 export class UserController {
@@ -163,9 +163,25 @@ export class UserController {
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
-		return this.userService.updateProfilePicture({
-			login: login,
-			avatar: avatar.buffer.toString('base64'),
+
+		return new Promise((resolve, reject) => {
+			gm(avatar.buffer).identify((err: any, data: any) => {
+				if (err) {
+					reject(
+						new HttpException(
+							'Invalid image file',
+							HttpStatus.BAD_REQUEST,
+						),
+					);
+				} else {
+					resolve(
+						this.userService.updateProfilePicture({
+							login: login,
+							avatar: avatar.buffer.toString('base64'),
+						}),
+					);
+				}
+			});
 		});
 	}
 
