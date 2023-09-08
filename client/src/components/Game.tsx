@@ -5,6 +5,9 @@ import { UserContext } from "../App";
 import GameRender from "./GameRender/GameRender";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { Navigate } from "react-router-dom";
+import style from "../style/Game.module.scss";
+import load from "../assets/load.gif"
+
 
 const Game = () => {
 	/**
@@ -83,15 +86,17 @@ const Game = () => {
 const WaitingForMatch = ({ cancelSearch }: { cancelSearch: Function }) => {
 	return (
 		<>
+		<div className={style.playsearch}>
+			<img src={load} className={style.load}></img>
 			<div>Recherche en cours . . .</div>
-			<div>*inserer animation de recherche*</div>
-			<button
+			<button className={style.button}
 				onClick={() => {
 					cancelSearch();
 				}}
-			>
+				>
 				Cancel
 			</button>
+		</div>
 		</>
 	);
 };

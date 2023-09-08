@@ -1,0 +1,22 @@
+.profil {
+
+	position:absolute;
+    z-index:300;
+    left:0;
+    top:100px;
+    right:0;
+    bottom:0;
+	background-size: cover;
+	background-position: center;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: scroll;
+	div {
+		background-color: rgba($color: #f8f8f8, $alpha: 0.4);
+	}
+	h1 {
+		color: white;
+	}
+}

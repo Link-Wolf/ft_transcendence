@@ -13,6 +13,7 @@ import {
 	UnfriendButton,
 } from "./ActionsButtons";
 import socket from "../socket";
+import style from "../style/Profile.module.scss";
 
 const Profile = () => {
 	/**
@@ -45,7 +46,7 @@ const Profile = () => {
 	 * Profile page
 	 */
 	return (
-		<div>
+		<div className={style.profil}>
 			<h1>Profile</h1>
 			<Resume
 				isMe={isMe}

@@ -1,6 +1,6 @@
 .toggle_switch {
-	--dark: #1a1a1a;
-	--light: #fff;
+	--dark: #f8f8f8;
+	--light: #000000;
 	--size: 20px;
 
 	margin-top: calc(-1 * var(--size) / 2);
@@ -20,11 +20,11 @@
 			display: none;
 
 			&:checked ~ .slider {
-				background-color: blue;
+				background-color: rgb(255, 255, 255);
 
 				&::before {
 					transform: translateX(calc(0.75 * var(--size)));
-					background-color: yellow;
+					background-color: rgb(255, 225, 126);
 					box-shadow: none;
 				}
 			}

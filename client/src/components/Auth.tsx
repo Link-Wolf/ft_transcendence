@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../App";
+import { PPDisplayer } from "./ImageDisplayer";
+import style from "../style/Header.module.scss";
+
 
 const Auth = () => {
 	/**
@@ -36,7 +39,7 @@ const AuthButton = () => {
 				`response_type=code`
 			}
 		>
-			Login
+			<button className={style.login}>Login</button>
 		</Link>
 	);
 };
@@ -45,7 +48,7 @@ const ProfileButton = ({ login }: { login: string }) => {
 	/**
 	 * Redirect the user to their profile page
 	 */
-	return <Link to={`/profile/${login}`}>Profile</Link>;
+	return <Link to={`/profile/${login}`}><span className={style.img}><PPDisplayer login={login} size={50} status={true}/></span></Link>;
 };
 
 export default Auth;

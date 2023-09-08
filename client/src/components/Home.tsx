@@ -2,6 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../App";
 import GameSelection from "./GameSelection";
+import style from "../style/Home.module.scss";
+import brand from "../assets/placeholder_logo.png";
+
 
 const Home = () => {
 	/**
@@ -12,19 +15,21 @@ const Home = () => {
 	const [chooseMode, setChooseMode] = useState(false);
 
 	return (
-		<div>
-			<h1>Home</h1>
-			<p>Home page buddy</p>
+		<div className={style.home}>
+			<h1 className={style.title}>W E L C O M E</h1>
+			<img className={style.brand} src={brand}></img>
+			<h1 className={style.subtitle}>P L A T Y P O N G</h1>
+			<p> Ready to play ? </p>
 			{user.clearance > 0 ? (
 				<>
 					{!chooseMode ? (
-						<button
+						<button className={style.playbutton}
 							type='button'
 							onClick={() => {
 								setChooseMode(true);
 							}}
 						>
-							Start a game
+							Play
 						</button>
 					) : (
 						<GameSelection />
@@ -43,7 +48,7 @@ const Home = () => {
 						`response_type=code`
 					}
 				>
-					Connect to play
+					<button className={style.playbutton}> Connect to play </button>
 				</Link>
 			)}
 		</div>

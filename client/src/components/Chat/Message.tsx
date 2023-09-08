@@ -9,6 +9,7 @@ import {
 	UnblockButton,
 } from "../ActionsButtons";
 import { PPDisplayer } from "../ImageDisplayer";
+import style from "../../style/Chat.module.scss";
 
 const Message = ({
 	name,
@@ -45,6 +46,7 @@ const Message = ({
 	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
+		<div className={style.headmessage}>
 			<PPDisplayer
 				login={login}
 				size={40}
@@ -52,6 +54,7 @@ const Message = ({
 			>
 				<img src={`data:image/*;base64,${avatar}`} />
 			</PPDisplayer>
+			<div className={style.senderinfo}>
 			{user.login !== login ? (
 				<button onClick={toggleBox}>
 					{name}{" "}
@@ -100,7 +103,9 @@ const Message = ({
 							})
 							.replace(",", "")}
 			</label>
-			<p>{relation.isBlocked ? "Ce message est masquée" : content}</p>
+			</div>
+			</div>
+			<p className={style.message}>{relation.isBlocked ? "Ce message est masquée" : content}</p>
 		</>
 	);
 };
