@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Auth from "./Auth";
 import logo from "../assets/placeholder_logo.png";
+import brand from "../assets/brandname.png";
 import style from "../style/Header.module.scss";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { useContext } from "react";
@@ -25,17 +26,23 @@ const Header = () => {
 						alt='Logo'
 						className={style.logo}
 					/>
+					<img
+						src={brand}
+						alt='PlatyPong'
+						className={style.brand}
+					/>
 				</Link>
 			</li>
-			<li>P L A T Y P O N G</li>
 			<li>
 				<ul className={style.right_section}>
-					{user.clearance > 0 && <Notifications />}
-					<li>
-						<Auth />
-					</li>
 					<li>
 						<ThemeSwitcher />
+					</li>
+					<li className={style.notif}>
+						{user.clearance > 0 && <Notifications />}
+					</li>
+					<li>
+						<Auth />
 					</li>
 				</ul>
 			</li>

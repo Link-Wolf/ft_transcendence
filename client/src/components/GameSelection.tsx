@@ -2,6 +2,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
+import style from "../style/Game.module.scss";
+
 
 const GameSelection = ({ opponentLogin }: { opponentLogin?: string }) => {
 	const [modifiers, setModifiers] = useState<any[]>([]);
@@ -20,9 +22,9 @@ const GameSelection = ({ opponentLogin }: { opponentLogin?: string }) => {
 
 	return (
 		<>
-			<img src='https://media.giphy.com/media/3o7aDcz6Y0fzWYvU5G/giphy.gif' />
+			{/* <img src='https://media.giphy.com/media/3o7aDcz6Y0fzWYvU5G/giphy.gif' /> */}
 			{modifiers.map((modifier, i) => (
-				<label
+				<label className={style.gameselect}
 					key={i}
 					style={{
 						fontWeight: selectedModifiers.includes(modifier.code)
@@ -33,7 +35,7 @@ const GameSelection = ({ opponentLogin }: { opponentLogin?: string }) => {
 							: "black",
 					}}
 				>
-					<input
+					<input 
 						type='checkbox'
 						checked={selectedModifiers.includes(modifier.code)}
 						onChange={() => {
@@ -64,7 +66,7 @@ const GameSelection = ({ opponentLogin }: { opponentLogin?: string }) => {
 			))}
 
 			{/* Depending of if there is a given login (so if it's a friendly match) do something different to manage the game */}
-			<Link to='/game'>Play</Link>
+			<Link to='/game'><button className={style.button}>Play</button></Link>
 		</>
 	);
 };

@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import Message from "../Message";
 import socket from "../../../socket";
 import { UserContext } from "../../../App";
+import style from "../../../style/Chat.module.scss";
 
 const MessagesManager = ({
 	channel,
@@ -149,6 +150,7 @@ const MessagesManager = ({
 	return (
 		<>
 			<h1>{channel[0] !== "_" ? channel : getNameOfTheOther(channel)}</h1>
+			<div className={style.channelmsg}>
 			{messages
 				.sort((m1, m2) => {
 					return (
@@ -180,6 +182,7 @@ const MessagesManager = ({
 						)}
 					</div>
 				))}
+				</div>
 			<input
 				value={message}
 				type='text'
