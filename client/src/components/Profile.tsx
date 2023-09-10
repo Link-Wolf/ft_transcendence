@@ -14,6 +14,33 @@ import {
 } from "./ActionsButtons";
 import socket from "../socket";
 import style from "../style/Profile.module.scss";
+import { Link } from "react-router-dom";
+import stats from "../assets/stats.png";
+import history from "../assets/history.png";
+import friends from "../assets/friends.png";
+
+let displaystats = 1;
+let displayfriends = 0;
+let displaysettings = 0;
+
+
+const StatsDisplay = () => {
+	displaystats = 1;
+	displayfriends = 0;
+	displaysettings = 0;
+};
+
+const FriendsDisplay = () => {
+	displaystats = 0;
+	displayfriends = 1;
+	displaysettings = 0;
+};
+
+const SettingsDisplay = () => {
+	displaystats = 0;
+	displayfriends = 0;
+	displaysettings = 1;
+};
 
 const Profile = () => {
 	/**
@@ -45,26 +72,47 @@ const Profile = () => {
 	/**
 	 * Profile page
 	 */
+
 	return (
+		<div>
 		<div className={style.profil}>
-			<h1>Profile</h1>
-			<Resume
-				isMe={isMe}
-				login={profileLogin}
-			/>
-			<MatchHistory
-				isMe={isMe}
-				login={profileLogin}
-			/>
+			<div className={style.resume}>
+			<h1>P R O F I L E</h1>
+				<Resume
+					isMe={isMe}
+					login={profileLogin}
+					/>
+				<Link to={`/profile/${profileLogin}`}><button className={style.button} onClick={StatsDisplay}>Stats</button></Link>
+				<Link to={`/profile/${profileLogin}`}><button className={style.button} onClick={FriendsDisplay}>Friends</button></Link>
+				<Link to={`/profile/${profileLogin}`}><button className={style.button} onClick={SettingsDisplay}>Settings</button></Link>
+				<button className={style.button} onClick={logout}>Log out</button>
+			</div>
+			{displaystats == 1 ? 
+				<div className={style.stats}>
+				<MatchHistory
+					isMe={isMe}
+					login={profileLogin}
+				/>
+				</div>:<></>}
 			{isMe && (
 				<>
+				{displayfriends == 1 ?
+				<div className={style.friends}>
+					<img src={friends} className={style.img}></img>
+					<div>
 					<Friends />
 					<Blocked />
+					</div>
+				</div>:<></>}
+				{displaysettings == 1 ?
+				<div className={style.settings}>
+					<img src="https://primedepartamentos.com/images/icons/settings-icon-white.png"></img>
 					<Update />
+				</div>:<></>}
 				</>
 			)}
+			</div>
 			{!isMe && <SocialInterractions login={profileLogin} />}
-			<button onClick={logout}>Log out</button>
 		</div>
 	);
 };
@@ -100,14 +148,14 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 
 	return (
 		<>
-			<PPDisplayer
-				login={user.login}
-				size={420}
-				status={true}
-			/>
-			<div>
+			<div className={style.username}>
 				{user.name} ({user.login})
 			</div>
+			<PPDisplayer
+				login={user.login}
+				size={210}
+				status={true}
+			/>
 		</>
 	);
 };
@@ -146,6 +194,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 	}, [login]);
 
 	return (
+		<>
 		<div>
 			<MatchStats
 				isMe={isMe}
@@ -153,7 +202,11 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				rankedGames={rankedGames}
 				normalGames={normalGames}
 			/>
-			<h2>Match history</h2>
+			</div>
+		<div>
+			<img src={history}></img>
+			<div className={style.statshistory}>
+			<h2>M A T C H _ H I S T O R Y</h2>
 			<h3>Ranked</h3>
 			<ul>
 				{rankedGames.length > 0 ? (
@@ -200,8 +253,8 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 										login={game.opponentUserGame.userLogin}
 										size={69}
 										status={false}
-									/>
-								}
+										/>
+									}
 							</li>
 						);
 					})
@@ -255,16 +308,18 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 										login={game.opponentUserGame.userLogin}
 										size={69}
 										status={false}
-									/>
-								}
+										/>
+									}
 							</li>
 						);
 					})
-				) : (
+					) : (
 					<li>No friendly games played</li>
 				)}
 			</ul>
+			</div>
 		</div>
+	</>
 	);
 };
 
@@ -323,34 +378,39 @@ const MatchStats = ({
 	}, [rankedGameResults, normalGameResults]);
 
 	return (
-		<div>
+<>
+			<img src={stats}></img>
+			<div className ={style.statsbanner}>
+
 			<h2>
-				Stats for all {gameResults.losses + gameResults.wins} games
+				{gameResults.losses + gameResults.wins} <br/>games
 				played
 			</h2>
-			<ul>
-				<li>Nb of wins : {gameResults.wins}</li>
-				<li>Nb of losses : {gameResults.losses}</li>
-			</ul>
+				<p>Wins : {gameResults.wins}<br/>
+				Losses : {gameResults.losses}</p>
+	
+
 			<h3>
-				Stats for all{" "}
-				{rankedGameResults.losses + rankedGameResults.wins} ranked games
+				{" "}
+				{rankedGameResults.losses + rankedGameResults.wins} <br/>ranked <br/>games
 				played
 			</h3>
-			<ul>
-				<li>Nb of wins : {rankedGameResults.wins}</li>
-				<li>Nb of losses : {rankedGameResults.losses}</li>
-			</ul>
+
+				<p>Wins : {rankedGameResults.wins}<br/>
+				Losses : {rankedGameResults.losses}</p>
+
 			<h3>
-				Stats for all{" "}
-				{normalGameResults.losses + normalGameResults.wins} friendly
+				{" "}
+				{normalGameResults.losses + normalGameResults.wins} <br/> friendly <br/>
 				games played
 			</h3>
-			<ul>
-				<li>Nb of wins : {normalGameResults.wins}</li>
-				<li>Nb of losses : {normalGameResults.losses}</li>
-			</ul>
-		</div>
+
+				<p>Wins : {normalGameResults.wins}<br/>
+				Losses : {normalGameResults.losses}</p>
+
+			</div>
+</>
+
 	);
 };
 

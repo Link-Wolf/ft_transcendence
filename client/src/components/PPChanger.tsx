@@ -119,7 +119,7 @@ const PPChanger = ({ login }: { login: string }) => {
 		<>
 			<PPDisplayer
 				login={login}
-				size={400}
+				size={200}
 				status={false}
 			>
 				<img

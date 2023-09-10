@@ -1,22 +1,178 @@
 .profil {
 
-	position:absolute;
-    z-index:300;
-    left:0;
-    top:100px;
-    right:0;
-    bottom:0;
-	background-size: cover;
-	background-position: center;
+	display: flex;
+	flex-direction: row;
+	margin-left: auto;
+	margin-right: auto;
+	justify-content: center;
+	
 
+	text-align: center;
+	align-items: center;
+	h1 {
+		color: white;
+		font-size: 40px;
+	}
+}
+
+.resume {
+	display: flex;
+	flex-direction: column;
+	font-size: 20px;
+	color: white;
+	text-align: center;
+	align-items: center;
+	width: 230px;
+	margin-right: 50px;
+	border-radius: 1000px;
+	font-size: 20px;
+	img {
+		border-radius: 30px;
+		border : 5px solid white;
+	}
+	.username {
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+	
+}
+
+.stats {
+
+	height: 900px;
+	width: 600px;
+	display: flex;
+	flex-direction: row;
+	color: white;
+	align-items: center;
+
+	img {
+		width: 200px;
+		border-bottom: 2px solid white;
+		margin-bottom: 15px;
+	}
+	.statsbanner{
+		width: 200px;
+		border: 4px solid white;
+		border-radius: 30px 30px 30px 30px;
+		border-left: 0px;
+		border-right: 0px;
+		background-color: rgba($color: #000000, $alpha: 0.4);
+	}
+	.statshistory {
+		background-color: rgba($color: #000000, $alpha: 0.4);
+		margin: 20px;
+		margin-top: 0px;
+		border: 4px solid white;
+		border-left: 0px;
+		border-right: 0px;
+		height: 600px;
+		padding-left: 40px;
+		padding-right: 40px;
+		border-radius: 30px 30px 30px 30px;
+		overflow: scroll;
+
+	}
+}
+.friends {
+
+	
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	overflow: scroll;
-	div {
-		background-color: rgba($color: #f8f8f8, $alpha: 0.4);
+	height: 900px;
+	width: 600px;
+	img {
+		margin-top: 40px;
+		width: 300px;
+		margin-bottom: 15px;
 	}
-	h1 {
-		color: white;
+	div {
+		display : flex ;
+		div {
+			display: flex;
+			flex-direction: column;
+			color: white;
+			margin: 20px;
+			margin-top: 0px;
+			border: 4px solid white;
+			border-left: 0px;
+			border-right: 0px;
+			height: 600px;
+			padding-left: 40px;
+			padding-right: 40px;
+			border-radius: 30px 30px 30px 30px;
+			background-color: rgba($color: #000000, $alpha: 0.4);
+			overflow: scroll;
+		}
 	}
 }
+
+.settings {
+	width: 600px;
+	height: 900px;
+	img{
+		margin-top: 50px;
+		margin-bottom: 20px;
+		height: 180px;
+		width: 180px;
+	}	
+	.setting {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		color: white;
+		margin: 20px;
+		margin-top: 0px;
+		
+		border: 4px solid white;
+		border-left: 0px;
+		border-right: 0px;
+
+		padding-left: 40px;
+		padding-right: 40px;
+		border-radius: 30px 30px 30px 30px;
+		background-color: rgba($color: #000000, $alpha: 0.4);
+		overflow: scroll;
+		img {
+			margin: 0;
+			margin-left: 110px;
+		}
+		button{
+			border: 2px solid #f8f8f8;
+			border-left: 5px solid #f8f8f8;
+			border-right: 5px solid #f8f8f8;
+			border-radius: 25px;
+			background-color: rgba($color: #000000, $alpha: 0);
+			padding: 5px 10px 5px 10px;
+			color: #f8f8f8;
+			font-size: 13px; 
+			transition: 0.3s;
+		}
+	}
+	div {margin-bottom: 20px;}
+}
+
+.button{
+	margin-top: 20px;
+	width: 150px;
+	border: 4px solid #f8f8f8;
+	border-left: 10px solid #f8f8f8;
+	border-right: 10px solid #f8f8f8;
+	border-radius: 25px;
+	background-color: rgba($color: #000000, $alpha: 0);
+	padding: 5px 20px 5px 20px;
+	color: #f8f8f8;
+	font-size: 18px; 
+	transition: 0.3s;
+}
+
+.button:hover {
+	background-color: #f8f8f8;
+	color: #000000;
+
+	transition: 0.3s;
+	font-size: 18px; 
+}
+
