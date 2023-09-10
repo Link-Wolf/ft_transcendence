@@ -7,6 +7,8 @@ import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import Dropzone, { useDropzone } from "react-dropzone";
 import socket from "../socket";
 import PPChanger from "./PPChanger";
+import style from "../style/Profile.module.scss";
+
 
 const ISSUER = "Platypong";
 
@@ -162,6 +164,7 @@ const Update = () => {
 
 	return (
 		<>
+		<div className={style.setting}>
 			<h2>Settings</h2>
 			<form>
 				<div>
@@ -255,6 +258,7 @@ const Update = () => {
 					Disable 2FA
 				</button>
 			)}
+		</div>
 		</>
 	);
 };
