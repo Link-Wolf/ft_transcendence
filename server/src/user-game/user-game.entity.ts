@@ -29,7 +29,7 @@ export class UserGame extends Model<UserGame> {
     @PrimaryKey
     @ForeignKey(() => Game)
     @Column({})
-    gameId: number;
+    gameId: string;
 
     @BelongsTo(() => Game)
     game: Game;

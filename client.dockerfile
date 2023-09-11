@@ -10,6 +10,7 @@ COPY client/tsconfig.json ./
 
 COPY .env ./
 
+RUN npm i sharp
 RUN npm i
 
 CMD ["npm", "start"]

@@ -17,7 +17,7 @@ import { UserClearanceGuard } from '../guards/user_clearance.guard';
 import { ParseBoolPipe } from './user.pipe';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import * as gm from 'gm';
+//TODO: uncomment before pushing -> import * as sharp from 'sharp';
 
 @Controller('user')
 export class UserController {
@@ -154,7 +154,7 @@ export class UserController {
 	 */
 	@Patch('pp/:login')
 	@UseGuards(AdminUserGuard)
-	@UseInterceptors(FileInterceptor('file'))
+	@UseInterceptors(FileInterceptor('avatar'))
 	async updateProfilePicture(
 		@Param('login') login: string,
 		@UploadedFile() avatar: Express.Multer.File,
@@ -163,26 +163,21 @@ export class UserController {
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
+		//TODO: uncomment before pushing
+		// try {
+		// 	await sharp(avatar.buffer).metadata();
+		// } catch (e) {
+		// 	throw new HttpException(
+		// 		'Invalid image file',
+		// 		HttpStatus.BAD_REQUEST,
+		// 	);
+		// }
 
-		return new Promise((resolve, reject) => {
-			gm(avatar.buffer).identify((err: any, data: any) => {
-				if (err) {
-					reject(
-						new HttpException(
-							'Invalid image file',
-							HttpStatus.BAD_REQUEST,
-						),
-					);
-				} else {
-					resolve(
-						this.userService.updateProfilePicture({
-							login: login,
-							avatar: avatar.buffer.toString('base64'),
-						}),
-					);
-				}
-			});
+		let ret = await this.userService.updateProfilePicture({
+			login: login,
+			avatar: avatar.buffer.toString('base64'),
 		});
+		return ret;
 	}
 
 	// /**

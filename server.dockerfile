@@ -9,6 +9,7 @@ COPY server/tsconfig.json ./
 
 COPY .env ./
 
+RUN npm i sharp
 RUN npm i
 
 CMD ["npm", "run", "start:dev"]

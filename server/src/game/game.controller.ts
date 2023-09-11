@@ -56,7 +56,7 @@ export class GameController {
 	 */
 	@Get(':id')
 	@UseGuards(AdminClearanceGuard)
-	async findById(@Param('id', ParseIntPipe) id: number): Promise<Game> {
+	async findById(@Param('id') id: string): Promise<Game> {
 		let ret = await this.gameService.findById(id);
 		if (!ret) {
 			throw new HttpException('Game not found', HttpStatus.NOT_FOUND);

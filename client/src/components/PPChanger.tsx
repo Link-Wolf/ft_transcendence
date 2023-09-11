@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { DropEvent, useDropzone } from "react-dropzone";
 import { PPDisplayer } from "./ImageDisplayer";
 import { validateImage } from "image-validator";
+import socket from "../socket";
 
 const baseStyle = {
 	flex: 1,
@@ -35,6 +36,9 @@ const rejectStyle = {
 
 const PPChanger = ({ login }: { login: string }) => {
 	const [imageSource, setImageSource] = useState<string>("");
+	const [currentAvatar, setCurrentAvatar] = useState<string>("");
+	const [imageSourceToBeSend, setImageSourceToBeSend] = useState<File>();
+	const [imageError, setImageError] = useState<string>("");
 	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
@@ -45,12 +49,14 @@ const PPChanger = ({ login }: { login: string }) => {
 			)
 			.then((res) => {
 				setImageSource(res.data.avatar);
+				setCurrentAvatar(res.data.avatar);
+				setImageError("");
 				setUpdate(false);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [login]);
+	}, [login, update]);
 
 	const getBase64 = (file: File) => {
 		return new Promise((resolve) => {
@@ -74,9 +80,14 @@ const PPChanger = ({ login }: { login: string }) => {
 		if (!files.length) return;
 		const file = files[0];
 		if (await validateImage(file)) {
+			setImageError("");
+			setImageSourceToBeSend(file);
 			getBase64(file).then((result) => {
 				setImageSource((result as string).split(",")[1]);
 			});
+		} else {
+			setImageError("Invalid image");
+			setImageSource("");
 		}
 	};
 
@@ -103,12 +114,19 @@ const PPChanger = ({ login }: { login: string }) => {
 	);
 
 	const upload = async () => {
+		if (!imageSource || imageSource === currentAvatar) return;
+		const formData = new FormData();
+		formData.append("avatar", imageSourceToBeSend as Blob);
+		console.log(formData);
 		await axios
 			.patch(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/pp/${login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/pp/${login}`,
+				formData
 			)
 			.then((res) => {
 				setUpdate(true);
+				//TODO: update dynamically (socket)
+				socket.emit("contextUpdate", { login: login });
 			})
 			.catch((error) => {
 				console.log(error);
@@ -135,11 +153,12 @@ const PPChanger = ({ login }: { login: string }) => {
 						Drag 'n' drop some files here, or click to select files
 					</p>
 				</div>
+				{imageError && <p>{imageError}</p>}
 			</div>
 
 			<button
 				type='button'
-				disabled={!imageSource}
+				// disabled={!imageSource || imageSource === currentAvatar}
 				onClick={upload}
 			>
 				Upload to the CLOUD (it is not a cloud)

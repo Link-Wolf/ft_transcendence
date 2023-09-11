@@ -4,9 +4,6 @@ import { User } from 'src/user/user.entity';
 
   export class UserGameDto {
     @IsNumber()
-    id?: number;
-
-    @IsNumber()
     score?: number;
 
     user?: User;

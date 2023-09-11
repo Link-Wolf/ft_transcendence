@@ -18,7 +18,7 @@ const App = () => {
 		login: "",
 		name: "",
 		clearance: 0,
-		theme: "dark",
+		theme: "light",
 	});
 
 	useEffect(() => {
