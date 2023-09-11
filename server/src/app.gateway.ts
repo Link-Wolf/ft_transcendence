@@ -11,6 +11,7 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
+import { HttpException } from '@nestjs/common';
 
 type Player = {
 	paddle: {
@@ -53,7 +54,7 @@ type GameData = {
 	turn: number;
 	playerToStart: number;
 	isTurnStarted: boolean;
-	gameId: number;
+	gameId: string;
 	lastTimestamp: number;
 	height: number;
 	width: number;
@@ -278,7 +279,7 @@ export class AppGateway
 		}
 	}
 
-	newGame(gameId: number, player1: string, player2: string): GameData {
+	newGame(gameId: string, player1: string, player2: string): GameData {
 		const width = 800; //TODO: check for modifiers and adapt if needed
 		const height = 600; //TODO: check for modifiers and adapt if needed
 		return {
@@ -340,8 +341,8 @@ export class AppGateway
 		this.stopGame(game, true);
 	}
 
-	startGame(gameId: number, player1: string, player2: string) {
-		this.game.length = Math.max(this.game?.length | 0, gameId + 1);
+	startGame(gameId: string, player1: string, player2: string) {
+		this.game.length = this.game?.length | (0 + 1);
 		this.game[gameId] = this.newGame(gameId, player1, player2);
 		let game = this.game[gameId];
 		this.resetBall(game);
@@ -569,5 +570,38 @@ export class AppGateway
 		if (!user) return;
 
 		await this.statusUpdate(user.login, 'online', client.id);
+	}
+
+	/*********************************************************
+	 * 														 *
+	 * 		        GAME CONNECTION HANDLING				 *
+	 * 					            						 *
+	 ********************************************************/
+
+	@SubscribeMessage('createGame')
+	async createGame(client: Socket, payload: any): Promise<number> {
+		let user = await this.userService.verify(payload.auth);
+		if (!user) throw new HttpException('Unauthorized', 401);
+
+		let games = await this.userGameService.findNotFinishedByLogin(
+			user.login,
+		);
+		let ongoingGames = games.filter((g) => g.dataValues.game.status === 'ongoing');
+		if (ongoingGames.length > 0) {
+			return 
+		}
+		games = games.filter(
+			(g) => g.dataValues.game.dataValues.isRanked === payload.isRanked,
+		);
+		games = games.filter(
+			(g) =>
+				g.dataValues.game.dataValues.modifiers
+					.map((mod) => mod.dataValues.id)
+					.sort() === payload.modifiers.sort(),
+		);
+		if (games.length > 0) 
+		{}
+
+		throw new Error('Not implemented');
 	}
 }

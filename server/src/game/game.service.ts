@@ -4,7 +4,6 @@ import { Game } from './game.entity';
 
 @Injectable()
 export class GameService {
-
 	constructor(
 		@Inject('GAME_REPOSITORY')
 		private readonly gameRepository: typeof Game,
@@ -27,11 +26,11 @@ export class GameService {
 
 	/**
 	 * @brief   Find a game by its id with sequelize
-	 * @param   {number} id     The game's id
+	 * @param   {string} id     The game's id
 	 * @return  {Game}          The game
 	 * @throws  {HttpException} 500 if an error occured
 	 */
-	async findById(id: number): Promise<Game> {
+	async findById(id: string): Promise<Game> {
 		try {
 			return await this.gameRepository.findOne<Game>({
 				where: { id: id },
@@ -150,11 +149,11 @@ export class GameService {
 
 	/**
 	 * @brief  Delete a game by its id with sequelize
-	 * @param  {number} id     The game's id
+	 * @param  {string} id     The game's id
 	 * @return {number}        The number of deleted games
 	 * @throws {HttpException} 500 if an error occured
 	 */
-	async delete(id: number): Promise<number> {
+	async delete(id: string): Promise<number> {
 		try {
 			return await this.gameRepository.destroy<Game>({
 				where: { id: id },

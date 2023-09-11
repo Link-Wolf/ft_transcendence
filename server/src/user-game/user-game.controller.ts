@@ -56,7 +56,7 @@ export class UserGameController {
 	@Get('game/:id/player/:login')
 	@UseGuards(AdminClearanceGuard)
 	async getByUserAndGame(
-		@Param('id', ParseIntPipe) id: number,
+		@Param('id') id: string,
 		@Param('login') login: string,
 	): Promise<UserGame> {
 		let user = await this.userService.findByLogin(login);
@@ -138,7 +138,7 @@ export class UserGameController {
 
 	/**
 	 * @brief Get all user games by game id
-	 * @param {number} id - Game id
+	 * @param {string} id - Game id
 	 * @returns {UserGame[]} All user games by game id
 	 * @security Clearance admin OR one of the 2 players of the game
 	 * @response 200 - OK
@@ -149,9 +149,7 @@ export class UserGameController {
 	 */
 	@Get('game/:id')
 	@UseGuards(UserClearanceGuard)
-	async findByGame(
-		@Param('id', ParseIntPipe) id: number,
-	): Promise<UserGame[]> {
+	async findByGame(@Param('id') id: string): Promise<UserGame[]> {
 		if (!(await this.gameService.findById(id)))
 			throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
 		let ret = await this.userGameService.findByGame(id);
@@ -163,7 +161,7 @@ export class UserGameController {
 	/**
 	 * @brief Create a new user game
 	 * @param {string} userLogin - User login
-	 * @param {number} gameId - Game id
+	 * @param {string} gameId - Game id
 	 * @returns {UserGame} New user game
 	 * @security Admin clearance OR user himself
 	 * @response 201 - Created
@@ -177,7 +175,7 @@ export class UserGameController {
 	@UseGuards(AdminUserGuardPost)
 	async create(
 		@Body('userLogin') userLogin: string,
-		@Body('gameId', ParseIntPipe) gameId: number,
+		@Body('gameId') gameId: string,
 	): Promise<UserGame> {
 		if (!userLogin)
 			throw new HttpException(
@@ -211,9 +209,8 @@ export class UserGameController {
 
 	/**
 	 * @brief Update a user game
-	 * @param {number} id - User game id
 	 * @param {string} login - User login
-	 * @param {number} id - Game id
+	 * @param {string} id - Game id
 	 * @param {number} score - User score
 	 * @returns {number} Number of updated user games
 	 * @security Clearance admin OR one of the 2 players of the game
@@ -226,7 +223,7 @@ export class UserGameController {
 	@Patch('game/:id/player/:login')
 	@UseGuards(AdminClearanceGuard)
 	async update(
-		@Param('id', ParseIntPipe) id: number,
+		@Param('id') id: string,
 		@Param('login') login: string,
 		@Body('score', ParseIntPipe) score: number,
 	): Promise<Number> {

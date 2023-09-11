@@ -67,7 +67,7 @@ export class UserGameService {
 	 * @return  {UserGame[]}    List of user games
 	 * @throws  {HttpException} 500 if an error occured
 	 */
-	async findByGame(id: number): Promise<UserGame[]> {
+	async findByGame(id: string): Promise<UserGame[]> {
 		try {
 			return await this.userGameRepository.findAll<UserGame>({
 				where: { gameId: id },
@@ -84,7 +84,7 @@ export class UserGameService {
 	 * @return  {UserGame}      The user game
 	 * @throws  {HttpException} 500 if an error occured
 	 */
-	async findNotFinishedByLogin(login: string): Promise<UserGame> {
+	async findNotFinishedByLogin(login: string): Promise<UserGame[]> {
 		try {
 			let ret = await this.userGameRepository.findAll<UserGame>({
 				where: {
@@ -93,8 +93,8 @@ export class UserGameService {
 				include: [{ all: true }],
 			});
 			return ret.filter((userGame) => {
-				return userGame.game.status !== 'finished';
-			})[0];
+				return userGame.game.status !== 'finished' && userGame.game.status !== 'abandoned';
+			});
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

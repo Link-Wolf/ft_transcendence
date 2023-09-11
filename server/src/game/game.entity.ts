@@ -16,9 +16,10 @@ export class Game extends Model<Game> {
 	@PrimaryKey
 	@AutoIncrement
 	@Column({
-		type: DataType.INTEGER,
+		type: DataType.UUID,
+		defaultValue: DataType.UUIDV4,
 	})
-	id: number;
+	id: string;
 
 	@Column({
 		type: DataType.BOOLEAN,

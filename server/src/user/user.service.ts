@@ -129,9 +129,10 @@ export class UserService {
 	 */
 	async updateProfilePicture(userDto: UserDto): Promise<number> {
 		try {
-			return await this.userRepository.update<User>(userDto, {
+			let ret = await this.userRepository.update<User>(userDto, {
 				where: { login: userDto.login },
 			})[0];
+			return ret;
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

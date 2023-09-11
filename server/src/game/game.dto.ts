@@ -4,7 +4,7 @@ import { User } from 'src/user/user.entity';
 
 export class GameDto {
 	@IsNumber()
-	id?: number;
+	id?: string;
 
 	@IsBoolean()
 	isRanked?: boolean;
