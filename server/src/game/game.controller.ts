@@ -9,6 +9,7 @@ import {
 	ParseIntPipe,
 	Post,
 	Query,
+	Req,
 	UseGuards,
 } from '@nestjs/common';
 import { AdminClearanceGuard } from 'src/guards/admin_clearance.guard';
@@ -19,6 +20,7 @@ import { Game } from './game.entity';
 import { GameService } from './game.service';
 import { ModifierService } from 'src/modifier/modifier.service';
 import { AdminUserUserGuardPost } from 'src/guards/admin_user_user.guard';
+import { Request } from 'express';
 
 @Controller('game')
 export class GameController {
@@ -41,27 +43,6 @@ export class GameController {
 	@UseGuards(AdminClearanceGuard)
 	async findAll(): Promise<Game[]> {
 		return await this.gameService.findAll();
-	}
-
-	/**
-	 * @brief Get a game by id
-	 * @param {number} id - Game id
-	 * @return {Game} Game
-	 * @security Clearance admin
-	 * @response 200 - OK
-	 * @response 401 - Unauthorized
-	 * @response 403 - Forbidden
-	 * @response 404 - Not Found
-	 * @response 500 - Internal Server Error
-	 */
-	@Get(':id')
-	@UseGuards(AdminClearanceGuard)
-	async findById(@Param('id') id: string): Promise<Game> {
-		let ret = await this.gameService.findById(id);
-		if (!ret) {
-			throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
-		}
-		return ret;
 	}
 
 	/**
@@ -132,6 +113,44 @@ export class GameController {
 		}
 		let ret = await this.gameService.findByPlayer(login, true);
 		ret = ret.concat(await this.gameService.findByPlayer(login, false));
+		return ret;
+	}
+
+	/**
+	 * @brief Get games that the client can join
+	 * @return {Game[]} Games that the client can join
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('playable')
+	// @UseGuards(UserClearanceGuard)
+	async findPlayable(@Req() req: Request): Promise<Game[]> {
+		let player = await this.userService.verify(req.cookies.token);
+		if (!player)
+			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+		return await this.gameService.findPlayable(player.dataValues.login);
+	}
+
+	/**
+	 * @brief Get a game by id
+	 * @param {number} id - Game id
+	 * @return {Game} Game
+	 * @security Clearance admin
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get(':id')
+	@UseGuards(AdminClearanceGuard)
+	async findById(@Param('id') id: string): Promise<Game> {
+		let ret = await this.gameService.findById(id);
+		if (!ret) {
+			throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+		}
 		return ret;
 	}
 

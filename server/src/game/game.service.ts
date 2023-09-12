@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { GameDto } from './game.dto';
 import { Game } from './game.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class GameService {
@@ -111,6 +112,39 @@ export class GameService {
 			return ret;
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @brief	Find all games that are playable by a user
+	 * @param {string} login	Login of the user
+	 * @return {Game[]}		List of games
+	 * @throws {HttpException}	500 if an error occured
+	 */
+	async findPlayable(login: string): Promise<Game[]> {
+		try {
+			let ret = await this.gameRepository.findAll<Game>({
+				include: [{ all: true }],
+				where: {
+					[Op.or]: [{ status: 'waiting' }, { status: 'invitation' }],
+				},
+			});
+			ret = ret.filter(
+				(game) =>
+					// There is a place in the game
+					game.dataValues.users.length < 2 &&
+					// The game is waiting and he is not already in it
+					((game.status === 'waiting' &&
+						!game.dataValues.users.some(
+							(user) => user.dataValues.login === login,
+						)) ||
+						// The game is an invitation and he is the invitee
+						(game.status === 'invitation' &&
+							game.invitee === login)),
+			);
+			return ret;
+		} catch (err) {
+			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

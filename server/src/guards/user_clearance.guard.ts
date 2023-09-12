@@ -26,7 +26,7 @@ export class UserClearanceGuard implements CanActivate {
 			const user = await this.userService.verify(cookies.token);
 			if (!user)
 				throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
-			clearance = user.clearance;
+			clearance = user.dataValues.clearance;
 		} else throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		if (clearance < Number(process.env.USER_CLEARANCE)) {
 			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);

@@ -22,6 +22,7 @@ const PlayableGamesList = () => {
 					`:${process.env.REACT_APP_BACKEND_PORT}/api/game/playable`
 			)
 			.then((res) => {
+				console.log(res.data);
 				setPlayableGames(res.data);
 			})
 			.catch((error) => console.log(error));

@@ -154,6 +154,11 @@ export class UserService {
 		}
 	}
 
+	/**
+	 * @brief   Verify a token of connection
+	 * @param   {string} token  The token to verify
+	 * @returns {User}          The user connected (null if not connected)
+	 */
 	async verify(token: string): Promise<User> {
 		if (!token) return null;
 		const { login, needTFA } = await jwt.verify(token, process.env.JWT_KEY);

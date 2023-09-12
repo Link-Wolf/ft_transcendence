@@ -12,6 +12,7 @@ import { UserGame } from '../user-game/user-game.entity';
 import { Block } from '../block/block.entity';
 import { Membership } from '../membership/membership.entity';
 import { SeedingService } from './database.service';
+import { GameModifierBridge } from 'src/game-modifier-bridge/game-modifier-bridge.entity';
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ export const databaseProviders = [
 				Friendship,
 				Message,
 				Membership,
+				GameModifierBridge,
 			]);
 			await sequelize.sync({ alter: true });
 
