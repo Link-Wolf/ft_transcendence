@@ -5,26 +5,31 @@ import socket from "../socket";
 import Cookies from "js-cookie";
 
 const CreateGame = () => {
+	//TODO: take invite in account
 	const [searchParam] = useSearchParams();
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		let modifiers = searchParam.get("modifiers") as string | null | number[];
-		let ranked = searchParam.get("ranked") as string | null | boolean;
+		let modifiers = searchParam.get("modifiers") as
+			| string
+			| null
+			| number[];
+		let isRanked = searchParam.get("isRanked") as string | null | boolean;
 
 		if (modifiers)
 			modifiers = (modifiers as string)
 				.split(",")
 				.map((modifier: string) => parseInt(modifier));
+		else modifiers = [];
 
-		if (ranked) ranked = ranked === "true";
-		else ranked = false;
+		if (isRanked) isRanked = isRanked === "true";
+		else isRanked = false;
 
 		socket.emit(
 			"createGame",
 			{
-				modifiersIds: modifiers,
-				ranked: ranked,
+				modifierIds: modifiers,
+				isRanked: isRanked,
 				auth: Cookies.get("token"),
 			},
 			(gameId: number, error: any) => {
