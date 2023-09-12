@@ -11,6 +11,8 @@ import { User } from 'src/user/user.entity';
 import { UserGame } from 'src/user-game/user-game.entity';
 import { Modifier } from 'src/modifier/modifier.entity';
 import { Col } from 'sequelize/types/utils';
+import { GameModule } from './game.module';
+import { GameModifierBridge } from 'src/game-modifier-bridge/game-modifier-bridge.entity';
 
 @Table({ tableName: 'Game' })
 export class Game extends Model<Game> {
@@ -45,6 +47,6 @@ export class Game extends Model<Game> {
 	@BelongsToMany(() => User, () => UserGame)
 	users: User[];
 
-	@BelongsToMany(() => Modifier, 'GameModifierBridge', 'gameId', 'modifierId')
+	@BelongsToMany(() => Modifier, () => GameModifierBridge)
 	modifiers: Modifier[];
 }
