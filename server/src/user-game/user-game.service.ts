@@ -93,7 +93,10 @@ export class UserGameService {
 				include: [{ all: true }],
 			});
 			return ret.filter((userGame) => {
-				return userGame.game.status !== 'finished' && userGame.game.status !== 'abandoned';
+				return (
+					userGame.dataValues.game.dataValues.status !== 'finished' &&
+					userGame.dataValues.game.dataValues.status !== 'abandoned'
+				);
 			});
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
