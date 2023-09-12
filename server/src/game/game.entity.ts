@@ -10,6 +10,7 @@ import {
 import { User } from 'src/user/user.entity';
 import { UserGame } from 'src/user-game/user-game.entity';
 import { Modifier } from 'src/modifier/modifier.entity';
+import { Col } from 'sequelize/types/utils';
 
 @Table({ tableName: 'Game' })
 export class Game extends Model<Game> {
@@ -37,6 +38,9 @@ export class Game extends Model<Game> {
 		allowNull: false,
 	})
 	status: string;
+
+	@Column
+	invitee: string;
 
 	@BelongsToMany(() => User, () => UserGame)
 	users: User[];
