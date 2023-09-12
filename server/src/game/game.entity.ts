@@ -14,7 +14,6 @@ import { Modifier } from 'src/modifier/modifier.entity';
 @Table({ tableName: 'Game' })
 export class Game extends Model<Game> {
 	@PrimaryKey
-	@AutoIncrement
 	@Column({
 		type: DataType.UUID,
 		defaultValue: DataType.UUIDV4,
