@@ -1,11 +1,12 @@
 .light {
-	background: linear-gradient(to top,rgba(0,0,0,0),rgba(0,0,0,0.2)), url('../assets/background_light.jpg');
-	position:absolute;
-    z-index:300;
-    left:0;
-    top:0;
-    right:0;
-    bottom:0;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2)),
+		url("../assets/background_light.jpg");
+	position: absolute;
+	z-index: 300;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
 	background-size: cover;
 	transition: 1s;
 	background-position: center;
@@ -16,19 +17,17 @@
 	--accent-background: #ffffff;
 	--accent-text: #002136;
 	--background-tel: #f8f8f8;
-
-
-
 }
 
 .dark {
-	background: linear-gradient(to top,rgba(0,0,0,0),rgba(0,0,0,0.5)), url('../assets/background_dark.jpg');
-	position:absolute;
-    z-index:300;
-    left:0;
-    top:0;
-    right:0;
-    bottom:0;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)),
+		url("../assets/background_dark.jpg");
+	position: absolute;
+	z-index: 300;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
 	background-size: cover;
 	background-position: center;
 	overflow: scroll;
