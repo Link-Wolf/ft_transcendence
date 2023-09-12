@@ -12,6 +12,7 @@ import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { HttpException } from '@nestjs/common';
+import { ModifierService } from './modifier/modifier.service';
 
 type Player = {
 	paddle: {
@@ -78,6 +79,7 @@ export class AppGateway
 		private userService: UserService,
 		private gameService: GameService,
 		private userGameService: UserGameService,
+		private modifierService: ModifierService,
 	) {}
 
 	@WebSocketServer() server: Server;
@@ -579,29 +581,50 @@ export class AppGateway
 	 ********************************************************/
 
 	@SubscribeMessage('createGame')
-	async createGame(client: Socket, payload: any): Promise<number> {
+	async createGame(client: Socket, payload: any): Promise<string> {
 		let user = await this.userService.verify(payload.auth);
 		if (!user) throw new HttpException('Unauthorized', 401);
 
 		let games = await this.userGameService.findNotFinishedByLogin(
 			user.login,
 		);
-		let ongoingGames = games.filter((g) => g.dataValues.game.status === 'ongoing');
+
+		// Check if the player is currently playing a game
+		let ongoingGames = games.filter(
+			(g) => g.dataValues.game.status === 'ongoing',
+		);
 		if (ongoingGames.length > 0) {
-			return 
+			return ongoingGames[0].dataValues.game.id;
 		}
+
+		// Check if the player is waiting for a game that has the same modifiers and ranked status
 		games = games.filter(
 			(g) => g.dataValues.game.dataValues.isRanked === payload.isRanked,
 		);
-		games = games.filter(
-			(g) =>
-				g.dataValues.game.dataValues.modifiers
+		games = games.filter((g) => {
+			return (
+				(g.dataValues.game.dataValues.modifiers ?? [])
 					.map((mod) => mod.dataValues.id)
-					.sort() === payload.modifiers.sort(),
-		);
-		if (games.length > 0) 
-		{}
+					.sort() === payload.modifierIds.sort()
+			);
+		});
+		if (games.length > 0) {
+			return games[0].dataValues.game.id;
+		}
 
-		throw new Error('Not implemented');
+		// Create a new game for the player
+		let game = await this.gameService.create({
+			isRanked: payload.isRanked,
+			status: 'waiting',
+			users: [],
+			modifiers: await this.modifierService.findByIds(
+				payload.modifierIds ?? [],
+			),
+		});
+
+		// Add the player to the game
+		game.$set('users', [...game.dataValues.users, user]);
+
+		return game.id;
 	}
 }
