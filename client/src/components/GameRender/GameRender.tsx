@@ -11,15 +11,7 @@ import socket from "../../socket";
 
 let playerKeys = new Set<number>();
 
-const GameRender = ({
-	gameId,
-}: {
-	gameId: number;
-	isNew: boolean;
-	modifiers: any[];
-	playerToStart: number;
-	players: string[];
-}) => {
+const GameRender = ({ gameId }: { gameId: string }) => {
 	const user = useContext(UserContext);
 	let game = {
 		players: [
