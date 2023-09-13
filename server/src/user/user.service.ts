@@ -161,8 +161,15 @@ export class UserService {
 	 */
 	async verify(token: string): Promise<User> {
 		if (!token) return null;
-		const { login, needTFA } = await jwt.verify(token, process.env.JWT_KEY);
+		const { login, needTFA, exp } = await jwt.verify(
+			token,
+			process.env.JWT_KEY,
+			{
+				ignoreExpiration: true,
+			},
+		);
 		if (needTFA) return null;
+		if (Date.now() / 1000 > exp) return null;
 		return await this.findByLogin(login);
 	}
 }
