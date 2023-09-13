@@ -129,15 +129,13 @@ export class GameService {
 					[Op.or]: [{ status: 'waiting' }, { status: 'invitation' }],
 				},
 			});
+			console.log(ret);
 			ret = ret.filter(
 				(game) =>
 					// There is a place in the game
 					game.dataValues.users.length < 2 &&
 					// The game is waiting and he is not already in it
-					((game.status === 'waiting' &&
-						!game.dataValues.users.some(
-							(user) => user.dataValues.login === login,
-						)) ||
+					(game.status === 'waiting' ||
 						// The game is an invitation and he is the invitee
 						(game.status === 'invitation' &&
 							game.invitee === login)),
