@@ -616,14 +616,18 @@ export class AppGateway
 		let game = await this.gameService.create({
 			isRanked: payload.isRanked,
 			status: 'waiting',
-			users: [],
-			modifiers: await this.modifierService.findByIds(
-				payload.modifierIds ?? [],
-			),
 		});
 
 		// Add the player to the game
-		game.$set('users', [...game.dataValues.users, user]);
+		const modifiers = await this.modifierService.findByIds(
+			payload.modifierIds ?? [],
+		);
+
+		await game.$add('users', user);
+		for (const modifier of modifiers) {
+			await game.$add('modifiers', modifier);
+		}
+		await game.save();
 
 		return game.id;
 	}
