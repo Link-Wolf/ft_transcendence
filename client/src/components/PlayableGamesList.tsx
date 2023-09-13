@@ -3,6 +3,7 @@ import { UserContext } from "../App";
 import axios from "axios";
 import { use } from "matter-js";
 import { error } from "console";
+import { Link } from "react-router-dom";
 
 const PlayableGamesList = () => {
 	const user = useContext(UserContext);
@@ -33,7 +34,15 @@ const PlayableGamesList = () => {
 		<div>
 			{playableGames.map((game: any, i: number) => (
 				<ul key={i}>
-					<li>{game.id}</li>
+					<li>
+						{game.isRanked ? "" : "Un"}ranked
+						<ul>
+							{game.modifiers.map((modifier: any, j: number) => (
+								<li key={j}>{modifier.name}</li>
+							))}
+						</ul>
+						<Link to={`/game/${game.id}`}>Join</Link>
+					</li>
 				</ul>
 			))}
 		</div>
