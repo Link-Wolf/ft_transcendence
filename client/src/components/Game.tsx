@@ -25,11 +25,13 @@ const Game = () => {
 				},
 				(
 					res: {
-						action: "redirect" | "play";
+						action: "redirect" | "play" | "wait" | "error";
 						newId?: string;
+						message?: string;
 					},
 					error: any
 				) => {
+					console.log(res);
 					if (error) return;
 					if (res.action === "redirect") {
 						clearInterval(joinInterval as NodeJS.Timer);
