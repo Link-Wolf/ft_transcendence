@@ -8,7 +8,6 @@
 	right: 0;
 	bottom: 0;
 	background-size: cover;
-	transition: 1s ease-in;
 	background-position: center;
 	overflow: scroll;
 
@@ -17,6 +16,10 @@
 	--accent-background: #ffffff;
 	--accent-text: #002136;
 	--background-tel: #f8f8f8;
+}
+
+.animation {
+	transition: 1s ease-in;
 }
 
 .dark {
