@@ -32,7 +32,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 
 	return (
 		<>
-			{/* <img src='https://media.giphy.com/media/3o7aDcz6Y0fzWYvU5G/giphy.gif' /> */}
+			<img src='https://i.guim.co.uk/img/media/6cf6afdd050888ac3060479f9f28cefbb8b62316/43_0_1200_720/master/1200.jpg?width=700&quality=85&auto=format&fit=max&s=beb175cb86dd5093fcd23f42bed9565b' />
 			<label
 				className={style.gameselect}
 				style={isRanked ? selectedStyle : unselectedStyle}

@@ -12,35 +12,23 @@ export const UserContext = createContext({
 	clearance: 0,
 	theme: "light",
 	toggleTheme: () => {},
+	chat: false,
+	setChat: (() => {}) as any,
+	channel: null as null | string,
+	setChannel: (() => {}) as any,
 });
 
 const App = () => {
 	const [update, setUpdate] = useState(true);
 	const [hasAnimation, setHasAnimation] = useState(false);
+	const [chat, setChat] = useState(false);
+	const [channel, setChannel] = useState<string | null>(null);
 	const [clearance, setClearance] = useState({
 		login: "",
 		name: "",
 		clearance: 0,
 		theme: localStorage.getItem("theme") || "light",
 	});
-	const location = useLocation();
-	const [oldLocation, setOldLocation] = useState(location.pathname);
-
-	useEffect(() => {
-		// Check if old location is /game/:id and new location is not /game/:id
-		if (
-			oldLocation.startsWith("/game") &&
-			!location.pathname.startsWith("/game")
-		) {
-			socket.emit("leaveGame", {
-				auth: Cookies.get("token"),
-				gameId: oldLocation.split("/")[
-					oldLocation.split("/").length - 1
-				],
-			});
-		}
-		setOldLocation(location.pathname);
-	}, [location]);
 
 	useEffect(() => {
 		const theme = localStorage.getItem("theme");
@@ -151,7 +139,14 @@ const App = () => {
 			></div>
 			<div className={style.container}>
 				<UserContext.Provider
-					value={{ ...clearance, toggleTheme: toggleTheme }}
+					value={{
+						...clearance,
+						toggleTheme: toggleTheme,
+						chat: chat,
+						setChat: setChat,
+						channel: channel,
+						setChannel: setChannel,
+					}}
 				>
 					<Routage />
 				</UserContext.Provider>
