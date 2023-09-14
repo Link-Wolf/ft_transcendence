@@ -2,21 +2,27 @@ import { useEffect, useState } from "react";
 import socket from "../socket";
 import Cookies from "js-cookie";
 import GameRender from "./GameRender/GameRender";
-import { useNavigate, useParams } from "react-router-dom";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import style from "../style/Game.module.scss";
 import load from "../assets/load.gif";
 import { join } from "path";
+import { clear } from "console";
 
 const Game = () => {
 	const [loading, setLoading] = useState<boolean>(true);
-	const [joinInterval, setJoinInterval] = useState<NodeJS.Timer | undefined>(
-		undefined
-	);
 	const gameId = useParams().id;
 	const navigate = useNavigate();
 
+	let joinInterval: NodeJS.Timer;
+
+	const cancelSearch = () => {
+		clearInterval(joinInterval as NodeJS.Timer);
+		navigate("/");
+	};
+
 	useEffect(() => {
 		const joinGame = () => {
+			console.log(joinInterval);
 			socket.emit(
 				"joinGame",
 				{
@@ -31,7 +37,6 @@ const Game = () => {
 					},
 					error: any
 				) => {
-					console.log(res);
 					if (error) return;
 					if (res.action === "redirect") {
 						clearInterval(joinInterval as NodeJS.Timer);
@@ -39,8 +44,8 @@ const Game = () => {
 						return;
 					}
 					if (res.action === "play") {
-						setLoading(false);
 						clearInterval(joinInterval as NodeJS.Timer);
+						setLoading(false);
 						return;
 					}
 				}
@@ -48,7 +53,8 @@ const Game = () => {
 		};
 
 		joinGame();
-		setJoinInterval(setInterval(joinGame, 1000));
+		clearInterval(joinInterval as NodeJS.Timer);
+		joinInterval = setInterval(joinGame, 1000);
 
 		return () => {
 			clearInterval(joinInterval as NodeJS.Timer);

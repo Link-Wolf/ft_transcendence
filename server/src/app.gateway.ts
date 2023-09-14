@@ -350,10 +350,9 @@ export class AppGateway
 		this.resetBall(game);
 		this.resetPaddles(game);
 
-		console.log(player1, player2);
-
-		this.status[player1].status = 'ingame';
-		this.status[player2].status = 'ingame';
+		// TODO: check if player are online and, if not, abort the game
+		// this.status[player1].status = 'ingame';
+		// this.status[player2].status = 'ingame';
 
 		game.loop = setInterval(() => {
 			//update dt
@@ -569,14 +568,22 @@ export class AppGateway
 		newId?: string;
 		message?: string;
 	}> {
+		console.log('joinGame', payload);
 		if (!payload.gameId || !payload.auth)
 			return { action: 'error', message: 'missing data' };
 		const game = await this.gameService.findById(payload.gameId);
 		const user = await this.userService.verify(payload.auth);
 
-		console.log(game.dataValues.id, user.login);
-
 		if (!user) return { action: 'error', message: 'user not recognised' };
+
+		if (game.dataValues.status !== 'waiting') {
+			if (
+				game.dataValues.users.some(
+					(u) => u.dataValues.login === user.dataValues.login,
+				)
+			)
+				return { action: 'play' };
+		}
 
 		const playableGames = await this.gameService.findPlayable(user.login);
 
@@ -588,11 +595,12 @@ export class AppGateway
 		client.join(`game-${game.id}`);
 
 		if (game.dataValues.users.length === 2) {
+			console.log('game', game);
 			this.gameService.update({
-				...game,
+				...game.dataValues,
 				status: 'ongoing',
 			});
-			// this.startGame(game.id, game.users[0].login, game.users[1].login);
+			this.startGame(game.id, game.users[0].login, game.users[1].login);
 			return { action: 'play' };
 		}
 
