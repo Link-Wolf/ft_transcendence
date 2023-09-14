@@ -129,17 +129,27 @@ export class GameService {
 					[Op.or]: [{ status: 'waiting' }, { status: 'invitation' }],
 				},
 			});
-			console.log(ret);
-			ret = ret.filter(
-				(game) =>
-					// There is a place in the game
-					game.dataValues.users.length < 2 &&
-					// The game is waiting and he is not already in it
-					(game.status === 'waiting' ||
-						// The game is an invitation and he is the invitee
-						(game.status === 'invitation' &&
-							game.invitee === login)),
-			);
+			// ret = ret.filter(
+			// 	(game) =>
+			// 		// There is a place in the game
+			// 		game.dataValues.users.length < 2 &&
+			// 		// The game is waiting and he is not already in it
+			// 		(game.status === 'waiting' ||
+			// 			// The game is an invitation and he is the invitee
+			// 			(game.status === 'invitation' &&
+			// 				game.invitee === login)),
+			// );
+
+			//filter ret to only keep games where the user is in, or where he is invited, or where there is a place AND the game is not an invitation
+			ret = ret.filter((game) => {
+				return (
+					game.users.some((user) => {
+						return user.login == login;
+					}) ||
+					game.invitee === login ||
+					(game.users.length < 2 && game.status != 'invitation')
+				);
+			});
 			return ret;
 		} catch (err) {
 			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -417,78 +417,6 @@ export class AppGateway
 		});
 	}
 
-	@SubscribeMessage('joinWaitRoom')
-	async handleJoinWaitRoom(client: Socket, payload: any): Promise<void> {
-		//TODO: change status to waiting
-
-		let user = await this.userService.verify(payload.auth);
-		if (!user) return;
-
-		let ongoingGames = await this.gameService.findOngoing(
-			user.dataValues.login,
-		);
-		if (ongoingGames.length > 0) {
-			client.emit('startGame', {
-				gameId: ongoingGames[0].id,
-				isNew: false,
-			});
-			client.join(`game-${ongoingGames[0].id}`);
-			return;
-		}
-
-		let waitingGame = await this.gameService.findWaiting(payload.isRanked);
-		if (!waitingGame) {
-			waitingGame = await this.gameService.create({
-				isRanked: payload.isRanked,
-				status: 'waiting',
-				users: [],
-				modifiers: [],
-			});
-		}
-		waitingGame.$set('users', [...waitingGame.dataValues.users, user]);
-		await waitingGame.save();
-
-		client.join(`game-${waitingGame.id}`);
-
-		if (waitingGame.dataValues.users.length === 2) {
-			await this.gameService.update({
-				id: waitingGame.id,
-				status: 'ongoing',
-			});
-			this.startGame(
-				waitingGame.id,
-				waitingGame.users[0].login,
-				waitingGame.users[1].login,
-			);
-			this.server.to(`game-${waitingGame.id}`).emit('startGame', {
-				gameId: waitingGame.id,
-				isNew: true,
-			});
-		}
-	}
-
-	@SubscribeMessage('quitWaitRoom')
-	async handleQuitWaitRoom(client: Socket, payload: any): Promise<number> {
-		// TODO: change status to online
-		let user = await this.userService.verify(payload.auth);
-		if (!user) return 400;
-
-		let waitingGame = await this.gameService.findWaiting(payload.isRanked); //XXX: wtf?
-		if (!waitingGame) {
-			console.log('no waiting game', waitingGame);
-			return 400;
-		}
-
-		if (waitingGame.dataValues.users.length === 1) {
-			console.log('delete game');
-			await this.gameService.delete(waitingGame.id);
-			return 200;
-		}
-
-		console.log('nop');
-		return 400;
-	}
-
 	@SubscribeMessage('keys')
 	async handleKeys(client: Socket, payload: any): Promise<void> {
 		let game = this.game[payload.gameId];
@@ -630,5 +558,91 @@ export class AppGateway
 		await game.save();
 
 		return game.id;
+	}
+
+	@SubscribeMessage('joinGame')
+	async handleJoinWaitRoom(
+		client: Socket,
+		payload: any,
+	): Promise<{
+		action: 'redirect' | 'play' | 'wait' | 'error';
+		newId?: string;
+		message?: string;
+	}> {
+		if (!payload.gameId || !payload.auth)
+			return { action: 'error', message: 'missing data' };
+		const game = await this.gameService.findById(payload.gameId);
+		const user = await this.userService.verify(payload.auth);
+
+		console.log(game.dataValues.id, user.login);
+
+		if (!user) return { action: 'error', message: 'user not recognised' };
+
+		const playableGames = await this.gameService.findPlayable(user.login);
+
+		if (!playableGames.some((g) => g.dataValues.id === game.dataValues.id))
+			return { action: 'error', message: 'game not playable' };
+
+		if (!game.users.some((u) => u.login === user.login))
+			await game.$add('users', user);
+		client.join(`game-${game.id}`);
+
+		if (game.dataValues.users.length === 2) {
+			this.gameService.update({
+				...game,
+				status: 'ongoing',
+			});
+			// this.startGame(game.id, game.users[0].login, game.users[1].login);
+			return { action: 'play' };
+		}
+
+		return { action: 'wait' };
+
+		//TODO: change status to waiting
+
+		// let user = await this.userService.verify(payload.auth);
+		// if (!user) return;
+
+		// let ongoingGames = await this.gameService.findOngoing(
+		// 	user.dataValues.login,
+		// );
+		// if (ongoingGames.length > 0) {
+		// 	client.emit('startGame', {
+		// 		gameId: ongoingGames[0].id,
+		// 		isNew: false,
+		// 	});
+		// 	client.join(`game-${ongoingGames[0].id}`);
+		// 	return;
+		// }
+
+		// let waitingGame = await this.gameService.findWaiting(payload.isRanked);
+		// if (!waitingGame) {
+		// 	waitingGame = await this.gameService.create({
+		// 		isRanked: payload.isRanked,
+		// 		status: 'waiting',
+		// 		users: [],
+		// 		modifiers: [],
+		// 	});
+		// }
+		// waitingGame.$set('users', [...waitingGame.dataValues.users, user]);
+		// await waitingGame.save();
+
+		// client.join(`game-${waitingGame.id}`);
+
+		// if (waitingGame.dataValues.users.length === 2) {
+		// 	await this.gameService.update({
+		// 		id: waitingGame.id,
+		// 		status: 'ongoing',
+		// 	});
+		// 	this.startGame(
+		// 		waitingGame.id,
+		// 		waitingGame.users[0].login,
+		// 		waitingGame.users[1].login,
+		// 	);
+		// 	this.server.to(`game-${waitingGame.id}`).emit('startGame', {
+		// 		gameId: waitingGame.id,
+		// 		isNew: true,
+		// 	});
+		// }
 	}
 }
