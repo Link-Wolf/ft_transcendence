@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./Home";
 import Profile from "./Profile";
 import Header from "./Header";
@@ -9,6 +9,32 @@ import Game from "./Game";
 import Update from "./Update";
 import TFA from "./TFA";
 import CreateGame from "./CreateGame";
+import { useEffect, useState } from "react";
+import socket from "../socket";
+import Cookies from "js-cookie";
+
+const RouteWatcher = ({ children }: { children: JSX.Element[] }) => {
+	const location = useLocation();
+	const [oldLocation, setOldLocation] = useState(location.pathname);
+
+	useEffect(() => {
+		// Check if old location is /game/:id and new location is not /game/:id
+		if (
+			oldLocation.startsWith("/game") &&
+			!location.pathname.startsWith("/game")
+		) {
+			socket.emit("leaveGame", {
+				auth: Cookies.get("token"),
+				gameId: oldLocation.split("/")[
+					oldLocation.split("/").length - 1
+				],
+			});
+		}
+		setOldLocation(location.pathname);
+	}, [location]);
+
+	return <>{children}</>;
+};
 
 const Routage = () => {
 	/**
@@ -16,42 +42,20 @@ const Routage = () => {
 	 */
 	return (
 		<BrowserRouter>
-			<Header />
-			<Routes>
-				<Route
-					path='/'
-					element={<Home />}
-				/>
-				<Route
-					path='/profile/:login'
-					element={<Profile />}
-				/>
-				<Route
-					path='/login'
-					element={<Login />}
-				/>
-				<Route
-					path='/me/update'
-					element={<Update />}
-				/>
-				<Route
-					path='/game/:id'
-					element={<Game />}
-				/>
-				<Route 
-					path='/game'
-					element={<CreateGame />}
-				/>
-				<Route
-					path='/tfa/:login'
-					element={<TFA />}
-				/>
-				<Route
-					path='*'
-					element={<ThereIsNoFuckingPageBro />}
-				/>
-			</Routes>
-			<Chat />
+			<RouteWatcher>
+				<Header />
+				<Routes>
+					<Route path='/' element={<Home />} />
+					<Route path='/profile/:login' element={<Profile />} />
+					<Route path='/login' element={<Login />} />
+					<Route path='/me/update' element={<Update />} />
+					<Route path='/game/:id' element={<Game />} />
+					<Route path='/game' element={<CreateGame />} />
+					<Route path='/tfa/:login' element={<TFA />} />
+					<Route path='*' element={<ThereIsNoFuckingPageBro />} />
+				</Routes>
+				<Chat />
+			</RouteWatcher>
 		</BrowserRouter>
 	);
 };
