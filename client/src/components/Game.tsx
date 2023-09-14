@@ -36,6 +36,7 @@ const Game = () => {
 					},
 					error: any
 				) => {
+					console.log(res);
 					if (error || res.action === "error") {
 						console.log(error || res.message);
 						clearInterval(joinInterval as NodeJS.Timer);

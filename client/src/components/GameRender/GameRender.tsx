@@ -107,11 +107,6 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 			window.innerHeight -
 			getAbsoluteHeight(document.getElementById("header"));
 
-		console.log(
-			window.innerHeight,
-			getAbsoluteHeight(document.getElementById("header"))
-		);
-
 		const game_ratio = game.width / game.height;
 		const view_ratio = view_width / view_height;
 		scale =
@@ -184,7 +179,6 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 
 	return (
 		<Sketch
-			style={{ width: game.width * scale, height: game.height * scale }}
 			setup={setup}
 			draw={draw}
 			windowResized={windowResized}

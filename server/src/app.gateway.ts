@@ -581,8 +581,10 @@ export class AppGateway
 				game.dataValues.users.some(
 					(u) => u.dataValues.login === user.dataValues.login,
 				)
-			)
+			) {
+				client.join(`game-${game.id}`);
 				return { action: 'play' };
+			}
 		}
 
 		const playableGames = await this.gameService.findPlayable(user.login);
