@@ -5,6 +5,7 @@ import style from "./style/App.module.scss";
 import socket from "./socket";
 import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
+import { use } from "matter-js";
 
 export const UserContext = createContext({
 	login: "",
@@ -22,6 +23,24 @@ const App = () => {
 		clearance: 0,
 		theme: localStorage.getItem("theme") || "light",
 	});
+	const location = useLocation();
+	const [oldLocation, setOldLocation] = useState(location.pathname);
+
+	useEffect(() => {
+		// Check if old location is /game/:id and new location is not /game/:id
+		if (
+			oldLocation.startsWith("/game") &&
+			!location.pathname.startsWith("/game")
+		) {
+			socket.emit("leaveGame", {
+				auth: Cookies.get("token"),
+				gameId: oldLocation.split("/")[
+					oldLocation.split("/").length - 1
+				],
+			});
+		}
+		setOldLocation(location.pathname);
+	}, [location]);
 
 	useEffect(() => {
 		const theme = localStorage.getItem("theme");
