@@ -4,6 +4,7 @@ import { DropEvent, useDropzone } from "react-dropzone";
 import { PPDisplayer } from "./ImageDisplayer";
 import { validateImage } from "image-validator";
 import socket from "../socket";
+import { loadImage, createCanvas } from "canvas";
 
 const baseStyle = {
 	flex: 1,
@@ -81,10 +82,61 @@ const PPChanger = ({ login }: { login: string }) => {
 		const file = files[0];
 		if (await validateImage(file)) {
 			setImageError("");
-			setImageSourceToBeSend(file);
-			getBase64(file).then((result) => {
-				setImageSource((result as string).split(",")[1]);
-			});
+
+			const canvas = document.createElement("canvas");
+			canvas.width = 500;
+			canvas.height = 500;
+			const ctx = canvas.getContext("2d");
+			if (!ctx) {
+				setImageError("Error while processing image");
+				setImageSource("");
+				return;
+			}
+			const reader = new FileReader();
+
+			reader.onload = (event) => {
+				const image = new Image();
+				if (event.target === null) {
+					setImageError("Error while processing image");
+					setImageSource("");
+					return;
+				}
+				image.src = event.target.result as string;
+
+				image.onload = () => {
+					const size = Math.min(image.width, image.height);
+					const x = (image.width - size) / 2;
+					const y = (image.height - size) / 2;
+
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					ctx.drawImage(image, x, y, size, size, 0, 0, 500, 500);
+
+					canvas.toBlob((blob) => {
+						if (!blob) return;
+
+						const newFile = new File([blob], file.name, {
+							type: file.type,
+						});
+
+						setImageSourceToBeSend(newFile);
+						getBase64(newFile).then((result) => {
+							setImageSource((result as string).split(",")[1]);
+						});
+					}, "image/jpeg");
+				};
+
+				image.onerror = (error) => {
+					setImageError("Error while processing image");
+					setImageSource("");
+				};
+			};
+
+			reader.onerror = (error) => {
+				setImageError("Error while processing image");
+				setImageSource("");
+			};
+
+			reader.readAsDataURL(file);
 		} else {
 			setImageError("Invalid image");
 			setImageSource("");
@@ -135,11 +187,7 @@ const PPChanger = ({ login }: { login: string }) => {
 
 	return (
 		<>
-			<PPDisplayer
-				login={login}
-				size={200}
-				status={false}
-			>
+			<PPDisplayer login={login} size={200} status={false}>
 				<img
 					src={`data:image/*;base64,${imageSource}`}
 					alt='profile picture'

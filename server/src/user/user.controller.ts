@@ -17,6 +17,7 @@ import { UserClearanceGuard } from '../guards/user_clearance.guard';
 import { ParseBoolPipe } from './user.pipe';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { createCanvas, loadImage } from 'canvas';
 //TODO: uncomment before pushing -> import * as sharp from 'sharp';
 
 @Controller('user')
@@ -163,7 +164,7 @@ export class UserController {
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
-		//TODO: uncomment before pushing
+		// TODO: uncomment before pushing
 		// try {
 		// 	await sharp(avatar.buffer).metadata();
 		// } catch (e) {
@@ -172,10 +173,15 @@ export class UserController {
 		// 		HttpStatus.BAD_REQUEST,
 		// 	);
 		// }
+		const buffer = Buffer.from(avatar.buffer);
+		const image = await loadImage(buffer);
+		const canvas = createCanvas(500, 500);
+		canvas.getContext('2d').drawImage(image, 0, 0, 500, 500);
+		const pp = canvas.toDataURL().split(',')[1];
 
 		let ret = await this.userService.updateProfilePicture({
 			login: login,
-			avatar: avatar.buffer.toString('base64'),
+			avatar: pp,
 		});
 		return ret;
 	}
