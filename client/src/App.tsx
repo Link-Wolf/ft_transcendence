@@ -4,6 +4,7 @@ import { createContext, useEffect, useState } from "react";
 import style from "./style/App.module.scss";
 import socket from "./socket";
 import Cookies from "js-cookie";
+import { useLocation } from "react-router-dom";
 
 export const UserContext = createContext({
 	login: "",
@@ -52,6 +53,11 @@ const App = () => {
 	}, []);
 
 	const toggleTheme = () => {
+		let light = document.getElementById("light");
+		if (light) {
+			if (clearance.theme === "light") light.style.opacity = "0";
+			else light.style.opacity = "1";
+		}
 		setClearance((clearance) => {
 			return {
 				...clearance,
@@ -102,13 +108,17 @@ const App = () => {
 	}, [update]);
 
 	return (
-		<div className={clearance.theme === "light" ? style.light : style.dark}>
-			<UserContext.Provider
-				value={{ ...clearance, toggleTheme: toggleTheme }}
-			>
-				<Routage />
-			</UserContext.Provider>
-		</div>
+		<>
+			<div id='dark' className={style.dark}></div>
+			<div id='light' className={style.light}></div>
+			<div>
+				<UserContext.Provider
+					value={{ ...clearance, toggleTheme: toggleTheme }}
+				>
+					<Routage />
+				</UserContext.Provider>
+			</div>
+		</>
 	);
 };
 
