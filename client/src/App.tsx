@@ -15,14 +15,25 @@ export const UserContext = createContext({
 
 const App = () => {
 	const [update, setUpdate] = useState(true);
+	const [hasAnimation, setHasAnimation] = useState(false);
 	const [clearance, setClearance] = useState({
 		login: "",
 		name: "",
 		clearance: 0,
-		theme: "light",
+		theme: localStorage.getItem("theme") || "light",
 	});
 
 	useEffect(() => {
+		const theme = localStorage.getItem("theme");
+		if (theme) {
+			setHasAnimation(false);
+			let light = document.getElementById("light");
+			if (!light) return;
+			if (theme === "dark") {
+				light.style.opacity = "0";
+			}
+		}
+
 		socket.on("connect", () => {
 			socket.emit("log", {
 				auth: Cookies.get("token"),
@@ -53,11 +64,16 @@ const App = () => {
 	}, []);
 
 	const toggleTheme = () => {
+		setHasAnimation(true);
 		let light = document.getElementById("light");
 		if (light) {
 			if (clearance.theme === "light") light.style.opacity = "0";
 			else light.style.opacity = "1";
 		}
+		localStorage.setItem(
+			"theme",
+			clearance.theme === "light" ? "dark" : "light"
+		);
 		setClearance((clearance) => {
 			return {
 				...clearance,
@@ -110,7 +126,10 @@ const App = () => {
 	return (
 		<>
 			<div id='dark' className={style.dark}></div>
-			<div id='light' className={style.light}></div>
+			<div
+				id='light'
+				className={`${style.light} ${hasAnimation && style.animation}`}
+			></div>
 			<div>
 				<UserContext.Provider
 					value={{ ...clearance, toggleTheme: toggleTheme }}
