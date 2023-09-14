@@ -576,7 +576,7 @@ export class AppGateway
 
 		if (!user) return { action: 'error', message: 'user not recognised' };
 
-		if (game.dataValues.status !== 'waiting') {
+		if (game.dataValues.status === 'ongoing') {
 			if (
 				game.dataValues.users.some(
 					(u) => u.dataValues.login === user.dataValues.login,
