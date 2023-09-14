@@ -16,7 +16,6 @@ const Game = () => {
 	let joinInterval: NodeJS.Timer;
 
 	const cancelSearch = () => {
-		clearInterval(joinInterval as NodeJS.Timer);
 		navigate("/");
 	};
 
@@ -66,7 +65,7 @@ const Game = () => {
 		};
 	}, []);
 
-	if (loading) return <WaitingForMatch cancelSearch={() => {}} />;
+	if (loading) return <WaitingForMatch cancelSearch={cancelSearch} />;
 	return <GameRender gameId={gameId as string} />;
 };
 

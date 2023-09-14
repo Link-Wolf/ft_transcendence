@@ -655,4 +655,25 @@ export class AppGateway
 		// 	});
 		// }
 	}
+
+	@SubscribeMessage('leaveGame')
+	async handleLeaveGame(client: Socket, payload: any): Promise<void> {
+		let user = await this.userService.verify(payload.auth);
+		if (!user) return;
+
+		let game = await this.gameService.findById(payload.gameId);
+		if (!game) return;
+
+		if (game.dataValues.status === 'ongoing') {
+			this.abortGame(this.game[game.dataValues.id], user.login);
+			return;
+		}
+
+		await game.$remove('users', user);
+		await game.save();
+
+		if (game.dataValues.users.length === 0) {
+			await this.gameService.delete(game.id);
+		}
+	}
 }
