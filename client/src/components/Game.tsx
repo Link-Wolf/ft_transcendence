@@ -22,7 +22,6 @@ const Game = () => {
 
 	useEffect(() => {
 		const joinGame = () => {
-			console.log(joinInterval);
 			socket.emit(
 				"joinGame",
 				{
@@ -37,7 +36,12 @@ const Game = () => {
 					},
 					error: any
 				) => {
-					if (error) return;
+					if (error || res.action === "error") {
+						console.log(error || res.message);
+						clearInterval(joinInterval as NodeJS.Timer);
+						navigate("/");
+						return;
+					}
 					if (res.action === "redirect") {
 						clearInterval(joinInterval as NodeJS.Timer);
 						navigate(`/game/${res.newId}`);
