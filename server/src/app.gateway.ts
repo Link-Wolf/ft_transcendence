@@ -516,25 +516,25 @@ export class AppGateway
 			user.login,
 		);
 
-		// Check if the player is currently playing a game
-		let ongoingGames = games.filter(
-			(g) => g.dataValues.game.status === 'ongoing',
-		);
-		if (ongoingGames.length > 0) {
-			return ongoingGames[0].dataValues.game.id;
-		}
+		// // Check if the player is currently playing a game
+		// let ongoingGames = games.filter(
+		// 	(g) => g.dataValues.game.status === 'ongoing',
+		// );
+		// if (ongoingGames.length > 0) {
+		// 	return ongoingGames[0].dataValues.game.id;
+		// }
 
-		// Check if the player is waiting for a game that has the same modifiers and ranked status
-		games = games.filter(
-			(g) => g.dataValues.game.dataValues.isRanked === payload.isRanked,
-		);
-		games = games.filter((g) => {
-			return (
-				(g.dataValues.game.dataValues.modifiers ?? [])
-					.map((mod) => mod.dataValues.id)
-					.sort() === payload.modifierIds.sort()
-			);
-		});
+		// // Check if the player is waiting for a game that has the same modifiers and ranked status
+		// games = games.filter(
+		// 	(g) => g.dataValues.game.dataValues.isRanked === payload.isRanked,
+		// );
+		// games = games.filter((g) => {
+		// 	return (
+		// 		(g.dataValues.game.dataValues.modifiers ?? [])
+		// 			.map((mod) => mod.dataValues.id)
+		// 			.sort() === payload.modifierIds.sort()
+		// 	);
+		// });
 		if (games.length > 0) {
 			return games[0].dataValues.game.id;
 		}
