@@ -130,7 +130,7 @@ const App = () => {
 				id='light'
 				className={`${style.light} ${hasAnimation && style.animation}`}
 			></div>
-			<div>
+			<div className={style.container}>
 				<UserContext.Provider
 					value={{ ...clearance, toggleTheme: toggleTheme }}
 				>

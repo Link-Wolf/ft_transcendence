@@ -87,11 +87,31 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 		game = { ...game, ...data };
 	});
 
+	function getAbsoluteHeight(el: HTMLElement | null): number {
+		// Get the DOM Node if you pass in a string
+		if (!el) return 0;
+		var elHeight = el.offsetHeight;
+		elHeight += parseInt(
+			window.getComputedStyle(el).getPropertyValue("margin-top")
+		);
+		elHeight += parseInt(
+			window.getComputedStyle(el).getPropertyValue("margin-bottom")
+		);
+
+		return elHeight;
+	}
+
 	const calculateScale = () => {
 		const view_width = window.innerWidth;
 		const view_height =
 			window.innerHeight -
-			(document.getElementById("header")?.offsetHeight || 0);
+			getAbsoluteHeight(document.getElementById("header"));
+
+		console.log(
+			window.innerHeight,
+			getAbsoluteHeight(document.getElementById("header"))
+		);
+
 		const game_ratio = game.width / game.height;
 		const view_ratio = view_width / view_height;
 		scale =
@@ -164,6 +184,7 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 
 	return (
 		<Sketch
+			style={{ width: game.width * scale, height: game.height * scale }}
 			setup={setup}
 			draw={draw}
 			windowResized={windowResized}
