@@ -35,7 +35,7 @@ const PlayableGamesList = () => {
 			{playableGames.map((game: any, i: number) => (
 				<ul key={i}>
 					<li>
-						{game.isRanked ? "" : "Un"}ranked
+						{game.id} : {game.isRanked ? "" : "Un"}ranked
 						<ul>
 							{game.modifiers.map((modifier: any, j: number) => (
 								<li key={j}>{modifier.name}</li>
