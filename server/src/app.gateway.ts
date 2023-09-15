@@ -468,88 +468,7 @@ export class AppGateway
 	}
 	//#endregion
 
-	/*********************************************************
-	 * 														 *
-	 * 					STATUS HANDLING						 *
-	 * 					            						 *
-	 ********************************************************/
-
-	handleConnection(client: Socket) {}
-
-	private status: {
-		[login: string]: {
-			status: string;
-			socketId: string;
-		};
-	} = {};
-
-	@SubscribeMessage('getStatus')
-	async handleGetStatus(client: Socket, payload: any): Promise<string> {
-		if (!this.status[payload.login]) return 'offline';
-		return this.status[payload.login].status;
-	}
-
-	statusUpdate = async (login: string, status: string, socketId: string) => {
-		this.status[login] = {
-			status: status,
-			socketId: socketId,
-		};
-
-		this.server.emit('statusUpdate', {
-			login: login,
-			status: status,
-		});
-
-		this.logger.log(`User ${login} is now ${status} on socket ${socketId}`);
-	};
-
-	async handleDisconnect(client: Socket, ...args: any[]) {
-		// find the key of the status array that has the same socketId as client.id
-		const login = Object.keys(this.status).find(
-			(key) => this.status[key].socketId === client.id,
-		);
-		if (!login) return;
-
-		let games = await this.userGameService.findNotFinishedByLogin(login);
-		games
-			.filter((g) => g.dataValues.game.status === 'waiting')
-			.forEach((g) => {
-				this.gameService.delete(g.dataValues.game.id);
-			});
-
-		await this.statusUpdate(login, 'offline', null);
-	}
-
-	@SubscribeMessage('log')
-	async handleLog(client: Socket, payload: any): Promise<void> {
-		let user = await this.userService.verify(payload.auth);
-		if (!user) return;
-
-		await this.statusUpdate(user.login, 'online', client.id);
-	}
-
-	@SubscribeMessage('away')
-	async handleAway(client: Socket, payload: any): Promise<void> {
-		let user = await this.userService.verify(payload.auth);
-		if (!user) return;
-
-		await this.statusUpdate(user.login, 'away', client.id);
-	}
-
-	@SubscribeMessage('back')
-	async handleBack(client: Socket, payload: any): Promise<void> {
-		let user = await this.userService.verify(payload.auth);
-		if (!user) return;
-
-		await this.statusUpdate(user.login, 'online', client.id);
-	}
-
-	/*********************************************************
-	 * 														 *
-	 * 		        GAME CONNECTION HANDLING				 *
-	 * 					            						 *
-	 ********************************************************/
-
+	//#region GAME CONNECTION HANDLING
 	@SubscribeMessage('createGame')
 	async createGame(client: Socket, payload: any): Promise<string> {
 		let user = await this.userService.verify(payload.auth);
@@ -559,25 +478,6 @@ export class AppGateway
 			user.login,
 		);
 
-		// // Check if the player is currently playing a game
-		// let ongoingGames = games.filter(
-		// 	(g) => g.dataValues.game.status === 'ongoing',
-		// );
-		// if (ongoingGames.length > 0) {
-		// 	return ongoingGames[0].dataValues.game.id;
-		// }
-
-		// // Check if the player is waiting for a game that has the same modifiers and ranked status
-		// games = games.filter(
-		// 	(g) => g.dataValues.game.dataValues.isRanked === payload.isRanked,
-		// );
-		// games = games.filter((g) => {
-		// 	return (
-		// 		(g.dataValues.game.dataValues.modifiers ?? [])
-		// 			.map((mod) => mod.dataValues.id)
-		// 			.sort() === payload.modifierIds.sort()
-		// 	);
-		// });
 		if (games.length > 0) {
 			return games[0].dataValues.game.id;
 		}
@@ -654,53 +554,6 @@ export class AppGateway
 		}
 
 		return { action: 'wait' };
-
-		//TODO: change status to waiting
-
-		// let user = await this.userService.verify(payload.auth);
-		// if (!user) return;
-
-		// let ongoingGames = await this.gameService.findOngoing(
-		// 	user.dataValues.login,
-		// );
-		// if (ongoingGames.length > 0) {
-		// 	client.emit('startGame', {
-		// 		gameId: ongoingGames[0].id,
-		// 		isNew: false,
-		// 	});
-		// 	client.join(`game-${ongoingGames[0].id}`);
-		// 	return;
-		// }
-
-		// let waitingGame = await this.gameService.findWaiting(payload.isRanked);
-		// if (!waitingGame) {
-		// 	waitingGame = await this.gameService.create({
-		// 		isRanked: payload.isRanked,
-		// 		status: 'waiting',
-		// 		users: [],
-		// 		modifiers: [],
-		// 	});
-		// }
-		// waitingGame.$set('users', [...waitingGame.dataValues.users, user]);
-		// await waitingGame.save();
-
-		// client.join(`game-${waitingGame.id}`);
-
-		// if (waitingGame.dataValues.users.length === 2) {
-		// 	await this.gameService.update({
-		// 		id: waitingGame.id,
-		// 		status: 'ongoing',
-		// 	});
-		// 	this.startGame(
-		// 		waitingGame.id,
-		// 		waitingGame.users[0].login,
-		// 		waitingGame.users[1].login,
-		// 	);
-		// 	this.server.to(`game-${waitingGame.id}`).emit('startGame', {
-		// 		gameId: waitingGame.id,
-		// 		isNew: true,
-		// 	});
-		// }
 	}
 
 	@SubscribeMessage('leaveGame')
@@ -715,4 +568,84 @@ export class AppGateway
 			this.gameService.delete(game.id);
 		}
 	}
+	//#endregion
+
+	//#region STATUS HANDLING
+	/*********************************************************
+	 * 														 *
+	 * 					STATUS HANDLING						 *
+	 * 					            						 *
+	 ********************************************************/
+
+	handleConnection(client: Socket) {}
+
+	private status: {
+		[login: string]: {
+			status: string;
+			socketId: string;
+		};
+	} = {};
+
+	@SubscribeMessage('getStatus')
+	async handleGetStatus(client: Socket, payload: any): Promise<string> {
+		if (!this.status[payload.login]) return 'offline';
+		return this.status[payload.login].status;
+	}
+
+	statusUpdate = async (login: string, status: string, socketId: string) => {
+		this.status[login] = {
+			status: status,
+			socketId: socketId,
+		};
+
+		this.server.emit('statusUpdate', {
+			login: login,
+			status: status,
+		});
+
+		this.logger.log(`User ${login} is now ${status} on socket ${socketId}`);
+	};
+
+	async handleDisconnect(client: Socket, ...args: any[]) {
+		// find the key of the status array that has the same socketId as client.id
+		const login = Object.keys(this.status).find(
+			(key) => this.status[key].socketId === client.id,
+		);
+		if (!login) return;
+
+		let games = await this.userGameService.findNotFinishedByLogin(login);
+		games
+			.filter((g) => g.dataValues.game.status === 'waiting')
+			.forEach((g) => {
+				this.gameService.delete(g.dataValues.game.id);
+			});
+
+		await this.statusUpdate(login, 'offline', null);
+	}
+
+	@SubscribeMessage('log')
+	async handleLog(client: Socket, payload: any): Promise<void> {
+		let user = await this.userService.verify(payload.auth);
+		if (!user) return;
+
+		await this.statusUpdate(user.login, 'online', client.id);
+	}
+
+	@SubscribeMessage('away')
+	async handleAway(client: Socket, payload: any): Promise<void> {
+		let user = await this.userService.verify(payload.auth);
+		if (!user) return;
+
+		await this.statusUpdate(user.login, 'away', client.id);
+	}
+
+	@SubscribeMessage('back')
+	async handleBack(client: Socket, payload: any): Promise<void> {
+		let user = await this.userService.verify(payload.auth);
+		if (!user) return;
+
+		await this.statusUpdate(user.login, 'online', client.id);
+	}
+
+	//#endregion
 }
