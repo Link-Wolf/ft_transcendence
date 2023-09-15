@@ -13,6 +13,7 @@ import { UserService } from './user/user.service';
 import { UserGameService } from './user-game/user-game.service';
 import { HttpException } from '@nestjs/common';
 import { ModifierService } from './modifier/modifier.service';
+import { Modifier } from './modifier/modifier.entity';
 
 type Player = {
 	paddle: {
@@ -49,23 +50,44 @@ type Ball = {
 	};
 };
 
+type Obstacle = {
+	points: { x: number; y: number }[];
+};
+
+type PowerUps = {
+	position: { x: number; y: number };
+	size: { radius: number };
+	effect: (game: GameData) => void;
+};
+
 type GameData = {
+	// stuff to draw and physics
 	players: Player[];
-	ball: Ball;
+	balls: Ball[];
+	obstacles: Obstacle[];
+	powerUps: PowerUps[];
+
+	// turn logic
 	turn: number;
 	playerToStart: number;
 	isTurnStarted: boolean;
-	gameId: string;
-	lastTimestamp: number;
-	height: number;
-	width: number;
 	status: {
 		ended: boolean;
 		winner: number;
 		gonePlayer: number;
 	};
+
+	// frame logic
+	lastTimestamp: number;
+
+	// game data (fixed)
+	gameId: string;
+	modifiers?: Modifier[];
+	height: number;
+	width: number;
 	loop: NodeJS.Timeout;
 };
+
 @WebSocketGateway({
 	cors: {
 		origin: '*',
@@ -87,6 +109,7 @@ export class AppGateway
 
 	afterInit(server: Server) {}
 
+	//#region GLOBAL SOCKET HANDLING
 	/*********************************************************
 	 * 														 *
 	 * 				GLOBAL SOCKET HANDLING 					 *
@@ -111,6 +134,7 @@ export class AppGateway
 	async handleContextUpdate(client: Socket, payload: any) {
 		client.emit('contextUpdate', payload);
 	}
+	//#endregion
 
 	/*********************************************************
 	 * 														 *
@@ -118,8 +142,18 @@ export class AppGateway
 	 * 					            						 *
 	 ********************************************************/
 
-	//TODO: handle properly quittage de game en cours -> plein de trucs a devoir gerer
 	private game: GameData[] = [];
+
+	//#region INPUTS HANDLING
+	@SubscribeMessage('keys')
+	async handleKeys(client: Socket, payload: any): Promise<void> {
+		let game = this.game[payload.gameId];
+		if (!game) return;
+		let player = game.players.find((p) => p.login === payload.login);
+		if (!player) return;
+		player.inputs = payload.keys;
+		player.lastInput = Date.now();
+	}
 
 	handleInputs(game: GameData) {
 		game.players.forEach((player) => {
@@ -136,7 +170,19 @@ export class AppGateway
 		});
 	}
 
-	moveBall(dt: number, game: GameData) {
+	handleStartTurn(game: GameData) {
+		if (game.isTurnStarted) return;
+		let inputs = game.players[game.playerToStart].inputs;
+		if (inputs.includes(32)) {
+			//SPACE
+			game.isTurnStarted = true;
+			game.turn++;
+		}
+	}
+	//#endregion
+
+	//#region MOVEMENT & POSITION HANDLING
+	moveBalls(dt: number, game: GameData) {
 		game.ball.position.x += game.ball.velocity.dx * dt;
 		game.ball.position.y += game.ball.velocity.dy * dt;
 	}
@@ -180,6 +226,63 @@ export class AppGateway
 		});
 	}
 
+	newGame(
+		gameId: string,
+		player1: string,
+		player2: string,
+		modifiers: Modifier[],
+	): GameData {
+		const width = 800; //TODO: check for modifiers and adapt if needed
+		const height = 600; //TODO: check for modifiers and adapt if needed
+		return {
+			gameId: gameId,
+			players: [
+				{
+					login: player1,
+					score: 0,
+					paddle: {
+						position: { x: -width / 2 + 10, y: 0 },
+						size: { w: 10, h: 50 },
+						velocity: { dx: 0, dy: 0 },
+					},
+					inputs: [],
+					lastInput: Date.now(),
+				},
+				{
+					login: player2,
+					score: 0,
+					paddle: {
+						position: { x: width / 2 - 10, y: 0 },
+						size: { w: 10, h: 50 },
+						velocity: { dx: 0, dy: 0 },
+					},
+					inputs: [],
+					lastInput: Date.now(),
+				},
+			],
+			ball: {
+				position: { x: 0, y: 0 },
+				velocity: { dx: 0, dy: 0 },
+				size: { radius: 5 },
+			},
+			width: width,
+			height: height,
+			lastTimestamp: Date.now(),
+			playerToStart: 0,
+			isTurnStarted: false,
+			turn: 0,
+			status: {
+				ended: false,
+				winner: null,
+				gonePlayer: null,
+			},
+			loop: null,
+			modifiers: modifiers,
+		};
+	}
+	//#endregion
+
+	//#region COLLISIONS HANDLING
 	bounceOnWalls = (game: GameData) => {
 		//get all values in shorter variables
 		const ballY = game.ball.position.y;
@@ -270,82 +373,17 @@ export class AppGateway
 		// score on player 1 goal
 		if (game.ball.position.x > game.width / 2) checkForScore(0);
 	}
+	//#endregion
 
-	handleStartTurn(game: GameData) {
-		if (game.isTurnStarted) return;
-		let inputs = game.players[game.playerToStart].inputs;
-		if (inputs.includes(32)) {
-			//SPACE
-			game.isTurnStarted = true;
-			game.turn++;
-		}
-	}
-
-	newGame(gameId: string, player1: string, player2: string): GameData {
-		const width = 800; //TODO: check for modifiers and adapt if needed
-		const height = 600; //TODO: check for modifiers and adapt if needed
-		return {
-			gameId: gameId,
-			players: [
-				{
-					login: player1,
-					score: 0,
-					paddle: {
-						position: { x: -width / 2 + 10, y: 0 },
-						size: { w: 10, h: 50 },
-						velocity: { dx: 0, dy: 0 },
-					},
-					inputs: [],
-					lastInput: Date.now(),
-				},
-				{
-					login: player2,
-					score: 0,
-					paddle: {
-						position: { x: width / 2 - 10, y: 0 },
-						size: { w: 10, h: 50 },
-						velocity: { dx: 0, dy: 0 },
-					},
-					inputs: [],
-					lastInput: Date.now(),
-				},
-			],
-			ball: {
-				position: { x: 0, y: 0 },
-				velocity: { dx: 0, dy: 0 },
-				size: { radius: 5 },
-			},
-			width: width,
-			height: height,
-			lastTimestamp: Date.now(),
-			playerToStart: 0,
-			isTurnStarted: false,
-			turn: 0,
-			status: {
-				ended: false,
-				winner: null,
-				gonePlayer: null,
-			},
-			loop: null,
-		};
-	}
-
-	abortGame(game: GameData, player: number | string) {
-		if (typeof player === 'string') {
-			player = game.players.findIndex((p) => p.login === player);
-		}
-
-		game.players[1 - player].score = 11;
-		game.status.winner = 1 - player;
-		game.players[player].score = 0;
-		game.status.ended = true;
-		this.server.to(`game-${game.gameId}`).emit('gameUpdate', game);
-		this.stopGame(game, true);
-	}
-
-	startGame(gameId: string, player1: string, player2: string) {
+	//#region BORING STUFF
+	startGame(
+		gameId: string,
+		player1: string,
+		player2: string,
+		modifiers: Modifier[],
+	) {
 		this.game.length = this.game?.length | (0 + 1);
-		this.game[gameId] = this.newGame(gameId, player1, player2);
+		this.game[gameId] = this.newGame(gameId, player1, player2, modifiers);
 		let game = this.game[gameId];
 		this.resetBall(game);
 		this.resetPaddles(game);
@@ -380,11 +418,24 @@ export class AppGateway
 			this.handleInputs(game);
 			this.movePaddles(dt, game);
 			if (game.isTurnStarted) {
-				this.moveBall(dt, game);
+				this.moveBalls(dt, game);
 				this.checkCollisions(game);
 			} else this.handleStartTurn(game);
 			this.server.to(`game-${gameId}`).emit('gameUpdate', game);
-		}, 16);
+		}, 16 /* 60 fps */);
+	}
+
+	abortGame(game: GameData, player: number | string) {
+		if (typeof player === 'string') {
+			player = game.players.findIndex((p) => p.login === player);
+		}
+
+		game.players[1 - player].score = 11;
+		game.status.winner = 1 - player;
+		game.players[player].score = 0;
+		game.status.ended = true;
+		this.server.to(`game-${game.gameId}`).emit('gameUpdate', game);
+		this.stopGame(game, true);
 	}
 
 	stopGame(game: GameData, abandoned = false) {
@@ -415,16 +466,7 @@ export class AppGateway
 			user: dbUser1,
 		});
 	}
-
-	@SubscribeMessage('keys')
-	async handleKeys(client: Socket, payload: any): Promise<void> {
-		let game = this.game[payload.gameId];
-		if (!game) return;
-		let player = game.players.find((p) => p.login === payload.login);
-		if (!player) return;
-		player.inputs = payload.keys;
-		player.lastInput = Date.now();
-	}
+	//#endregion
 
 	/*********************************************************
 	 * 														 *
@@ -602,7 +644,12 @@ export class AppGateway
 				...game.dataValues,
 				status: 'ongoing',
 			});
-			this.startGame(game.id, game.users[0].login, game.users[1].login);
+			this.startGame(
+				game.id,
+				game.users[0].login,
+				game.users[1].login,
+				game.dataValues.modifiers,
+			);
 			return { action: 'play' };
 		}
 
