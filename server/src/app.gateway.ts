@@ -462,17 +462,18 @@ export class AppGateway
 	};
 
 	async handleDisconnect(client: Socket, ...args: any[]) {
-		let login = Object.keys(this.status).find((login) => {
-			this.status[login].socketId === client.id;
-		});
+		// find the key of the status array that has the same socketId as client.id
+		const login = Object.keys(this.status).find(
+			(key) => this.status[key].socketId === client.id,
+		);
 		if (!login) return;
 
-		let game = this.game.find((g) => {
-			return g.players.find((p) => p.login === login);
-		});
-		if (game) {
-			this.abortGame(game, login);
-		}
+		let games = await this.userGameService.findNotFinishedByLogin(login);
+		games
+			.filter((g) => g.dataValues.game.status === 'waiting')
+			.forEach((g) => {
+				this.gameService.delete(g.dataValues.game.id);
+			});
 
 		await this.statusUpdate(login, 'offline', null);
 	}
@@ -568,13 +569,13 @@ export class AppGateway
 		newId?: string;
 		message?: string;
 	}> {
-		console.log('joinGame', payload);
 		if (!payload.gameId || !payload.auth)
 			return { action: 'error', message: 'missing data' };
 		const game = await this.gameService.findById(payload.gameId);
 		const user = await this.userService.verify(payload.auth);
 
 		if (!user) return { action: 'error', message: 'user not recognised' };
+		if (!game) return { action: 'error', message: 'game not recognised' }; //NOTE: might change that to a redirect to create a game with the same modifiers, but need to have the modifiers in the payload
 
 		if (game.dataValues.status === 'ongoing') {
 			if (
@@ -597,7 +598,6 @@ export class AppGateway
 		client.join(`game-${game.id}`);
 
 		if (game.dataValues.users.length === 2) {
-			console.log('game', game);
 			this.gameService.update({
 				...game.dataValues,
 				status: 'ongoing',

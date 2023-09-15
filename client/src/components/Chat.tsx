@@ -8,12 +8,12 @@ const Chat = () => {
 	/**
 	 * Chat component, display the chatbox if the user is logged in and not on the game page
 	 */
-	const [chat, setChat] = useState(false);
+
 	const user = useContext(UserContext);
 	const location = useLocation();
 
 	const toggleChat = () => {
-		setChat(!chat);
+		user.setChat(!user.chat);
 	};
 
 	if (
@@ -28,7 +28,7 @@ const Chat = () => {
 
 	return (
 		<div className={style.chat}>
-			{chat ? (
+			{user.chat ? (
 				<ChatBox toggleChat={toggleChat} />
 			) : (
 				<ChatButton onClick={toggleChat} />
