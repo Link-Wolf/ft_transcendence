@@ -93,7 +93,6 @@ export class UserGameService {
 				include: [{ all: true }],
 			});
 			return ret.filter((userGame) => {
-				console.log(userGame.dataValues);
 				return (
 					userGame.dataValues.game.dataValues.status !== 'finished' &&
 					userGame.dataValues.game.dataValues.status !== 'abandoned'
