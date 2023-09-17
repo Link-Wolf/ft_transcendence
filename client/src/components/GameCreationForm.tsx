@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import style from "../style/Game.module.scss";
 
+import DefaultSlowSmall from "../assets/GameSelect/Default-slow-small.gif";
+import CitySlowSmall from "../assets/GameSelect/City-slow-small.gif";
+
 const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	const [modifiers, setModifiers] = useState<any[]>([]);
 	const [selectedModifiers, setSelectedModifiers] = useState<number[]>([]);
@@ -30,9 +33,38 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 			.catch((err) => console.log(err));
 	}, []);
 
+	console.log(selectedModifiers);
+	console.log(selectedModifiers);
 	return (
 		<>
-			<img src='https://i.guim.co.uk/img/media/6cf6afdd050888ac3060479f9f28cefbb8b62316/43_0_1200_720/master/1200.jpg?width=700&quality=85&auto=format&fit=max&s=beb175cb86dd5093fcd23f42bed9565b' />
+			{
+			selectedModifiers.find((id) => id === 1) != 1 ?
+			selectedModifiers.find((id) => id === 2) == 2 ?
+					selectedMap === -1 ? 
+						<div className={style.gamemapDefaultSpeed}></div> :
+						selectedMap === 3 ? 
+							<div className={style.gamemapCitySpeed}></div> :
+						<div className={style.gamemapVoidSpeed}></div>
+					:
+					selectedMap === -1 ? 
+						<div className={style.gamemapDefault}></div> :
+						selectedMap === 3 ? 
+							<div className={style.gamemapCity}></div> :
+						<div className={style.gamemapVoid}></div>	
+				:
+			selectedModifiers.find((id) => id === 2) == 2 ?
+					selectedMap === -1 ? 
+						<div className={style.gamemapDefaultSpeedLarge}></div> :
+						selectedMap === 3 ? 
+							<div className={style.gamemapCitySpeedLarge}></div> :
+						<div className={style.gamemapVoidSpeedLarge}></div>
+					:
+					selectedMap === -1 ? 
+						<div className={style.gamemapDefaultLarge}></div> :
+						selectedMap === 3 ? 
+							<div className={style.gamemapCityLarge}></div> :
+						<div className={style.gamemapVoidLarge}></div>
+					}
 			<label
 				className={style.gameselect}
 				style={isRanked ? selectedStyle : unselectedStyle}
@@ -158,6 +190,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 								</Tooltip>
 							</label>
 						))}
+
 				</>
 			)}
 
@@ -176,6 +209,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 			>
 				<button className={style.button}>Create Game</button>
 			</Link>
+
 		</>
 	);
 };

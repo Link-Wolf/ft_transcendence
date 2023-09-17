@@ -48,7 +48,7 @@
 	border: 4px solid #f8f8f8;
 	border-left: 10px solid #f8f8f8;
 	border-right: 10px solid #f8f8f8;
-	border-radius: 25px;
+	sborder-radius: 25px;
 	background-color: rgba($color: #000000, $alpha: 0);
 	padding: 5px 20px 5px 20px;
 	color: #f8f8f8;
@@ -64,4 +64,233 @@
 	font-size: 18px; 
 }
 
+.gamemapDefault {
+	background-color: #0000ff;
+	background: url('../assets/GameSelect/Default-slow-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	// background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
 
+	border-radius: 50px;
+	opacity: 0.8;
+
+}
+
+.gamemapVoid {
+	background-color: #00ff00;
+	background: url('../assets/GameSelect/Void-slow-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	// background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+
+
+
+}
+
+.gamemapCity {
+	background-color: #ff0000;
+	background: url('../assets/GameSelect/City-slow-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	// background-size: contain;
+	width:700px;
+	height: 400px;
+
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+	
+}
+
+
+.gamemapDefaultSpeed {
+	background-color: #0000ff;
+	background: url('../assets/GameSelect/Default-speed-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	// background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+
+}
+
+.gamemapVoidSpeed {
+	background-color: #00ff00;
+	background: url('../assets/GameSelect/Void-speed-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	// background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+
+
+
+}
+
+.gamemapCitySpeed {
+	background-color: #ff0000;
+	background: url('../assets/GameSelect/City-speed-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	// background-size: contain;
+	width:700px;
+	height: 400px;
+
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+	
+}
+
+
+.gamemapDefaultLarge {
+	background-color: #0000ff;
+	background: url('../assets/GameSelect/Default-slow-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+
+}
+
+.gamemapVoidLarge {
+	background-color: #00ff00;
+	background: url('../assets/GameSelect/Void-slow-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+
+
+
+}
+
+.gamemapCityLarge {
+	background-color: #ff0000;
+	background: url('../assets/GameSelect/City-slow-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	width:700px;
+	height: 400px;
+
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+	
+}
+
+
+.gamemapDefaultSpeedLarge {
+	background-color: #0000ff;
+	background: url('../assets/GameSelect/Default-speed-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+
+}
+
+.gamemapVoidSpeedLarge {
+	background-color: #00ff00;
+	background: url('../assets/GameSelect/Void-speed-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	width:700px;
+	height: 400px;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+
+
+
+}
+
+.gamemapCitySpeedLarge {
+	background-color: #ff0000;
+	background: url('../assets/GameSelect/City-speed-small.gif');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	width:700px;
+	height: 400px;
+
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+	border-radius: 50px;
+	opacity: 0.8;
+	
+}
