@@ -157,6 +157,27 @@ export class GameService {
 	}
 
 	/**
+	 * @brief	Find all games in which a user is invited
+	 * @param login The login of the user
+	 * @return {Game[]} List of games
+	 * @throws {HttpException} 500 if an error occured
+	 */
+	async findInvitation(login: string): Promise<Game[]> {
+		try {
+			let ret = await this.gameRepository.findAll<Game>({
+				include: [{ all: true }],
+				where: {
+					status: 'invitation',
+					invitee: login,
+				},
+			});
+			return ret;
+		} catch (err) {
+			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
 	 * @brief   Create a game with sequelize
 	 * @param   {GameDto} gameDto   The game to create
 	 * @return  {Game}              The created game

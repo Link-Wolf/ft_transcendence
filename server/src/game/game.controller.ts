@@ -46,13 +46,30 @@ export class GameController {
 	}
 
 	/**
-	 *
-	 * @param login TODO:
+	 * @brief Get games where the player is invited
+	 * @param login - Player login
+	 * @return {Game[]} Games where the player is invited
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 400 - Bad Request
+	 * @response 401 - Unauthorized
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
 	 */
-	@Get('invitation/:login')
+	@Get('invitations/:login')
 	@UseGuards(UserClearanceGuard)
 	async findInvitation(@Param('login') login: string): Promise<Game[]> {
-		throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
+		if (!login) {
+			throw new HttpException(
+				'Missing parameters',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		let player = await this.userService.findByLogin(login);
+		if (!player) {
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		}
+		return await this.gameService.findInvitation(login);
 	}
 
 	/**
