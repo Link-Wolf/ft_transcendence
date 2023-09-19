@@ -91,7 +91,7 @@ export class FriendshipService {
 		try {
 			return await this.friendshipRepository.findAll<Friendship>({
 				where: {
-					receiver: login,
+					receiverLogin: login,
 					isPending: true,
 				},
 				include: [{ all: true }],
