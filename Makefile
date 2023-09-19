@@ -21,6 +21,7 @@ start:
 	docker-compose start
 
 fclean: clean
+	docker volume rm -f ft_transcendence_database_data
 	docker system prune -fa --volumes
 
 .PHONY: all up re clean stop start
