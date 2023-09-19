@@ -54,7 +54,9 @@ type Ball = {
 };
 
 type Obstacle = {
-	points: { x: number; y: number }[];
+	shape: 'circle' | 'rectangle';
+	center: { x: number; y: number };
+	size: { w: number; h: number };
 	effect: (game: GameData) => void;
 };
 
@@ -279,44 +281,7 @@ export class AppGateway
 				},
 			],
 			powerUps: [],
-			obstacles: [
-				{
-					//player 0 goal (left)
-					points: [
-						{ x: -width / 2, y: -height / 2 },
-						{ x: -width / 2, y: height / 2 },
-						{ x: -width / 2 - 10, y: 0 },
-					],
-					effect: this.score(1),
-				},
-				{
-					// player 1 goal (right)
-					points: [
-						{ x: width / 2, y: -height / 2 },
-						{ x: width / 2, y: height / 2 },
-						{ x: width / 2 + 10, y: 0 },
-					],
-					effect: this.score(0),
-				},
-				{
-					// ceiling (top)
-					points: [
-						{ x: -width / 2, y: -height / 2 },
-						{ x: width / 2, y: -height / 2 },
-						{ x: 0, y: -height / 2 - 10 },
-					],
-					effect: (game: GameData) => {},
-				},
-				{
-					// floor (bottom)
-					points: [
-						{ x: -width / 2, y: height / 2 },
-						{ x: width / 2, y: height / 2 },
-						{ x: 0, y: height / 2 + 10 },
-					],
-					effect: (game: GameData) => {},
-				},
-			],
+			obstacles: [],
 			width: width,
 			height: height,
 			lastTimestamp: Date.now(),
@@ -343,9 +308,11 @@ export class AppGateway
 		obstacles.forEach((obstacle) => {});
 	}
 
-	bollObstaclesCollision(ball: Ball, obstacles: Obstacle[], game: GameData) {
+	ballObstaclesCollision(ball: Ball, obstacles: Obstacle[], game: GameData) {
 		obstacles.forEach((obstacle) => {});
 	}
+
+	ballWallCollision(ball: Ball, game: GameData) {}
 
 	ballPaddlesCollision(
 		ball: Ball,
@@ -418,8 +385,9 @@ export class AppGateway
 				game.players.map((p) => p.paddle),
 				game,
 			);
-			this.bollObstaclesCollision(ball, game.obstacles, game);
+			this.ballObstaclesCollision(ball, game.obstacles, game);
 			this.ballPowerUpsCollision(ball, game.powerUps, game);
+			this.ballWallCollision(ball, game);
 		});
 	}
 	//#endregion
