@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
+import socket from "../../socket";
 
 type Notification = {
 	type: "newMP" | "newGame" | "newFriend";
@@ -12,8 +13,11 @@ type Notification = {
 const NotificationsPopUp = () => {
 	const user = useContext(UserContext);
 	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const [update, setUpdate] = useState<boolean>(true);
 
+	// INITIAL FETCH
 	useEffect(() => {
+		if (!update) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://` +
@@ -86,6 +90,20 @@ const NotificationsPopUp = () => {
 					console.log(err);
 				});
 		}
+		setUpdate(false);
+	}, [update, user.login]);
+
+	// SOCKET LISTENERS
+	useEffect(() => {
+		socket.on("newMessage", (data: any) => {
+			if (!(data.channel as string).startsWith("_")) setUpdate(true);
+		});
+
+		//TODO: add more listeners for games and friendship
+
+		return () => {
+			socket.off("newMessage");
+		};
 	}, []);
 
 	return (
