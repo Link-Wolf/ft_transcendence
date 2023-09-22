@@ -26,7 +26,6 @@ export class ToxicGuard implements CanActivate {
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		//TODO: je viens de rm un return true mdr donc tester
 		const userLogin = context.switchToHttp().getRequest().params.login;
 		const cookies = context.switchToHttp().getRequest().cookies;
 		const channelName = context.switchToHttp().getRequest()

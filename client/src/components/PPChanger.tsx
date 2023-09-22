@@ -177,7 +177,6 @@ const PPChanger = ({ login }: { login: string }) => {
 			)
 			.then((res) => {
 				setUpdate(true);
-				//TODO: update dynamically (socket)
 				socket.emit("contextUpdate", { login: login });
 			})
 			.catch((error) => {

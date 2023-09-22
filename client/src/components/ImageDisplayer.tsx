@@ -46,16 +46,10 @@ const PPDisplayer = ({
 					className={style.PPDisplayer}
 				>
 					{children ?? <img src={`data:image/*;base64,${image}`} />}
-					{status && (
-						<StatusIcon
-							login={login}
-							size={size}
-						/>
-					)}
+					{status && <StatusIcon login={login} size={size} />}
 				</div>
 			) : (
-				"Loading Image..."
-				//TODO:	<Loading />
+				<Loading size={size} />
 			)}
 		</>
 	);
