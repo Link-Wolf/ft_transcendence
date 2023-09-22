@@ -130,6 +130,8 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 	};
 
 	const draw = (p5: p5Types) => {
+		calculateScale();
+		p5.resizeCanvas(game.width * scale, game.height * scale);
 		if (game.myIndex === -1) {
 			game.myIndex = game.players.findIndex(
 				(player) => player.login === user.login
