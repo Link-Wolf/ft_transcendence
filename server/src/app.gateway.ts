@@ -32,6 +32,7 @@ type Player = {
 			dx: number;
 			dy: number;
 		};
+		effect: ((game: GameData) => void)[];
 	};
 	score: number;
 	inputs: number[];
@@ -51,6 +52,7 @@ type Ball = {
 		dx: number;
 		dy: number;
 	};
+	lastUser: number;
 };
 
 type Obstacle = {
@@ -82,6 +84,7 @@ type GameData = {
 		winner: number;
 		gonePlayer: number;
 	};
+	nbBounces: number;
 
 	// frame logic
 	lastTimestamp: number;
@@ -92,6 +95,7 @@ type GameData = {
 	height: number;
 	width: number;
 	loop: NodeJS.Timeout;
+	powerUpSpawnPoints: { x: number; y: number }[];
 };
 //#endregion
 
@@ -140,6 +144,11 @@ export class AppGateway
 	@SubscribeMessage('contextUpdate')
 	async handleContextUpdate(client: Socket, payload: any) {
 		client.emit('contextUpdate', payload);
+	}
+
+	@SubscribeMessage('askForGame')
+	async handleAskForGame(client: Socket, payload: any) {
+		client.emit('askForGame', payload);
 	}
 	//#endregion
 
@@ -190,7 +199,10 @@ export class AppGateway
 
 	//#region GAME MOVEMENT & RESET & POSITION HANDLING
 	moveBalls(dt: number, game: GameData) {
-		//TODO:
+		game.balls.forEach((ball) => {
+			ball.position.x += ball.velocity.dx * dt;
+			ball.position.y += ball.velocity.dy * dt;
+		});
 	}
 
 	movePaddles(dt: number, game: GameData) {
@@ -225,19 +237,55 @@ export class AppGateway
 					dy: game.turn % 2 == 0 ? 1 : -1,
 				},
 				size: { radius: 10 },
+				lastUser: null,
 			},
 		];
 	}
 
-	resetPaddles(game: GameData) {
+	resetPaddles(game: GameData, modifiers: Modifier[]) {
 		game.players.forEach((player, i) => {
 			player.paddle.position.y = 0;
 			player.paddle.velocity.dy = 0;
 			player.paddle.position.x = i == 0 ? -350 : 350;
-			player.paddle.size.w = 8 * 1;
-			player.paddle.size.h = 8 * 7;
+			player.paddle.size.w = 10;
+			player.paddle.size.h = this.paddleSize(modifiers);
 		});
 	}
+
+	size = (modifiers: Modifier[]) => {
+		if (modifiers.length) return { width: 1600, height: 900 };
+		return { width: 800, height: 600 };
+	};
+
+	paddleSize = (modifiers: Modifier[]) => {
+		if (
+			modifiers.some((m) => {
+				m.dataValues.code === 'big_paddle';
+			})
+		)
+			return 83;
+		if (
+			modifiers.some((m) => {
+				m.dataValues.code === 'small_paddle';
+			})
+		)
+			return 30;
+		return 50;
+	};
+
+	paddleEffect = (player: number) => (modifiers: Modifier[]) => {
+		if (modifiers.some((m) => m.dataValues.code === 'accelerating_ball'))
+			//TODO: return all the modifiers and store in array or smth
+			return [
+				(game: GameData) => {
+					game.balls.forEach((ball) => {
+						ball.velocity.dx *= 1.1;
+						ball.velocity.dx = Math.min(ball.velocity.dx, 2);
+					});
+				},
+			];
+		return [(game: GameData) => {}];
+	};
 
 	newGame(
 		gameId: string,
@@ -245,8 +293,7 @@ export class AppGateway
 		player2: string,
 		modifiers: Modifier[],
 	): GameData {
-		const width = modifiers.length === 0 ? 800 : 1600;
-		const height = modifiers.length === 0 ? 600 : 900;
+		const { width, height } = this.size(modifiers);
 		return {
 			gameId: gameId,
 			players: [
@@ -255,8 +302,9 @@ export class AppGateway
 					score: 0,
 					paddle: {
 						position: { x: -width / 2 + 10, y: 0 },
-						size: { w: 10, h: 50 },
+						size: { w: 10, h: this.paddleSize(modifiers) },
 						velocity: { dx: 0, dy: 0 },
+						effect: this.paddleEffect(0)(modifiers),
 					},
 					inputs: [],
 					lastInput: Date.now(),
@@ -266,8 +314,9 @@ export class AppGateway
 					score: 0,
 					paddle: {
 						position: { x: width / 2 - 10, y: 0 },
-						size: { w: 10, h: 50 },
+						size: { w: 10, h: this.paddleSize(modifiers) },
 						velocity: { dx: 0, dy: 0 },
+						effect: this.paddleEffect(1)(modifiers),
 					},
 					inputs: [],
 					lastInput: Date.now(),
@@ -278,6 +327,7 @@ export class AppGateway
 					position: { x: 0, y: 0 },
 					velocity: { dx: 0, dy: 0 },
 					size: { radius: 5 },
+					lastUser: null,
 				},
 			],
 			powerUps: [],
@@ -288,6 +338,7 @@ export class AppGateway
 			playerToStart: 0,
 			isTurnStarted: false,
 			turn: 0,
+			nbBounces: 0,
 			status: {
 				ended: false,
 				winner: null,
@@ -295,24 +346,58 @@ export class AppGateway
 			},
 			loop: null,
 			modifiers: modifiers,
+			powerUpSpawnPoints: [
+				//NOTE: spawn point definition
+				{ x: -width / 2 + 50, y: -height / 2 + 50 },
+				{ x: width / 2 - 50, y: -height / 2 + 50 },
+				{ x: -width / 2 + 50, y: height / 2 - 50 },
+				{ x: width / 2 - 50, y: height / 2 - 50 },
+			],
 		};
 	}
+
 	//#endregion
 
 	//#region GAME COLLISIONS HANDLING
-	paddleObstaclesCollision(
-		paddle: Player['paddle'],
-		obstacles: Obstacle[],
-		game: GameData,
-	) {
-		obstacles.forEach((obstacle) => {});
-	}
 
 	ballObstaclesCollision(ball: Ball, obstacles: Obstacle[], game: GameData) {
 		obstacles.forEach((obstacle) => {});
 	}
 
-	ballWallCollision(ball: Ball, game: GameData) {}
+	ballWallCollision(ball: Ball, game: GameData, modifiers: Modifier[]) {
+		//get all values in shorter variables
+		const ballY = ball.position.y;
+		const signOfY = Math.sign(ballY);
+		if (signOfY == 0) return;
+
+		const ballX = ball.position.x;
+		const ballRadius = ball.size.radius;
+
+		//check if ball is in wall
+		const ballIsInWall =
+			Math.abs(ballY + ballRadius * signOfY) > Math.abs(game.height / 2);
+		if (!ballIsInWall) return;
+
+		//	calculate new ball position and velocity
+		// The ball go in direction of x=0
+		const newBallDy = -Math.abs(ball.velocity.dy) * signOfY;
+		// The ball is placed tangent to the wall
+		const newBallY = (game.height / 2 - ballRadius) * signOfY;
+		const newBallX =
+			ballX +
+			(ball.velocity.dx / ball.velocity.dy) *
+				(signOfY * (game.height / 2 - ballRadius) - ballY);
+
+		//apply new ball position and velocity
+		ball.velocity.dy = newBallDy;
+		ball.position.y = newBallY;
+		ball.position.x = newBallX;
+
+		//check if ball is in goal
+		const ballIsInGoal = Math.abs(ballX) > game.width / 2;
+		if (!ballIsInGoal) return;
+		this.score(ballX > 0 ? 0 : 1, modifiers);
+	}
 
 	ballPaddlesCollision(
 		ball: Ball,
@@ -357,6 +442,10 @@ export class AppGateway
 					Math.sign(ball.velocity.dx);
 			ball.velocity.dy =
 				(ball.position.y - paddle.position.y) / (paddle.size.h / 2);
+			game.nbBounces++;
+			paddle.effect.forEach((f) => {
+				f(game);
+			});
 		});
 	}
 
@@ -375,10 +464,7 @@ export class AppGateway
 		});
 	}
 
-	checkCollisions(game: GameData) {
-		game.players.forEach((player) => {
-			this.paddleObstaclesCollision(player.paddle, game.obstacles, game);
-		});
+	checkCollisions(game: GameData, modifiers: Modifier[]) {
 		game.balls.forEach((ball) => {
 			this.ballPaddlesCollision(
 				ball,
@@ -387,7 +473,7 @@ export class AppGateway
 			);
 			this.ballObstaclesCollision(ball, game.obstacles, game);
 			this.ballPowerUpsCollision(ball, game.powerUps, game);
-			this.ballWallCollision(ball, game);
+			this.ballWallCollision(ball, game, modifiers);
 		});
 	}
 	//#endregion
@@ -401,9 +487,9 @@ export class AppGateway
 	) {
 		this.game.length = this.game?.length | (0 + 1);
 		this.game[gameId] = this.newGame(gameId, player1, player2, modifiers);
-		let game = this.game[gameId];
+		let game = this.game[gameId] as GameData;
 		this.resetBall(game);
-		this.resetPaddles(game);
+		this.resetPaddles(game, modifiers);
 
 		// TODO: check if player are online and, if not, abort the game
 		// this.status[player1].status = 'ingame';
@@ -436,7 +522,7 @@ export class AppGateway
 			this.movePaddles(dt, game);
 			if (game.isTurnStarted) {
 				this.moveBalls(dt, game);
-				this.checkCollisions(game);
+				this.checkCollisions(game, modifiers);
 			} else this.handleStartTurn(game);
 			this.server.to(`game-${gameId}`).emit('gameUpdate', game);
 		}, 16 /* 60 fps */);
@@ -484,13 +570,24 @@ export class AppGateway
 		});
 	}
 
-	score(player: number) {
+	score(player: number, modifiers: Modifier[]) {
 		return (game: GameData) => {
 			game.players[player].score++;
-			this.resetBall(game);
-			this.resetPaddles(game);
+			if (game.balls.length < 2) {
+				this.resetBall(game);
+				this.resetPaddles(game, modifiers);
+			} else {
+				game.balls = game.balls.filter((b) =>
+					game.players[1 - player].paddle.position.x > 0
+						? b.position.x <
+						  game.players[1 - player].paddle.position.x
+						: b.position.x >
+						  game.players[1 - player].paddle.position.x,
+				);
+			}
 			game.isTurnStarted = false;
 			game.playerToStart = 1 - player;
+			game.nbBounces = 0;
 			game.turn++;
 		};
 	}
@@ -646,7 +743,7 @@ export class AppGateway
 			.filter((g) => g.dataValues.game.status === 'waiting')
 			.forEach((g) => {
 				this.gameService.delete(g.dataValues.game.id);
-			});
+			}); //TODO: delete invations game that are yours or to you
 
 		await this.statusUpdate(login, 'offline', null);
 	}
