@@ -77,15 +77,9 @@ const Profile = () => {
 			<div className={style.profil}>
 				<div className={style.resume}>
 					<h1>P R O F I L E</h1>
-					<Resume
-						isMe={isMe}
-						login={profileLogin}
-					/>
+					<Resume isMe={isMe} login={profileLogin} />
 					<Link to={`/profile/${profileLogin}`}>
-						<button
-							className={style.button}
-							onClick={StatsDisplay}
-						>
+						<button className={style.button} onClick={StatsDisplay}>
 							Stats
 						</button>
 					</Link>
@@ -105,19 +99,13 @@ const Profile = () => {
 							Settings
 						</button>
 					</Link>
-					<button
-						className={style.button}
-						onClick={logout}
-					>
+					<button className={style.button} onClick={logout}>
 						Log out
 					</button>
 				</div>
 				{displaystats == 1 ? (
 					<div className={style.stats}>
-						<MatchHistory
-							isMe={isMe}
-							login={profileLogin}
-						/>
+						<MatchHistory isMe={isMe} login={profileLogin} />
 					</div>
 				) : (
 					<></>
@@ -126,10 +114,7 @@ const Profile = () => {
 					<>
 						{displayfriends == 1 ? (
 							<div className={style.friends}>
-								<img
-									src={friends}
-									className={style.img}
-								></img>
+								<img src={friends} className={style.img}></img>
 								<div>
 									<Friends />
 									<Blocked />
@@ -190,11 +175,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({user.login})
 			</div>
-			<PPDisplayer
-				login={user.login}
-				size={210}
-				status={false}
-			>
+			<PPDisplayer login={user.login} size={210} status={false}>
 				<img
 					alt='profile picture'
 					src={`data:image/*;base64,${user.avatar}`}
@@ -536,15 +517,22 @@ const Friends = () => {
 			});
 	};
 
+	console.log(friendShips);
+
 	return (
 		<div>
 			<h2>Friends</h2>
 			<ul>
 				<li>
-					Friend List (default)
+					Friend List
 					<ul>
+						{/* If friendShips is not empty AND at least one of them has pending set to false */}
 						{friendShips.length > 0 &&
+						friendShips.some(
+							(friendShip) => !friendShip.isPending
+						) ? (
 							friendShips.map((friendShip, i) => {
+								if (friendShip.isPending) return;
 								let friend: any;
 								if (friendShip.sender.login === user.login)
 									friend = friendShip.receiver;
@@ -559,7 +547,51 @@ const Friends = () => {
 										<div>{friend.name}</div>
 										<div>{friend.login}</div>
 										<div>
-											Friende since{" "}
+											Friend since {friendShip.updated_at}
+										</div>
+										<button
+											onClick={() => {
+												removeFriend(friend.login);
+											}}
+										>
+											Remove friend
+										</button>
+									</li>
+								);
+							})
+						) : (
+							<li>No friends yet uwun't</li>
+						)}
+					</ul>
+				</li>
+				<li>
+					Requests
+					<ul>
+						<li>Sent</li>
+						{friendShips.length > 0 &&
+						friendShips.some(
+							(friendShip) =>
+								friendShip.isPending &&
+								friendShip.sender.login === user.login
+						) ? (
+							friendShips.map((friendShip, i) => {
+								if (
+									!friendShip.isPending ||
+									friendShip.sender.login !== user.login
+								)
+									return;
+								let friend = friendShip.receiver;
+								return (
+									<li key={i}>
+										<PPDisplayer
+											login={friend.login}
+											size={69}
+											status={true}
+										/>
+										<div>{friend.name}</div>
+										<div>{friend.login}</div>
+										<div>
+											Friendship asked on{" "}
 											{friendShip.created_at}
 										</div>
 										<button
@@ -567,21 +599,54 @@ const Friends = () => {
 												removeFriend(friend.login);
 											}}
 										>
-											{" "}
-											Remove friend{" "}
+											Cancel request
 										</button>
 									</li>
 								);
-							})}
-					</ul>
-				</li>
-				<li>
-					Requests
-					<ul>
-						<li>Sent</li>
-						{/* TODO: friend requests sent by the user */}
+							})
+						) : (
+							<li>No requests sent</li>
+						)}
 						<li>Received</li>
-						{/* TODO: friend requests received by the user and not accepted nor refused yet */}
+						{friendShips.length > 0 &&
+						friendShips.some(
+							(friendShip) =>
+								friendShip.isPending &&
+								friendShip.receiver.login === user.login
+						) ? (
+							friendShips.map((friendShip, i) => {
+								if (
+									!friendShip.isPending ||
+									friendShip.receiver.login !== user.login
+								)
+									return;
+								let friend = friendShip.sender;
+								return (
+									<li key={i}>
+										<PPDisplayer
+											login={friend.login}
+											size={69}
+											status={true}
+										/>
+										<div>{friend.name}</div>
+										<div>{friend.login}</div>
+										<div>
+											Friendship request received on{" "}
+											{friendShip.created_at}
+										</div>
+										<button
+											onClick={() => {
+												removeFriend(friend.login);
+											}}
+										>
+											Deny request
+										</button>
+									</li>
+								);
+							})
+						) : (
+							<li>No requests received</li>
+						)}
 					</ul>
 				</li>
 			</ul>
@@ -621,9 +686,9 @@ const Blocked = () => {
 			<h2>Blocked users</h2>
 			<ul>
 				<li>
-					Block List (default)
+					Block List
 					<ul>
-						{blocks.length > 0 &&
+						{blocks.length > 0 ? (
 							blocks.map((block, i) => {
 								let blocked = block.blocked;
 								return (
@@ -644,7 +709,10 @@ const Blocked = () => {
 										/>
 									</li>
 								);
-							})}
+							})
+						) : (
+							<li>No blocked users yet</li>
+						)}
 					</ul>
 				</li>
 			</ul>
