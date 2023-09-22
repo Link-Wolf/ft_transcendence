@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import socket from "../socket";
 
@@ -101,20 +101,8 @@ const BlockUnblockButton = ({
 	effect?: Function;
 	isBlocked: boolean;
 }) => {
-	if (isBlocked)
-		return (
-			<UnblockButton
-				login={login}
-				effect={effect}
-			/>
-		);
-	else
-		return (
-			<BlockButton
-				login={login}
-				effect={effect}
-			/>
-		);
+	if (isBlocked) return <UnblockButton login={login} effect={effect} />;
+	else return <BlockButton login={login} effect={effect} />;
 };
 
 /*******************************************************************************
@@ -211,6 +199,20 @@ const FriendButton = ({
 	effect?: Function;
 }) => {
 	const user = useContext(UserContext);
+	const [friendship, setFriendhip] = useState<any>({});
+
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
+			)
+			.then((res) => {
+				setFriendhip(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
 
 	const friend = async (login: string) => {
 		let block = await axios.get(
@@ -222,21 +224,33 @@ const FriendButton = ({
 				`${login} blocked ${user.login}, so no u can't be friend with him !`
 			);
 		}
-		console.log(`${user.login} wants to be friend with ${login}`); //TODO: implement friendship request
-		socket.emit("relationUpdate", {
-			userA: user.login,
-			userB: login,
-		});
+		axios
+			.post(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship`,
+				{
+					receiverLogin: login,
+				}
+			)
+			.then(() => {
+				socket.emit("relationUpdate", {
+					userA: user.login,
+					userB: login,
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
 
 	return (
 		<button
 			type='button'
+			disabled={friendship}
 			onClick={() => {
-				friend(login);
+				!friendship && friend(login);
 			}}
 		>
-			Befriend
+			{friendship && friendship.isPending ? "Already sent" : "Befriend"}
 		</button>
 	);
 };
@@ -280,19 +294,9 @@ const FriendPMButton = ({
 
 	if (isFriend)
 		return (
-			<PMButton
-				login={login}
-				setChannel={setChannel}
-				effect={effect}
-			/>
+			<PMButton login={login} setChannel={setChannel} effect={effect} />
 		);
-	else
-		return (
-			<FriendButton
-				login={login}
-				effect={effect}
-			/>
-		);
+	else return <FriendButton login={login} effect={effect} />;
 };
 
 const UnfriendButton = ({
@@ -336,8 +340,14 @@ const AskForGameButton = ({
 	login: string;
 	effect?: Function;
 }) => {
+	const user = useContext(UserContext);
 	const askForGame = (login: string) => {
 		//TODO: ask the other person for game
+		socket.emit("askForGame", {
+			sender: user.login,
+			receiver: login,
+			// id: ???
+		});
 	};
 
 	return (
