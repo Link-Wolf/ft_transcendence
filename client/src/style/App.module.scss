@@ -1,7 +1,7 @@
 .light {
 	background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2)),
 		url("../assets/background_light.jpg");
-	position: absolute;
+	position: fixed;
 	z-index: -299;
 	left: 0;
 	top: 0;
@@ -9,7 +9,6 @@
 	bottom: 0;
 	background-size: cover;
 	background-position: center;
-	overflow: hidden;
 
 	--neutral-background: #f5f5f5;
 	--neutral-text: #000000;
@@ -25,7 +24,7 @@
 .dark {
 	background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)),
 		url("../assets/background_dark.jpg");
-	position: absolute;
+	position: fixed;
 	z-index: -300;
 	left: 0;
 	top: 0;
@@ -33,7 +32,6 @@
 	bottom: 0;
 	background-size: cover;
 	background-position: center;
-	overflow: hidden;
 	transition: 1s ease-in;
 
 	--neutral-background: #002136;
@@ -52,5 +50,4 @@
 	bottom: 0;
 	background-size: cover;
 	background-position: center;
-	overflow: hidden;
 }
