@@ -17,6 +17,15 @@ import { Modifier } from './modifier/modifier.entity';
 import { Game } from './game/game.entity';
 import { observeNotification } from 'rxjs/internal/Notification';
 
+const MAX_BALL_SPEED = 2;
+const DEFAULT_BALL_SPEED = 0.5;
+const MAX_PADDLE_SIZE = 100;
+const DEFAULT_BIGGER_PADDLE_SIZE = 83;
+const DEFAULT_PADDLE_SIZE = 50;
+const DEFAULT_SMALLER_PADDLE_SIZE = 30;
+const MIN_PADDLE_SIZE = 20;
+const MAX_NUMBER_OF_BALLS = 10;
+
 //#region TYPES
 type Player = {
 	paddle: {
@@ -32,7 +41,7 @@ type Player = {
 			dx: number;
 			dy: number;
 		};
-		effect: ((game: GameData) => void)[];
+		effect: ((ball: Ball, game: GameData) => void)[];
 	};
 	score: number;
 	inputs: number[];
@@ -65,7 +74,8 @@ type Obstacle = {
 type PowerUps = {
 	position: { x: number; y: number };
 	size: { radius: number };
-	effect: (game: GameData) => void;
+	effect: (ball: Ball, game: GameData) => void;
+	name: string;
 };
 
 type GameData = {
@@ -246,7 +256,7 @@ export class AppGateway
 		game.players.forEach((player, i) => {
 			player.paddle.position.y = 0;
 			player.paddle.velocity.dy = 0;
-			player.paddle.position.x = i == 0 ? -350 : 350;
+			player.paddle.position.x = (game.width / 2 - 40) * (i * 2 - 1);
 			player.paddle.size.w = 10;
 			player.paddle.size.h = this.paddleSize(modifiers);
 		});
@@ -263,28 +273,136 @@ export class AppGateway
 				m.dataValues.code === 'big_paddle';
 			})
 		)
-			return 83;
+			return DEFAULT_BIGGER_PADDLE_SIZE;
 		if (
 			modifiers.some((m) => {
 				m.dataValues.code === 'small_paddle';
 			})
 		)
-			return 30;
-		return 50;
+			return DEFAULT_SMALLER_PADDLE_SIZE;
+		return DEFAULT_PADDLE_SIZE;
+	};
+
+	spawnPowerUp = (game: GameData) => {
+		const potentialPowerUpsEffects = [
+			{
+				name: 'Enlarge Your Paddle',
+				action: (ball: Ball, game: GameData) => {
+					game.players[ball.lastUser].paddle.size.h /= 1.1;
+					game.players[ball.lastUser].paddle.size.h = Math.max(
+						MIN_PADDLE_SIZE,
+						game.players[ball.lastUser].paddle.size.h,
+					);
+				},
+			},
+			{
+				name: 'Enlarge Their Paddle',
+				effect: (ball: Ball, game: GameData) => {
+					game.players[1 - ball.lastUser].paddle.size.h /= 1.1;
+					game.players[1 - ball.lastUser].paddle.size.h = Math.max(
+						MIN_PADDLE_SIZE,
+						game.players[1 - ball.lastUser].paddle.size.h,
+					);
+				},
+			},
+			{
+				name: 'Shrink Your Paddle',
+				effect: (ball: Ball, game: GameData) => {
+					game.players[ball.lastUser].paddle.size.h *= 1.1;
+					game.players[ball.lastUser].paddle.size.h = Math.min(
+						MAX_PADDLE_SIZE,
+						game.players[ball.lastUser].paddle.size.h,
+					);
+				},
+			},
+			{
+				name: 'Shrink Their Paddle',
+				effect: (ball: Ball, game: GameData) => {
+					game.players[1 - ball.lastUser].paddle.size.h *= 1.1;
+					game.players[1 - ball.lastUser].paddle.size.h = Math.min(
+						MAX_PADDLE_SIZE,
+						game.players[1 - ball.lastUser].paddle.size.h,
+					);
+				},
+			},
+			{
+				name: 'Two Balls are Better than One',
+				effect: (ball: Ball, game: GameData) => {
+					game.balls.push({
+						position: {
+							x: ball.position.x,
+							y: ball.position.y,
+						},
+						velocity: {
+							dx: ball.velocity.dx * Math.random() > 0.5 ? 1 : -1,
+							dy: Math.random() * 2 - 1,
+						},
+						size: { radius: 10 },
+						lastUser: ball.lastUser,
+					});
+				},
+			},
+			{
+				name: 'Five Balls are Better than Two',
+				effect: (ball: Ball, game: GameData) => {
+					for (let i in [0, 1, 2, 3]) {
+						game.balls.push({
+							position: {
+								x: ball.position.x,
+								y: ball.position.y,
+							},
+							velocity: {
+								dx:
+									ball.velocity.dx * Math.random() > 0.5
+										? 1
+										: -1,
+								dy: Math.random() * 2 - 1,
+							},
+							size: { radius: 10 },
+							lastUser: ball.lastUser,
+						});
+					}
+				},
+			},
+		];
+
+		if (Math.random() < 0.2) {
+			const spawnPoint =
+				game.powerUpSpawnPoints[
+					Math.floor(Math.random() * game.powerUpSpawnPoints.length)
+				];
+			if (game.powerUps.some((p) => p.position === spawnPoint)) return;
+			const effect =
+				potentialPowerUpsEffects[
+					Math.floor(Math.random() * potentialPowerUpsEffects.length)
+				];
+			game.powerUps.push({
+				position: spawnPoint,
+				size: { radius: 10 },
+				effect: effect.action,
+				name: effect.name,
+			});
+		}
 	};
 
 	paddleEffect = (player: number) => (modifiers: Modifier[]) => {
+		let ret = [];
 		if (modifiers.some((m) => m.dataValues.code === 'accelerating_ball'))
-			//TODO: return all the modifiers and store in array or smth
-			return [
-				(game: GameData) => {
-					game.balls.forEach((ball) => {
-						ball.velocity.dx *= 1.1;
-						ball.velocity.dx = Math.min(ball.velocity.dx, 2);
-					});
-				},
-			];
-		return [(game: GameData) => {}];
+			ret.push((ball: Ball, game: GameData) => {
+				ball.velocity.dx = Math.min(
+					MAX_BALL_SPEED,
+					ball.velocity.dx * 1.01,
+				);
+			});
+		if (modifiers.some((m) => m.dataValues.code === 'power_up'))
+			ret.push((ball: Ball, game: GameData) => {
+				this.spawnPowerUp(game);
+			});
+		return ret;
+	};
+
+	obstacles = (modifiers: Modifier[]) => {
+		return []; //TODO: add obstacles to the map
 	};
 
 	newGame(
@@ -331,7 +449,7 @@ export class AppGateway
 				},
 			],
 			powerUps: [],
-			obstacles: [],
+			obstacles: this.obstacles(modifiers),
 			width: width,
 			height: height,
 			lastTimestamp: Date.now(),
@@ -368,10 +486,16 @@ export class AppGateway
 		//get all values in shorter variables
 		const ballY = ball.position.y;
 		const signOfY = Math.sign(ballY);
-		if (signOfY == 0) return;
-
 		const ballX = ball.position.x;
 		const ballRadius = ball.size.radius;
+
+		//check if ball is in goal
+		const ballIsInGoal = Math.abs(ballX) > game.width / 2;
+		if (ballIsInGoal) {
+			return this.score(ballX > 0 ? 0 : 1, modifiers)(game);
+		}
+
+		if (signOfY == 0) return;
 
 		//check if ball is in wall
 		const ballIsInWall =
@@ -392,11 +516,7 @@ export class AppGateway
 		ball.velocity.dy = newBallDy;
 		ball.position.y = newBallY;
 		ball.position.x = newBallX;
-
-		//check if ball is in goal
-		const ballIsInGoal = Math.abs(ballX) > game.width / 2;
-		if (!ballIsInGoal) return;
-		this.score(ballX > 0 ? 0 : 1, modifiers);
+		return false;
 	}
 
 	ballPaddlesCollision(
@@ -444,7 +564,7 @@ export class AppGateway
 				(ball.position.y - paddle.position.y) / (paddle.size.h / 2);
 			game.nbBounces++;
 			paddle.effect.forEach((f) => {
-				f(game);
+				f(ball, game);
 			});
 		});
 	}
@@ -458,7 +578,7 @@ export class AppGateway
 				) <
 				ball.size.radius + powerUp.size.radius
 			) {
-				powerUp.effect(game);
+				powerUp.effect(ball, game);
 				game.powerUps = game.powerUps.filter((p) => p !== powerUp);
 			}
 		});
@@ -471,9 +591,9 @@ export class AppGateway
 				game.players.map((p) => p.paddle),
 				game,
 			);
+			if (this.ballWallCollision(ball, game, modifiers)) return;
 			this.ballObstaclesCollision(ball, game.obstacles, game);
 			this.ballPowerUpsCollision(ball, game.powerUps, game);
-			this.ballWallCollision(ball, game, modifiers);
 		});
 	}
 	//#endregion
@@ -573,9 +693,14 @@ export class AppGateway
 	score(player: number, modifiers: Modifier[]) {
 		return (game: GameData) => {
 			game.players[player].score++;
+			game.isTurnStarted = false;
+			game.playerToStart = 1 - player;
+			game.nbBounces = 0;
+			game.turn++;
 			if (game.balls.length < 2) {
 				this.resetBall(game);
 				this.resetPaddles(game, modifiers);
+				return true;
 			} else {
 				game.balls = game.balls.filter((b) =>
 					game.players[1 - player].paddle.position.x > 0
@@ -584,11 +709,8 @@ export class AppGateway
 						: b.position.x >
 						  game.players[1 - player].paddle.position.x,
 				);
+				return false;
 			}
-			game.isTurnStarted = false;
-			game.playerToStart = 1 - player;
-			game.nbBounces = 0;
-			game.turn++;
 		};
 	}
 	//#endregion
