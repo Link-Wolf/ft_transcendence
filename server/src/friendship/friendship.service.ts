@@ -71,7 +71,7 @@ export class FriendshipService {
 		try {
 			return await this.friendshipRepository.findAll<Friendship>({
 				where: {
-					sender: login,
+					senderLogin: login,
 					isPending: true,
 				},
 				include: [{ all: true }],
@@ -129,11 +129,11 @@ export class FriendshipService {
 	 */
 	async create(friendshipDto: FriendshipDto): Promise<Friendship> {
 		try {
-			let ret = await this.friendshipRepository.create<Friendship>(
-				friendshipDto,
-			);
-			await ret.$set('sender', friendshipDto.sender);
-			await ret.$set('receiver', friendshipDto.receiver);
+			let ret = await this.friendshipRepository.create<Friendship>({
+				senderLogin: friendshipDto.sender.dataValues.login,
+				receiverLogin: friendshipDto.receiver.dataValues.login,
+				isPending: friendshipDto.isPending,
+			});
 			return ret;
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -150,7 +150,11 @@ export class FriendshipService {
 		try {
 			return (
 				await this.friendshipRepository.update<Friendship>(
-					friendshipDto,
+					{
+						senderLogin: friendshipDto.sender.dataValues.login,
+						receiverLogin: friendshipDto.receiver.dataValues.login,
+						isPending: friendshipDto.isPending,
+					},
 					{
 						where: {
 							receiver: friendshipDto.receiver,

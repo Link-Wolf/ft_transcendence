@@ -175,18 +175,21 @@ export class FriendshipController {
 			sender.dataValues.login,
 			receiverLogin,
 		);
+		console.log(friendship, sender.dataValues.login, receiverLogin);
 		if (friendship) {
 			if (!friendship.dataValues.isPending)
 				throw new HttpException(
 					'Friendship already exists',
 					HttpStatus.CONFLICT,
 				);
-			if (friendship.dataValues.sender == sender)
+			if (friendship.dataValues.senderLogin == sender.dataValues.login)
 				throw new HttpException(
 					'Invitation already sent',
 					HttpStatus.CONFLICT,
 				);
-			if (friendship.dataValues.sender == receiver) {
+			if (
+				friendship.dataValues.senderLogin == receiver.dataValues.login
+			) {
 				await this.friendshipService.update({
 					isPending: false,
 					receiver: receiver,
