@@ -1,10 +1,9 @@
 all: up
 
 up:
-	docker-compose up
-
-re: fclean
 	docker-compose up --build
+
+re: fclean up
 
 nocache: fclean
 	docker-compose build --no-cache

@@ -4,7 +4,6 @@ import { UserContext } from "../App";
 import { PPDisplayer } from "./ImageDisplayer";
 import style from "../style/Header.module.scss";
 
-
 const Auth = () => {
 	/**
 	 * Display the login button if the user is not logged in, or the profile button if the user is logged in
@@ -48,7 +47,13 @@ const ProfileButton = ({ login }: { login: string }) => {
 	/**
 	 * Redirect the user to their profile page
 	 */
-	return <Link to={`/profile/${login}`}><span className={style.img}><PPDisplayer login={login} size={50} status={true}/></span></Link>;
+	return (
+		<Link to={`/profile/${login}`}>
+			<span className={style.img}>
+				<PPDisplayer login={login} size={50} status={true} />
+			</span>
+		</Link>
+	);
 };
 
 export default Auth;
