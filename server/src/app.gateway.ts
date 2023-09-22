@@ -42,6 +42,7 @@ type Player = {
 			dy: number;
 		};
 		effect: ((ball: Ball, game: GameData) => void)[];
+		color: string;
 	};
 	score: number;
 	inputs: number[];
@@ -62,6 +63,7 @@ type Ball = {
 		dy: number;
 	};
 	lastUser: number;
+	color: string;
 };
 
 type Obstacle = {
@@ -69,6 +71,7 @@ type Obstacle = {
 	center: { x: number; y: number };
 	size: { w: number; h: number };
 	effect: (game: GameData) => void;
+	color: string;
 };
 
 type PowerUps = {
@@ -76,6 +79,7 @@ type PowerUps = {
 	size: { radius: number };
 	effect: (ball: Ball, game: GameData) => void;
 	name: string;
+	color: string;
 };
 
 type GameData = {
@@ -248,6 +252,7 @@ export class AppGateway
 				},
 				size: { radius: 10 },
 				lastUser: null,
+				color: 'white',
 			},
 		];
 	}
@@ -294,6 +299,7 @@ export class AppGateway
 						game.players[ball.lastUser].paddle.size.h,
 					);
 				},
+				color: 'green',
 			},
 			{
 				name: 'Enlarge Their Paddle',
@@ -304,6 +310,7 @@ export class AppGateway
 						game.players[1 - ball.lastUser].paddle.size.h,
 					);
 				},
+				color: 'red',
 			},
 			{
 				name: 'Shrink Your Paddle',
@@ -314,6 +321,7 @@ export class AppGateway
 						game.players[ball.lastUser].paddle.size.h,
 					);
 				},
+				color: 'red',
 			},
 			{
 				name: 'Shrink Their Paddle',
@@ -324,6 +332,7 @@ export class AppGateway
 						game.players[1 - ball.lastUser].paddle.size.h,
 					);
 				},
+				color: 'green',
 			},
 			{
 				name: 'Two Balls are Better than One',
@@ -339,8 +348,10 @@ export class AppGateway
 						},
 						size: { radius: 10 },
 						lastUser: ball.lastUser,
+						color: 'white',
 					});
 				},
+				color: 'blue',
 			},
 			{
 				name: 'Five Balls are Better than Two',
@@ -360,9 +371,11 @@ export class AppGateway
 							},
 							size: { radius: 10 },
 							lastUser: ball.lastUser,
+							color: 'white',
 						});
 					}
 				},
+				color: 'blue',
 			},
 		];
 
@@ -381,6 +394,7 @@ export class AppGateway
 				size: { radius: 10 },
 				effect: effect.action,
 				name: effect.name,
+				color: effect.color,
 			});
 		}
 	};
@@ -423,6 +437,7 @@ export class AppGateway
 						size: { w: 10, h: this.paddleSize(modifiers) },
 						velocity: { dx: 0, dy: 0 },
 						effect: this.paddleEffect(0)(modifiers),
+						color: 'white',
 					},
 					inputs: [],
 					lastInput: Date.now(),
@@ -435,6 +450,7 @@ export class AppGateway
 						size: { w: 10, h: this.paddleSize(modifiers) },
 						velocity: { dx: 0, dy: 0 },
 						effect: this.paddleEffect(1)(modifiers),
+						color: 'white',
 					},
 					inputs: [],
 					lastInput: Date.now(),
@@ -446,6 +462,7 @@ export class AppGateway
 					velocity: { dx: 0, dy: 0 },
 					size: { radius: 5 },
 					lastUser: null,
+					color: 'white',
 				},
 			],
 			powerUps: [],
