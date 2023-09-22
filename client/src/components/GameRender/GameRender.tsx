@@ -54,19 +54,21 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 				login: "",
 			},
 		],
-		ball: {
-			size: {
-				radius: 0,
+		balls: [
+			{
+				size: {
+					radius: 0,
+				},
+				position: {
+					x: 0,
+					y: 0,
+				},
+				velocity: {
+					dx: 0,
+					dy: 0,
+				},
 			},
-			position: {
-				x: 0,
-				y: 0,
-			},
-			velocity: {
-				dx: 0,
-				dy: 0,
-			},
-		},
+		],
 		turn: 0,
 		playerToStart: 0,
 		isTurnStarted: false,
@@ -153,10 +155,10 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 				type: "rectangle",
 				...game.players[1].paddle,
 			},
-			{
+			...game.balls.map((ball: any) => ({
 				type: "circle",
-				...game.ball,
-			},
+				...ball,
+			})),
 		]);
 		p5.pop();
 		drawScore(
