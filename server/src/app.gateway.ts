@@ -742,6 +742,11 @@ export class AppGateway
 			return games[0].dataValues.game.id;
 		}
 
+		if (payload.isRanked) {
+			let game = await this.gameService.findWaiting();
+			if (game.isRanked) return game.id;
+		}
+
 		// Create a new game for the player
 		let game = await this.gameService.create({
 			isRanked: payload.isRanked,
