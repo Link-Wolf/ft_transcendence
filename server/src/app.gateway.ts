@@ -628,10 +628,6 @@ export class AppGateway
 		this.resetBall(game);
 		this.resetPaddles(game, modifiers);
 
-		// TODO: check if player are online and, if not, abort the game
-		// this.status[player1].status = 'ingame';
-		// this.status[player2].status = 'ingame';
-
 		game.loop = setInterval(() => {
 			//update dt
 			let now = Date.now();
@@ -879,10 +875,14 @@ export class AppGateway
 
 		let games = await this.userGameService.findNotFinishedByLogin(login);
 		games
-			.filter((g) => g.dataValues.game.status === 'waiting')
+			.filter(
+				(g) =>
+					g.dataValues.game.status === 'waiting' ||
+					g.dataValues.game.status === 'invitation',
+			)
 			.forEach((g) => {
 				this.gameService.delete(g.dataValues.game.id);
-			}); //TODO: delete invations game that are yours or to you
+			});
 
 		await this.statusUpdate(login, 'offline', null);
 	}
