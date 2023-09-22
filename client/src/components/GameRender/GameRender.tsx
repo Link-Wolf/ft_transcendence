@@ -181,6 +181,11 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 		<Sketch
 			setup={setup}
 			draw={draw}
+			style={{
+				width: "100vw",
+				display: "flex",
+				justifyContent: "center",
+			}}
 			windowResized={windowResized}
 			keyPressed={(p5) => {
 				playerKeys.add(p5.keyCode);
