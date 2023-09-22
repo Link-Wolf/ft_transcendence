@@ -33,12 +33,12 @@ export class SeedingService {
 				desc: 'Add a chance for power up to spawn when the ball hits a paddle !',
 			});
 			await this.modifierRepository.create<Modifier>({
-				code: 'map1',
+				code: 'map_1',
 				name: 'Custom Map: The City',
 				desc: 'Replace the default map with a custom one with lot of obstacles that represent a city !',
 			});
 			await this.modifierRepository.create<Modifier>({
-				code: 'map2',
+				code: 'map_2',
 				name: 'Custom Map: The void',
 				desc: 'Replace the default map with .. void',
 			});
