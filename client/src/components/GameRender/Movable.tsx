@@ -12,6 +12,7 @@ export type Rectangle = {
 		dx: number;
 		dy: number;
 	};
+	color: string;
 };
 
 export type Circle = {
@@ -27,6 +28,7 @@ export type Circle = {
 		dx: number;
 		dy: number;
 	};
+	color: string;
 };
 
 type Movable = Circle | Rectangle;

@@ -14,74 +14,57 @@ let playerKeys = new Set<number>();
 const GameRender = ({ gameId }: { gameId: string }) => {
 	const user = useContext(UserContext);
 	let game = {
+		gameId: gameId,
 		players: [
 			{
-				paddle: {
-					size: {
-						w: 0,
-						h: 0,
-					},
-					position: {
-						x: 0,
-						y: 0,
-					},
-					velocity: {
-						dx: 0,
-						dy: 0,
-					},
-				},
+				login: "player1",
 				score: 0,
+				paddle: {
+					position: { x: -0 / 2 + 10, y: 0 },
+					size: { w: 10, h: 0 },
+					velocity: { dx: 0, dy: 0 },
+					effect: [],
+				},
 				inputs: [],
-				login: "",
+				lastInput: Date.now(),
 			},
 			{
-				paddle: {
-					size: {
-						w: 0,
-						h: 0,
-					},
-					position: {
-						x: 0,
-						y: 0,
-					},
-					velocity: {
-						dx: 0,
-						dy: 0,
-					},
-				},
+				login: "player2",
 				score: 0,
+				paddle: {
+					position: { x: 0 / 2 - 10, y: 0 },
+					size: { w: 10, h: 0 },
+					velocity: { dx: 0, dy: 0 },
+					effect: 0,
+				},
 				inputs: [],
-				login: "",
+				lastInput: Date.now(),
 			},
 		],
 		balls: [
 			{
-				size: {
-					radius: 0,
-				},
-				position: {
-					x: 0,
-					y: 0,
-				},
-				velocity: {
-					dx: 0,
-					dy: 0,
-				},
+				position: { x: 0, y: 0 },
+				velocity: { dx: 0, dy: 0 },
+				size: { radius: 5 },
+				lastUser: null,
 			},
 		],
-		turn: 0,
+		powerUps: [],
+		obstacles: [],
+		width: 0,
+		height: 0,
+		lastTimestamp: Date.now(),
 		playerToStart: 0,
 		isTurnStarted: false,
-		gameId: 0,
-		lastTimestamp: 0,
-		height: 600,
-		width: 800,
-		myIndex: -1,
+		turn: 0,
+		nbBounces: 0,
 		status: {
 			ended: false,
 			winner: null,
 			gonePlayer: null,
 		},
+		loop: null,
+		myIndex: -1,
 	};
 	let scale = 1;
 
@@ -149,17 +132,16 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 			p5.scale(-1, 1);
 		}
 		drawMovables(p5, [
-			{
-				type: "rectangle",
-				...game.players[0].paddle,
-			},
-			{
-				type: "rectangle",
-				...game.players[1].paddle,
-			},
-			...game.balls.map((ball: any) => ({
+			...game.players
+				.map((player: any) => player.paddle)
+				.concat(game.obstacles)
+				.map((rect_stuff: any) => ({
+					type: "rect",
+					...rect_stuff,
+				})),
+			...game.balls.concat(game.powerUps).map((round_stuff: any) => ({
 				type: "circle",
-				...ball,
+				...round_stuff,
 			})),
 		]);
 		p5.pop();
