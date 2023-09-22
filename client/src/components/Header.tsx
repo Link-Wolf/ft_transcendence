@@ -6,7 +6,6 @@ import style from "../style/Header.module.scss";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { useContext } from "react";
 import { UserContext } from "../App";
-import Notifications from "./Notifications/Notifications";
 
 const Header = () => {
 	/**
@@ -15,31 +14,17 @@ const Header = () => {
 	const user = useContext(UserContext);
 
 	return (
-		<ul
-			className={style.banner}
-			id='header'
-		>
+		<ul className={style.banner} id='header'>
 			<li>
 				<Link to='/'>
-					<img
-						src={logo}
-						alt='Logo'
-						className={style.logo}
-					/>
-					<img
-						src={brand}
-						alt='PlatyPong'
-						className={style.brand}
-					/>
+					<img src={logo} alt='Logo' className={style.logo} />
+					<img src={brand} alt='PlatyPong' className={style.brand} />
 				</Link>
 			</li>
 			<li>
 				<ul className={style.right_section}>
 					<li>
 						<ThemeSwitcher />
-					</li>
-					<li className={style.notif}>
-						{user.clearance > 0 && <Notifications />}
 					</li>
 					<li>
 						<Auth />
