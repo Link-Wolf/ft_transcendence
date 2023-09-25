@@ -42,8 +42,7 @@ const ChannelUser = ({
 	});
 
 	const toggleBox = async (login = user.login) => {
-		console.log("here");
-		if (login === user.login) return navigate(`/profile/${user.login}`); //TODO: replace the redirect by something else that works
+		if (login === user.login) return navigate(`/profile/${user.login}`);
 		if (
 			!isToggleBox &&
 			(admins.includes(user.login) || user.login === owner.login)
@@ -133,9 +132,10 @@ const ChannelUser = ({
 							setUserStatus({
 								isMuted: false,
 							});
-							socket.emit("newMessage", {
-								//TODO: change
+							socket.emit("membershipUpdate", {
 								channel: channel,
+								what: "mute",
+								who: login,
 							});
 						})
 						.catch((err) => {
@@ -183,7 +183,9 @@ const ChannelUser = ({
 								isBlocked={members[login].isBlocked}
 							/>
 							{user.login === owner.login &&
-								(admins.some((admin) => admin.login === login) ? (
+								(admins.some(
+									(admin) => admin.login === login
+								) ? (
 									<DemoteButton
 										login={login}
 										channel={channel}
@@ -195,9 +197,13 @@ const ChannelUser = ({
 									/>
 								))}
 							{(user.login === owner.login ||
-								(admins.some((admin) => admin.login === user.login) &&
+								(admins.some(
+									(admin) => admin.login === user.login
+								) &&
 									login !== owner.login &&
-									!admins.some((admin) => admin.login === login))) && (
+									!admins.some(
+										(admin) => admin.login === login
+									))) && (
 								<>
 									<button
 										onClick={() => {
@@ -240,14 +246,11 @@ const ChannelUser = ({
 					) : (
 						<label>{name} (you) </label>
 					)}
-					<PPDisplayer
-						login={login}
-						size={50}
-						status={true}
-					/>
+					<PPDisplayer login={login} size={50} status={true} />
 					{login === owner.login
 						? " (owner)"
-						: admins.some((admin) => admin.login === login) && " (admin)"}
+						: admins.some((admin) => admin.login === login) &&
+						  " (admin)"}
 				</button>
 			</div>
 		</>
