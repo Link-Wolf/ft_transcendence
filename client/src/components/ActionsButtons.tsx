@@ -200,6 +200,7 @@ const FriendButton = ({
 }) => {
 	const user = useContext(UserContext);
 	const [friendship, setFriendhip] = useState<any>({});
+	const [isBlocked, setIsBlocked] = useState<boolean>(true);
 
 	useEffect(() => {
 		axios
@@ -212,6 +213,16 @@ const FriendButton = ({
 			.catch((err) => {
 				console.log(err);
 			});
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
+			)
+			.then((res) => {
+				setIsBlocked(res.data.length !== 0);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}, []);
 
 	const friend = async (login: string) => {
@@ -219,10 +230,11 @@ const FriendButton = ({
 			`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
 		);
 		if (block.data.length !== 0) {
-			//TODO: cancel friendship request (front-end side) because the target blocked the user
+			//TODO: Notify user ?
 			console.log(
 				`${login} blocked ${user.login}, so no u can't be friend with him !`
 			);
+			return;
 		}
 		axios
 			.post(
@@ -245,7 +257,7 @@ const FriendButton = ({
 	return (
 		<button
 			type='button'
-			disabled={friendship}
+			disabled={friendship && !isBlocked}
 			onClick={() => {
 				!friendship && friend(login);
 			}}

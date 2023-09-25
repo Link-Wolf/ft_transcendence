@@ -5,7 +5,6 @@ import socket from "../socket";
 import Cookies from "js-cookie";
 
 const CreateGame = () => {
-	//TODO: take invite in account
 	const [searchParam] = useSearchParams();
 	const navigate = useNavigate();
 
@@ -15,6 +14,7 @@ const CreateGame = () => {
 			| null
 			| number[];
 		let isRanked = searchParam.get("isRanked") as string | null | boolean;
+		let invitee = searchParam.get("invitee") as string | null;
 
 		if (modifiers)
 			modifiers = (modifiers as string)
@@ -24,6 +24,24 @@ const CreateGame = () => {
 
 		if (isRanked) isRanked = isRanked === "true";
 		else isRanked = false;
+
+		if (invitee) {
+			invitee = invitee as string;
+			isRanked = false;
+			socket.emit(
+				"invitePlayer",
+				{
+					invitee: invitee,
+					modifierIds: modifiers,
+					auth: Cookies.get("token"),
+				},
+				(gameId: number, error: any) => {
+					if (error) console.log(error);
+					else navigate(`/game/${gameId}`);
+				}
+			);
+			return;
+		}
 
 		socket.emit(
 			"createGame",

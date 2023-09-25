@@ -6,7 +6,7 @@ import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { HttpCode, HttpStatus, Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
@@ -765,6 +765,11 @@ export class AppGateway
 		await game.save();
 
 		return game.id;
+	}
+
+	@SubscribeMessage('invitePlayer')
+	async invitePlayer(client: Socket, payload: any): Promise<void> {
+		throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED); //COMBAK: invite player not implemented
 	}
 
 	@SubscribeMessage('joinGame')
