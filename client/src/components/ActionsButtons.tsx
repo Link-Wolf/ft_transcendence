@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import socket from "../socket";
+import PopUp from "./PopUp";
 
 const ActionsButtons = () => {
 	return <></>;
@@ -353,7 +354,8 @@ const AskForGameButton = ({
 	effect?: Function;
 }) => {
 	const user = useContext(UserContext);
-	const askForGame = (login: string) => {
+	const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+	const openGameCreationPopup = (login: string) => {
 		//TODO: ask the other person for game
 		socket.emit("askForGame", {
 			sender: user.login,
@@ -363,14 +365,21 @@ const AskForGameButton = ({
 	};
 
 	return (
-		<button
-			type='button'
-			onClick={() => {
-				askForGame(login);
-			}}
-		>
-			Fer 1 party
-		</button>
+		<>
+			<button
+				type='button'
+				onClick={() => {
+					openGameCreationPopup(login);
+				}}
+			>
+				Fer 1 party
+			</button>
+			{isPopUpOpen && (
+				<PopUp>
+					<h1>Game creation</h1>
+				</PopUp>
+			)}
+		</>
 	);
 };
 
