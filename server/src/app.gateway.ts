@@ -20,9 +20,9 @@ import { observeNotification } from 'rxjs/internal/Notification';
 const MAX_BALL_SPEED = 2;
 const DEFAULT_BALL_SPEED = 0.5;
 const MAX_PADDLE_SIZE = 100;
-const DEFAULT_BIGGER_PADDLE_SIZE = 83;
-const DEFAULT_PADDLE_SIZE = 50;
-const DEFAULT_SMALLER_PADDLE_SIZE = 30;
+const DEFAULT_BIGGER_PADDLE_SIZE = 2.0 / 9.0;
+const DEFAULT_PADDLE_SIZE = 1.0 / 6.0;
+const DEFAULT_SMALLER_PADDLE_SIZE = 1.0 / 9.0;
 const MIN_PADDLE_SIZE = 20;
 const MAX_NUMBER_OF_BALLS = 10;
 
@@ -263,7 +263,8 @@ export class AppGateway
 			player.paddle.velocity.dy = 0;
 			player.paddle.position.x = (game.width / 2 - 40) * (i * 2 - 1);
 			player.paddle.size.w = 10;
-			player.paddle.size.h = this.paddleSize(modifiers);
+			player.paddle.size.h = this.paddleSize(modifiers) * game.height;
+			player.paddle.color = 'white';
 		});
 	}
 
@@ -273,17 +274,10 @@ export class AppGateway
 	};
 
 	paddleSize = (modifiers: Modifier[]) => {
-		if (
-			modifiers.some((m) => {
-				m.dataValues.code === 'big_paddle';
-			})
-		)
+		if (modifiers.some((m) => m.dataValues.code === 'big_paddle')) {
 			return DEFAULT_BIGGER_PADDLE_SIZE;
-		if (
-			modifiers.some((m) => {
-				m.dataValues.code === 'small_paddle';
-			})
-		)
+		}
+		if (modifiers.some((m) => m.dataValues.code === 'small_paddle'))
 			return DEFAULT_SMALLER_PADDLE_SIZE;
 		return DEFAULT_PADDLE_SIZE;
 	};
@@ -434,7 +428,7 @@ export class AppGateway
 					score: 0,
 					paddle: {
 						position: { x: -width / 2 + 10, y: 0 },
-						size: { w: 10, h: this.paddleSize(modifiers) },
+						size: { w: 10, h: this.paddleSize(modifiers) * height },
 						velocity: { dx: 0, dy: 0 },
 						effect: this.paddleEffect(0)(modifiers),
 						color: 'white',
@@ -447,7 +441,7 @@ export class AppGateway
 					score: 0,
 					paddle: {
 						position: { x: width / 2 - 10, y: 0 },
-						size: { w: 10, h: this.paddleSize(modifiers) },
+						size: { w: 10, h: this.paddleSize(modifiers) * height },
 						velocity: { dx: 0, dy: 0 },
 						effect: this.paddleEffect(1)(modifiers),
 						color: 'white',

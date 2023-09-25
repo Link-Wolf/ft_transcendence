@@ -136,7 +136,7 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 				.map((player: any) => player.paddle)
 				.concat(game.obstacles)
 				.map((rect_stuff: any) => ({
-					type: "rect",
+					type: "rectangle",
 					...rect_stuff,
 				})),
 			...game.balls.concat(game.powerUps).map((round_stuff: any) => ({
