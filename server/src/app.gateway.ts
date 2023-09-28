@@ -286,7 +286,7 @@ export class AppGateway
 		const potentialPowerUpsEffects = [
 			{
 				name: 'Enlarge Your Paddle',
-				action: (ball: Ball, game: GameData) => {
+				effect: (ball: Ball, game: GameData) => {
 					game.players[ball.lastUser].paddle.size.h /= 1.1;
 					game.players[ball.lastUser].paddle.size.h = Math.max(
 						MIN_PADDLE_SIZE,
@@ -386,7 +386,7 @@ export class AppGateway
 			game.powerUps.push({
 				position: spawnPoint,
 				size: { radius: 10 },
-				effect: effect.action,
+				effect: effect.effect,
 				name: effect.name,
 				color: effect.color,
 			});
