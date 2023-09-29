@@ -134,7 +134,10 @@ const Channel = ({
 		setMembersUpdate(false);
 	}, [channel, membersUpdate, user]);
 
-	if (!owner) return <></>;
+	if (!owner) {
+		setOwner({ login: "" });
+		return <></>;
+	}
 	return (
 		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
