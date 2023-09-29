@@ -263,7 +263,7 @@ const FriendButton = ({
 				!friendship && friend(login);
 			}}
 		>
-			{friendship && friendship.isPending ? "Already sent" : "Befriend"}
+			{friendship && friendship.isPending ? "Already sent" : "Be friend"}
 		</button>
 	);
 };
@@ -287,7 +287,7 @@ const PMButton = ({
 				setChannel(`_${logins[0]}&${logins[1]}`);
 			}}
 		>
-			Envoyer un MP
+			Send MP
 		</button>
 	);
 };
@@ -372,7 +372,7 @@ const AskForGameButton = ({
 					openGameCreationPopup(login);
 				}}
 			>
-				Fer 1 party
+				Play
 			</button>
 			{isPopUpOpen && (
 				<PopUp>

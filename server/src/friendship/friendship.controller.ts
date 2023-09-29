@@ -66,6 +66,26 @@ export class FriendshipController {
 	}
 
 	/**
+	 * @brief Get all friends of a user, including pending requests in both directions
+	 * @param {string} login - The user's login
+	 * @returns {Friendship[]} All friends (and requests) of the user
+	 * @security Clearance admin OR user himself
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - User not found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('all/:login')
+	@UseGuards(AdminUserGuard)
+	async getAllFriends(@Param('login') login: string): Promise<Friendship[]> {
+		let user = await this.userService.findByLogin(login);
+		if (!user)
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		return await this.friendshipService.findAllFriends(login);
+	}
+
+	/**
 	 * @brief Get all invitations an user received
 	 * @param {string} login - The user's login
 	 * @returns {Friendship[]} All invitations the user received

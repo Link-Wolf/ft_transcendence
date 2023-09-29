@@ -50,28 +50,17 @@ const Message = ({
 	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
-			<div className={style.headmessage}>
+			<div className={user.login  === login ? style.sendmessage : style.recvmessage}>
 				<PPDisplayer login={login} size={40} status={true}>
 					<img src={`data:image/*;base64,${avatar}`} />
 				</PPDisplayer>
 				<div className={style.senderinfo}>
-					{user.login !== login ? (
-						<button onClick={toggleBox}>
-							{name}{" "}
-							{login === owner.login
-								? "[owner]"
-								: admins.some(
-										(admin) => admin.login === login
-								  ) && "[admin]"}
-							{relation.isBlocked ? "(bloqué)" : ""}
-						</button>
-					) : (
-						<label>{name} (you) </label>
-					)}
+				
+
 					{isToggleBox && (
 						<div>
 							<Link to={`/profile/${login}`}>
-								<label>Profil</label>
+								<button>Profil</button>
 							</Link>
 							{!relation.isBlocked && (
 								<AskForGameButton login={login} />
@@ -92,25 +81,40 @@ const Message = ({
 							)}
 						</div>
 					)}
-					<label>
+
+						{user.login !== login ? (
+						<button onClick={toggleBox} className={style.profil}>
+							{name}{" "}
+							{login === owner.login
+								? "[owner]"
+								: admins.some(
+										(admin) => admin.login === login
+								  ) && "[admin]"}
+							{relation.isBlocked ? "(bloqué)" : ""}
+						</button>
+					) : (
+						<label>{name} (you) </label>
+					)}
+
+							<p className={style.message}>
+								{relation.isBlocked ? "Ce message est masquée" : content}
+							</p>
+					<p className={style.time}>
 						{new Date(date).toLocaleDateString() ===
 						new Date().toLocaleDateString()
-							? new Date(date).toISOString().slice(11, 16) //if today, get an ISO string (YYYY-MM-DDTHH:mm:ss.sssZ) and slice it to only get HH:mm
-							: new Date(date)
-									.toLocaleString("fr-FR", {
-										hour: "2-digit",
-										minute: "2-digit",
-										day: "2-digit",
-										month: "2-digit",
-										year: "2-digit",
-									})
-									.replace(",", "")}
-					</label>
+						? new Date(date).toISOString().slice(11, 16) //if today, get an ISO string (YYYY-MM-DDTHH:mm:ss.sssZ) and slice it to only get HH:mm
+						: new Date(date)
+						.toLocaleString("fr-FR", {
+							hour: "2-digit",
+							minute: "2-digit",
+							day: "2-digit",
+							month: "2-digit",
+							year: "2-digit",
+						})
+						.replace(",", "")}
+					</p>
 				</div>
 			</div>
-			<p className={style.message}>
-				{relation.isBlocked ? "Ce message est masquée" : content}
-			</p>
 		</>
 	);
 };
