@@ -26,6 +26,25 @@ export class FriendshipService {
 	}
 
 	/**
+	 * @brief Get all friendships of a user including pending invitations
+	 * @param {string} login The login of the user
+	 * @returns {Friendship[]} The total list of friendships
+	 * @throws {HttpException} 500 if an error occured
+	 */
+	async findAllFriends(login: string): Promise<Friendship[]> {
+		try {
+			return await this.friendshipRepository.findAll<Friendship>({
+				where: {
+					[Op.or]: [{ senderLogin: login }, { receiverLogin: login }],
+				},
+				include: [{ all: true }],
+			});
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
 	 * @brief Get a friendship by its two friends
 	 * @param {string} loginA The login of the first friend
 	 * @param {string} loginB The login of the second friend
