@@ -63,6 +63,26 @@ export class MembershipService {
 	}
 
 	/**
+	 * @brief Find all channel names of the memberships of a user
+	 * @param {string} login The user's login
+	 * @return {string[]} All channel names of the memberships of a user
+	 * @throws {HttpException} 500 if an error occured
+	 */
+	async findChannelNamesByUser(login: string): Promise<string[]> {
+		try {
+			return this.membershipRepository
+				.findAll<Membership>({
+					where: { userLogin: login },
+				})
+				.then((memberships) => {
+					return memberships.map((m) => m.channelName);
+				});
+		} catch (error) {
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
 	 * @brief   Find a membership by its user login and channel name with sequelize
 	 * @param   {string} login      The user's login
 	 * @param   {string} chan_name  The channel's name

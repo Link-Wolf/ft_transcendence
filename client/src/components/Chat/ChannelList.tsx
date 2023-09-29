@@ -30,14 +30,10 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 		if (!update) return;
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${context.login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${context.login}/channel_names`
 			)
 			.then((response) => {
-				setChannels(
-					response.data.map(
-						(membership: any) => membership.channelName
-					)
-				);
+				setChannels(response.data);
 			})
 			.catch((err) => {
 				console.log(err);

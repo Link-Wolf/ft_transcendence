@@ -15,15 +15,11 @@ import { MembershipService } from './membership.service';
 import { UserService } from '../user/user.service';
 import { Membership } from './membership.entity';
 import { ChannelService } from '../channel/channel.service';
-import {
-	AdminUserGuard,
-} from 'src/guards/admin_user.guard';
+import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { AdminOwnerGuard } from 'src/guards/admin_owner.guard';
 import { AdminOwnerAdminUserGuard } from 'src/guards/admin_owner_admin_user.guard';
 import { AdminUserChannelusersGuard } from 'src/guards/admin_user_channelusers.guard';
-import {
-	AdminChannelusersGuardCookies,
-} from 'src/guards/admin_channelusers.guard';
+import { AdminChannelusersGuardCookies } from 'src/guards/admin_channelusers.guard';
 
 @Controller('membership')
 export class MembershipController {
@@ -65,6 +61,27 @@ export class MembershipController {
 		if (!this.userService.findByLogin(login))
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		return this.membershipService.findByUser(login);
+	}
+
+	/**
+	 * @brief Get all channel names of the memberships of a user
+	 * @param {string} login The user login
+	 * @return {string[]} All channel names of the memberships of a user
+	 * @security Clearance admin OR the user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 404 - Not Found
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('user/:login/channel_names')
+	@UseGuards(AdminUserGuard)
+	async getChannelNamesByUser(
+		@Param('login') login: string,
+	): Promise<string[]> {
+		if (!this.userService.findByLogin(login))
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		return this.membershipService.findChannelNamesByUser(login);
 	}
 
 	/**
