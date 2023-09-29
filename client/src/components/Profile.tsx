@@ -77,9 +77,15 @@ const Profile = () => {
 			<div className={style.profil}>
 				<div className={style.resume}>
 					<h1>P R O F I L E</h1>
-					<Resume isMe={isMe} login={profileLogin} />
+					<Resume
+						isMe={isMe}
+						login={profileLogin}
+					/>
 					<Link to={`/profile/${profileLogin}`}>
-						<button className={style.button} onClick={StatsDisplay}>
+						<button
+							className={style.button}
+							onClick={StatsDisplay}
+						>
 							Stats
 						</button>
 					</Link>
@@ -99,13 +105,19 @@ const Profile = () => {
 							Settings
 						</button>
 					</Link>
-					<button className={style.button} onClick={logout}>
+					<button
+						className={style.button}
+						onClick={logout}
+					>
 						Log out
 					</button>
 				</div>
 				{displaystats == 1 ? (
 					<div className={style.stats}>
-						<MatchHistory isMe={isMe} login={profileLogin} />
+						<MatchHistory
+							isMe={isMe}
+							login={profileLogin}
+						/>
 					</div>
 				) : (
 					<></>
@@ -114,7 +126,10 @@ const Profile = () => {
 					<>
 						{displayfriends == 1 ? (
 							<div className={style.friends}>
-								<img src={friends} className={style.img}></img>
+								<img
+									src={friends}
+									className={style.img}
+								></img>
 								<div>
 									<Friends />
 									<Blocked />
@@ -175,7 +190,11 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({user.login})
 			</div>
-			<PPDisplayer login={user.login} size={210} status={false}>
+			<PPDisplayer
+				login={user.login}
+				size={210}
+				status={false}
+			>
 				<img
 					alt='profile picture'
 					src={`data:image/*;base64,${user.avatar}`}
@@ -478,7 +497,7 @@ const Friends = () => {
 		if (!update) return;
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/all/${user.login}`
 			)
 			.then((res) => {
 				setFriendShips(res.data);
@@ -516,8 +535,6 @@ const Friends = () => {
 				console.log(err);
 			});
 	};
-
-	console.log(friendShips);
 
 	return (
 		<div>
