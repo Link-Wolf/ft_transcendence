@@ -5,6 +5,8 @@ import socket from "../../../socket";
 import { PPDisplayer } from "../../ImageDisplayer";
 import { UserContext } from "../../../App";
 import MuteBanForm from "./MuteBanForm";
+import style from "../../../style/Chat.module.scss";
+
 import {
 	AskForGameButton,
 	BlockUnblockButton,
@@ -149,7 +151,7 @@ const ChannelUser = ({
 	};
 
 	return (
-		<>
+		<div>
 			{toggleAdminBox.isActive && (
 				<MuteBanForm
 					channel={channel}
@@ -161,12 +163,12 @@ const ChannelUser = ({
 					kick={kick}
 				/>
 			)}
-			<div>
+			<div className={style.user}>
 				{isToggleBox && (
-					<div>
+					<div className={style.action}>
 						<div>
 							<Link to={`/profile/${login}`}>
-								<label>Profil</label>
+								<button>Profil</button>
 							</Link>
 							{!members[login].isBlocked && (
 								<AskForGameButton login={login} />
@@ -234,26 +236,26 @@ const ChannelUser = ({
 						</div>
 					</div>
 				)}
-				<button
+				<div className={style.profil}
 					onClick={() => {
 						toggleBox(login);
 					}}
 				>
+					{login === owner.login
+						? " (owner)"
+						: admins.some((admin) => admin.login === login) &&
+						" (admin)"}
 					{user.login !== login ? (
 						<label>
 							{name} {members[login].isBlocked ? "(bloqué)" : ""}
 						</label>
 					) : (
 						<label>{name} (you) </label>
-					)}
-					<PPDisplayer login={login} size={50} status={true} />
-					{login === owner.login
-						? " (owner)"
-						: admins.some((admin) => admin.login === login) &&
-						  " (admin)"}
-				</button>
+						)}
+						<PPDisplayer login={login} size={50} status={true} />
+				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 
