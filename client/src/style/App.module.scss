@@ -20,6 +20,7 @@
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(197, 197, 197);
 	--msg-text: #000000;
+	overflow: scroll;
 }
 
 .animation {
@@ -38,6 +39,7 @@
 	background-size: cover;
 	background-position: center;
 	transition: 1s ease-in;
+	overflow: scroll;
 
 	--neutral-background: #131313;
 	--neutral-text: #b8b8b8;

@@ -251,14 +251,13 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				<img src={history}></img>
 				<div className={style.statshistory}>
 					<h2>M A T C H _ H I S T O R Y</h2>
-					<h3>Ranked</h3>
-					<ul>
+					<h3>R A N K E D</h3>
+					<div className={style.class}>
 						{rankedGames.length > 0 ? (
 							rankedGames.map((game, i) => {
 								if (game.game.status === "waiting") return;
 								return (
-									<li key={i}>
-										{/* Status */}
+									<div className={style.match}>
 										<div>
 											{game.game.status === "ongoing" &&
 												"Ongoing"}
@@ -271,59 +270,40 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 													? "Victory"
 													: "Defeat")}
 										</div>
-										{/* PP du user */}
-										{
-											<PPDisplayer
+										<div className={style.score}>
+											<div className={style.usermatch}>
+											{<PPDisplayer
 												login={login}
-												size={69}
-												status={false}
-											/>
-										}
-										{/* Nom du user */}
-										<div>{game.user.name}</div>
-										{game.game.status !== "ongoing" && (
-											<>
-												{/* Score du user */}
-												<div>{game.score}</div>
-												{/* Score de l'adversaire */}
-												<div>
-													{
-														game.opponentUserGame
-															.score
-													}
-												</div>
-											</>
-										)}
-										{/* Nom de l'adversaire */}
-										<div>
-											{game.opponentUserGame.user.name}
+												size={60}
+												status={false}/>}
+											</div>
+											{game.game.status !== "ongoing" ? (
+												<div className={style.result}> [ {game.score} ] vs [ {game.opponentUserGame.score} ] </div>
+												) : <div className={style.result} > [ 0 ] vs  [ 0 ] </div>}
+											<div className={style.usermatch}>
+											<Link to={`/profile/${game.opponentUserGame.userLogin}`}>
+											{<PPDisplayer
+												login={game.opponentUserGame.userLogin}
+												size={60}
+												status={false}/>}
+											</Link>
+											</div>
 										</div>
-										{/* PP de l'adversaire */}
-										{
-											<PPDisplayer
-												login={
-													game.opponentUserGame
-														.userLogin
-												}
-												size={69}
-												status={false}
-											/>
-										}
-									</li>
+										<p>--------------------------------</p>
+									</div>
 								);
 							})
 						) : (
-							<li>No ranked games played</li>
+							<p>No ranked games played</p>
 						)}
-					</ul>
-					<h3>Not ranked</h3>
-					<ul>
+					</div>
+					<h3>N O T _ R A N K E D</h3>
+					<div className={style.class}>
 						{normalGames.length > 0 ? (
 							normalGames.map((game, i) => {
 								if (game.game.status === "waiting") return;
 								return (
-									<li key={i}>
-										{/* Status */}
+									<div className={style.match}>
 										<div>
 											{game.game.status === "ongoing" &&
 												"Ongoing"}
@@ -336,51 +316,33 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 													? "Victory"
 													: "Defeat")}
 										</div>
-										{/* PP du user */}
-										{
-											<PPDisplayer
-												login={user.login}
-												size={69}
-												status={false}
-											/>
-										}
-										{/* Nom du user */}
-										<div>{game.user.name}</div>
-										{game.game.status !== "ongoing" && (
-											<>
-												{/* Score du user */}
-												<div>{game.score}</div>
-												{/* Score de l'adversaire */}
-												<div>
-													{
-														game.opponentUserGame
-															.score
-													}
-												</div>
-											</>
-										)}
-										{/* Nom de l'adversaire */}
-										<div>
-											{game.opponentUserGame.user.name}
+										<div className={style.score}>
+											<div className={style.usermatch}>
+											{<PPDisplayer
+												login={login}
+												size={60}
+												status={false}/>}
+											</div>
+											{game.game.status !== "ongoing" ? (
+												<div className={style.result}> [ {game.score} ] vs [ {game.opponentUserGame.score} ] </div>
+												) : <div className={style.result}> [ 0 ] vs  [ 0 ] </div>}
+											<div className={style.usermatch}>
+											<Link to={`/profile/${game.opponentUserGame.userLogin}`}>
+											{<PPDisplayer
+												login={game.opponentUserGame.userLogin}
+												size={60}
+												status={false}/>}
+											</Link>
+											</div>
 										</div>
-										{/* PP de l'adversaire */}
-										{
-											<PPDisplayer
-												login={
-													game.opponentUserGame
-														.userLogin
-												}
-												size={69}
-												status={false}
-											/>
-										}
-									</li>
+										<p>--------------------------------</p>
+									</div>
 								);
 							})
 						) : (
-							<li>No friendly games played</li>
+							<p>No friendly games played</p>
 						)}
-					</ul>
+					</div>
 				</div>
 			</div>
 		</>
@@ -538,11 +500,11 @@ const Friends = () => {
 
 	return (
 		<div>
-			<h2>Friends</h2>
-			<ul>
-				<li>
-					Friend List
-					<ul>
+			<h2>F R I E N D S</h2>
+			<span>
+					F R I E N D S _ L I S T
+				<div className={style.FriendsList}>
+					<span>
 						{/* If friendShips is not empty AND at least one of them has pending set to false */}
 						{friendShips.length > 0 &&
 						friendShips.some(
@@ -555,22 +517,24 @@ const Friends = () => {
 									friend = friendShip.receiver;
 								else friend = friendShip.sender;
 								return (
-									<li key={i}>
+									<li key={i} className={style.friendsUser}>
+										<Link to={`/profile/${friend.login}`}>
 										<PPDisplayer
 											login={friend.login}
-											size={69}
+											size={100}
 											status={true}
-										/>
-										<div>{friend.name}</div>
-										<div>{friend.login}</div>
-										<div>
-											Friend since {friendShip.updated_at}
-										</div>
+											/>
+										</Link>
+										<span>{friend.name}<br/>
+										({friend.login})<br/></span>
+										{/* <span> */}
+											{/* Friend since {friendShip.updated_at} */}
+										{/* </span> */}
 										<button
 											onClick={() => {
 												removeFriend(friend.login);
 											}}
-										>
+											>
 											Remove friend
 										</button>
 									</li>
@@ -579,8 +543,8 @@ const Friends = () => {
 						) : (
 							<li>No friends yet uwun't</li>
 						)}
-					</ul>
-				</li>
+					</span>
+				</div>
 				<li>
 					Requests
 					<ul>
@@ -666,7 +630,7 @@ const Friends = () => {
 						)}
 					</ul>
 				</li>
-			</ul>
+			</span>
 		</div>
 	);
 };
@@ -700,16 +664,16 @@ const Blocked = () => {
 
 	return (
 		<div>
-			<h2>Blocked users</h2>
+			<h2>B L O C K E D _ U S E R S</h2>
 			<ul>
-				<li>
+				<div className={style.FriendsList}>
 					Block List
-					<ul>
+					<span>
 						{blocks.length > 0 ? (
 							blocks.map((block, i) => {
 								let blocked = block.blocked;
 								return (
-									<li key={i}>
+									<li key={i} className={style.friendsUser}>
 										<PPDisplayer
 											login={blocked.login}
 											size={69}
@@ -730,8 +694,8 @@ const Blocked = () => {
 						) : (
 							<li>No blocked users yet</li>
 						)}
-					</ul>
-				</li>
+					</span>
+				</div>
 			</ul>
 		</div>
 	);
