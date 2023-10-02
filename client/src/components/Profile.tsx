@@ -89,6 +89,8 @@ const Profile = () => {
 							Stats
 						</button>
 					</Link>
+					{isMe ?
+					<>
 					<Link to={`/profile/${profileLogin}`}>
 						<button
 							className={style.button}
@@ -101,16 +103,22 @@ const Profile = () => {
 						<button
 							className={style.button}
 							onClick={SettingsDisplay}
-						>
+							>
 							Settings
 						</button>
 					</Link>
 					<button
 						className={style.button}
 						onClick={logout}
-					>
+						>
 						Log out
-					</button>
+					</button> 
+					</>
+					:<>
+							<div className={style.socialbutton}>
+								{!isMe && <SocialInterractions login={profileLogin} />}
+							</div>
+					</>}
 				</div>
 				{displaystats == 1 ? (
 					<div className={style.stats}>
@@ -149,7 +157,6 @@ const Profile = () => {
 					</>
 				)}
 			</div>
-			{!isMe && <SocialInterractions login={profileLogin} />}
 		</div>
 	);
 };
@@ -182,7 +189,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-		setUpdate(false);
+		setUpdate(true);
 	}, [update, login]);
 
 	return (
