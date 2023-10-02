@@ -132,28 +132,33 @@ const App = () => {
 
 	return (
 		<>
-			<div className={clearance.theme === "light" ? style.light : style.dark}>
-
-			<div id='dark' className={style.dark}></div>
 			<div
-				id='light'
-				className={`${style.light} ${hasAnimation && style.animation}`}
+				className={
+					clearance.theme === "light" ? style.light : style.dark
+				}
+			>
+				<div id='dark' className={style.dark}></div>
+				<div
+					id='light'
+					className={`${style.light} ${
+						hasAnimation && style.animation
+					}`}
 				></div>
-			<div className={style.container}>
-				<UserContext.Provider
-					value={{
-						...clearance,
-						toggleTheme: toggleTheme,
-						chat: chat,
-						setChat: setChat,
-						channel: channel,
-						setChannel: setChannel,
-					}}
+				<div className={style.container}>
+					<UserContext.Provider
+						value={{
+							...clearance,
+							toggleTheme: toggleTheme,
+							chat: chat,
+							setChat: setChat,
+							channel: channel,
+							setChannel: setChannel,
+						}}
 					>
-					<Routage />
-				</UserContext.Provider>
+						<Routage />
+					</UserContext.Provider>
+				</div>
 			</div>
-					</div>
 		</>
 	);
 };

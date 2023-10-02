@@ -36,7 +36,6 @@ export class UserService {
 		try {
 			return await this.userRepository.findOne<User>({
 				where: { login: login },
-				include: [{ all: true }],
 			});
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
