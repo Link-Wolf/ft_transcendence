@@ -237,7 +237,7 @@
 
 .button{
 	margin-top: 20px;
-	width: 150px;
+	width: 165px;
 	border: 4px solid #f8f8f8;
 	border-left: 10px solid #f8f8f8;
 	border-right: 10px solid #f8f8f8;
@@ -257,6 +257,34 @@
 	font-size: 18px; 
 }
 
+.socialbutton
+{
+	display: flex;
+	flex-direction: column;
+	button{
+		margin-top: 20px;
+		width: 165px;
+		border: 4px solid #f8f8f8;
+		border-left: 10px solid #f8f8f8;
+		border-right: 10px solid #f8f8f8;
+		border-radius: 25px;
+		background-color: rgba($color: #000000, $alpha: 0);
+		padding: 5px 20px 5px 20px;
+		color: #f8f8f8;
+		font-size: 18px; 
+		transition: 0.3s;
+	}
+
+	button:hover {
+		background-color: #f8f8f8;
+		color: #000000;
+	
+		transition: 0.3s;
+		font-size: 18px; 
+	}
+
+}
+
 .match{
 	display: flex;
 	flex-direction: column;
@@ -264,6 +292,7 @@
 	img {
 		width: 60px;
 		height: 60px;
+		margin: 0px;
 	}
 	.score {
 		display: flex;
