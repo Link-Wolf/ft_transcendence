@@ -33,37 +33,14 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 			.catch((err) => console.log(err));
 	}, []);
 
-	console.log(selectedModifiers);
-	console.log(selectedModifiers);
+	console.log(selectedMap);
 	return (
 		<>
-			{
-			selectedModifiers.find((id) => id === 1) != 1 ?
-			selectedModifiers.find((id) => id === 2) == 2 ?
-					selectedMap === -1 ? 
-						<div className={style.gamemapDefaultSpeed}></div> :
-						selectedMap === 3 ? 
-							<div className={style.gamemapCitySpeed}></div> :
-						<div className={style.gamemapVoidSpeed}></div>
-					:
-					selectedMap === -1 ? 
-						<div className={style.gamemapDefault}></div> :
-						selectedMap === 3 ? 
-							<div className={style.gamemapCity}></div> :
-						<div className={style.gamemapVoid}></div>	
-				:
-			selectedModifiers.find((id) => id === 2) == 2 ?
-					selectedMap === -1 ? 
-						<div className={style.gamemapDefaultSpeedLarge}></div> :
-						selectedMap === 3 ? 
-							<div className={style.gamemapCitySpeedLarge}></div> :
-						<div className={style.gamemapVoidSpeedLarge}></div>
-					:
-					selectedMap === -1 ? 
-						<div className={style.gamemapDefaultLarge}></div> :
-						selectedMap === 3 ? 
-							<div className={style.gamemapCityLarge}></div> :
-						<div className={style.gamemapVoidLarge}></div>
+			{ selectedMap === -1 ? 
+					<div className={style.gamemapDefault}></div> :
+				selectedMap === 11 ? 
+					<div className={style.gamemapTwin}></div> :
+					<div className={style.gamemapLine}></div>
 					}
 			<label
 				className={style.gameselect}
