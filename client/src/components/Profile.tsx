@@ -545,8 +545,8 @@ const Friends = () => {
 						)}
 					</span>
 				</div>
-				<li>
-					Requests
+				<span>
+					R E Q U E S T S
 					<ul>
 						<li>Sent</li>
 						{friendShips.length > 0 &&
@@ -563,23 +563,19 @@ const Friends = () => {
 									return;
 								let friend = friendShip.receiver;
 								return (
-									<li key={i}>
+									<li key={i} className={style.requestUser}>
 										<PPDisplayer
 											login={friend.login}
 											size={69}
 											status={true}
-										/>
+											/>
 										<div>{friend.name}</div>
 										<div>{friend.login}</div>
-										<div>
-											Friendship asked on{" "}
-											{friendShip.created_at}
-										</div>
 										<button
 											onClick={() => {
 												removeFriend(friend.login);
 											}}
-										>
+											>
 											Cancel request
 										</button>
 									</li>
@@ -603,7 +599,7 @@ const Friends = () => {
 									return;
 								let friend = friendShip.sender;
 								return (
-									<li key={i}>
+									<li key={i} className={style.requestUser}>
 										<PPDisplayer
 											login={friend.login}
 											size={69}
@@ -629,7 +625,7 @@ const Friends = () => {
 							<li>No requests received</li>
 						)}
 					</ul>
-				</li>
+				</span>
 			</span>
 		</div>
 	);
@@ -665,9 +661,9 @@ const Blocked = () => {
 	return (
 		<div>
 			<h2>B L O C K E D _ U S E R S</h2>
-			<ul>
+			<span>
+					B L O C K _ L I S T
 				<div className={style.FriendsList}>
-					Block List
 					<span>
 						{blocks.length > 0 ? (
 							blocks.map((block, i) => {
@@ -681,9 +677,6 @@ const Blocked = () => {
 										/>
 										<div>{blocked.name}</div>
 										<div>{blocked.login}</div>
-										<div>
-											Blocked since {blocked.created_at}
-										</div>
 										<UnblockButton
 											login={blocked.login}
 											effect={touchTheUpdate}
@@ -696,7 +689,7 @@ const Blocked = () => {
 						)}
 					</span>
 				</div>
-			</ul>
+			</span>
 		</div>
 	);
 };
