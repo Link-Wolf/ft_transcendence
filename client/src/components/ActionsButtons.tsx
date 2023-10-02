@@ -26,7 +26,9 @@ const BlockButton = ({
 	const block = (login: string) => {
 		axios
 			.post(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block`,
+				`${process.env.REACT_APP_PROTOCOL}` +
+					`://${process.env.REACT_APP_HOSTNAME}` +
+					`:${process.env.REACT_APP_BACKEND_PORT}/api/toxic-relations/block`,
 				{
 					userLogin: user.login,
 					blocked: login,
