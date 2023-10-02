@@ -84,6 +84,11 @@ const MessagesManager = ({
 		setUpdate(false);
 	}, [update, channel]);
 
+	useEffect(() => {
+		const el = document.getElementById("chat");
+		if (el) el.scrollTop = el.scrollHeight;
+	}, [messages]);
+
 	//  Load the possibility to send messages or not depending on whether the user is blocked or not, or if the user is muted
 	useEffect(() => {
 		if (!update) return;
@@ -144,7 +149,7 @@ const MessagesManager = ({
 	return (
 		<>
 			<h1>{channel[0] !== "_" ? channel : getNameOfTheOther(channel)}</h1>
-			<div className={style.channelmsg}>
+			<div className={style.channelmsg} id='chat'>
 				{messages
 					.sort((m1, m2) => {
 						return (
