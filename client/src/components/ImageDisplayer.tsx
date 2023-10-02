@@ -18,11 +18,12 @@ const PPDisplayer = ({
 	/**
 	 * PPDisplayer component, display the user's avatar and status
 	 */
-	const [image, setImage] = useState<string>("");
+	const [image, setImage] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (children) return;
 		if (!login) return;
+		setImage(null);
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
