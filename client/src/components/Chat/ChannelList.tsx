@@ -33,6 +33,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${context.login}/channel_names`
 			)
 			.then((response) => {
+				console.log(response.data);
 				setChannels(response.data);
 			})
 			.catch((err) => {

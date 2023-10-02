@@ -75,7 +75,9 @@ export class MembershipService {
 					where: { userLogin: login },
 				})
 				.then((memberships) => {
-					return memberships.map((m) => m.channelName);
+					return memberships
+						.filter((m) => m.dataValues.channelName[0] !== '_')
+						.map((m) => m.channelName);
 				});
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
