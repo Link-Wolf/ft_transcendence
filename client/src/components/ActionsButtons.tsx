@@ -354,14 +354,9 @@ const AskForGameButton = ({
 	effect?: Function;
 }) => {
 	const user = useContext(UserContext);
-	const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+	const [isPopUpOpen, setIsPopUpOpen] = useState("");
 	const openGameCreationPopup = (login: string) => {
-		//TODO: ask the other person for game
-		socket.emit("askForGame", {
-			sender: user.login,
-			receiver: login,
-			// id: ???
-		});
+		setIsPopUpOpen(login === "" ? login : "");
 	};
 
 	return (
@@ -374,7 +369,7 @@ const AskForGameButton = ({
 			>
 				Play
 			</button>
-			{isPopUpOpen && (
+			{isPopUpOpen !== "" && (
 				<PopUp>
 					<h1>Game creation</h1>
 				</PopUp>

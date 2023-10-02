@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, FormEvent } from "react";
 import Message from "../Message";
 import socket from "../../../socket";
 import { UserContext } from "../../../App";
@@ -41,7 +41,8 @@ const MessagesManager = ({
 		return names[0] === user.login ? names[1] : names[0];
 	};
 
-	const sendMessage = async () => {
+	const sendMessage = async (e: FormEvent) => {
+		e.preventDefault();
 		if (!canSendMessage) return;
 		let printableRegexButNoSpace = /[\S\x21-\x7E\u{A0}-\u{FFFF}]/gu; // Matches any printable characters (including Unicode) except space
 		if (printableRegexButNoSpace.test(message) && message.length < 500)
@@ -184,7 +185,7 @@ const MessagesManager = ({
 						</div>
 					))}
 			</div>
-			<form action='#'>
+			<form action='' onSubmit={sendMessage}>
 				<input
 					value={message}
 					type='text'
@@ -198,9 +199,7 @@ const MessagesManager = ({
 						setMessage(e.target.value);
 					}}
 				/>
-				<button onClick={sendMessage} disabled={!canSendMessage}>
-					Send
-				</button>
+				<button disabled={!canSendMessage}>Send</button>
 			</form>
 		</>
 	);
