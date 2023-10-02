@@ -113,12 +113,6 @@ export class AuthController {
 	async getClearance(
 		@Req() req: Request,
 	): Promise<{ clearance: number; login: string }> {
-		if (!req.cookies.token)
-			return {
-				clearance: Number(process.env.GUEST_CLEARANCE),
-				login: 'guest',
-			};
-
 		let user = await this.userService.verify(req.cookies.token);
 		if (!user)
 			return {
