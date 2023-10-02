@@ -19,35 +19,20 @@ import stats from "../assets/stats.png";
 import history from "../assets/history.png";
 import friends from "../assets/friends.png";
 
-let displaystats = 1;
-let displayfriends = 0;
-let displaysettings = 0;
-
-const StatsDisplay = () => {
-	displaystats = 1;
-	displayfriends = 0;
-	displaysettings = 0;
-};
-
-const FriendsDisplay = () => {
-	displaystats = 0;
-	displayfriends = 1;
-	displaysettings = 0;
-};
-
-const SettingsDisplay = () => {
-	displaystats = 0;
-	displayfriends = 0;
-	displaysettings = 1;
-};
-
 const Profile = () => {
 	/**
 	 * Profile page, display the user's profile if the user is logged in and has enough clearance
 	 */
+	const [displayedMenu, setDisplayedMenu] = useState(
+		"" as "" | "stats" | "friends" | "settings"
+	);
 	const profileLogin = useParams<{ login: string }>().login ?? "";
 	const user = useContext(UserContext);
 	const isMe = user.login === profileLogin;
+
+	useEffect(() => {
+		setDisplayedMenu("");
+	}, [profileLogin]);
 
 	if (!user.clearance || user.clearance === 0)
 		return <ThereIsNotEnoughPermsBro />;
@@ -77,67 +62,65 @@ const Profile = () => {
 			<div className={style.profil}>
 				<div className={style.resume}>
 					<h1>P R O F I L E</h1>
-					<Resume
-						isMe={isMe}
-						login={profileLogin}
-					/>
+					<Resume isMe={isMe} login={profileLogin} />
 					<Link to={`/profile/${profileLogin}`}>
 						<button
 							className={style.button}
-							onClick={StatsDisplay}
+							onClick={() => {
+								setDisplayedMenu("stats");
+							}}
 						>
 							Stats
 						</button>
 					</Link>
-					{isMe ?
-					<>
-					<Link to={`/profile/${profileLogin}`}>
-						<button
-							className={style.button}
-							onClick={FriendsDisplay}
-						>
-							Friends
-						</button>
-					</Link>
-					<Link to={`/profile/${profileLogin}`}>
-						<button
-							className={style.button}
-							onClick={SettingsDisplay}
-							>
-							Settings
-						</button>
-					</Link>
-					<button
-						className={style.button}
-						onClick={logout}
-						>
-						Log out
-					</button> 
-					</>
-					:<>
+					{isMe ? (
+						<>
+							<Link to={`/profile/${profileLogin}`}>
+								<button
+									className={style.button}
+									onClick={() => {
+										setDisplayedMenu("friends");
+									}}
+								>
+									Friends
+								</button>
+							</Link>
+							<Link to={`/profile/${profileLogin}`}>
+								<button
+									className={style.button}
+									onClick={() => {
+										setDisplayedMenu("settings");
+									}}
+								>
+									Settings
+								</button>
+							</Link>
+							<button className={style.button} onClick={logout}>
+								Log out
+							</button>
+						</>
+					) : (
+						<>
 							<div className={style.socialbutton}>
-								{!isMe && <SocialInterractions login={profileLogin} />}
+								{!isMe && (
+									<SocialInterractions login={profileLogin} />
+								)}
 							</div>
-					</>}
+						</>
+					)}
 				</div>
-				{displaystats == 1 ? (
+				{displayedMenu === "stats" ? (
 					<div className={style.stats}>
-						<MatchHistory
-							isMe={isMe}
-							login={profileLogin}
-						/>
+						<MatchHistory isMe={isMe} login={profileLogin} />
 					</div>
 				) : (
 					<></>
 				)}
 				{isMe && (
 					<>
-						{displayfriends == 1 ? (
+						{displayedMenu === "friends" ? (
 							<div className={style.friends}>
-								<img
-									src={friends}
-									className={style.img}
-								></img>
+								<img src={friends} className={style.img}></img>
 								<div>
 									<Friends />
 									<Blocked />
@@ -146,7 +129,7 @@ const Profile = () => {
 						) : (
 							<></>
 						)}
-						{displaysettings == 1 ? (
+						{displayedMenu === "settings" ? (
 							<div className={style.settings}>
 								<img src='https://primedepartamentos.com/images/icons/settings-icon-white.png'></img>
 								<Update />
@@ -197,11 +180,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({user.login})
 			</div>
-			<PPDisplayer
-				login={user.login}
-				size={210}
-				status={false}
-			>
+			<PPDisplayer login={user.login} size={210} status={false}>
 				<img
 					alt='profile picture'
 					src={`data:image/*;base64,${user.avatar}`}
@@ -279,21 +258,46 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 										</div>
 										<div className={style.score}>
 											<div className={style.usermatch}>
-											{<PPDisplayer
-												login={login}
-												size={60}
-												status={false}/>}
+												{
+													<PPDisplayer
+														login={login}
+														size={60}
+														status={false}
+													/>
+												}
 											</div>
 											{game.game.status !== "ongoing" ? (
-												<div className={style.result}> [ {game.score} ] vs [ {game.opponentUserGame.score} ] </div>
-												) : <div className={style.result} > [ 0 ] vs  [ 0 ] </div>}
+												<div className={style.result}>
+													{" "}
+													[ {game.score} ] vs [ 
+													{
+														game.opponentUserGame
+															.score
+													}{" "}
+													]{" "}
+												</div>
+											) : (
+												<div className={style.result}>
+													{" "}
+													[ 0 ] vs [ 0 ]{" "}
+												</div>
+											)}
 											<div className={style.usermatch}>
-											<Link to={`/profile/${game.opponentUserGame.userLogin}`}>
-											{<PPDisplayer
-												login={game.opponentUserGame.userLogin}
-												size={60}
-												status={false}/>}
-											</Link>
+												<Link
+													to={`/profile/${game.opponentUserGame.userLogin}`}
+												>
+													{
+														<PPDisplayer
+															login={
+																game
+																	.opponentUserGame
+																	.userLogin
+															}
+															size={60}
+															status={false}
+														/>
+													}
+												</Link>
 											</div>
 										</div>
 										<p>--------------------------------</p>
@@ -325,21 +329,46 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 										</div>
 										<div className={style.score}>
 											<div className={style.usermatch}>
-											{<PPDisplayer
-												login={login}
-												size={60}
-												status={false}/>}
+												{
+													<PPDisplayer
+														login={login}
+														size={60}
+														status={false}
+													/>
+												}
 											</div>
 											{game.game.status !== "ongoing" ? (
-												<div className={style.result}> [ {game.score} ] vs [ {game.opponentUserGame.score} ] </div>
-												) : <div className={style.result}> [ 0 ] vs  [ 0 ] </div>}
+												<div className={style.result}>
+													{" "}
+													[ {game.score} ] vs [ 
+													{
+														game.opponentUserGame
+															.score
+													}{" "}
+													]{" "}
+												</div>
+											) : (
+												<div className={style.result}>
+													{" "}
+													[ 0 ] vs [ 0 ]{" "}
+												</div>
+											)}
 											<div className={style.usermatch}>
-											<Link to={`/profile/${game.opponentUserGame.userLogin}`}>
-											{<PPDisplayer
-												login={game.opponentUserGame.userLogin}
-												size={60}
-												status={false}/>}
-											</Link>
+												<Link
+													to={`/profile/${game.opponentUserGame.userLogin}`}
+												>
+													{
+														<PPDisplayer
+															login={
+																game
+																	.opponentUserGame
+																	.userLogin
+															}
+															size={60}
+															status={false}
+														/>
+													}
+												</Link>
 											</div>
 										</div>
 										<p>--------------------------------</p>
@@ -509,7 +538,7 @@ const Friends = () => {
 		<div>
 			<h2>F R I E N D S</h2>
 			<span>
-					F R I E N D S _ L I S T
+				F R I E N D S _ L I S T
 				<div className={style.FriendsList}>
 					<span>
 						{/* If friendShips is not empty AND at least one of them has pending set to false */}
@@ -526,22 +555,24 @@ const Friends = () => {
 								return (
 									<li key={i} className={style.friendsUser}>
 										<Link to={`/profile/${friend.login}`}>
-										<PPDisplayer
-											login={friend.login}
-											size={100}
-											status={true}
+											<PPDisplayer
+												login={friend.login}
+												size={100}
+												status={true}
 											/>
 										</Link>
-										<span>{friend.name}<br/>
-										({friend.login})<br/></span>
+										<span>
+											{friend.name}
+											<br />({friend.login})<br />
+										</span>
 										{/* <span> */}
-											{/* Friend since {friendShip.updated_at} */}
+										{/* Friend since {friendShip.updated_at} */}
 										{/* </span> */}
 										<button
 											onClick={() => {
 												removeFriend(friend.login);
 											}}
-											>
+										>
 											Remove friend
 										</button>
 									</li>
@@ -575,14 +606,14 @@ const Friends = () => {
 											login={friend.login}
 											size={69}
 											status={true}
-											/>
+										/>
 										<div>{friend.name}</div>
 										<div>{friend.login}</div>
 										<button
 											onClick={() => {
 												removeFriend(friend.login);
 											}}
-											>
+										>
 											Cancel request
 										</button>
 									</li>
@@ -669,7 +700,7 @@ const Blocked = () => {
 		<div>
 			<h2>B L O C K E D _ U S E R S</h2>
 			<span>
-					B L O C K _ L I S T
+				B L O C K _ L I S T
 				<div className={style.FriendsList}>
 					<span>
 						{blocks.length > 0 ? (
