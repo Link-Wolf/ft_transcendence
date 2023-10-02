@@ -1,284 +1,325 @@
 .profil {
-
+	--size_unit: 40px;
 	display: flex;
 	flex-direction: row;
 	margin-left: auto;
 	margin-right: auto;
 	justify-content: center;
-	
 
 	text-align: center;
 	align-items: center;
-	h1 {
+
+	.resume {
+		left: 20px;
+		display: flex;
+		flex-direction: column;
+		font-size: 20px;
 		color: white;
-		font-size: 40px;
-	}
-}
-
-.resume {
-	display: flex;
-	flex-direction: column;
-	font-size: 20px;
-	color: white;
-	text-align: center;
-	align-items: center;
-	width: 230px;
-	margin-right: 50px;
-	border-radius: 1000px;
-	font-size: 20px;
-	img {
-		border-radius: 30px;
-		border : 5px solid white;
-	}
-	.username {
-		margin-top: 5px;
-		margin-bottom: 5px;
-	}
-	
-}
-
-.stats {
-
-	height: 900px;
-	width: 800px;
-	display: flex;
-	flex-direction: row;
-	color: white;
-	align-items: center;
-
-	img {
-		width: 200px;
-		border-bottom: 2px solid white;
-		margin-left: 100px;
-		margin-bottom: 15px;
-	}
-	.statsbanner{
-		margin-left: 100px;
-		width: 200px;
-		border: 4px solid white;
-		border-radius: 30px 30px 30px 30px;
-		border-left: 0px;
-		border-right: 0px;
-		background-color: rgba($color: #000000, $alpha: 0.4);
-	}
-	.statshistory {
-		background-color: rgba($color: #000000, $alpha: 0.4);
-		margin: 20px;
-		margin-top: 0px;
-		margin-left: 100px;
-
-		border: 4px solid white;
-		border-left: 0px;
-		border-right: 0px;
-		height: 700px;
-		padding-left: 40px;
-		padding-right: 40px;
-		border-radius: 30px 30px 30px 30px;
-		overflow: scroll;
-
-	}
-}
-.friends {
-
-	
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	height: 900px;
-	width: 800px;
-	.img {
-		margin-top: 40px;
-		width: 300px;
-		margin-bottom: 15px;
-	}
-	div {
-		display : flex ;
-		flex-direction: row;
+		text-align: center;
 		align-items: center;
-		div {
+		font-size: 20px;
+
+		h1 {
+			color: white;
+			font-size: calc(3 * var(--size_unit));
+			margin-top: 0;
+			margin-bottom: calc(1 * var(--size_unit));
+		}
+
+		img {
+			border-radius: 30px;
+			width: 290px;
+			height: 290px;
+			border: 5px solid white;
+		}
+
+		.username {
+			font-size: calc(2 * var(--size_unit));
+			margin-bottom: calc(1 * var(--size_unit));
+
+			&::before {
+				content: "of ";
+			}
+		}
+
+		.button {
+			width: 165px;
+			border: 4px solid #f8f8f8;
+			border-left: 10px solid #f8f8f8;
+			border-right: 10px solid #f8f8f8;
+			border-radius: 25px;
+			background-color: rgba($color: #000000, $alpha: 0);
+			padding: 5px 20px 5px 20px;
+			color: #f8f8f8;
+			font-size: 18px;
+			transition: 0.3s;
+
+			&:hover {
+				background-color: #f8f8f8;
+				color: #000000;
+				transition: 0.3s;
+				font-size: 18px;
+			}
+
+			&:nth-of-type(1) {
+				margin-top: calc(1 * var(--size_unit));
+			}
+
+			&:nth-of-type(2) {
+				margin-top: calc(3 * var(--size_unit));
+			}
+
+			&:nth-of-type(3) {
+				margin-top: calc(1 * var(--size_unit));
+			}
+
+			&:nth-of-type(4) {
+				margin-top: calc(1 * var(--size_unit));
+			}
+		}
+	}
+
+	.menu {
+		.stats {
+			display: flex;
+			flex-direction: row;
+			color: white;
+			align-items: center;
+
+			img {
+				width: 200px;
+				margin-left: 100px;
+				margin-bottom: 15px;
+			}
+			.statsbanner {
+				margin-left: 100px;
+				width: 200px;
+				border: 4px solid white;
+				border-radius: 30px 30px 30px 30px;
+				border-left: 0px;
+				border-right: 0px;
+				background-color: rgba($color: #000000, $alpha: 0.4);
+			}
+			.statshistory {
+				background-color: rgba($color: #000000, $alpha: 0.4);
+				margin: 20px;
+				margin-top: 0px;
+				margin-left: 100px;
+
+				border: 4px solid white;
+				border-left: 0px;
+				border-right: 0px;
+				height: 700px;
+				padding-left: 40px;
+				padding-right: 40px;
+				border-radius: 30px 30px 30px 30px;
+				overflow: scroll;
+
+				.class {
+					.match {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						img {
+							width: 60px;
+							height: 60px;
+							margin: 0px;
+						}
+						.score {
+							display: flex;
+							display: row;
+							align-items: center;
+						}
+						.usermatch {
+							display: flex;
+							flex-direction: column;
+						}
+						.result {
+							margin-left: 10px;
+							margin-right: 10px;
+						}
+					}
+
+					overflow: scroll;
+					border: 4px solid #f8f8f8;
+					border-left: 10px solid #f8f8f8;
+					border-right: 10px solid #f8f8f8;
+					border-radius: 25px;
+					padding-top: 20px;
+					height: 230px;
+				}
+			}
+		}
+		.friends {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			color: white;
-			margin: 20px;
-			margin-top: 0px;
-			border: 4px solid white;
-			border-left: 0px;
-			border-right: 0px;
-			height: 600px;
-			padding-left: 40px;
-			padding-right: 40px;
-			border-radius: 30px 30px 30px 30px;
-			background-color: rgba($color: #000000, $alpha: 0.4);
-			overflow: scroll;
+			.img {
+				margin-top: 40px;
+				width: 300px;
+				margin-bottom: 15px;
+			}
+			div {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				div {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					color: white;
+					margin: 20px;
+					margin-top: 0px;
+					border: 4px solid white;
+					border-left: 0px;
+					border-right: 0px;
+					height: 600px;
+					padding-left: 40px;
+					padding-right: 40px;
+					border-radius: 30px 30px 30px 30px;
+					background-color: rgba($color: #000000, $alpha: 0.4);
+					overflow: scroll;
+				}
+			}
+
+			.friendsUser {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin-top: 10px;
+				div {
+					border: 0px;
+					padding: 0px;
+					margin: 0px;
+					height: auto;
+					width: auto;
+					background-color: rgba($color: #000000, $alpha: 0);
+				}
+				button {
+					width: 120px;
+					height: 25px;
+					border: 1px solid #f8f8f8;
+					border-left: 5px solid #f8f8f8;
+					border-right: 5px solid #f8f8f8;
+					border-radius: 25px;
+					background-color: rgba($color: #000000, $alpha: 0);
+					color: #f8f8f8;
+					font-size: 15px;
+					transition: 0.3s;
+				}
+			}
+
+			.requestUser {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin-top: 10px;
+				div {
+					border: 0px;
+					padding: 0px;
+					margin: 0px;
+					height: auto;
+					width: auto;
+					background-color: rgba($color: #000000, $alpha: 0);
+					align-items: center;
+				}
+				button {
+					width: 130px;
+					height: 25px;
+					border: 1px solid #f8f8f8;
+					border-left: 5px solid #f8f8f8;
+					border-right: 5px solid #f8f8f8;
+					border-radius: 25px;
+					background-color: rgba($color: #000000, $alpha: 0);
+					color: #f8f8f8;
+					font-size: 15px;
+					transition: 0.3s;
+				}
+			}
+
+			.FriendsList {
+				overflow: scroll;
+				border: 4px solid #f8f8f8;
+				border-left: 0px solid #f8f8f8;
+				border-right: 0px solid #f8f8f8;
+				border-radius: 25px;
+				width: 250px;
+				margin: 0px;
+				margin-top: 10px;
+				margin-bottom: 10px;
+
+				padding: 0px;
+				height: 300px;
+				background-color: rgba($color: #000000, $alpha: 0);
+			}
 		}
-	}
 
-	.friendsUser{
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		margin-top: 10px;
-		div {
-			border: 0px;
-			padding: 0px;
-			margin: 0px;
-			height: auto;
-			width: auto;
-			background-color: rgba($color: #000000, $alpha: 0.0);
+		.settings {
+			img {
+				margin-top: 50px;
+				margin-bottom: 20px;
+				height: 180px;
+				width: 180px;
+			}
+			.setting {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				text-align: center;
+				color: white;
+				margin: 20px;
+				margin-top: 0px;
 
+				border: 4px solid white;
+				border-left: 0px;
+				border-right: 0px;
+
+				padding-left: 40px;
+				padding-right: 40px;
+				border-radius: 30px 30px 30px 30px;
+				background-color: rgba($color: #000000, $alpha: 0.4);
+				overflow: scroll;
+				img {
+					margin: 0;
+					margin-left: 110px;
+				}
+				input {
+					border-radius: 50px;
+					margin-left: 10px;
+					margin-right: 10px;
+					padding-left: 10px;
+					padding-right: 10px;
+				}
+				button {
+					border: 2px solid #f8f8f8;
+					border-left: 5px solid #f8f8f8;
+					border-right: 5px solid #f8f8f8;
+					border-radius: 25px;
+					background-color: rgba($color: #000000, $alpha: 0);
+					padding: 5px 10px 5px 10px;
+					color: #f8f8f8;
+					font-size: 13px;
+					transition: 0.3s;
+					margin-bottom: 10px;
+				}
+				button:hover {
+					background-color: #f8f8f8;
+					color: #000000;
+
+					transition: 0.3s;
+				}
+			}
+			div {
+				margin-bottom: 20px;
+			}
 		}
-		button{
-			width: 120px;
-			height: 25px;
-			border: 1px solid #f8f8f8;
-			border-left: 5px solid #f8f8f8;
-			border-right: 5px solid #f8f8f8;
-			border-radius: 25px;
-			background-color: rgba($color: #000000, $alpha: 0);
-			color: #f8f8f8;
-			font-size: 15px; 
-			transition: 0.3s;
-		}
-	
-	}
-
-	.requestUser{
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		margin-top: 10px;
-		div {
-			border: 0px;
-			padding: 0px;
-			margin: 0px;
-			height: auto;
-			width: auto;
-			background-color: rgba($color: #000000, $alpha: 0.0);
-			align-items: center;
-		}
-		button{
-			width: 130px;
-			height: 25px;
-			border: 1px solid #f8f8f8;
-			border-left: 5px solid #f8f8f8;
-			border-right: 5px solid #f8f8f8;
-			border-radius: 25px;
-			background-color: rgba($color: #000000, $alpha: 0);
-			color: #f8f8f8;
-			font-size: 15px; 
-			transition: 0.3s;
-		}
-	
-	}
-
-
-	.FriendsList{
-		overflow: scroll;
-		border: 4px solid #f8f8f8;
-		border-left: 0px solid #f8f8f8;
-		border-right: 0px solid #f8f8f8;
-		border-radius: 25px;
-		width: 250px;
-		margin: 0px;
-		margin-top: 10px;
-		margin-bottom: 10px;
-
-		padding: 0px;
-		height: 300px;
-		background-color: rgba($color: #000000, $alpha: 0.0);
-
-
 	}
 }
 
-.settings {
-	width: 800px;
-	height: 900px;
-	img{
-		margin-top: 50px;
-		margin-bottom: 20px;
-		height: 180px;
-		width: 180px;
-	}	
-	.setting {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		color: white;
-		margin: 20px;
-		margin-top: 0px;
-		
-		border: 4px solid white;
-		border-left: 0px;
-		border-right: 0px;
-
-		padding-left: 40px;
-		padding-right: 40px;
-		border-radius: 30px 30px 30px 30px;
-		background-color: rgba($color: #000000, $alpha: 0.4);
-		overflow: scroll;
-		img {
-			margin: 0;
-			margin-left: 110px;
-		}
-		input {
-			border-radius: 50px;
-			margin-left: 10px;
-			margin-right: 10px;
-			padding-left: 10px;
-			padding-right: 10px;
-		}
-		button{
-			border: 2px solid #f8f8f8;
-			border-left: 5px solid #f8f8f8;
-			border-right: 5px solid #f8f8f8;
-			border-radius: 25px;
-			background-color: rgba($color: #000000, $alpha: 0);
-			padding: 5px 10px 5px 10px;
-			color: #f8f8f8;
-			font-size: 13px; 
-			transition: 0.3s;
-			margin-bottom: 10px;
-		}
-		button:hover {
-			background-color: #f8f8f8;
-			color: #000000;
-		
-			transition: 0.3s;
-		}
-	}
-	div {margin-bottom: 20px;}
-}
-
-.button{
-	margin-top: 20px;
-	width: 165px;
-	border: 4px solid #f8f8f8;
-	border-left: 10px solid #f8f8f8;
-	border-right: 10px solid #f8f8f8;
-	border-radius: 25px;
-	background-color: rgba($color: #000000, $alpha: 0);
-	padding: 5px 20px 5px 20px;
-	color: #f8f8f8;
-	font-size: 18px; 
-	transition: 0.3s;
-}
-
-.button:hover {
-	background-color: #f8f8f8;
-	color: #000000;
-
-	transition: 0.3s;
-	font-size: 18px; 
-}
-
-.socialbutton
-{
+.socialbutton {
 	display: flex;
 	flex-direction: column;
-	button{
+	button {
 		margin-top: 20px;
 		width: 165px;
 		border: 4px solid #f8f8f8;
@@ -288,49 +329,15 @@
 		background-color: rgba($color: #000000, $alpha: 0);
 		padding: 5px 20px 5px 20px;
 		color: #f8f8f8;
-		font-size: 18px; 
+		font-size: 18px;
 		transition: 0.3s;
 	}
 
 	button:hover {
 		background-color: #f8f8f8;
 		color: #000000;
-	
+
 		transition: 0.3s;
-		font-size: 18px; 
+		font-size: 18px;
 	}
-
-}
-
-.match{
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	img {
-		width: 60px;
-		height: 60px;
-		margin: 0px;
-	}
-	.score {
-		display: flex;
-		display: row;
-		align-items: center;
-	}
-	.usermatch {
-		display: flex;
-		flex-direction: column;
-	}
-	.result {
-		margin-left: 10px;
-		margin-right: 10px;
-	}
-}
-.class{
-	overflow: scroll;
-	border: 4px solid #f8f8f8;
-	border-left: 10px solid #f8f8f8;
-	border-right: 10px solid #f8f8f8;
-	border-radius: 25px;
-	padding-top: 20px;
-	height: 230px;
 }
