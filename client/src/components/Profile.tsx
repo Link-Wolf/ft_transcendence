@@ -63,38 +63,32 @@ const Profile = () => {
 				<div className={style.resume}>
 					<h1>P R O F I L E</h1>
 					<Resume isMe={isMe} login={profileLogin} />
-					<Link to={`/profile/${profileLogin}`}>
-						<button
-							className={style.button}
-							onClick={() => {
-								setDisplayedMenu("stats");
-							}}
-						>
-							Stats
-						</button>
-					</Link>
+					<button
+						className={style.button}
+						onClick={() => {
+							setDisplayedMenu("stats");
+						}}
+					>
+						Stats
+					</button>
 					{isMe ? (
 						<>
-							<Link to={`/profile/${profileLogin}`}>
-								<button
-									className={style.button}
-									onClick={() => {
-										setDisplayedMenu("friends");
-									}}
-								>
-									Friends
-								</button>
-							</Link>
-							<Link to={`/profile/${profileLogin}`}>
-								<button
-									className={style.button}
-									onClick={() => {
-										setDisplayedMenu("settings");
-									}}
-								>
-									Settings
-								</button>
-							</Link>
+							<button
+								className={style.button}
+								onClick={() => {
+									setDisplayedMenu("friends");
+								}}
+							>
+								Friends
+							</button>
+							<button
+								className={style.button}
+								onClick={() => {
+									setDisplayedMenu("settings");
+								}}
+							>
+								Settings
+							</button>
 							<button className={style.button} onClick={logout}>
 								Log out
 							</button>
@@ -102,9 +96,7 @@ const Profile = () => {
 					) : (
 						<>
 							<div className={style.socialbutton}>
-								{!isMe && (
-									<SocialInterractions login={profileLogin} />
-								)}
+								<SocialInterractions login={profileLogin} />
 							</div>
 						</>
 					)}
