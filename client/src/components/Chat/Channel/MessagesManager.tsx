@@ -41,12 +41,6 @@ const MessagesManager = ({
 		return names[0] === user.login ? names[1] : names[0];
 	};
 
-	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter") {
-			sendMessage();
-		}
-	};
-
 	const sendMessage = async () => {
 		if (!canSendMessage) return;
 		let printableRegexButNoSpace = /[\S\x21-\x7E\u{A0}-\u{FFFF}]/gu; // Matches any printable characters (including Unicode) except space
@@ -151,58 +145,58 @@ const MessagesManager = ({
 		<>
 			<h1>{channel[0] !== "_" ? channel : getNameOfTheOther(channel)}</h1>
 			<div className={style.channelmsg}>
-			{messages
-				.sort((m1, m2) => {
-					return (
-						new Date(m1.createdAt).getTime() -
-						new Date(m2.createdAt).getTime()
-					);
-				})
-				.map((message, i) => (
-					<div key={i}>
-						{members[message.userLogin] !== undefined && (
-							<Message
-								name={members[message.userLogin].user.name}
-								login={message.userLogin}
-								date={message.createdAt}
-								content={message.content}
-								relation={
-									message.user.login === user.login
-										? {
-												isBlocked: false,
-												isFriend: false,
-										  }
-										: members[message.userLogin]
-								}
-								avatar={members[message.userLogin].user.avatar}
-								admins={admins}
-								owner={owner.login}
-								setChannel={setChannel}
-							/>
-						)}
-					</div>
-				))}
-				</div>
-			<input
-				value={message}
-				type='text'
-				placeholder={
-					canSendMessage
-						? "Type your message here..."
-						: "You cannot send messages here"
-				}
-				disabled={!canSendMessage}
-				onChange={(e) => {
-					setMessage(e.target.value);
-				}}
-				onKeyDown={handleKeyPress}
-			/>
-			<button
-				onClick={sendMessage}
-				disabled={!canSendMessage}
-			>
-				Send
-			</button>
+				{messages
+					.sort((m1, m2) => {
+						return (
+							new Date(m1.createdAt).getTime() -
+							new Date(m2.createdAt).getTime()
+						);
+					})
+					.map((message, i) => (
+						<div key={i}>
+							{members[message.userLogin] !== undefined && (
+								<Message
+									name={members[message.userLogin].user.name}
+									login={message.userLogin}
+									date={message.createdAt}
+									content={message.content}
+									relation={
+										message.user.login === user.login
+											? {
+													isBlocked: false,
+													isFriend: false,
+											  }
+											: members[message.userLogin]
+									}
+									avatar={
+										members[message.userLogin].user.avatar
+									}
+									admins={admins}
+									owner={owner.login}
+									setChannel={setChannel}
+								/>
+							)}
+						</div>
+					))}
+			</div>
+			<form action='#'>
+				<input
+					value={message}
+					type='text'
+					placeholder={
+						canSendMessage
+							? "Type your message here..."
+							: "You cannot send messages here"
+					}
+					disabled={!canSendMessage}
+					onChange={(e) => {
+						setMessage(e.target.value);
+					}}
+				/>
+				<button onClick={sendMessage} disabled={!canSendMessage}>
+					Send
+				</button>
+			</form>
 		</>
 	);
 };
