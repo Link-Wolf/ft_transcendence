@@ -66,7 +66,9 @@ const Profile = () => {
 					<button
 						className={style.button}
 						onClick={() => {
-							setDisplayedMenu("stats");
+							setDisplayedMenu((dp) =>
+								dp === "stats" ? "" : "stats"
+							);
 						}}
 					>
 						Stats
@@ -76,7 +78,9 @@ const Profile = () => {
 							<button
 								className={style.button}
 								onClick={() => {
-									setDisplayedMenu("friends");
+									setDisplayedMenu((dp) =>
+										dp === "friends" ? "" : "friends"
+									);
 								}}
 							>
 								Friends
@@ -84,7 +88,9 @@ const Profile = () => {
 							<button
 								className={style.button}
 								onClick={() => {
-									setDisplayedMenu("settings");
+									setDisplayedMenu((dp) =>
+										dp === "settings" ? "" : "settings"
+									);
 								}}
 							>
 								Settings
@@ -101,36 +107,41 @@ const Profile = () => {
 						</>
 					)}
 				</div>
-				{displayedMenu === "stats" ? (
-					<div className={style.stats}>
-						<MatchHistory isMe={isMe} login={profileLogin} />
-					</div>
-				) : (
-					<></>
-				)}
-				{isMe && (
-					<>
-						{displayedMenu === "friends" ? (
-							<div className={style.friends}>
-								<img src={friends} className={style.img}></img>
-								<div>
-									<Friends />
-									<Blocked />
+				<div className={style.menu}>
+					{displayedMenu === "stats" ? (
+						<div className={style.stats}>
+							<MatchHistory isMe={isMe} login={profileLogin} />
+						</div>
+					) : (
+						<></>
+					)}
+					{isMe && (
+						<>
+							{displayedMenu === "friends" ? (
+								<div className={style.friends}>
+									<img
+										src={friends}
+										className={style.img}
+									></img>
+									<div>
+										<Friends />
+										<Blocked />
+									</div>
 								</div>
-							</div>
-						) : (
-							<></>
-						)}
-						{displayedMenu === "settings" ? (
-							<div className={style.settings}>
-								<img src='https://primedepartamentos.com/images/icons/settings-icon-white.png'></img>
-								<Update />
-							</div>
-						) : (
-							<></>
-						)}
-					</>
-				)}
+							) : (
+								<></>
+							)}
+							{displayedMenu === "settings" ? (
+								<div className={style.settings}>
+									<img src='https://primedepartamentos.com/images/icons/settings-icon-white.png'></img>
+									<Update />
+								</div>
+							) : (
+								<></>
+							)}
+						</>
+					)}
+				</div>
 			</div>
 		</div>
 	);
@@ -172,7 +183,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({user.login})
 			</div>
-			<PPDisplayer login={user.login} size={210} status={false}>
+			<PPDisplayer login={user.login} size={300} status={false}>
 				<img
 					alt='profile picture'
 					src={`data:image/*;base64,${user.avatar}`}
