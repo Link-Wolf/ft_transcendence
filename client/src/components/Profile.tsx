@@ -7,10 +7,9 @@ import { PPDisplayer } from "./ImageDisplayer";
 import Update from "./Update";
 import {
 	AskForGameButton,
-	BlockButton,
-	FriendButton,
+	BlockUnblockButton,
 	UnblockButton,
-	UnfriendButton,
+	FriendUnfriendButton,
 } from "./ActionsButtons";
 import socket from "../socket";
 import style from "../style/Profile.module.scss";
@@ -76,7 +75,7 @@ const Profile = () => {
 					{isMe ? (
 						<>
 							<button
-								className={style.button}
+								className={`${style.button} ${style.friend}`}
 								onClick={() => {
 									setDisplayedMenu((dp) =>
 										dp === "friends" ? "" : "friends"
@@ -95,15 +94,27 @@ const Profile = () => {
 							>
 								Settings
 							</button>
-							<button className={style.button} onClick={logout}>
+							<button
+								className={`${style.button} ${style.alert}`}
+								onClick={logout}
+							>
 								Log out
 							</button>
 						</>
 					) : (
 						<>
-							<div className={style.socialbutton}>
-								<SocialInterractions login={profileLogin} />
-							</div>
+							<AskForGameButton
+								login={profileLogin}
+								className={style.button}
+							/>
+							<FriendUnfriendButton
+								login={profileLogin}
+								className={`${style.button} ${style.friend}`}
+							/>
+							<BlockUnblockButton
+								login={profileLogin}
+								className={`${style.button} ${style.alert}`}
+							/>
 						</>
 					)}
 				</div>
@@ -732,71 +743,6 @@ const Blocked = () => {
 				</div>
 			</span>
 		</div>
-	);
-};
-
-const SocialInterractions = ({ login }: { login: string }) => {
-	const user = useContext(UserContext);
-	const [isFriend, setIsFriend] = useState<boolean>(false);
-	const [isBlocked, setIsBlocked] = useState<boolean>(false);
-	const [isBlockedBy, setIsBlockedBy] = useState<boolean>(false);
-	const [update, setUpdate] = useState<boolean>(true);
-
-	useEffect(() => {
-		axios
-			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
-			)
-			.then((res) => {
-				setIsFriend(res.data.length > 0);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}, []);
-
-	useEffect(() => {
-		axios
-			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${user.login}/${login}`
-			)
-			.then((res) => {
-				setIsBlocked(res.data.length > 0);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}, []);
-
-	useEffect(() => {
-		axios
-			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
-			)
-			.then((res) => {
-				setIsBlockedBy(res.data.length > 0);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}, []);
-
-	return (
-		<>
-			{!isBlockedBy && <AskForGameButton login={login} />}
-			{!isBlockedBy &&
-				(isFriend ? (
-					<UnfriendButton login={login} />
-				) : (
-					<FriendButton login={login} />
-				))}
-
-			{isBlocked ? (
-				<UnblockButton login={login} />
-			) : (
-				<BlockButton login={login} />
-			)}
-		</>
 	);
 };
 
