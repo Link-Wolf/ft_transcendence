@@ -70,53 +70,59 @@ const Profile = () => {
 							);
 						}}
 					>
-						Stats
+						S T A T S
 					</button>
+					<div>
 					{isMe ? (
 						<>
 							<button
-								className={`${style.button} ${style.friend}`}
+								title="Friends List"
+								className={`${style.button} ${style.shape} ${style.friend}`}
 								onClick={() => {
 									setDisplayedMenu((dp) =>
-										dp === "friends" ? "" : "friends"
+									dp === "friends" ? "" : "friends"
+									);
+								}}
+								>
+								 👥
+							</button>
+							<button
+								title="Edit Profil"
+								className={`${style.button} ${style.shape} ${style.settings}`}
+								onClick={() => {
+									setDisplayedMenu((dp) =>
+									dp === "settings" ? "" : "settings"
 									);
 								}}
 							>
-								Friends
+								🖋️
 							</button>
 							<button
-								className={style.button}
-								onClick={() => {
-									setDisplayedMenu((dp) =>
-										dp === "settings" ? "" : "settings"
-									);
-								}}
-							>
-								Settings
-							</button>
-							<button
-								className={`${style.button} ${style.alert}`}
+								title="Log out"
+								className={`${style.button} ${style.shape} ${style.alert}`}
 								onClick={logout}
-							>
-								Log out
+								>
+								❌
 							</button>
 						</>
 					) : (
 						<>
-							<AskForGameButton
-								login={profileLogin}
-								className={style.button}
-							/>
 							<FriendUnfriendButton
 								login={profileLogin}
-								className={`${style.button} ${style.friend}`}
-							/>
+								className={`${style.button} ${style.shape} ${style.friend}`}
+								/>
+							<AskForGameButton
+								login={profileLogin}
+								className={`${style.button} ${style.shape} ${style.settings}`}
+								
+								/>
 							<BlockUnblockButton
 								login={profileLogin}
-								className={`${style.button} ${style.alert}`}
-							/>
+								className={`${style.button} ${style.shape} ${style.alert}`}
+								/>
 						</>
 					)}
+					</div>
 				</div>
 				<div className={style.menu}>
 					{displayedMenu === "stats" ? (
