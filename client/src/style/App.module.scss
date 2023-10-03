@@ -20,8 +20,9 @@
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(197, 197, 197);
 	--msg-text: #000000;
+	--alert-color: #cc3300;
+	--friend-color: #b7fffa;
 	overflow: scroll;
-
 }
 
 .light::-webkit-scrollbar {
@@ -56,6 +57,8 @@
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(66, 66, 66);
 	--msg-text: #c5c5c5;
+	--alert-color: #cc3300;
+	--friend-color: #b7fffa;
 }
 .dark::-webkit-scrollbar {
 	display: none;

@@ -17,9 +17,11 @@ export default ActionsButtons;
 const BlockButton = ({
 	login,
 	effect,
+	className,
 }: {
 	login: string;
 	effect?: Function;
+	className?: string;
 }) => {
 	const user = useContext(UserContext);
 
@@ -47,6 +49,7 @@ const BlockButton = ({
 
 	return (
 		<button
+			className={className}
 			type='button'
 			onClick={() => {
 				block(login);
@@ -60,9 +63,11 @@ const BlockButton = ({
 const UnblockButton = ({
 	login,
 	effect,
+	className,
 }: {
 	login: string;
 	effect?: Function;
+	className?: string;
 }) => {
 	const user = useContext(UserContext);
 
@@ -85,6 +90,7 @@ const UnblockButton = ({
 
 	return (
 		<button
+			className={className}
 			type='button'
 			onClick={() => {
 				unblock(login);
@@ -99,13 +105,42 @@ const BlockUnblockButton = ({
 	login,
 	effect,
 	isBlocked,
+	className,
 }: {
 	login: string;
 	effect?: Function;
-	isBlocked: boolean;
+	isBlocked?: boolean;
+	className?: string;
 }) => {
-	if (isBlocked) return <UnblockButton login={login} effect={effect} />;
-	else return <BlockButton login={login} effect={effect} />;
+	const [_isBlocked, setIsBlocked] = useState(isBlocked);
+	const user = useContext(UserContext);
+
+	useEffect(() => {
+		if (isBlocked !== undefined) return;
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
+			)
+			.then((res) => {
+				setIsBlocked(res.data.length !== 0);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [_isBlocked]);
+
+	if (_isBlocked)
+		return (
+			<UnblockButton
+				login={login}
+				effect={effect}
+				className={className}
+			/>
+		);
+	else
+		return (
+			<BlockButton login={login} effect={effect} className={className} />
+		);
 };
 
 /*******************************************************************************
@@ -116,10 +151,12 @@ const PromoteButton = ({
 	login,
 	channel,
 	effect,
+	className,
 }: {
 	login: string;
 	channel: string;
 	effect?: Function;
+	className?: string;
 }) => {
 	const promote = async (login: string) => {
 		await axios
@@ -155,10 +192,12 @@ const DemoteButton = ({
 	login,
 	channel,
 	effect,
+	className,
 }: {
 	login: string;
 	channel: string;
 	effect?: Function;
+	className?: string;
 }) => {
 	const demote = async (login: string) => {
 		await axios
@@ -197,9 +236,11 @@ const DemoteButton = ({
 const FriendButton = ({
 	login,
 	effect,
+	className,
 }: {
 	login: string;
 	effect?: Function;
+	className?: string;
 }) => {
 	const user = useContext(UserContext);
 	const [friendship, setFriendhip] = useState<any>({});
@@ -259,6 +300,7 @@ const FriendButton = ({
 
 	return (
 		<button
+			className={className}
 			type='button'
 			disabled={friendship && !isBlocked}
 			onClick={() => {
@@ -274,15 +316,18 @@ const PMButton = ({
 	login,
 	setChannel,
 	effect,
+	className,
 }: {
 	login: string;
 	setChannel: Function;
 	effect?: Function;
+	className?: string;
 }) => {
 	const user = useContext(UserContext);
 
 	return (
 		<button
+			className={className}
 			type='button'
 			onClick={() => {
 				const logins = [user.login, login].sort();
@@ -299,27 +344,54 @@ const FriendPMButton = ({
 	effect,
 	setChannel,
 	isFriend,
+	className,
 }: {
 	login: string;
 	effect?: Function;
 	setChannel: Function;
-	isFriend: boolean;
+	isFriend?: boolean;
+	className?: string;
 }) => {
+	const [_isFriend, setIsFriend] = useState(isFriend);
 	const user = useContext(UserContext);
+
+	useEffect(() => {
+		if (_isFriend === undefined) return;
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
+			)
+			.then((res) => {
+				setIsFriend(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [_isFriend]);
 
 	if (isFriend)
 		return (
-			<PMButton login={login} setChannel={setChannel} effect={effect} />
+			<PMButton
+				login={login}
+				setChannel={setChannel}
+				effect={effect}
+				className={className}
+			/>
 		);
-	else return <FriendButton login={login} effect={effect} />;
+	else
+		return (
+			<FriendButton login={login} effect={effect} className={className} />
+		);
 };
 
 const UnfriendButton = ({
 	login,
 	effect,
+	className,
 }: {
 	login: string;
 	effect?: Function;
+	className?: string;
 }) => {
 	const user = useContext(UserContext);
 
@@ -338,6 +410,7 @@ const UnfriendButton = ({
 
 	return (
 		<button
+			className={className}
 			type='button'
 			onClick={() => {
 				unfriendSomeone(login);
@@ -348,12 +421,53 @@ const UnfriendButton = ({
 	);
 };
 
-const AskForGameButton = ({
+const FriendUnfriendButton = ({
 	login,
 	effect,
+	isFriend,
+	className,
 }: {
 	login: string;
 	effect?: Function;
+	isFriend?: boolean;
+	className?: string;
+}) => {
+	const [_isFriend, setIsFriend] = useState(isFriend);
+	const user = useContext(UserContext);
+
+	useEffect(() => {
+		if (_isFriend === undefined) return;
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
+			)
+			.then((res) => {
+				setIsFriend(res.data.length > 0);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [_isFriend]);
+
+	if (_isFriend)
+		return (
+			<UnfriendButton
+				login={login}
+				effect={effect}
+				className={className}
+			/>
+		);
+	return <FriendButton login={login} effect={effect} className={className} />;
+};
+
+const AskForGameButton = ({
+	login,
+	effect,
+	className,
+}: {
+	login: string;
+	effect?: Function;
+	className?: string;
 }) => {
 	const user = useContext(UserContext);
 	const [isPopUpOpen, setIsPopUpOpen] = useState("");
@@ -368,6 +482,7 @@ const AskForGameButton = ({
 				onClick={() => {
 					openGameCreationPopup(login);
 				}}
+				className={className}
 			>
 				Play
 			</button>
@@ -384,10 +499,12 @@ const UnbanButton = ({
 	login,
 	channel,
 	effect,
+	className,
 }: {
 	login: string;
 	channel: string;
 	effect?: Function;
+	className?: string;
 }) => {
 	const unban = (login: string, channel: string) => {
 		axios
@@ -406,6 +523,7 @@ const UnbanButton = ({
 	};
 	return (
 		<button
+			className={className}
 			type='button'
 			onClick={() => {
 				unban(login, channel);
@@ -429,4 +547,5 @@ export {
 	FriendPMButton,
 	BlockUnblockButton,
 	UnbanButton,
+	FriendUnfriendButton,
 };

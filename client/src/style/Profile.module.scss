@@ -52,6 +52,7 @@
 			color: #f8f8f8;
 			font-size: 18px;
 			transition: 0.3s;
+			cursor: pointer;
 
 			&:hover {
 				background-color: #f8f8f8;
@@ -74,6 +75,20 @@
 
 			&:nth-of-type(4) {
 				margin-top: calc(1 * var(--size_unit));
+			}
+
+			&.alert {
+				border: 4px solid var(--alert-color);
+				border-left: 10px solid var(--alert-color);
+				border-right: 10px solid var(--alert-color);
+				color: var(--alert-color);
+			}
+
+			&.friend {
+				border: 4px solid var(--friend-color);
+				border-left: 10px solid var(--friend-color);
+				border-right: 10px solid var(--friend-color);
+				color: var(--friend-color);
 			}
 		}
 	}
@@ -327,31 +342,5 @@
 				margin-bottom: 20px;
 			}
 		}
-	}
-}
-
-.socialbutton {
-	display: flex;
-	flex-direction: column;
-	button {
-		margin-top: 20px;
-		width: 165px;
-		border: 4px solid #f8f8f8;
-		border-left: 10px solid #f8f8f8;
-		border-right: 10px solid #f8f8f8;
-		border-radius: 25px;
-		background-color: rgba($color: #000000, $alpha: 0);
-		padding: 5px 20px 5px 20px;
-		color: #f8f8f8;
-		font-size: 18px;
-		transition: 0.3s;
-	}
-
-	button:hover {
-		background-color: #f8f8f8;
-		color: #000000;
-
-		transition: 0.3s;
-		font-size: 18px;
 	}
 }
