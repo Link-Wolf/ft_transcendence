@@ -4,6 +4,7 @@ import Message from "../Message";
 import socket from "../../../socket";
 import { UserContext } from "../../../App";
 import style from "../../../style/Chat.module.scss";
+import { Link } from "react-router-dom";
 
 const MessagesManager = ({
 	channel,
@@ -149,7 +150,18 @@ const MessagesManager = ({
 
 	return (
 		<>
-			<h1>{channel[0] !== "_" ? channel : getNameOfTheOther(channel)}</h1>
+			<h1>
+				{channel[0] !== "_" ? (
+					channel
+				) : (
+					<Link
+						to={`/profile/${getNameOfTheOther(channel)}`}
+						style={{ color: "inherit", textDecoration: "none" }}
+					>
+						{getNameOfTheOther(channel)}
+					</Link>
+				)}
+			</h1>
 			<div className={style.channelmsg} id='chat'>
 				{messages
 					.sort((m1, m2) => {
