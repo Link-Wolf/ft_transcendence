@@ -1,3 +1,17 @@
-.popup {
-	position: relative;
+.popupContainer {
+	top: 0;
+	left: 0;
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #00000055;
+	backdrop-filter: blur(10px);
+
+	.popup {
+		background-color: #00000055;
+		backdrop-filter: blur(10px);
+	}
 }

@@ -9,7 +9,6 @@ import ChannelSettings from "./ChannelSettings";
 import { UnbanButton } from "../../ActionsButtons";
 import style from "../../../style/Chat.module.scss";
 
-
 const Channel = ({
 	channel,
 	setChannel,
@@ -29,7 +28,7 @@ const Channel = ({
 	const [admins, setAdmins] = useState<any[]>([]);
 	const [members, setMembers] = useState<any>({});
 
-	const [updateLebany, setUpdateLebany] = useState(false);
+	const [updateLebany, setUpdateLebany] = useState(true);
 	const [lebany, setLebany] = useState<string[]>([]);
 
 	const [showThingsAboutChannel, setShowThingsAboutChannel] = useState("");
@@ -141,7 +140,7 @@ const Channel = ({
 		return <></>;
 	}
 	return (
-		<div >
+		<div>
 			<button onClick={() => setChannel(null)}>Back</button>
 			{channel[0] !== "_" && (
 				<>
@@ -194,7 +193,7 @@ const Channel = ({
 									return member.isMember;
 								})
 								.map((member, i) => (
-									<div key={i} >
+									<div key={i}>
 										<ChannelUser
 											name={member.user.name}
 											channel={channel}

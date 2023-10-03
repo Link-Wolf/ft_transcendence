@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import socket from "../socket";
 import PopUp from "./PopUp";
+import GameCreationForm from "./GameCreationForm";
 
 const ActionsButtons = () => {
 	return <></>;
@@ -472,7 +473,7 @@ const AskForGameButton = ({
 	const user = useContext(UserContext);
 	const [isPopUpOpen, setIsPopUpOpen] = useState("");
 	const openGameCreationPopup = (login: string) => {
-		setIsPopUpOpen(login === "" ? login : "");
+		setIsPopUpOpen(isPopUpOpen === "" ? login : "");
 	};
 
 	return (
@@ -487,8 +488,8 @@ const AskForGameButton = ({
 				Play
 			</button>
 			{isPopUpOpen !== "" && (
-				<PopUp>
-					<h1>Game creation</h1>
+				<PopUp setPopup={setIsPopUpOpen}>
+					<GameCreationForm opponentLogin={login} />
 				</PopUp>
 			)}
 		</>
