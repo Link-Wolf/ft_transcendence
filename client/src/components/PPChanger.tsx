@@ -46,11 +46,11 @@ const PPChanger = ({ login }: { login: string }) => {
 		if (!login || !update) return;
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/pp/${login}`
 			)
 			.then((res) => {
-				setImageSource(res.data.avatar);
-				setCurrentAvatar(res.data.avatar);
+				setImageSource(res.data);
+				setCurrentAvatar(res.data);
 				setImageError("");
 				setUpdate(false);
 			})
