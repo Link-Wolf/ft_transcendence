@@ -31,11 +31,6 @@ export class User extends Model<User> {
 	name: string;
 
 	@Column({
-		type: DataType.TEXT,
-	})
-	avatar: string;
-
-	@Column({
 		type: DataType.BOOLEAN,
 		defaultValue: false,
 	})

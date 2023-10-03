@@ -3,6 +3,7 @@ import axios from "axios";
 import StatusIcon from "./StatusIcon";
 import style from "../style/PPDisplayer.module.scss";
 import Loading from "./Loading";
+import socket from "../socket";
 
 const PPDisplayer = ({
 	login,
@@ -19,22 +20,36 @@ const PPDisplayer = ({
 	 * PPDisplayer component, display the user's avatar and status
 	 */
 	const [image, setImage] = useState<string | null>(null);
+	const [update, setUpdate] = useState<boolean>(true);
+
+	useEffect(() => {
+		socket.on("contextUpdate", (payload) => {
+			if (payload.login === login) setUpdate(true);
+		});
+
+		return () => {
+			socket.off("contextUpdate");
+		};
+	}, []);
 
 	useEffect(() => {
 		if (children) return;
+		if (!update) return;
 		if (!login) return;
+		console.log("fetching image");
 		setImage(null);
 		axios
 			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/pp/${login}`
 			)
 			.then((response) => {
-				setImage(response.data.avatar);
+				setImage(response.data);
 			})
 			.catch((error) => {
 				console.error("Error fetching image:", error);
 			});
-	}, [login, children]);
+		setUpdate(false);
+	}, [login, update, children]);
 
 	return (
 		<>
