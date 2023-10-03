@@ -36,7 +36,6 @@ const PPDisplayer = ({
 		if (children) return;
 		if (!update) return;
 		if (!login) return;
-		console.log("fetching image");
 		setImage(null);
 		axios
 			.get(
