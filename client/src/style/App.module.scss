@@ -21,6 +21,11 @@
 	--msg-recv: rgb(197, 197, 197);
 	--msg-text: #000000;
 	overflow: scroll;
+
+}
+
+.light::-webkit-scrollbar {
+	display: none;
 }
 
 .animation {
@@ -51,6 +56,9 @@
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(66, 66, 66);
 	--msg-text: #c5c5c5;
+}
+.dark::-webkit-scrollbar {
+	display: none;
 }
 
 .container {
