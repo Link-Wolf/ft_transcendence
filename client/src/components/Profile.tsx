@@ -73,55 +73,54 @@ const Profile = () => {
 						S T A T S
 					</button>
 					<div>
-					{isMe ? (
-						<>
-							<button
-								title="Friends List"
-								className={`${style.button} ${style.shape} ${style.friend}`}
-								onClick={() => {
-									setDisplayedMenu((dp) =>
-									dp === "friends" ? "" : "friends"
-									);
-								}}
+						{isMe ? (
+							<>
+								<button
+									title='Friends List'
+									className={`${style.button} ${style.shape} ${style.friend}`}
+									onClick={() => {
+										setDisplayedMenu((dp) =>
+											dp === "friends" ? "" : "friends"
+										);
+									}}
 								>
-								 👥
-							</button>
-							<button
-								title="Edit Profil"
-								className={`${style.button} ${style.shape} ${style.settings}`}
-								onClick={() => {
-									setDisplayedMenu((dp) =>
-									dp === "settings" ? "" : "settings"
-									);
-								}}
-							>
-								🖋️
-							</button>
-							<button
-								title="Log out"
-								className={`${style.button} ${style.shape} ${style.alert}`}
-								onClick={logout}
+									👥
+								</button>
+								<button
+									title='Edit Profil'
+									className={`${style.button} ${style.shape} ${style.settings}`}
+									onClick={() => {
+										setDisplayedMenu((dp) =>
+											dp === "settings" ? "" : "settings"
+										);
+									}}
 								>
-								❌
-							</button>
-						</>
-					) : (
-						<>
-							<FriendUnfriendButton
-								login={profileLogin}
-								className={`${style.button} ${style.shape} ${style.friend}`}
+									🖋️
+								</button>
+								<button
+									title='Log out'
+									className={`${style.button} ${style.shape} ${style.alert}`}
+									onClick={logout}
+								>
+									❌
+								</button>
+							</>
+						) : (
+							<>
+								<FriendUnfriendButton
+									login={profileLogin}
+									className={`${style.button} ${style.shape} ${style.friend}`}
 								/>
-							<AskForGameButton
-								login={profileLogin}
-								className={`${style.button} ${style.shape} ${style.settings}`}
-								
+								<AskForGameButton
+									login={profileLogin}
+									className={`${style.button} ${style.shape} ${style.settings}`}
 								/>
-							<BlockUnblockButton
-								login={profileLogin}
-								className={`${style.button} ${style.shape} ${style.alert}`}
+								<BlockUnblockButton
+									login={profileLogin}
+									className={`${style.button} ${style.shape} ${style.alert}`}
 								/>
-						</>
-					)}
+							</>
+						)}
 					</div>
 				</div>
 				<div className={style.menu}>
@@ -200,12 +199,7 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({user.login})
 			</div>
-			<PPDisplayer login={user.login} size={300} status={false}>
-				<img
-					alt='profile picture'
-					src={`data:image/*;base64,${user.avatar}`}
-				/>
-			</PPDisplayer>
+			<PPDisplayer login={user.login} size={300} status={false} />
 		</>
 	);
 };

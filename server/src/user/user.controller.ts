@@ -18,7 +18,7 @@ import { ParseBoolPipe } from './user.pipe';
 import { AdminUserGuard } from 'src/guards/admin_user.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { createCanvas, loadImage } from 'canvas';
-//TODO: uncomment before pushing -> import * as sharp from 'sharp';
+import * as sharp from 'sharp';
 
 @Controller('user')
 export class UserController {
@@ -103,6 +103,30 @@ export class UserController {
 	}
 
 	/**
+	 * @brief Get a user's profile picture
+	 * @param {string} login - The user's login
+	 * @return {string} - The user's profile picture
+	 * @security Clearance admin OR user himself
+	 * @response 200 - OK
+	 * @response 404 - Bad Request
+	 * @response 401 - Unauthorized
+	 * @response 403 - Forbidden
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('pp/:login')
+	@UseGuards(AdminUserGuard)
+	@UseInterceptors(FileInterceptor('avatar'))
+	async getProfilePicture(@Param('login') login: string): Promise<string> {
+		let user = await this.userService.findByLogin(login);
+		if (!user) {
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		}
+
+		let pp = this.userService.readPP(login);
+		return pp;
+	}
+
+	/**
 	 * @brief Update a user
 	 * @param {string} login - The user's login
 	 * @param {string} name - The user's name
@@ -144,7 +168,7 @@ export class UserController {
 	 * @brief Update a user's profile picture
 	 * @param {string} login - The user's login
 	 * @param {Buffer} avatar - The user's avatar
-	 * @return {User} - The updated user
+	 * @return {string} - The updated user's profile picture
 	 * @security Clearance admin OR user himself
 	 * @response 200 - OK
 	 * @response 404 - Bad Request
@@ -159,31 +183,27 @@ export class UserController {
 	async updateProfilePicture(
 		@Param('login') login: string,
 		@UploadedFile() avatar: Express.Multer.File,
-	): Promise<number> {
+	): Promise<string> {
 		let user = await this.userService.findByLogin(login);
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
-		// TODO: uncomment before pushing
-		// try {
-		// 	await sharp(avatar.buffer).metadata();
-		// } catch (e) {
-		// 	throw new HttpException(
-		// 		'Invalid image file',
-		// 		HttpStatus.BAD_REQUEST,
-		// 	);
-		// }
+		try {
+			await sharp(avatar.buffer).metadata();
+		} catch (e) {
+			throw new HttpException(
+				'Invalid image file',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
 		const buffer = Buffer.from(avatar.buffer);
 		const image = await loadImage(buffer);
 		const canvas = createCanvas(500, 500);
 		canvas.getContext('2d').drawImage(image, 0, 0, 500, 500);
 		const pp = canvas.toDataURL().split(',')[1];
 
-		let ret = await this.userService.updateProfilePicture({
-			login: login,
-			avatar: pp,
-		});
-		return ret;
+		this.userService.writePP(login, pp);
+		return pp;
 	}
 
 	// /**

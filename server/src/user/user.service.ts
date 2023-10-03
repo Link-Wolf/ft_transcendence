@@ -3,6 +3,7 @@ import { UserDto } from './user.dto';
 import { User } from './user.entity';
 import * as otplib from 'otplib';
 import * as jwt from 'jsonwebtoken';
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
@@ -134,6 +135,35 @@ export class UserService {
 			return ret;
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @brief   Write a user's profile picture
+	 * @param {string} login The user's login
+	 * @param {string} pp The user's profile picture
+	 * @throws {HttpException} 500 if an error occured
+	 */
+	writePP(login: string, pp: string): void {
+		try {
+			if (!fs.existsSync(`/usr/src/pp_data`))
+				fs.mkdirSync(`/usr/src/pp_data`);
+			fs.writeFileSync(`/usr/src/pp_data/${login}`, pp);
+		} catch (err) {
+			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @brief   Read a user's profile picture
+	 * @param {string} login The user's login
+	 * @returns {string} The user's profile picture
+	 */
+	readPP(login: string): string {
+		try {
+			return fs.readFileSync(`/usr/src/pp_data/${login}`).toString();
+		} catch (err) {
+			return '';
 		}
 	}
 

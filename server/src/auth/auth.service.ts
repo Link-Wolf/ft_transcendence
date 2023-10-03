@@ -52,7 +52,7 @@ export class AuthService {
 		return intraUser;
 	}
 
-	async generateProfilePicture(): Promise<string> {
+	async generateProfilePicture(login: string): Promise<void> {
 		let pp: string;
 
 		await axios
@@ -69,7 +69,7 @@ export class AuthService {
 			.catch((err) => {
 				console.log(err);
 			});
-		return pp;
+		this.userService.writePP(login, pp);
 	}
 
 	async generateName(): Promise<string> {

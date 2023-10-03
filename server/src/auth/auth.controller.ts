@@ -62,10 +62,12 @@ export class AuthController {
 			user = await this.userService.create({
 				login: intraUser.login,
 				clearance: Number(process.env.USER_CLEARANCE),
-				avatar: await this.authService.generateProfilePicture(),
 				name: await this.authService.generateName(),
 				TFASecret: otplib.authenticator.generateSecret(),
 			});
+			await this.authService.generateProfilePicture(
+				user.dataValues.login,
+			);
 		}
 
 		if (!user.dataValues.hasConnected)
