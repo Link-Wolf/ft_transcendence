@@ -274,11 +274,17 @@ export class AppGateway
 	};
 
 	paddleSize = (modifiers: Modifier[]) => {
-		if (modifiers.some((m) => m.dataValues.code === 'big_paddle')) {
+		const hasBig = modifiers.some(
+			(m) => m.dataValues.code === 'big_paddle',
+		);
+		const hasSmal = modifiers.some(
+			(m) => m.dataValues.code === 'small_paddle',
+		);
+		if (hasBig && hasSmal) return DEFAULT_PADDLE_SIZE;
+		if (hasBig) {
 			return DEFAULT_BIGGER_PADDLE_SIZE;
 		}
-		if (modifiers.some((m) => m.dataValues.code === 'small_paddle'))
-			return DEFAULT_SMALLER_PADDLE_SIZE;
+		if (hasSmal) return DEFAULT_SMALLER_PADDLE_SIZE;
 		return DEFAULT_PADDLE_SIZE;
 	};
 
