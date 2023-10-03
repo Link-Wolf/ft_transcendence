@@ -200,7 +200,6 @@ const DemoteButton = ({
 	effect?: Function;
 	className?: string;
 }) => {
-	// BUG: marche pas askip
 	const demote = async (login: string) => {
 		await axios
 			.patch(
@@ -490,7 +489,7 @@ const AskForGameButton = ({
 			</button>
 			{isPopUpOpen !== "" && (
 				<PopUp setPopup={setIsPopUpOpen}>
-					<GameCreationForm />
+					<GameCreationForm opponentLogin={login} />
 				</PopUp>
 			)}
 		</>
