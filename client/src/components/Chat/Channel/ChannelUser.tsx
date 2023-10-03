@@ -186,7 +186,7 @@ const ChannelUser = ({
 							/>
 							{user.login === owner.login &&
 								(admins.some(
-									(admin) => admin.login === login
+									(admin) => admin.userLogin === login
 								) ? (
 									<DemoteButton
 										login={login}
@@ -200,11 +200,11 @@ const ChannelUser = ({
 								))}
 							{(user.login === owner.login ||
 								(admins.some(
-									(admin) => admin.login === user.login
+									(admin) => admin.userLogin === user.login
 								) &&
 									login !== owner.login &&
 									!admins.some(
-										(admin) => admin.login === login
+										(admin) => admin.userLogin === login
 									))) && (
 								<>
 									<button
@@ -236,23 +236,24 @@ const ChannelUser = ({
 						</div>
 					</div>
 				)}
-				<div className={style.profil}
+				<div
+					className={style.profil}
 					onClick={() => {
 						toggleBox(login);
 					}}
 				>
 					{login === owner.login
 						? " (owner)"
-						: admins.some((admin) => admin.login === login) &&
-						" (admin)"}
+						: admins.some((admin) => admin.userLogin === login) &&
+						  " (admin)"}
 					{user.login !== login ? (
 						<label>
 							{name} {members[login].isBlocked ? "(bloqué)" : ""}
 						</label>
 					) : (
 						<label>{name} (you) </label>
-						)}
-						<PPDisplayer login={login} size={50} status={true} />
+					)}
+					<PPDisplayer login={login} size={50} status={true} />
 				</div>
 			</div>
 		</div>
