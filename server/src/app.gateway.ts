@@ -16,6 +16,7 @@ import { ModifierService } from './modifier/modifier.service';
 import { Modifier } from './modifier/modifier.entity';
 import { Game } from './game/game.entity';
 import { observeNotification } from 'rxjs/internal/Notification';
+import { BlockService } from './block/block.service';
 
 const MAX_BALL_SPEED = 2;
 const DEFAULT_BALL_SPEED = 0.5;
@@ -127,6 +128,7 @@ export class AppGateway
 		private gameService: GameService,
 		private userGameService: UserGameService,
 		private modifierService: ModifierService,
+		private blockService: BlockService,
 	) {}
 
 	@WebSocketServer() server: Server;
@@ -768,8 +770,49 @@ export class AppGateway
 	}
 
 	@SubscribeMessage('invitePlayer')
-	async invitePlayer(client: Socket, payload: any): Promise<void> {
-		throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED); //COMBAK: invite player not implemented
+	async invitePlayer(client: Socket, payload: any): Promise<string> {
+		let user = await this.userService.verify(payload.auth);
+		let invitee = await this.userService.findByLogin(payload.invitee);
+
+		if (!user || !invitee) return;
+		if (user.dataValues.login === invitee.dataValues.login) return;
+
+		let block = await this.blockService.findBlockByBothLogin(
+			user.dataValues.login,
+			invitee.dataValues.login,
+		);
+		if (block) return;
+		block = await this.blockService.findBlockByBothLogin(
+			invitee.dataValues.login,
+			user.dataValues.login,
+		);
+		if (block) return;
+		let games = await this.userGameService.findNotFinishedByLogin(
+			user.login,
+		);
+
+		if (games.length > 0) {
+			return games[0].dataValues.game.id;
+		}
+
+		// Create a new game for the player
+		let game = await this.gameService.create({
+			isRanked: false,
+			status: 'waiting',
+		});
+
+		// Add the player to the game
+		const modifiers = await this.modifierService.findByIds(
+			payload.modifierIds ?? [],
+		);
+
+		await game.$add('users', user);
+		for (const modifier of modifiers) {
+			await game.$add('modifiers', modifier);
+		}
+		await game.save();
+
+		return game.id;
 	}
 
 	@SubscribeMessage('joinGame')

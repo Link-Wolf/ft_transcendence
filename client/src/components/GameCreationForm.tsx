@@ -36,12 +36,13 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	console.log(selectedMap);
 	return (
 		<>
-			{ selectedMap === -1 ? 
-					<div className={style.gamemapDefault}></div> :
-				selectedMap === 11 ? 
-					<div className={style.gamemapTwin}></div> :
-					<div className={style.gamemapLine}></div>
-					}
+			{selectedMap === -1 ? (
+				<div className={style.gamemapDefault}></div>
+			) : selectedMap === 11 ? (
+				<div className={style.gamemapTwin}></div>
+			) : (
+				<div className={style.gamemapLine}></div>
+			)}
 			<label
 				className={style.gameselect}
 				style={isRanked ? selectedStyle : unselectedStyle}
@@ -167,7 +168,6 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 								</Tooltip>
 							</label>
 						))}
-
 				</>
 			)}
 
@@ -182,11 +182,12 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 						  ]
 								.filter((e) => e !== -1)
 								.join(",")}`
-				}${opponentLogin ? `&invite=${opponentLogin}` : ""}`}
+				}${opponentLogin ? `&invitee=${opponentLogin}` : ""}`}
 			>
-				<button className={style.button}>Create Game</button>
+				<button className={style.button}>
+					{opponentLogin ? "Invite" : "Create Game"}
+				</button>
 			</Link>
-
 		</>
 	);
 };
