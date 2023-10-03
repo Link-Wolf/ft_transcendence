@@ -208,7 +208,6 @@ export class AppGateway
 		if (inputs.includes(32)) {
 			//SPACE
 			game.isTurnStarted = true;
-			game.turn++;
 		}
 	}
 	//#endregion
