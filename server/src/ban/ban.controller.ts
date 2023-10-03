@@ -196,7 +196,10 @@ export class BanController {
 				'User not in channel',
 				HttpStatus.NOT_FOUND,
 			);
-		if (membership.dataValues.isAdmin && chan.dataValues.owner !== me)
+		if (
+			membership.dataValues.isAdmin &&
+			chan.dataValues.owner.dataValues.login !== me.dataValues.login
+		)
 			throw new HttpException(
 				'Cannot ban channel admin',
 				HttpStatus.FORBIDDEN,
