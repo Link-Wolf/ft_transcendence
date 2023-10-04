@@ -5,7 +5,7 @@ const PopUp = ({
 	children,
 	setPopup,
 }: {
-	children?: JSX.Element[] | JSX.Element;
+	children?: (JSX.Element | false)[] | JSX.Element | false;
 	setPopup: Function;
 }) => {
 	useEffect(() => {
