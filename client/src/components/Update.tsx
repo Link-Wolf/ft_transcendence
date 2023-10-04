@@ -8,7 +8,7 @@ import Dropzone, { useDropzone } from "react-dropzone";
 import socket from "../socket";
 import PPChanger from "./PPChanger";
 import style from "../style/Profile.module.scss";
-
+import PopUp from "./PopUp";
 
 const ISSUER = "Platypong";
 
@@ -164,101 +164,103 @@ const Update = () => {
 
 	return (
 		<>
-		<div className={style.setting}>
-			<h2>Settings</h2>
-			<form>
-				<div>
-					<label>Username</label>
-					{nameError !== "" && <div>{nameError}</div>}
-					<input
-						id='name'
-						type='text'
-						value={form.name}
-						onChange={handleFormChange}
-						placeholder='myAwesomeNewUsername'
-					/>
-					<button
-						type='button'
-						onClick={updateUsername}
-						disabled={nameError !== ""}
-					>
-						Change username
-					</button>
-				</div>
-				<div>
-					<PPChanger login={user.login} />
-				</div>
-			</form>
-			{!form.hasTFA ? (
-				TFASecret === "" ? (
-					<button
-						type='button'
-						onClick={wannaEnableTFA}
-					>
-						Activate 2FA
-					</button>
-				) : (
-					<div className='BONJOUR JE SUIS UN POP UP MERCI'>
-						<h1>Two-Factor Authentication (2FA) Activation</h1>
-						<h3>Configure Google Authenticator or Authy</h3>
-						<ul>
-							<li>
-								Install Google Authenticator or Authy (both IOS
-								- Android)
-							</li>
-							<li>In the authenticator app, select '+' icon</li>
-							<li>
-								Select "Scan a barcode (or QR code)" and use the
-								phone's camera to scan this barcode
-							</li>
-						</ul>
-						<h3>Scan this QR code with your authenticator app</h3>
-						<QRCode
-							value={`otpauth://totp/${user.login}?secret=${TFASecret}&issuer=${ISSUER}`}
-							size={256}
-							level='H'
-						/>
-						<h4>Or enter this code manually in your app</h4>
-						<label>Secret Key: {TFASecret}</label>
-						<h3>Verifiy code</h3>
-						<label>
-							To validate the 2FA activation, please verify the
-							authentication code
-						</label>
+			<div className={style.setting}>
+				<h2>Settings</h2>
+				<form>
+					<div>
+						<label>Username</label>
+						{nameError !== "" && <div>{nameError}</div>}
 						<input
-							value={codeValue}
-							autoFocus={true}
-							maxLength={6}
-							placeholder='Authentication code'
-							onChange={(e) => handleInputChange(e.target.value)}
+							id='name'
+							type='text'
+							value={form.name}
+							onChange={handleFormChange}
+							placeholder='myAwesomeNewUsername'
 						/>
-						{codeError !== "" && <div>{codeError}</div>}
 						<button
 							type='button'
-							onClick={verifyTFA}
+							onClick={updateUsername}
+							disabled={nameError !== ""}
 						>
-							Verify and activate 2FA
+							Change username
 						</button>
-						<button
-							type='button'
-							onClick={() => {
+					</div>
+					<div>
+						<PPChanger login={user.login} />
+					</div>
+				</form>
+				{!form.hasTFA ? (
+					TFASecret === "" ? (
+						<button type='button' onClick={wannaEnableTFA}>
+							Activate 2FA
+						</button>
+					) : (
+						<PopUp
+							setPopup={() => {
 								setTFASecret("");
 								setCodeValue("");
 							}}
 						>
-							Cancel
-						</button>
-					</div>
-				)
-			) : (
-				<button
-					type='button'
-					onClick={disableTFA}
-				>
-					Disable 2FA
-				</button>
-			)}
-		</div>
+							<h1>Two-Factor Authentication (2FA) Activation</h1>
+							<h3>Configure Google Authenticator or Authy</h3>
+							<ul>
+								<li>
+									Install Google Authenticator or Authy (both
+									IOS - Android)
+								</li>
+								<li>
+									In the authenticator app, select '+' icon
+								</li>
+								<li>
+									Select "Scan a barcode (or QR code)" and use
+									the phone's camera to scan this barcode
+								</li>
+							</ul>
+							<h3>
+								Scan this QR code with your authenticator app
+							</h3>
+							<QRCode
+								value={`otpauth://totp/${user.login}?secret=${TFASecret}&issuer=${ISSUER}`}
+								size={256}
+								level='H'
+							/>
+							<h4>Or enter this code manually in your app</h4>
+							<label>Secret Key: {TFASecret}</label>
+							<h3>Verifiy code</h3>
+							<label>
+								To validate the 2FA activation, please verify
+								the authentication code
+							</label>
+							<input
+								value={codeValue}
+								autoFocus={true}
+								maxLength={6}
+								placeholder='Authentication code'
+								onChange={(e) =>
+									handleInputChange(e.target.value)
+								}
+							/>
+							{codeError !== "" && <div>{codeError}</div>}
+							<button type='button' onClick={verifyTFA}>
+								Verify and activate 2FA
+							</button>
+							<button
+								type='button'
+								onClick={() => {
+									setTFASecret("");
+									setCodeValue("");
+								}}
+							>
+								Cancel
+							</button>
+						</PopUp>
+					)
+				) : (
+					<button type='button' onClick={disableTFA}>
+						Disable 2FA
+					</button>
+				)}
+			</div>
 		</>
 	);
 };
