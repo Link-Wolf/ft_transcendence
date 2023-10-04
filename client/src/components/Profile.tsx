@@ -165,8 +165,22 @@ const Profile = () => {
 
 const Resume = ({ login }: { isMe: boolean; login: string }) => {
 	const [user, setUser] = useState<any>({});
+	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
+		socket.on("contextUpdate", (payload) => {
+			if (payload.login !== login) return;
+			setUpdate(true);
+		});
+
+		return () => {
+			socket.off("contextUpdate");
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!update) return;
+		setUpdate(false);
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/${login}`
@@ -177,7 +191,7 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [login]);
+	}, [login, update]);
 
 	return (
 		<>
