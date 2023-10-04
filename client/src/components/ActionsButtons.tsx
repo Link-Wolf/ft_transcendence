@@ -56,7 +56,7 @@ const BlockButton = ({
 				block(login);
 			}}
 		>
-			Block
+			📛
 		</button>
 	);
 };
@@ -304,11 +304,12 @@ const FriendButton = ({
 			className={className}
 			type='button'
 			disabled={friendship && !isBlocked}
+			title={friendship && friendship.isPending ? "Already sent" : "Be Friend"}
 			onClick={() => {
 				!friendship && friend(login);
 			}}
 		>
-			{friendship && friendship.isPending ? "Already sent" : "Be friend"}
+			{friendship && friendship.isPending ? "🕐" : "👤"}
 		</button>
 	);
 };
@@ -413,11 +414,12 @@ const UnfriendButton = ({
 		<button
 			className={className}
 			type='button'
+			title="Block"
 			onClick={() => {
 				unfriendSomeone(login);
 			}}
 		>
-			Supprimer ami
+			🚮
 		</button>
 	);
 };
@@ -449,7 +451,7 @@ const FriendUnfriendButton = ({
 				console.log(err);
 			});
 	}, [_isFriend]);
-
+	console.log(isFriend);
 	if (_isFriend)
 		return (
 			<UnfriendButton
@@ -480,12 +482,13 @@ const AskForGameButton = ({
 		<>
 			<button
 				type='button'
+				title="Play a game"
 				onClick={() => {
 					openGameCreationPopup(login);
 				}}
 				className={className}
 			>
-				Play
+				🎮
 			</button>
 			{isPopUpOpen !== "" && (
 				<PopUp setPopup={setIsPopUpOpen}>
