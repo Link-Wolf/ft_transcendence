@@ -163,7 +163,7 @@ const Profile = () => {
 	);
 };
 
-const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
+const Resume = ({ login }: { isMe: boolean; login: string }) => {
 	const [user, setUser] = useState<any>({});
 
 	useEffect(() => {
@@ -182,9 +182,9 @@ const Resume = ({ isMe, login }: { isMe: boolean; login: string }) => {
 	return (
 		<>
 			<div className={style.username}>
-				{user.name} ({user.login})
+				{user.name} ({login})
 			</div>
-			<PPDisplayer login={user.login} size={300} status={false} />
+			<PPDisplayer login={login} size={300} status={false} />
 		</>
 	);
 };
