@@ -114,7 +114,7 @@ export class UserController {
 	 * @response 500 - Internal Server Error
 	 */
 	@Get('pp/:login')
-	@UseGuards(AdminUserGuard)
+	@UseGuards(UserClearanceGuard)
 	@UseInterceptors(FileInterceptor('avatar'))
 	async getProfilePicture(@Param('login') login: string): Promise<string> {
 		let user = await this.userService.findByLogin(login);
