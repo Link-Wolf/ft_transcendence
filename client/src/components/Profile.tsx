@@ -662,15 +662,18 @@ const Friends = () => {
 											Friendship request received on{" "}
 											{friendShip.created_at}
 										</div>
+										<div className={style.acceptbutton}>
+
 										<FriendButton login={friend.login} />
 										<button
 											title="Reject Friend request"
 											onClick={() => {
 												removeFriend(friend.login);
 											}}
-										>
+											>
 											✖️
 										</button>
+										</div>
 									</li>
 								);
 							})

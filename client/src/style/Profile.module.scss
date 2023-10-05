@@ -283,6 +283,16 @@
 					font-size: 15px;
 					transition: 0.3s;
 				}
+				.acceptbutton {
+					display: flex;
+					flex-direction: row;
+					button {
+						width: 50px;
+						background-color: #f8f8f8;
+						margin-left: 10px;
+						margin-right: 10px;
+					}
+				}
 			}
 
 			.FriendsList {
