@@ -1,15 +1,41 @@
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes fade-out {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+
 .profil {
+	
 	--size_unit: 40px;
 	display: flex;
 	flex-direction: row;
 	margin-left: auto;
 	margin-right: auto;
 	justify-content: center;
-
 	text-align: center;
 	align-items: center;
-
+	animation: fade-in 0.5s;
+	&:has(button:active){
+		animation: fade-out 0.5s;
+	}
+	
 	.resume {
+		animation: fade-in 0.5s;
+	
+
+		animation: ease-in 0.5s;
 		display: flex;
 		flex-direction: column;
 		font-size: 20px;
@@ -23,7 +49,7 @@
 			color: white;
 			font-size: calc(3 * var(--size_unit));
 			margin-top: 0;
-			margin-bottom: calc(1 * var(--size_unit));
+			// margin-bottom: calc(1 * var(--size_unit));
 		}
 
 		img {
@@ -34,12 +60,12 @@
 		}
 
 		.username {
-			font-size: calc(2 * var(--size_unit));
-			margin-bottom: calc(1 * var(--size_unit));
+			font-size: calc(1 * var(--size_unit));
+			margin-bottom: calc(0.5 * var(--size_unit));
 
-			&::before {
-				content: "of ";
-			}
+			// &::before {
+				// content: "O F";
+			// }
 		}
 
 		.button {
@@ -56,10 +82,12 @@
 			transition: 0.3s;
 			cursor: pointer;
 
+
 			&:hover {
 				background-color: #c5c5c5;
 				color: #000000;
 				transition: 0.3s;
+
 			}
 
 			&:nth-of-type(1) {
@@ -114,6 +142,7 @@
 	}
 
 	.menu {
+
 		.stats {
 			display: flex;
 			flex-direction: row;

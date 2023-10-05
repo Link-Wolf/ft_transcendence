@@ -1,3 +1,12 @@
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
 .light {
 	background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2)),
 		url("../assets/background_light.jpg");

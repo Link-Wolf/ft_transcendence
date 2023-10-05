@@ -62,7 +62,7 @@ const Profile = () => {
 		<div>
 			<div className={style.profil}>
 				<div className={style.resume}>
-					<h1>P R O F I L E</h1>
+					<h1>P R O F I L E &nbsp; O F</h1>
 					<Resume isMe={isMe} login={profileLogin} />
 					<button
 						className={style.button}
