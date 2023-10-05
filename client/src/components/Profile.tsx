@@ -664,11 +664,12 @@ const Friends = () => {
 										</div>
 										<FriendButton login={friend.login} />
 										<button
+											title="Reject Friend request"
 											onClick={() => {
 												removeFriend(friend.login);
 											}}
 										>
-											Deny request
+											✖️
 										</button>
 									</li>
 								);
