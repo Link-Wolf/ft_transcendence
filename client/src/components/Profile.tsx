@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { useParams } from "react-router-dom";
@@ -179,6 +179,10 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 			socket.off("contextUpdate");
 		};
 	}, []);
+
+	useMemo(() => {
+		setUpdate(true);
+	}, [login]);
 
 	useEffect(() => {
 		if (!update) return;

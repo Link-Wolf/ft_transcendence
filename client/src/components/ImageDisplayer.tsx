@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import StatusIcon from "./StatusIcon";
 import style from "../style/PPDisplayer.module.scss";
@@ -31,6 +31,10 @@ const PPDisplayer = ({
 			socket.off("contextUpdate");
 		};
 	}, []);
+
+	useMemo(() => {
+		setUpdate(true);
+	}, [login]);
 
 	useEffect(() => {
 		if (children) return;
