@@ -10,6 +10,8 @@ import {
 	BlockUnblockButton,
 	UnblockButton,
 	FriendUnfriendButton,
+	FriendButton,
+	UnfriendButton,
 } from "./ActionsButtons";
 import socket from "../socket";
 import style from "../style/Profile.module.scss";
@@ -581,13 +583,7 @@ const Friends = () => {
 										{/* <span> */}
 										{/* Friend since {friendShip.updated_at} */}
 										{/* </span> */}
-										<button
-											onClick={() => {
-												removeFriend(friend.login);
-											}}
-										>
-											Remove friend
-										</button>
+										<UnfriendButton login={friend.login} />
 									</li>
 								);
 							})
@@ -662,6 +658,7 @@ const Friends = () => {
 											Friendship request received on{" "}
 											{friendShip.created_at}
 										</div>
+										<FriendButton login={friend.login} />
 										<button
 											onClick={() => {
 												removeFriend(friend.login);
