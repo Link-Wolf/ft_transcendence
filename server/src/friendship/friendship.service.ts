@@ -176,8 +176,9 @@ export class FriendshipService {
 					},
 					{
 						where: {
-							receiver: friendshipDto.receiver,
-							sender: friendshipDto.sender,
+							receiverLogin:
+								friendshipDto.receiver.dataValues.login,
+							senderLogin: friendshipDto.sender.dataValues.login,
 						},
 					},
 				)
