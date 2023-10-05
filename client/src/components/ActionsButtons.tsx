@@ -275,13 +275,10 @@ const FriendButton = ({
 			`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/${login}/${user.login}`
 		);
 		if (block.data.length !== 0) {
-			//TODO: Notify user ?
-			console.log(
-				`${login} blocked ${user.login}, so no u can't be friend with him !`
-			);
+			setIsBlocked(true);
 			return;
 		}
-		axios
+		await axios
 			.post(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship`,
 				{
@@ -299,16 +296,42 @@ const FriendButton = ({
 			});
 	};
 
+	/*
+	Blocked: nop
+	Friendship exists?
+		pending?
+			mine?
+				already sent
+			not mine?
+				accept button
+		not pending?
+			already friends
+	Not exists?
+		Be friend button
+	*/
+
 	return (
 		<button
 			className={className}
 			type='button'
-			disabled={friendship && !isBlocked}
+			disabled={
+				!(!friendship || friendship.senderLogin !== user.login) &&
+				!isBlocked
+			}
 			onClick={() => {
-				!friendship && friend(login);
+				(!friendship || friendship.senderLogin !== user.login) &&
+					friend(login);
 			}}
 		>
-			{friendship && friendship.isPending ? "Already sent" : "Be friend"}
+			{isBlocked
+				? "Be Friend"
+				: !friendship
+				? "Be Friend"
+				: !friendship.isPending
+				? "Already Friend"
+				: friendship.senderLogin === user.login
+				? "Already sent"
+				: "Accept"}
 		</button>
 	);
 };
