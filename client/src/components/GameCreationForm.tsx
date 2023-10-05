@@ -28,7 +28,14 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/modifier`
 			)
 			.then((res) => {
-				setModifiers(res.data);
+				setModifiers(
+					res.data.sort(
+						(
+							a: Required<{ code: string }>,
+							b: Required<{ code: string }>
+						) => a.code.localeCompare(b.code)
+					)
+				);
 			})
 			.catch((err) => console.log(err));
 	}, []);

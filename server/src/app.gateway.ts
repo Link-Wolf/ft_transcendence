@@ -69,7 +69,7 @@ type Ball = {
 
 type Obstacle = {
 	shape: 'circle' | 'rectangle';
-	center: { x: number; y: number };
+	position: { x: number; y: number };
 	size: { w: number; h: number };
 	effect: (game: GameData) => void;
 	color: string;
@@ -406,7 +406,7 @@ export class AppGateway
 			ret.push((ball: Ball, game: GameData) => {
 				ball.velocity.dx = Math.min(
 					MAX_BALL_SPEED,
-					ball.velocity.dx * 1.01,
+					ball.velocity.dx + 0.15 * Math.sign(ball.velocity.dx),
 				);
 			});
 		if (modifiers.some((m) => m.dataValues.code === 'power_up'))
@@ -416,7 +416,18 @@ export class AppGateway
 		return ret;
 	};
 
-	obstacles = (modifiers: Modifier[]) => {
+	obstacles = (modifiers: Modifier[]): Obstacle[] => {
+		if (modifiers.some((m) => m.dataValues.code === 'map_1'))
+			return [
+				{
+					shape: 'rectangle',
+					position: { x: 0, y: 0 },
+					size: { w: 100, h: 100 },
+					effect: (game: GameData) => {},
+					color: 'white',
+				},
+			];
+		if (modifiers.some((m) => m.dataValues.code === 'map_2')) return [];
 		return []; //TODO: add obstacles to the map
 	};
 
@@ -566,7 +577,7 @@ export class AppGateway
 			const isBallInPaddle =
 				distanceBallPaddleSquared < ball.size.radius ** 2;
 			if (!isBallInPaddle) return;
-			ball.velocity.dx = 1 - 2 * i;
+			ball.velocity.dx = (1 - 2 * i) * Math.abs(ball.velocity.dx);
 			ball.position.y +=
 				(ball.velocity.dy *
 					(paddle.position.x +
