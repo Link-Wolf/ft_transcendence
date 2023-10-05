@@ -69,7 +69,7 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 	let scale = 1;
 
 	socket.on("gameUpdate", (data) => {
-		game = { ...game, ...data };
+		if (data.gameId === gameId) game = { ...game, ...data };
 	});
 
 	function getAbsoluteHeight(el: HTMLElement | null): number {
@@ -134,7 +134,6 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 		drawMovables(p5, [
 			...game.players
 				.map((player: any) => player.paddle)
-				.concat(game.obstacles)
 				.map((rect_stuff: any) => ({
 					type: "rectangle",
 					...rect_stuff,
@@ -152,6 +151,10 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 			...game.balls.concat(game.powerUps).map((round_stuff: any) => ({
 				type: "circle",
 				...round_stuff,
+			})),
+			...game.obstacles.map((rect_stuff: any) => ({
+				type: rect_stuff.shape,
+				...rect_stuff,
 			})),
 		]);
 		p5.pop();
