@@ -83,6 +83,25 @@
 		border-color: #0000006e;
 		padding: 0 10px 0 10px;
 		color: #0066b9;
+
+		&:hover {
+			background-color: var(--background-button-tel-hover);
+			border-color: #000000;
+			color: #000000;
+			cursor: pointer;
+		}
+
+		&:active {
+			background-color: var(--background-button-tel-active);
+			border-color: #000000;
+			color: #000000;
+		}
+
+		&:disabled {
+			background-color: var(--background-button-tel-disabled);
+			border-color: #000000;
+			color: #000000;
+		}
 	}
 
 	.channelmsg {
