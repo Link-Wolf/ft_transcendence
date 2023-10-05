@@ -324,13 +324,13 @@ const FriendButton = ({
 			}}
 		>
 			{isBlocked
-				? "Be Friend"
+				? "👤"
 				: !friendship
-				? "Be Friend"
+				? "👤"
 				: !friendship.isPending
 				? "Already Friend"
 				: friendship.senderLogin === user.login
-				? "Already sent"
+				? "🕐"
 				: "Accept"}
 		</button>
 	);
