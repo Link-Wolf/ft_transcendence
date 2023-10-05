@@ -41,7 +41,7 @@ const Message = ({
 
 	const toggleBox = async () => {
 		if (login === user.login) {
-			navigate(`/profile/${user.login}`);
+			// navigate(`/profile/${user.login}`);
 			return;
 		}
 		setIsToggleBox(!isToggleBox);
@@ -50,12 +50,15 @@ const Message = ({
 	if (!relation) return <>loading... {login}</>;
 	return (
 		<>
-			<div
+			<div 
 				className={
 					user.login === login ? style.sendmessage : style.recvmessage
 				}
 			>
+				<div onClick={toggleBox}>
 				<PPDisplayer login={login} size={40} status={true} />
+				</div>
+				<div onClick={toggleBox}>
 				<div className={style.senderinfo}>
 					{isToggleBox && (
 						<div>
@@ -64,21 +67,21 @@ const Message = ({
 							</Link>
 							{!relation.isBlocked && (
 								<AskForGameButton login={login} />
-							)}
+								)}
 							{!relation.isBlocked &&
 								(relation.isFriend ? (
 									<PMButton
-										login={login}
-										setChannel={setChannel}
+									login={login}
+									setChannel={setChannel}
 									/>
-								) : (
-									<FriendButton login={login} />
-								))}
+									) : (
+										<FriendButton login={login} />
+										))}
 							{relation.isBlocked ? (
 								<UnblockButton login={login} />
-							) : (
-								<BlockButton login={login} />
-							)}
+								) : (
+									<BlockButton login={login} />
+									)}
 						</div>
 					)}
 
@@ -88,13 +91,13 @@ const Message = ({
 							{login === owner.login
 								? "[owner]"
 								: admins.some(
-										(admin) => admin.login === login
-								  ) && "[admin]"}
+									(admin) => admin.login === login
+									) && "[admin]"}
 							{relation.isBlocked ? "(bloqué)" : ""}
 						</button>
 					) : (
 						<label>{name} (you) </label>
-					)}
+						)}
 
 					<p className={style.message}>
 						{relation.isBlocked
@@ -104,17 +107,18 @@ const Message = ({
 					<p className={style.time}>
 						{new Date(date).toLocaleDateString() ===
 						new Date().toLocaleDateString()
-							? new Date(date).toISOString().slice(11, 16) //if today, get an ISO string (YYYY-MM-DDTHH:mm:ss.sssZ) and slice it to only get HH:mm
-							: new Date(date)
-									.toLocaleString("fr-FR", {
-										hour: "2-digit",
-										minute: "2-digit",
-										day: "2-digit",
-										month: "2-digit",
-										year: "2-digit",
-									})
-									.replace(",", "")}
+						? new Date(date).toISOString().slice(11, 16) //if today, get an ISO string (YYYY-MM-DDTHH:mm:ss.sssZ) and slice it to only get HH:mm
+						: new Date(date)
+						.toLocaleString("fr-FR", {
+							hour: "2-digit",
+							minute: "2-digit",
+							day: "2-digit",
+							month: "2-digit",
+							year: "2-digit",
+						})
+						.replace(",", "")}
 					</p>
+				</div>
 				</div>
 			</div>
 		</>
