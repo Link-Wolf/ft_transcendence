@@ -445,12 +445,12 @@ const UnfriendButton = ({
 		<button
 			className={className}
 			type='button'
-			title='Block'
+			title='Remove friendship'
 			onClick={() => {
 				unfriendSomeone(login);
 			}}
 		>
-			🚮
+			Remove
 		</button>
 	);
 };
