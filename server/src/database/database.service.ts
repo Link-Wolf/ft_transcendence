@@ -34,13 +34,18 @@ export class SeedingService {
 			});
 			await this.modifierRepository.create<Modifier>({
 				code: 'map_1',
-				name: 'Custom Map: The City',
-				desc: 'Replace the default map with a custom one with lot of obstacles that represent a city !',
+				name: 'Custom Map: The Cube',
+				desc: 'Replace the default map with a custom one that contains an obstacle at the center: a cube !',
 			});
 			await this.modifierRepository.create<Modifier>({
 				code: 'map_2',
-				name: 'Custom Map: The void',
-				desc: 'Replace the default map with .. void',
+				name: 'Custom Map: The Lines',
+				desc: 'Replace the default map with a custom one that contains two horizontals lines and a small hole between them !',
+			});
+			await this.modifierRepository.create<Modifier>({
+				code: 'map_3',
+				name: 'Custom Map: The Things',
+				desc: 'Replace the default map with ..things !',
 			});
 			// await this.modifierRepository.create<Modifier>();
 			// await this.modifierRepository.create<Modifier>();
