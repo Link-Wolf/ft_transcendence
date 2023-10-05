@@ -56,7 +56,7 @@ const BlockButton = ({
 				block(login);
 			}}
 		>
-			Block
+			📛
 		</button>
 	);
 };
@@ -436,11 +436,12 @@ const UnfriendButton = ({
 		<button
 			className={className}
 			type='button'
+			title='Block'
 			onClick={() => {
 				unfriendSomeone(login);
 			}}
 		>
-			Supprimer ami
+			🚮
 		</button>
 	);
 };
@@ -472,7 +473,7 @@ const FriendUnfriendButton = ({
 				console.log(err);
 			});
 	}, [_isFriend]);
-
+	console.log(isFriend);
 	if (_isFriend)
 		return (
 			<UnfriendButton
@@ -503,12 +504,13 @@ const AskForGameButton = ({
 		<>
 			<button
 				type='button'
+				title='Play a game'
 				onClick={() => {
 					openGameCreationPopup(login);
 				}}
 				className={className}
 			>
-				Play
+				🎮
 			</button>
 			{isPopUpOpen !== "" && (
 				<PopUp setPopup={setIsPopUpOpen}>
