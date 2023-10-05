@@ -13,7 +13,11 @@ export default function drawMovables(p5: p5Types, movables: Movable[]) {
 				object.size.h
 			);
 		else if (object.type === "circle")
-			p5.circle(object.position.x, object.position.y, object.size.radius);
+			p5.circle(
+				object.position.x,
+				object.position.y,
+				object.size.radius * 2
+			);
 	}
 	p5.pop();
 }

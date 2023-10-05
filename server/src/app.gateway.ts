@@ -19,13 +19,15 @@ import { observeNotification } from 'rxjs/internal/Notification';
 import { BlockService } from './block/block.service';
 
 const MAX_BALL_SPEED = 2;
-const DEFAULT_BALL_SPEED = 0.5;
-const MAX_PADDLE_SIZE = 100;
+const DEFAULT_BALL_SPEED = 0.6;
+const MAX_PADDLE_SIZE = 0.5;
 const DEFAULT_BIGGER_PADDLE_SIZE = 2.0 / 9.0;
 const DEFAULT_PADDLE_SIZE = 1.0 / 6.0;
 const DEFAULT_SMALLER_PADDLE_SIZE = 1.0 / 9.0;
-const MIN_PADDLE_SIZE = 20;
+const MIN_PADDLE_SIZE = 0.01;
 const MAX_NUMBER_OF_BALLS = 10;
+const POWERUP_RADIUS = 15;
+const BALL_RADIUS = 2.5;
 
 //#region TYPES
 type Player = {
@@ -248,10 +250,16 @@ export class AppGateway
 					y: (game.height / 2 - 50) * (game.turn % 2 == 0 ? 1 : -1),
 				},
 				velocity: {
-					dx: game.playerToStart == 0 ? -0.5 : 0.5,
-					dy: game.turn % 2 == 0 ? 1 : -1,
+					dx:
+						game.playerToStart == 0
+							? -DEFAULT_BALL_SPEED
+							: DEFAULT_BALL_SPEED,
+					dy:
+						game.turn % 2 == 0
+							? DEFAULT_BALL_SPEED
+							: -DEFAULT_BALL_SPEED,
 				},
-				size: { radius: 10 },
+				size: { radius: BALL_RADIUS },
 				lastUser: null,
 				color: 'white',
 			},
@@ -294,10 +302,9 @@ export class AppGateway
 			{
 				name: 'Enlarge Your Paddle',
 				effect: (ball: Ball, game: GameData) => {
-					game.players[ball.lastUser].paddle.size.h /= 1.1;
-					game.players[ball.lastUser].paddle.size.h = Math.max(
-						MIN_PADDLE_SIZE,
-						game.players[ball.lastUser].paddle.size.h,
+					game.players[ball.lastUser].paddle.size.h = Math.min(
+						MAX_PADDLE_SIZE * game.height,
+						game.players[ball.lastUser].paddle.size.h * 1.2,
 					);
 				},
 				color: 'green',
@@ -305,10 +312,9 @@ export class AppGateway
 			{
 				name: 'Enlarge Their Paddle',
 				effect: (ball: Ball, game: GameData) => {
-					game.players[1 - ball.lastUser].paddle.size.h /= 1.1;
-					game.players[1 - ball.lastUser].paddle.size.h = Math.max(
-						MIN_PADDLE_SIZE,
-						game.players[1 - ball.lastUser].paddle.size.h,
+					game.players[1 - ball.lastUser].paddle.size.h = Math.min(
+						MAX_PADDLE_SIZE * game.height,
+						game.players[1 - ball.lastUser].paddle.size.h * 1.2,
 					);
 				},
 				color: 'red',
@@ -316,10 +322,9 @@ export class AppGateway
 			{
 				name: 'Shrink Your Paddle',
 				effect: (ball: Ball, game: GameData) => {
-					game.players[ball.lastUser].paddle.size.h *= 1.1;
-					game.players[ball.lastUser].paddle.size.h = Math.min(
-						MAX_PADDLE_SIZE,
-						game.players[ball.lastUser].paddle.size.h,
+					game.players[ball.lastUser].paddle.size.h = Math.max(
+						MIN_PADDLE_SIZE * game.height,
+						game.players[ball.lastUser].paddle.size.h / 1.2,
 					);
 				},
 				color: 'red',
@@ -327,10 +332,9 @@ export class AppGateway
 			{
 				name: 'Shrink Their Paddle',
 				effect: (ball: Ball, game: GameData) => {
-					game.players[1 - ball.lastUser].paddle.size.h *= 1.1;
-					game.players[1 - ball.lastUser].paddle.size.h = Math.min(
-						MAX_PADDLE_SIZE,
-						game.players[1 - ball.lastUser].paddle.size.h,
+					game.players[1 - ball.lastUser].paddle.size.h = Math.max(
+						MIN_PADDLE_SIZE * game.height,
+						game.players[1 - ball.lastUser].paddle.size.h / 1.2,
 					);
 				},
 				color: 'green',
@@ -380,7 +384,7 @@ export class AppGateway
 			},
 		];
 
-		if (Math.random() < 0.2) {
+		if (Math.random() < 0.25) {
 			const spawnPoint =
 				game.powerUpSpawnPoints[
 					Math.floor(Math.random() * game.powerUpSpawnPoints.length)
@@ -392,7 +396,7 @@ export class AppGateway
 				];
 			game.powerUps.push({
 				position: spawnPoint,
-				size: { radius: 10 },
+				size: { radius: POWERUP_RADIUS },
 				effect: effect.effect,
 				name: effect.name,
 				color: effect.color,
@@ -428,7 +432,7 @@ export class AppGateway
 				},
 			];
 		if (modifiers.some((m) => m.dataValues.code === 'map_2')) return [];
-		return []; //TODO: add obstacles to the map
+		return [];
 	};
 
 	newGame(
@@ -472,7 +476,7 @@ export class AppGateway
 				{
 					position: { x: 0, y: 0 },
 					velocity: { dx: 0, dy: 0 },
-					size: { radius: 5 },
+					size: { radius: BALL_RADIUS },
 					lastUser: null,
 					color: 'white',
 				},
@@ -494,11 +498,26 @@ export class AppGateway
 			loop: null,
 			modifiers: modifiers,
 			powerUpSpawnPoints: [
-				//NOTE: spawn point definition
-				{ x: -width / 2 + 50, y: -height / 2 + 50 },
-				{ x: width / 2 - 50, y: -height / 2 + 50 },
-				{ x: -width / 2 + 50, y: height / 2 - 50 },
-				{ x: width / 2 - 50, y: height / 2 - 50 },
+				{ x: 550, y: 350 },
+				{ x: 550, y: -350 },
+				{ x: -550, y: 350 },
+				{ x: -550, y: -350 },
+
+				{ x: 300, y: 200 },
+				{ x: 300, y: -200 },
+				{ x: -300, y: 200 },
+				{ x: -300, y: -200 },
+
+				{ x: 0, y: 275 },
+				{ x: 0, y: -275 },
+				{ x: 425, y: 0 },
+				{ x: -425, y: 0 },
+				{ x: 425, y: 275 },
+				{ x: -425, y: 275 },
+				{ x: 425, y: -275 },
+				{ x: -425, y: -275 },
+
+				{ x: 0, y: 0 },
 			],
 		};
 	}
@@ -594,6 +613,7 @@ export class AppGateway
 			game.nbBounces++;
 			paddle.effect.forEach((f) => {
 				f(ball, game);
+				ball.lastUser = i;
 			});
 		});
 	}
@@ -607,6 +627,8 @@ export class AppGateway
 				) <
 				ball.size.radius + powerUp.size.radius
 			) {
+				if (ball.lastUser === null) return;
+				console.log('powerUp', powerUp.name);
 				powerUp.effect(ball, game);
 				game.powerUps = game.powerUps.filter((p) => p !== powerUp);
 			}
@@ -717,23 +739,22 @@ export class AppGateway
 
 	score(player: number, modifiers: Modifier[]) {
 		return (game: GameData) => {
-			game.players[player].score++;
-			game.isTurnStarted = false;
-			game.playerToStart = 1 - player;
-			game.nbBounces = 0;
-			game.turn++;
-			if (game.balls.length < 2) {
+			let nBalls = game.balls.filter((b) =>
+				game.players[1 - player].paddle.position.x > 0
+					? b.position.x < game.width / 2
+					: b.position.x > -game.width / 2,
+			);
+			game.players[player].score += game.balls.length - nBalls.length;
+			if (nBalls.length === 0) {
+				game.isTurnStarted = false;
+				game.nbBounces = 0;
+				game.playerToStart = 1 - player;
+				game.turn++;
 				this.resetBall(game);
 				this.resetPaddles(game, modifiers);
 				return true;
 			} else {
-				game.balls = game.balls.filter((b) =>
-					game.players[1 - player].paddle.position.x > 0
-						? b.position.x <
-						  game.players[1 - player].paddle.position.x
-						: b.position.x >
-						  game.players[1 - player].paddle.position.x,
-				);
+				game.balls = nBalls;
 				return false;
 			}
 		};
