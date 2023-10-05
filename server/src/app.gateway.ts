@@ -19,7 +19,8 @@ import { observeNotification } from 'rxjs/internal/Notification';
 import { BlockService } from './block/block.service';
 
 const MAX_BALL_SPEED = 2;
-const DEFAULT_BALL_SPEED = 0.6;
+const DEFAULT_BALL_SPEED = 0.8;
+const DEFAULT_RANKED_BALL_SPEED = 0.5;
 const MAX_PADDLE_SIZE = 0.5;
 const DEFAULT_BIGGER_PADDLE_SIZE = 2.0 / 9.0;
 const DEFAULT_PADDLE_SIZE = 1.0 / 6.0;
@@ -27,7 +28,8 @@ const DEFAULT_SMALLER_PADDLE_SIZE = 1.0 / 9.0;
 const MIN_PADDLE_SIZE = 0.01;
 const MAX_NUMBER_OF_BALLS = 10;
 const POWERUP_RADIUS = 15;
-const BALL_RADIUS = 2.5;
+const BALL_RADIUS = 8;
+const RANKED_BALL_RADIUS = 5;
 
 //#region TYPES
 type Player = {
@@ -252,14 +254,27 @@ export class AppGateway
 				velocity: {
 					dx:
 						game.playerToStart == 0
-							? -DEFAULT_BALL_SPEED
-							: DEFAULT_BALL_SPEED,
+							? -(game.modifiers.length > 0
+									? DEFAULT_BALL_SPEED
+									: DEFAULT_RANKED_BALL_SPEED)
+							: game.modifiers.length > 0
+							? DEFAULT_BALL_SPEED
+							: DEFAULT_RANKED_BALL_SPEED,
 					dy:
 						game.turn % 2 == 0
-							? DEFAULT_BALL_SPEED
-							: -DEFAULT_BALL_SPEED,
+							? game.modifiers.length > 0
+								? DEFAULT_BALL_SPEED
+								: DEFAULT_RANKED_BALL_SPEED
+							: -(game.modifiers.length > 0
+									? DEFAULT_BALL_SPEED
+									: DEFAULT_RANKED_BALL_SPEED),
 				},
-				size: { radius: BALL_RADIUS },
+				size: {
+					radius:
+						game.modifiers.length > 0
+							? BALL_RADIUS
+							: RANKED_BALL_RADIUS,
+				},
 				lastUser: null,
 				color: 'white',
 			},
@@ -270,8 +285,8 @@ export class AppGateway
 		game.players.forEach((player, i) => {
 			player.paddle.position.y = 0;
 			player.paddle.velocity.dy = 0;
-			player.paddle.position.x = (game.width / 2 - 40) * (i * 2 - 1);
-			player.paddle.size.w = 10;
+			player.paddle.position.x = (game.width / 2 - 0) * (i * 2 - 1);
+			player.paddle.size.w = 90;
 			player.paddle.size.h = this.paddleSize(modifiers) * game.height;
 			player.paddle.color = 'white';
 		});
@@ -342,16 +357,25 @@ export class AppGateway
 			{
 				name: 'Two Balls are Better than One',
 				effect: (ball: Ball, game: GameData) => {
+					let theta =
+						(Math.random() * Math.PI * 4) / 6 + (2 * Math.PI) / 6;
+					if (Math.random() > 0.5) theta = Math.PI * 2 - theta;
+
+					console.log('theta', theta, Math.PI / 2);
 					game.balls.push({
 						position: {
 							x: ball.position.x,
 							y: ball.position.y,
 						},
 						velocity: {
-							dx: ball.velocity.dx * Math.random() > 0.5 ? 1 : -1,
-							dy: Math.random() * 2 - 1,
+							dx:
+								Math.cos(theta) * ball.velocity.dx -
+								Math.sin(theta) * ball.velocity.dy,
+							dy:
+								Math.cos(theta) * ball.velocity.dy +
+								Math.sin(theta) * ball.velocity.dx,
 						},
-						size: { radius: 10 },
+						size: { radius: BALL_RADIUS },
 						lastUser: ball.lastUser,
 						color: 'white',
 					});
@@ -361,7 +385,14 @@ export class AppGateway
 			{
 				name: 'Five Balls are Better than Two',
 				effect: (ball: Ball, game: GameData) => {
-					for (let i in [0, 1, 2, 3]) {
+					for (let i = 0; i < 5; i++) {
+						let theta =
+							(Math.random() * Math.PI * 4) / 6 +
+							(2 * Math.PI) / 6;
+						if (Math.random() > 0.5) theta = Math.PI * 2 - theta;
+
+						console.log('theta', theta, Math.PI / 2);
+
 						game.balls.push({
 							position: {
 								x: ball.position.x,
@@ -369,12 +400,13 @@ export class AppGateway
 							},
 							velocity: {
 								dx:
-									ball.velocity.dx * Math.random() > 0.5
-										? 1
-										: -1,
-								dy: Math.random() * 2 - 1,
+									Math.cos(theta) * ball.velocity.dx -
+									Math.sin(theta) * ball.velocity.dy,
+								dy:
+									Math.cos(theta) * ball.velocity.dy +
+									Math.sin(theta) * ball.velocity.dx,
 							},
-							size: { radius: 10 },
+							size: { radius: BALL_RADIUS },
 							lastUser: ball.lastUser,
 							color: 'white',
 						});
@@ -384,7 +416,7 @@ export class AppGateway
 			},
 		];
 
-		if (Math.random() < 0.25) {
+		if (Math.random()) {
 			const spawnPoint =
 				game.powerUpSpawnPoints[
 					Math.floor(Math.random() * game.powerUpSpawnPoints.length)
@@ -426,12 +458,45 @@ export class AppGateway
 				{
 					shape: 'rectangle',
 					position: { x: 0, y: 0 },
-					size: { w: 100, h: 100 },
+					size: { w: 300, h: 300 },
 					effect: (game: GameData) => {},
 					color: 'white',
 				},
 			];
-		if (modifiers.some((m) => m.dataValues.code === 'map_2')) return [];
+		else if (modifiers.some((m) => m.dataValues.code === 'map_2'))
+			return [
+				{
+					shape: 'rectangle',
+					position: { x: -350, y: 0 },
+					size: { w: 500, h: 150 },
+					effect: (game: GameData) => {},
+					color: 'white',
+				},
+				{
+					shape: 'rectangle',
+					position: { x: 350, y: 0 },
+					size: { w: 500, h: 150 },
+					effect: (game: GameData) => {},
+					color: 'white',
+				},
+			];
+		else if (modifiers.some((m) => m.dataValues.code === 'map_3'))
+			return [
+				{
+					shape: 'rectangle',
+					position: { x: -250, y: 300 },
+					size: { w: 200, h: 300 },
+					effect: (game: GameData) => {},
+					color: 'white',
+				},
+				{
+					shape: 'rectangle',
+					position: { x: 250, y: -300 },
+					size: { w: 200, h: 300 },
+					effect: (game: GameData) => {},
+					color: 'white',
+				},
+			];
 		return [];
 	};
 
@@ -503,21 +568,28 @@ export class AppGateway
 				{ x: -550, y: 350 },
 				{ x: -550, y: -350 },
 
+				{ x: 425, y: 0 },
+				{ x: 425, y: 275 },
+				{ x: 425, y: -275 },
+				{ x: -425, y: 0 },
+				{ x: -425, y: 275 },
+				{ x: -425, y: -275 },
+
 				{ x: 300, y: 200 },
 				{ x: 300, y: -200 },
 				{ x: -300, y: 200 },
 				{ x: -300, y: -200 },
 
-				{ x: 0, y: 275 },
-				{ x: 0, y: -275 },
-				{ x: 425, y: 0 },
-				{ x: -425, y: 0 },
-				{ x: 425, y: 275 },
-				{ x: -425, y: 275 },
-				{ x: 425, y: -275 },
-				{ x: -425, y: -275 },
+				{ x: 128, y: 304 },
+				{ x: 128, y: -304 },
+				{ x: -128, y: 304 },
+				{ x: -128, y: -304 },
 
+				{ x: 0, y: 342 },
+				{ x: 0, y: 128 },
 				{ x: 0, y: 0 },
+				{ x: 0, y: -128 },
+				{ x: 0, y: -342 },
 			],
 		};
 	}
@@ -527,7 +599,47 @@ export class AppGateway
 	//#region GAME COLLISIONS HANDLING
 
 	ballObstaclesCollision(ball: Ball, obstacles: Obstacle[], game: GameData) {
-		obstacles.forEach((obstacle) => {});
+		obstacles.forEach((obstacle) => {
+			if (obstacle.shape === 'rectangle') {
+				const distBallobstacleX =
+					ball.position.x -
+					Math.max(
+						obstacle.position.x - obstacle.size.w / 2,
+						Math.min(
+							ball.position.x,
+							obstacle.position.x + obstacle.size.w / 2,
+						),
+					);
+				const distBallobstacleY =
+					ball.position.y -
+					Math.max(
+						obstacle.position.y - obstacle.size.h / 2,
+						Math.min(
+							ball.position.y,
+							obstacle.position.y + obstacle.size.h / 2,
+						),
+					);
+				const distanceBallobstacleSquared =
+					distBallobstacleX ** 2 + distBallobstacleY ** 2;
+				const isBallInobstacle =
+					distanceBallobstacleSquared < ball.size.radius ** 2;
+				if (!isBallInobstacle) return;
+				if (ball.position.x > obstacle.position.x) {
+					ball.position.x = obstacle.position.x + obstacle.size.w / 2;
+					ball.velocity.dx = Math.abs(ball.velocity.dx);
+				} else if (ball.position.x < obstacle.position.x) {
+					ball.position.x = obstacle.position.x - obstacle.size.w / 2;
+					ball.velocity.dx = -Math.abs(ball.velocity.dx);
+				} else if (ball.position.y > obstacle.position.y) {
+					ball.position.y = obstacle.position.y + obstacle.size.h / 2;
+					ball.velocity.dy = Math.abs(ball.velocity.dy);
+				}
+				if (ball.position.y < obstacle.position.y) {
+					ball.position.y = obstacle.position.y - obstacle.size.h / 2;
+					ball.velocity.dy = -Math.abs(ball.velocity.dy);
+				}
+			}
+		});
 	}
 
 	ballWallCollision(ball: Ball, game: GameData, modifiers: Modifier[]) {
