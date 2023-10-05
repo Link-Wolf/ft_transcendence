@@ -195,7 +195,6 @@ export class FriendshipController {
 			sender.dataValues.login,
 			receiverLogin,
 		);
-		console.log(friendship, sender.dataValues.login, receiverLogin);
 		if (friendship) {
 			if (!friendship.dataValues.isPending)
 				throw new HttpException(
@@ -211,9 +210,10 @@ export class FriendshipController {
 				friendship.dataValues.senderLogin == receiver.dataValues.login
 			) {
 				await this.friendshipService.update({
+					//NOTE: yes the sender and receiver are inverted here
 					isPending: false,
-					receiver: receiver,
-					sender: sender,
+					receiver: sender,
+					sender: receiver,
 				});
 				friendship.reload();
 				return friendship;
