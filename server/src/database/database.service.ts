@@ -47,10 +47,6 @@ export class SeedingService {
 				name: 'Custom Map: The Things',
 				desc: 'Replace the default map with ..things !',
 			});
-			// await this.modifierRepository.create<Modifier>();
-			// await this.modifierRepository.create<Modifier>();
-
-			console.log('Default modifiers seeded successfully');
 		} catch (error) {
 			console.error('Error seeding default modifiers:', error);
 		}

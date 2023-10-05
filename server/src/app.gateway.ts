@@ -360,8 +360,6 @@ export class AppGateway
 					let theta =
 						(Math.random() * Math.PI * 4) / 6 + (2 * Math.PI) / 6;
 					if (Math.random() > 0.5) theta = Math.PI * 2 - theta;
-
-					console.log('theta', theta, Math.PI / 2);
 					game.balls.push({
 						position: {
 							x: ball.position.x,
@@ -383,15 +381,13 @@ export class AppGateway
 				color: 'blue',
 			},
 			{
-				name: 'Five Balls are Better than Two',
+				name: 'Four Balls are Better than Two',
 				effect: (ball: Ball, game: GameData) => {
-					for (let i = 0; i < 5; i++) {
+					for (let i = 0; i < 4; i++) {
 						let theta =
 							(Math.random() * Math.PI * 4) / 6 +
 							(2 * Math.PI) / 6;
 						if (Math.random() > 0.5) theta = Math.PI * 2 - theta;
-
-						console.log('theta', theta, Math.PI / 2);
 
 						game.balls.push({
 							position: {
@@ -468,14 +464,14 @@ export class AppGateway
 				{
 					shape: 'rectangle',
 					position: { x: -350, y: 0 },
-					size: { w: 500, h: 150 },
+					size: { w: 500, h: 75 },
 					effect: (game: GameData) => {},
 					color: 'white',
 				},
 				{
 					shape: 'rectangle',
 					position: { x: 350, y: 0 },
-					size: { w: 500, h: 150 },
+					size: { w: 500, h: 75 },
 					effect: (game: GameData) => {},
 					color: 'white',
 				},
@@ -484,15 +480,15 @@ export class AppGateway
 			return [
 				{
 					shape: 'rectangle',
-					position: { x: -250, y: 300 },
-					size: { w: 200, h: 300 },
+					position: { x: -300, y: 300 },
+					size: { w: 100, h: 300 },
 					effect: (game: GameData) => {},
 					color: 'white',
 				},
 				{
 					shape: 'rectangle',
-					position: { x: 250, y: -300 },
-					size: { w: 200, h: 300 },
+					position: { x: 300, y: -300 },
+					size: { w: 100, h: 300 },
 					effect: (game: GameData) => {},
 					color: 'white',
 				},
@@ -624,19 +620,33 @@ export class AppGateway
 				const isBallInobstacle =
 					distanceBallobstacleSquared < ball.size.radius ** 2;
 				if (!isBallInobstacle) return;
-				if (ball.position.x > obstacle.position.x) {
-					ball.position.x = obstacle.position.x + obstacle.size.w / 2;
-					ball.velocity.dx = Math.abs(ball.velocity.dx);
-				} else if (ball.position.x < obstacle.position.x) {
-					ball.position.x = obstacle.position.x - obstacle.size.w / 2;
-					ball.velocity.dx = -Math.abs(ball.velocity.dx);
-				} else if (ball.position.y > obstacle.position.y) {
-					ball.position.y = obstacle.position.y + obstacle.size.h / 2;
-					ball.velocity.dy = Math.abs(ball.velocity.dy);
+				if (
+					ball.position.x >=
+						obstacle.position.x - obstacle.size.w / 2 &&
+					ball.position.x <=
+						obstacle.position.x + obstacle.size.w / 2 &&
+					obstacle.size.w / 2 -
+						Math.abs(obstacle.position.x - ball.position.x) >=
+						obstacle.size.h / 2 -
+							Math.abs(obstacle.position.y - ball.position.y)
+				) {
+					ball.velocity.dy =
+						Math.abs(ball.velocity.dy) *
+						Math.sign(ball.position.y - obstacle.position.y);
 				}
-				if (ball.position.y < obstacle.position.y) {
-					ball.position.y = obstacle.position.y - obstacle.size.h / 2;
-					ball.velocity.dy = -Math.abs(ball.velocity.dy);
+				if (
+					ball.position.y >=
+						obstacle.position.y - obstacle.size.h / 2 &&
+					ball.position.y <=
+						obstacle.position.y + obstacle.size.h / 2 &&
+					obstacle.size.w / 2 -
+						Math.abs(obstacle.position.x - ball.position.x) <
+						obstacle.size.h / 2 -
+							Math.abs(obstacle.position.y - ball.position.y)
+				) {
+					ball.velocity.dx =
+						Math.abs(ball.velocity.dx) *
+						Math.sign(ball.position.x - obstacle.position.x);
 				}
 			}
 		});
@@ -712,7 +722,7 @@ export class AppGateway
 			ball.position.y +=
 				(ball.velocity.dy *
 					(paddle.position.x +
-						(paddle.size.w / 2 + ball.size.radius / 2) *
+						(paddle.size.w / 2 + ball.size.radius / 2 + 1) *
 							Math.sign(ball.velocity.dx) -
 						ball.position.x)) /
 				ball.velocity.dx;
