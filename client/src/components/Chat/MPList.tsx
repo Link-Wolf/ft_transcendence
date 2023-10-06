@@ -29,7 +29,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 				setMemberships(memberships);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [context.login]);
 
@@ -43,7 +43,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 				setUsers(response.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [context.login]);
 
@@ -81,7 +81,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 					setChannel(response.data.name);
 				})
 				.catch((err) => {
-					// console.log(err);
+					console.log(err);
 				});
 		} else {
 			setChannel(dmChannelName);
@@ -127,10 +127,10 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 				))
 			) : (
 				<>
-					<div>Tu n'as encore eu aucune discussion privée</div>{" "}
+					<div>You don't have any DM</div>{" "}
 					<div>
-						Démarres en un depuis le profil d'un autre utilisateur,
-						depuis un channel ou ici même dès maintenant
+						Start one from another user's profile, from a channel or
+						here
 					</div>
 				</>
 			)}

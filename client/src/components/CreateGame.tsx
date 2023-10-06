@@ -37,8 +37,8 @@ const CreateGame = () => {
 				},
 				(gameId: number, error: any) => {
 					if (error) {
-					} // console.log(error);
-					else navigate(`/game/${gameId}`);
+						console.log(error);
+					} else navigate(`/game/${gameId}`);
 				}
 			);
 			return;
@@ -53,8 +53,8 @@ const CreateGame = () => {
 			},
 			(gameId: number, error: any) => {
 				if (error) {
-				} // console.log(error);
-				else navigate(`/game/${gameId}`);
+					console.log(error);
+				} else navigate(`/game/${gameId}`);
 			}
 		);
 	}, [searchParam]);

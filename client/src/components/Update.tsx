@@ -38,7 +38,7 @@ const Update = () => {
 				setUser(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, []);
 
@@ -97,12 +97,12 @@ const Update = () => {
 							});
 						})
 						.catch((err) => {
-							// console.log(err);
+							console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 		return;
 	};
@@ -116,7 +116,7 @@ const Update = () => {
 				setTFASecret(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -143,7 +143,7 @@ const Update = () => {
 				}
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -158,7 +158,7 @@ const Update = () => {
 				setCodeValue("");
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 

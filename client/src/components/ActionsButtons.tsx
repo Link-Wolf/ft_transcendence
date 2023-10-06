@@ -44,7 +44,7 @@ const BlockButton = ({
 				});
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -85,7 +85,7 @@ const UnblockButton = ({
 				effect && effect();
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -126,7 +126,7 @@ const BlockUnblockButton = ({
 				setIsBlocked(res.data.length !== 0);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [_isBlocked]);
 
@@ -173,7 +173,7 @@ const PromoteButton = ({
 				});
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -214,7 +214,7 @@ const DemoteButton = ({
 				});
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -256,7 +256,7 @@ const FriendButton = ({
 				setFriendhip(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 		axios
 			.get(
@@ -266,7 +266,7 @@ const FriendButton = ({
 				setIsBlocked(res.data.length !== 0);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, []);
 
@@ -292,7 +292,7 @@ const FriendButton = ({
 				});
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -369,7 +369,7 @@ const PMButton = ({
 				setChannel(`_${logins[0]}&${logins[1]}`);
 			}}
 		>
-			Send MP
+			Send PM
 		</button>
 	);
 };
@@ -400,7 +400,7 @@ const FriendPMButton = ({
 				setIsFriend(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [_isFriend]);
 
@@ -445,7 +445,7 @@ const UnfriendButton = ({
 				});
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -458,7 +458,7 @@ const UnfriendButton = ({
 				unfriendSomeone(login);
 			}}
 		>
-			Remove
+			Remove friend
 		</button>
 	);
 };
@@ -487,10 +487,9 @@ const FriendUnfriendButton = ({
 				setIsFriend(res.data.length > 0);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [_isFriend]);
-	// console.log(isFriend);
 	if (_isFriend)
 		return (
 			<UnfriendButton
@@ -561,7 +560,7 @@ const UnbanButton = ({
 				});
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 	return (

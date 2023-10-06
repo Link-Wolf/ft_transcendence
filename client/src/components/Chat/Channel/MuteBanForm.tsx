@@ -44,10 +44,6 @@ const MuteBanForm = ({
 							new Date(mute.end) >= new Date(Date.now())
 					)
 				) {
-					// console.log(
-					// 	adminForm.duration,
-					// 	new Date(adminForm.duration * 60 * 1000 + Date.now())
-					// );
 					axios
 						.post(
 							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute`,
@@ -74,12 +70,12 @@ const MuteBanForm = ({
 							});
 						})
 						.catch((err) => {
-							// console.log(err);
+							console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -110,12 +106,12 @@ const MuteBanForm = ({
 							kick(login);
 						})
 						.catch((err) => {
-							// console.log(err);
+							console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -131,15 +127,15 @@ const MuteBanForm = ({
 							name='duration'
 						>
 							<option value={0} disabled>
-								Choisis la duree du mute
+								Choose the duration
 							</option>
 							<option value={5}>5 minutes</option>
 							<option value={10}>10 minutes</option>
 							<option value={30}>30 minutes</option>
-							<option value={60}>1 heure</option>
-							<option value={12 * 60}>12 heures</option>
-							<option value={24 * 60}>24 heures</option>
-							<option value={60 * 24 * 42}>42 jours</option>
+							<option value={60}>1 hour</option>
+							<option value={12 * 60}>12 hours</option>
+							<option value={24 * 60}>24 hours</option>
+							<option value={60 * 24 * 42}>42 days</option>
 						</select>
 					)}
 					<input

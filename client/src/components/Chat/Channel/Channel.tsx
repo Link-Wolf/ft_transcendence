@@ -47,7 +47,6 @@ const Channel = ({
 					setChannel(null);
 					return;
 				}
-				// console.log("membershipUpdate");
 				setMembersUpdate(true);
 				setAdminsUpdate(true);
 			}
@@ -74,7 +73,7 @@ const Channel = ({
 				setUpdateLebany(false);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [updateLebany]);
 
@@ -91,7 +90,7 @@ const Channel = ({
 			})
 
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 		setAdminsUpdate(false);
 	}, [channel, admins]);
@@ -108,7 +107,7 @@ const Channel = ({
 				setAdmins(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 		setAdminsUpdate(false);
 	}, [channel, adminsUpdate]);
@@ -130,7 +129,7 @@ const Channel = ({
 					setChannel(null);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 		setMembersUpdate(false);
 	}, [channel, membersUpdate, user]);
@@ -183,7 +182,9 @@ const Channel = ({
 								setShowLebany(!showLebany);
 							}}
 						>
-							{!showLebany ? "Voir Lébany" : "Back to user list"}
+							{!showLebany
+								? "See the goulagged"
+								: "Back to user list"}
 						</button>
 					)}
 					{!showLebany
@@ -220,7 +221,7 @@ const Channel = ({
 									/>
 								</div>
 						  ))
-						: "There is no bany sir"}
+						: "No one is goulagged yet sir"}
 				</>
 			) : showThingsAboutChannel === "channelSettings" &&
 			  owner.login === user.login ? (

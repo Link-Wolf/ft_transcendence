@@ -50,7 +50,7 @@ const Profile = () => {
 				window.location.href = "/";
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -195,7 +195,7 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 				setUser(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [login, update]);
 
@@ -238,7 +238,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				setNormalGames(normal);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [login]);
 
@@ -528,7 +528,7 @@ const Friends = () => {
 				setFriendShips(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [update]);
 
@@ -553,12 +553,12 @@ const Friends = () => {
 							});
 						})
 						.catch((err) => {
-							// console.log(err);
+							console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	};
 
@@ -716,7 +716,7 @@ const Blocked = () => {
 				setBlocks(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 	}, [update]);
 

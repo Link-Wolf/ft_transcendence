@@ -38,11 +38,10 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				);
 			})
 			.catch((err) => {
-				// console.log(err)
+				console.log(err);
 			});
 	}, []);
 
-	// console.log(selectedMap);
 	return (
 		<>
 			{selectedMap === -1 ? (
@@ -66,8 +65,8 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				Ranked
 				<label data-tooltip-id={"ranked"}>?</label>
 				<Tooltip id={"ranked"}>
-					Une game ranked est une game sans modifier dont les
-					resultats sont pris en compte dans le classement
+					A ranked game is a game without modifier whose results are
+					taken into account in the ranking
 				</Tooltip>
 			</label>
 
@@ -143,7 +142,9 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 						/>
 						Default Map
 						<label data-tooltip-id={"default map"}>?</label>
-						<Tooltip id={"default map"}>Map par defaut</Tooltip>
+						<Tooltip id={"default map"}>
+							Default map, without any obstacle
+						</Tooltip>
 					</label>
 					{modifiers
 						.filter((mod) => mod.code.startsWith("map_"))
