@@ -19,7 +19,6 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	};
 	const unselectedStyle = {
 		fontWeight: "normal",
-		color: "black",
 	};
 
 	useEffect(() => {
@@ -56,15 +55,17 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				className={style.gameselect}
 				style={isRanked ? selectedStyle : unselectedStyle}
 			>
+				<label>
 				<input
 					type='checkbox'
 					checked={isRanked}
 					onChange={() => {
 						setIsRanked((isRanked) => !isRanked);
 					}}
-				/>
+					/>
 				Ranked
-				<label data-tooltip-id={"ranked"}>?</label>
+				</label>
+				<label data-tooltip-id={"ranked"}>💬</label>
 				<Tooltip id={"ranked"}>
 					Une game ranked est une game sans modifier dont les
 					resultats sont pris en compte dans le classement
@@ -86,7 +87,8 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 										? selectedStyle
 										: unselectedStyle
 								}
-							>
+								>
+								<label>	
 								<input
 									type='checkbox'
 									checked={selectedModifiers.includes(
@@ -114,10 +116,11 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 									}}
 								/>
 								{modifier.name}
+								</label>
 								<label
 									data-tooltip-id={"modifier" + modifier.code}
 								>
-									?
+									💬
 								</label>
 								<Tooltip id={"modifier" + modifier.code}>
 									{modifier.desc}
@@ -133,6 +136,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 							selectedMap === -1 ? selectedStyle : unselectedStyle
 						}
 					>
+						<label>
 						<input
 							type='radio'
 							name='map'
@@ -140,9 +144,10 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 							onChange={(e: any) => {
 								if (e.target.checked) setSelectedMap(-1);
 							}}
-						/>
+							/>
 						Default Map
-						<label data-tooltip-id={"default map"}>?</label>
+						</label>
+						<label data-tooltip-id={"default map"}>💬</label>
 						<Tooltip id={"default map"}>Map par defaut</Tooltip>
 					</label>
 					{modifiers
@@ -157,20 +162,22 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 										: unselectedStyle
 								}
 							>
+								<label>
 								<input
 									type='radio'
 									name='map'
 									checked={selectedMap === modifier.id}
 									onChange={(e: any) => {
 										if (e.target.checked)
-											setSelectedMap(modifier.id);
-									}}
+										setSelectedMap(modifier.id);
+								}}
 								/>
 								{modifier.name}
+								</label>
 								<label
 									data-tooltip-id={"modifier" + modifier.code}
 								>
-									?
+									💬
 								</label>
 								<Tooltip id={"modifier" + modifier.code}>
 									{modifier.desc}
