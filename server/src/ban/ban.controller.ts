@@ -238,6 +238,11 @@ export class BanController {
 		@Param('login') login: string,
 		@Param('chann_name') chann_name: string,
 	): Promise<number> {
+		if (!(await this.userService.findByLogin(login)))
+			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+		let channel = await this.channelService.findByName(chann_name);
+		if (!channel)
+			throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
 		let ban = (
 			await this.banService.findByLoginAndChannel(login, chann_name)
 		)[0];
@@ -255,7 +260,10 @@ export class BanController {
 				"User can't unban if he's not in channel",
 				HttpStatus.NOT_FOUND,
 			);
-		if (!my_membership.dataValues.isAdmin)
+		if (
+			!my_membership.dataValues.isAdmin &&
+			channel.dataValues.owner.dataValues.login !== me.dataValues.login
+		)
 			throw new HttpException("You can't do this", HttpStatus.FORBIDDEN);
 		return this.banService.delete(login, chann_name);
 	}

@@ -604,9 +604,11 @@ const UnbanButton = ({
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/user/${login}/channel/${channel}`
 			)
 			.then(() => {
-				socket.emit("banUpdate", {
+				socket.emit("membershipUpdate", {
 					//TODO: better here plz
-					user: login,
+					channel: channel,
+					who: login,
+					what: "ban",
 				});
 			})
 			.catch((err) => {

@@ -47,8 +47,13 @@ const Channel = ({
 					setChannel(null);
 					return;
 				}
+				if (payload.what === "ban" && payload.who === user.login) {
+					setChannel(null);
+					return;
+				}
 				setMembersUpdate(true);
 				setAdminsUpdate(true);
+				setUpdateLebany(true);
 			}
 		};
 
@@ -62,7 +67,12 @@ const Channel = ({
 	}, [channel]);
 
 	useEffect(() => {
-		if (!updateLebany) return;
+		if (
+			!updateLebany ||
+			(owner.login !== user.login &&
+				!admins.some((admin) => admin.login === user.login))
+		)
+			return;
 		if (channel[0] === "_") return;
 		axios
 			.get(
@@ -75,7 +85,7 @@ const Channel = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [updateLebany]);
+	}, [updateLebany, admins, owner, channel]);
 
 	// Load the owner of the channel
 	useEffect(() => {
@@ -88,7 +98,6 @@ const Channel = ({
 			.then((res) => {
 				setOwner(res.data.owner);
 			})
-
 			.catch((err) => {
 				console.log(err);
 			});
