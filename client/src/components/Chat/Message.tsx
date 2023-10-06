@@ -44,7 +44,7 @@ const Message = ({
 			// navigate(`/profile/${user.login}`);
 			return;
 		}
-		setIsToggleBox(!isToggleBox);
+		setIsToggleBox(true);
 	};
 
 	if (!relation) return <>loading... {login}</>;
@@ -55,7 +55,11 @@ const Message = ({
 					user.login === login ? style.sendmessage : style.recvmessage
 				}
 			>
-				<div onClick={toggleBox}>
+				<div
+					onClick={() => {
+						setIsToggleBox((t) => !t);
+					}}
+				>
 					<PPDisplayer login={login} size={40} status={true} />
 				</div>
 				<div onClick={toggleBox}>
