@@ -48,22 +48,23 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 	return (
 		<div className={style.channelList}>
 			<h1>Channel List</h1>
+
 			<button onClick={addChannel}>
 				{newChannelVisibility ? <>x</> : <>+</>}
 			</button>
 			{newChannelVisibility ? (
 				<AddChannelMenu setChannel={setChannel} />
-			) : (
-				<>
+				) : (
+					<>
 					{channels.length ? (
 						channels.map((channel, i) => (
 							<button key={i} onClick={() => setChannel(channel)}>
 								{channel}
 							</button>
 						))
-					) : (
-						<div>You didn't join any channel yet</div>
-					)}
+						) : (
+							<div>You didn't join any channel yet</div>
+							)}
 				</>
 			)}
 		</div>

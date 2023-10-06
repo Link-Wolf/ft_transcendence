@@ -59,12 +59,32 @@
 		width: calc(var(--height) / 1.618);
 		height: var(--height);
 	}
+	.form{
+		display: flex;
+		flex-direction: column;
+	}
+	.inputchannelform{
+		width: 200px;
+		margin: 0px;
+		margin-left: 10px;
+	}
 
 	.channelList {
+		.param{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
 		// border: orange 1px solid;
 		color: rgb(0, 115, 192);
-		h1 {
+		h1{
 			text-align: center;
+		}
+		button {
+			height: 18px;
 		}
 	}
 
