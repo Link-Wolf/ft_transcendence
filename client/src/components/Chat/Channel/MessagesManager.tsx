@@ -26,6 +26,7 @@ const MessagesManager = ({
 	const [update, setUpdate] = useState(true);
 
 	useEffect(() => {
+		setUpdate(true);
 		function clic(payload: any) {
 			if (payload.channel === channel) setUpdate(true);
 		}
@@ -197,8 +198,13 @@ const MessagesManager = ({
 						</div>
 					))}
 			</div>
-			<form className={style.sendsection} action='' onSubmit={sendMessage}>
-				<input className={style.sendinput}
+			<form
+				className={style.sendsection}
+				action=''
+				onSubmit={sendMessage}
+			>
+				<input
+					className={style.sendinput}
 					value={message}
 					type='text'
 					placeholder={
@@ -211,7 +217,9 @@ const MessagesManager = ({
 						setMessage(e.target.value);
 					}}
 				/>
-				<button className={style.sendbutton} disabled={!canSendMessage}>&gt;</button>
+				<button className={style.sendbutton} disabled={!canSendMessage}>
+					&gt;
+				</button>
 			</form>
 		</>
 	);
