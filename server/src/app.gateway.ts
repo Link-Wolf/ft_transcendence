@@ -1041,7 +1041,10 @@ export class AppGateway
 		let game = await this.gameService.findById(payload.gameId);
 		if (!game) return;
 
-		if (game.dataValues.status === 'waiting') {
+		if (
+			game.dataValues.status === 'waiting' ||
+			game.dataValues.status === 'invitation'
+		) {
 			this.gameService.delete(game.id);
 			this.server.emit('gameUpdate', { invitee: '*' });
 		}
