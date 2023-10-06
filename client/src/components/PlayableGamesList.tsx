@@ -4,6 +4,8 @@ import axios from "axios";
 import { use } from "matter-js";
 import { error } from "console";
 import { Link } from "react-router-dom";
+import style from "../style/Game.module.scss";
+
 
 const PlayableGamesList = () => {
 	const user = useContext(UserContext);
@@ -31,19 +33,24 @@ const PlayableGamesList = () => {
 	}, [user, update]);
 
 	return (
-		<div>
+		<div className={style.playablegamelist}>
+			{/* <h1> P L A Y A B L E _ G A M E _ L I S T</h1> */}
+			{playableGames.length === 0 && 
+			<div className={style.gameplayable}>
+			<p> Any game at this moments</p>
+			</div>
+			}
 			{playableGames.map((game: any, i: number) => (
-				<ul key={i}>
-					<li>
-						{game.id} : {game.isRanked ? "" : "Un"}ranked
-						<ul>
+				<div key={i} className={style.gameplayable}>
+						{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
+						<p>G A M E _ N*{i + 1} : {game.isRanked ? "" : "Un"}ranked
+							<Link to={`/game/${game.id}`}><button className={style.joinbutton}>J O I N</button></Link></p>
+						<div className={style.modifierslist}>
 							{game.modifiers.map((modifier: any, j: number) => (
-								<li key={j}>{modifier.name}</li>
+								<p key={j}>{modifier.name}</p>
 							))}
-						</ul>
-						<Link to={`/game/${game.id}`}>Join</Link>
-					</li>
-				</ul>
+						</div>
+				</div>
 			))}
 		</div>
 	);

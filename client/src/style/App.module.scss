@@ -1,3 +1,12 @@
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
 .light {
 	background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2)),
 		url("../assets/background_light.jpg");
@@ -16,9 +25,9 @@
 	--accent-text: #002136;
 	--background-tel: #f8f8f8;
 	--background-button-tel: rgb(212, 212, 212);
-	--background-button-tel-hover: blue;
+	--background-button-tel-hover: rgb(23, 116, 198);
 	--background-button-tel-active: green;
-	--background-button-tel-disabled: red;
+	--background-button-tel-disabled: rgb(80, 80, 80);
 	--neutral-input: #414141;
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(197, 197, 197);
@@ -56,17 +65,17 @@
 	--accent-background: #204e6b;
 	--accent-text: #ffffff;
 	--background-tel: #131313;
-	--background-button-tel: rgb(27, 27, 27);
-	--background-button-tel-hover: blue;
+	--background-button-tel: rgb(45, 45, 45);
+	--background-button-tel-hover: rgb(83, 83, 83);
 	--background-button-tel-active: green;
-	--background-button-tel-disabled: red;
+	--background-button-tel-disabled: rgb(34, 34, 34);
 	--neutral-input: #aaaaaa;
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(66, 66, 66);
 	--msg-text: #c5c5c5;
-	--settings-color: rgb(230, 190, 17);
-	--alert-color: #cc3300;
-	--friend-color: #b7fffa;
+	--settings-color: rgb(102, 102, 102);
+	--alert-color: #610b0b;
+	--friend-color: #052b41;
 }
 .dark::-webkit-scrollbar {
 	display: none;
@@ -81,4 +90,21 @@
 	bottom: 0;
 	background-size: cover;
 	background-position: center;
+}
+
+.errorpage{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: #2d3f3a;
+	h1 {
+		font-size: 100px;
+	}
+	pre {
+		font-size: 20px;
+		font-weight: 900;
+	}
+	p{
+		font-size: 70px;
+	}
 }
