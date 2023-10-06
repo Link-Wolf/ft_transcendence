@@ -63,6 +63,8 @@ type Ball = {
 	position: {
 		x: number;
 		y: number;
+		px?: number;
+		py?: number;
 	};
 	velocity: {
 		dx: number;
@@ -225,6 +227,8 @@ export class AppGateway
 	//#region GAME MOVEMENT & RESET & POSITION HANDLING
 	moveBalls(dt: number, game: GameData) {
 		game.balls.forEach((ball) => {
+			ball.position.px = ball.position.x;
+			ball.position.py = ball.position.y;
 			ball.position.x += ball.velocity.dx * dt;
 			ball.position.y += ball.velocity.dy * dt;
 		});
@@ -701,28 +705,41 @@ export class AppGateway
 		game: GameData,
 	) {
 		paddles.forEach((paddle, i) => {
-			const distBallPaddleX =
-				ball.position.x -
-				Math.max(
-					paddle.position.x - paddle.size.w / 2,
-					Math.min(
-						ball.position.x,
-						paddle.position.x + paddle.size.w / 2,
-					),
-				);
-			const distBallPaddleY =
-				ball.position.y -
-				Math.max(
-					paddle.position.y - paddle.size.h / 2,
-					Math.min(
-						ball.position.y,
-						paddle.position.y + paddle.size.h / 2,
-					),
-				);
-			const distanceBallPaddleSquared =
-				distBallPaddleX ** 2 + distBallPaddleY ** 2;
+			console.log('\n\n\n\n' + (i === 0 ? 'player 1' : 'player 0'));
+			const paddleSign = Math.sign(paddle.position.x);
+			const ballSign = Math.sign(ball.position.x);
+
+			if (paddleSign !== ballSign) return;
+
+			const ballX = Math.abs(ball.position.x);
+			const pBallX = Math.abs(ball.position.px || ball.position.x);
+			console.log('ballX, pBallX', ballX, pBallX);
+			if (ballX <= pBallX) return; // The ball is not moving towards the paddle
+			const paddleX = Math.abs(paddle.position.x);
+
+			console.log(
+				'ballX, treshhold',
+				ballX,
+				paddleX - ball.size.radius / 2 - paddle.size.w / 2,
+			);
+			if (ballX < paddleX - ball.size.radius / 2 - paddle.size.w / 2)
+				return; // The ball is not in the paddle's area
+
+			console.log(
+				'pballX, treshhold',
+				pBallX,
+				paddleX - ball.size.radius / 2 - paddle.size.w / 2,
+			);
+			if (pBallX >= paddleX - ball.size.radius / 2 - paddle.size.w / 2)
+				return; // The ball was already in the paddle's area
+
+			const ballY = ball.position.y;
+			const paddleY = paddle.position.y;
 			const isBallInPaddle =
-				distanceBallPaddleSquared < ball.size.radius ** 2;
+				Math.abs(ballY - paddleY) <
+				paddle.size.h / 2 + ball.size.radius;
+
+			console.log('ballY, paddleY', ballY, paddleY, isBallInPaddle);
 			if (!isBallInPaddle) return;
 			ball.velocity.dx = (1 - 2 * i) * Math.abs(ball.velocity.dx);
 			ball.position.y +=
@@ -756,7 +773,6 @@ export class AppGateway
 				ball.size.radius + powerUp.size.radius
 			) {
 				if (ball.lastUser === null) return;
-				// console.log('powerUp', powerUp.name);
 				powerUp.effect(ball, game);
 				game.powerUps = game.powerUps.filter((p) => p !== powerUp);
 			}
