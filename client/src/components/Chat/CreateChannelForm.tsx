@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../App";
+import style from "../../style/Chat.module.scss";
+
 
 const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -108,23 +110,28 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	};
 
 	return (
-		<form>
-			<label>Channel name</label>
-			<input
-				id='name'
-				type='text'
-				value={data.name}
-				onChange={handleFormChange}
-				placeholder='myAwesomeChannel'
-			/>
+		<form className={style.form}>
+			<label className={style.param}>
+				<label >Channel name</label>
+				<input className={style.inputchannelform}
+					id='name'
+					type='text'
+					value={data.name}
+					onChange={handleFormChange}
+					placeholder='myAwesomeChannel'
+					/>
+			</label>
 			{nameError !== "" && <div>{nameError}</div>}
-			<label>Password (optional)</label>
-			<input
-				id='pass'
-				type='password'
-				value={data.pass}
-				onChange={handleFormChange}
-			/>
+				{/* <br/> */}
+			<label className={style.param}>
+				<label>Password (optional)</label>
+				<input className={style.inputchannelform}
+					id='pass'
+					type='password'
+					value={data.pass}
+					onChange={handleFormChange}
+					/>
+			</label>
 			{passError !== "" && <div>{passError}</div>}
 			<button
 				type='button'
