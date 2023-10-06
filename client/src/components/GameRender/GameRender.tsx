@@ -137,6 +137,15 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 				.map((rect_stuff: any) => ({
 					type: "rectangle",
 					...rect_stuff,
+					...{
+						position: {
+							...rect_stuff.position,
+							x:
+								(game.width / 2 - 40) *
+								Math.sign(rect_stuff.position.x),
+						},
+						size: { ...rect_stuff.size, w: 10 },
+					},
 				})),
 			...game.balls.concat(game.powerUps).map((round_stuff: any) => ({
 				type: "circle",
