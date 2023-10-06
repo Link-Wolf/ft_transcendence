@@ -360,13 +360,63 @@ const PMButton = ({
 }) => {
 	const user = useContext(UserContext);
 
+	const [memberships, setMemberships] = useState<any[]>([]);
+
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/dm/${user.login}`
+			)
+			.then((response) => {
+				//get all memberships from dm channels with current user
+				let memberships = response.data.map((channel: any) => {
+					return channel.memberships.filter(
+						(membership: any) => membership.userLogin !== user.login
+					)[0];
+				});
+				setMemberships(memberships);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [user.login]);
+
 	return (
 		<button
 			className={className}
 			type='button'
 			onClick={() => {
-				const logins = [user.login, login].sort();
-				setChannel(`_${logins[0]}&${logins[1]}`);
+				if (!login || login === undefined) {
+					return;
+				}
+
+				let dmChannelName = `_${[user.login, login].sort()[0]}&${
+					[user.login, login].sort()[1]
+				}`;
+
+				// -check if dm channel already exists
+				if (
+					!memberships.some(
+						(membership) => membership.channelName === dmChannelName
+					)
+				) {
+					//create the dm channel
+					axios
+						.post(
+							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/private-message`,
+							{
+								loginOther: login,
+							}
+						)
+						.then((response) => {
+							setChannel(response.data.name);
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				} else {
+					setChannel(dmChannelName);
+				}
 			}}
 		>
 			Send PM
