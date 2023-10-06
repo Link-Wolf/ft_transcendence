@@ -2,6 +2,8 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
 import { PPDisplayer } from "../ImageDisplayer";
+import style from "../../style/Chat.module.scss";
+
 
 const MPList = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -89,51 +91,53 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 	};
 
 	return (
-		<div>
+		<div className={style.mplist}>
 			<h1>DM List</h1>
-			<div>
-				<datalist id='new_dm_list'>
-					{users.map((user, i) => (
-						<option key={i} value={user.login} />
-					))}
-				</datalist>
-				<input
-					placeholder="Enter user's login"
-					list='new_dm_list'
-					onChange={(e) => setSelectedUser(e.target.value)}
-				/>
-				<button
-					disabled={!selectedUser || selectedUser === ""}
-					onClick={openDM}
-				>
-					Go to conv
-				</button>
-			</div>
 			{newDMError !== "" && <div>{newDMError}</div>}
-
+			
+			<div className={style.displaylist}>
 			{memberships.length ? (
 				memberships.map((membership, i) => (
 					<div
-						key={i}
-						onClick={() => setChannel(membership.channelName)}
+					className={style.profilmp}
+					key={i}
+					onClick={() => setChannel(membership.channelName)}
 					>
 						<PPDisplayer
 							size={80}
 							login={membership.userLogin}
 							status={true}
-						/>
-						{membership.userLogin}
+							/>
+						<button className={style.mpname}>{membership.userLogin}</button>
 					</div>
 				))
-			) : (
+				) : (
 				<>
-					<div>You don't have any DM</div>{" "}
-					<div>
-						Start one from another user's profile, from a channel or
-						here
-					</div>
+					<p>
+						You don't have any DM<br/>
+						Start one from another user's profile, from a channel or here
+					</p>
 				</>
 			)}
+			</div>
+					<div>
+						<datalist id='new_dm_list'>
+							{users.map((user, i) => (
+								<option key={i} value={user.login} />
+							))}
+						</datalist>
+						<input className={style.mpinput}
+							placeholder="Enter user's login"
+							list='new_dm_list'
+							onChange={(e) => setSelectedUser(e.target.value)}
+						/>
+						<button
+							disabled={!selectedUser || selectedUser === ""}
+							onClick={openDM}
+						>
+							Go to conv
+						</button>
+					</div>
 		</div>
 	);
 };
