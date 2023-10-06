@@ -157,6 +157,11 @@ export class AppGateway
 		this.server.emit('relationUpdate', payload);
 	}
 
+	@SubscribeMessage('friendUpdate')
+	async handleFriendUpdate(client: Socket, payload: any) {
+		this.server.emit('friendUpdate', payload);
+	}
+
 	@SubscribeMessage('membershipUpdate')
 	async handleMembershipUpdate(client: Socket, payload: any) {
 		this.server.emit('membershipUpdate', payload);
