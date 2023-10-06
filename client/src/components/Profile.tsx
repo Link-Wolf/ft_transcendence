@@ -262,7 +262,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 							rankedGames.map((game, i) => {
 								if (game.game.status === "waiting") return;
 								return (
-									<div className={style.match}>
+									<div className={style.match} key={i}>
 										<div>
 											{game.game.status === "ongoing" &&
 												"Ongoing"}
@@ -510,15 +510,22 @@ const Friends = () => {
 	const [friendShips, setFriendShips] = useState<any[]>([]);
 	const [update, setUpdate] = useState<boolean>(true);
 
+	useEffect(() => {}, [
+		socket.on("friendUpdate", (payload) => {
+			if (payload.loginA === user.login || payload.loginB === user.login)
+				setUpdate(true);
+		}),
+	]);
+
 	useEffect(() => {
 		if (!update) return;
+		setUpdate(false);
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/all/${user.login}`
 			)
 			.then((res) => {
 				setFriendShips(res.data);
-				setUpdate(false);
 			})
 			.catch((err) => {
 				// console.log(err);
@@ -539,14 +546,16 @@ const Friends = () => {
 								withCredentials: true,
 							}
 						)
-
+						.then(() => {
+							socket.emit("friendUpdate", {
+								loginA: user.login,
+								loginB: friendLogin,
+							});
+						})
 						.catch((err) => {
 							// console.log(err);
 						});
 				}
-			})
-			.then(() => {
-				setUpdate(true);
 			})
 			.catch((err) => {
 				// console.log(err);

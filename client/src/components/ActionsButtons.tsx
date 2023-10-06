@@ -286,9 +286,9 @@ const FriendButton = ({
 				}
 			)
 			.then(() => {
-				socket.emit("relationUpdate", {
-					userA: user.login,
-					userB: login,
+				socket.emit("friendUpdate", {
+					loginA: user.login,
+					loginB: login,
 				});
 			})
 			.catch((err) => {
@@ -438,6 +438,12 @@ const UnfriendButton = ({
 					`:${process.env.REACT_APP_BACKEND_PORT}` +
 					`/api/friendship/${user.login}/${login}`
 			)
+			.then(() => {
+				socket.emit("friendUpdate", {
+					loginA: user.login,
+					loginB: login,
+				});
+			})
 			.catch((err) => {
 				// console.log(err);
 			});
