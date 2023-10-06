@@ -55,7 +55,7 @@ const PPChanger = ({ login }: { login: string }) => {
 				setUpdate(false);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [login, update]);
 
@@ -169,7 +169,7 @@ const PPChanger = ({ login }: { login: string }) => {
 		if (!imageSource || imageSource === currentAvatar) return;
 		const formData = new FormData();
 		formData.append("avatar", imageSourceToBeSend as Blob);
-		console.log(formData);
+		// console.log(formData);
 		await axios
 			.patch(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/pp/${login}`,
@@ -180,7 +180,7 @@ const PPChanger = ({ login }: { login: string }) => {
 				socket.emit("contextUpdate", { login: login });
 			})
 			.catch((error) => {
-				console.log(error);
+				// console.log(error);
 			});
 	};
 

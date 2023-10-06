@@ -37,10 +37,10 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 					)
 				);
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => // console.log(err));
 	}, []);
 
-	console.log(selectedMap);
+	// console.log(selectedMap);
 	return (
 		<>
 			{selectedMap === -1 ? (

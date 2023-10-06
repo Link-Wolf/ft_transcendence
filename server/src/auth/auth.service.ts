@@ -67,7 +67,7 @@ export class AuthService {
 				pp = canvas.toDataURL().split(',')[1];
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 		this.userService.writePP(login, pp);
 	}

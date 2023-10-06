@@ -751,7 +751,7 @@ export class AppGateway
 				ball.size.radius + powerUp.size.radius
 			) {
 				if (ball.lastUser === null) return;
-				console.log('powerUp', powerUp.name);
+				// console.log('powerUp', powerUp.name);
 				powerUp.effect(ball, game);
 				game.powerUps = game.powerUps.filter((p) => p !== powerUp);
 			}

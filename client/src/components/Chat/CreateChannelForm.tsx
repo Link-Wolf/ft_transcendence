@@ -72,7 +72,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 				return response.data;
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 		if (isChannelName && isChannelName.name === data.name) {
 			setNameError("Channel name is already taken");
@@ -99,11 +99,11 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 					);
 					setChannel(created_channel.data.channelName);
 				} catch (error) {
-					console.log(error);
+					// console.log(error);
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 

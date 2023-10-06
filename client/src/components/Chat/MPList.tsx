@@ -29,7 +29,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 				setMemberships(memberships);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [context.login]);
 
@@ -43,7 +43,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 				setUsers(response.data);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [context.login]);
 
@@ -81,7 +81,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 					setChannel(response.data.name);
 				})
 				.catch((err) => {
-					console.log(err);
+					// console.log(err);
 				});
 		} else {
 			setChannel(dmChannelName);
@@ -94,10 +94,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 			<div>
 				<datalist id='new_dm_list'>
 					{users.map((user, i) => (
-						<option
-							key={i}
-							value={user.login}
-						/>
+						<option key={i} value={user.login} />
 					))}
 				</datalist>
 				<input

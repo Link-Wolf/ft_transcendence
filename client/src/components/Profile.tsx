@@ -50,7 +50,7 @@ const Profile = () => {
 				window.location.href = "/";
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -195,7 +195,7 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 				setUser(res.data);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [login, update]);
 
@@ -238,7 +238,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				setNormalGames(normal);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [login]);
 
@@ -521,7 +521,7 @@ const Friends = () => {
 				setUpdate(false);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [update]);
 
@@ -541,7 +541,7 @@ const Friends = () => {
 						)
 
 						.catch((err) => {
-							console.log(err);
+							// console.log(err);
 						});
 				}
 			})
@@ -549,7 +549,7 @@ const Friends = () => {
 				setUpdate(true);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -663,16 +663,17 @@ const Friends = () => {
 											{friendShip.created_at}
 										</div>
 										<div className={style.acceptbutton}>
-
-										<FriendButton login={friend.login} />
-										<button
-											title="Reject Friend request"
-											onClick={() => {
-												removeFriend(friend.login);
-											}}
+											<FriendButton
+												login={friend.login}
+											/>
+											<button
+												title='Reject Friend request'
+												onClick={() => {
+													removeFriend(friend.login);
+												}}
 											>
-											✖️
-										</button>
+												✖️
+											</button>
 										</div>
 									</li>
 								);
@@ -706,7 +707,7 @@ const Blocked = () => {
 				setUpdate(false);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [update]);
 
