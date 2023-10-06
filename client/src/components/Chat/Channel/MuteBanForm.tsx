@@ -45,9 +45,9 @@ const MuteBanForm = ({
 					)
 				) {
 					// console.log(
-						adminForm.duration,
-						new Date(adminForm.duration * 60 * 1000 + Date.now())
-					);
+					// 	adminForm.duration,
+					// 	new Date(adminForm.duration * 60 * 1000 + Date.now())
+					// );
 					axios
 						.post(
 							`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute`,
