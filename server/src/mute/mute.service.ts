@@ -103,7 +103,6 @@ export class MuteService {
 	 */
 	async create(mute: MuteDto): Promise<Mute> {
 		try {
-			// console.log(mute)
 			let ret = await this.muteRepository.create<Mute>(mute);
 			await ret.$set('user', mute.user);
 			await ret.$set('channel', mute.channel);

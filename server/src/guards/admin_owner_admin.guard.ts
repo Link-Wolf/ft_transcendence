@@ -31,7 +31,6 @@ export class AdminOwnerAdminGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const channel = context.switchToHttp().getRequest().params.chann_name;
 		const cookies = context.switchToHttp().getRequest().cookies;
-		// console.log(channel);
 		let user: any;
 		let clearance = 0;
 		if (cookies.token) {
