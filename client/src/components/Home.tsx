@@ -5,7 +5,6 @@ import GameSelection from "./GameSelection";
 import style from "../style/Home.module.scss";
 import brand from "../assets/placeholder_logo.png";
 
-
 const Home = () => {
 	/**
 	 * Home page, display a link to the game page if the user is logged in, or a link to the login page if the user is not logged in
@@ -16,14 +15,17 @@ const Home = () => {
 
 	return (
 		<div className={style.home}>
-			<h1 className={style.title}>W E L C O M E</h1>
-			<img className={style.brand} src={brand}></img>
-			<h1 className={style.subtitle}>P L A T Y P O N G</h1>
-			<p> Ready to play ? </p>
+			<div id={chooseMode ? style.slide : undefined}>
+				<h1 className={style.title}>W E L C O M E</h1>
+				<img className={style.brand} src={brand}></img>
+				<h1 className={style.subtitle}>P L A T Y P O N G</h1>
+			</div>
+			{!chooseMode && <p> Ready to play ? </p>}
 			{user.clearance > 0 ? (
 				<>
 					{!chooseMode ? (
-						<button className={style.playbutton}
+						<button
+							className={style.playbutton}
 							type='button'
 							onClick={() => {
 								setChooseMode(true);
@@ -48,7 +50,10 @@ const Home = () => {
 						`response_type=code`
 					}
 				>
-					<button className={style.playbutton}> Connect to play </button>
+					<button className={style.playbutton}>
+						{" "}
+						Connect to play{" "}
+					</button>
 				</Link>
 			)}
 		</div>

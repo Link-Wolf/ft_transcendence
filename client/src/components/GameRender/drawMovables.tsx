@@ -30,15 +30,13 @@ export default function drawMovables(p5: p5Types, movables: Movable[]) {
 				p5.fill("#ffffff");
 				p5.textAlign(p5.CENTER, p5.CENTER);
 				p5.text(
-					object.color === "green"
+					object.color === "#4C823C"
 						? "↑"
-						: object.color === "red"
+						: object.color === "#8C1B1B"
 						? "↓"
-						: "0",
+						: "○",
 					object.position.x,
-					object.position.y,
-					object.size.radius * 2,
-					object.size.radius * 2
+					object.position.y
 				);
 			}
 		} else if (object.type === "rectangle")

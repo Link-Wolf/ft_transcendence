@@ -22,6 +22,14 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 		color: "black",
 	};
 
+	const [isVisible, setIsVisible] = useState(false);
+
+	useEffect(() => {
+		setTimeout(() => {
+			setIsVisible(true);
+		}, 0);
+	}, []);
+
 	useEffect(() => {
 		axios
 			.get(
@@ -43,7 +51,8 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	}, []);
 
 	return (
-		<>
+		<div className={`${style.gameCreationForm} ${isVisible && style.show}`}>
+			<h1>GAME CREATION</h1>
 			{selectedMap === -1 ? (
 				<div className={style.gamemapDefault}></div>
 			) : selectedMap === 11 ? (
@@ -77,51 +86,55 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 					{modifiers
 						.filter((mod) => !mod.code.startsWith("map_"))
 						.map((modifier, i) => (
-							<label
-								className={style.gameselect}
-								key={i}
-								style={
-									selectedModifiers.includes(modifier.id)
-										? selectedStyle
-										: unselectedStyle
-								}
-							>
-								<input
-									type='checkbox'
-									checked={selectedModifiers.includes(
-										modifier.id
-									)}
-									onChange={() => {
-										if (
-											selectedModifiers.includes(
-												modifier.id
-											)
-										)
-											setSelectedModifiers(
-												selectedModifiers.filter(
-													(e) => e !== modifier.id
-												)
-											);
-										else {
-											setSelectedModifiers(
-												(selectedModifiers) => [
-													...selectedModifiers,
-													modifier.id,
-												]
-											);
-										}
-									}}
-								/>
-								{modifier.name}
+							<>
 								<label
-									data-tooltip-id={"modifier" + modifier.code}
+									className={style.gameselect}
+									key={i}
+									style={
+										selectedModifiers.includes(modifier.id)
+											? selectedStyle
+											: unselectedStyle
+									}
 								>
-									?
+									<input
+										type='checkbox'
+										checked={selectedModifiers.includes(
+											modifier.id
+										)}
+										onChange={() => {
+											if (
+												selectedModifiers.includes(
+													modifier.id
+												)
+											)
+												setSelectedModifiers(
+													selectedModifiers.filter(
+														(e) => e !== modifier.id
+													)
+												);
+											else {
+												setSelectedModifiers(
+													(selectedModifiers) => [
+														...selectedModifiers,
+														modifier.id,
+													]
+												);
+											}
+										}}
+									/>
+									{modifier.name}
+									<label
+										data-tooltip-id={
+											"modifier" + modifier.code
+										}
+									>
+										?
+									</label>
+									<Tooltip id={"modifier" + modifier.code}>
+										{modifier.desc}
+									</Tooltip>
 								</label>
-								<Tooltip id={"modifier" + modifier.code}>
-									{modifier.desc}
-								</Tooltip>
-							</label>
+							</>
 						))}
 
 					<hr />
@@ -198,7 +211,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 					{opponentLogin ? "Invite" : "Create Game"}
 				</button>
 			</Link>
-		</>
+		</div>
 	);
 };
 
