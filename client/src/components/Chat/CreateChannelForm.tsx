@@ -121,7 +121,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 					placeholder='myAwesomeChannel'
 					/>
 			</label>
-			{nameError !== "" && <div>{nameError}</div>}
+			{nameError !== "" && <pre>{nameError}</pre>}
 				{/* <br/> */}
 			<label className={style.param}>
 				<label>Password (optional)</label>
@@ -132,7 +132,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 					onChange={handleFormChange}
 					/>
 			</label>
-			{passError !== "" && <div>{passError}</div>}
+			{passError !== "" && <pre>{passError}</pre>}
 			<button
 				type='button'
 				onClick={createChannel}
