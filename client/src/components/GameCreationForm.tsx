@@ -126,16 +126,13 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 									{modifier.name}
 								</label>
 								<label
-									className={style.gameselect}
-									key={i}
-									style={
-										selectedModifiers.includes(modifier.id)
-											? selectedStyle
-											: unselectedStyle
-									}
+									data-tooltip-id={"modifier" + modifier.code}
 								>
 									💬
 								</label>
+								<Tooltip id={"modifier" + modifier.code}>
+									{modifier.desc}
+								</Tooltip>
 							</label>
 						))}
 
@@ -157,50 +154,46 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 								}}
 							/>
 							Default Map
-							<label data-tooltip-id={"default map"}>?</label>
-							<Tooltip id={"default map"}>
-								Default map, without any obstacle
-							</Tooltip>
 						</label>
-						{modifiers
-							.filter((mod) => mod.code.startsWith("map_"))
-							.map((modifier, i) => (
-								<label
-									className={style.gameselect}
-									key={i}
-									style={
-										selectedMap === modifier.id
-											? selectedStyle
-											: unselectedStyle
-									}
-								>
-									<label>
-										<input
-											type='radio'
-											name='map'
-											checked={
-												selectedMap === modifier.id
-											}
-											onChange={(e: any) => {
-												if (e.target.checked)
-													setSelectedMap(modifier.id);
-											}}
-										/>
-										{modifier.name}
-									</label>
-									<label
-										data-tooltip-id={
-											"modifier" + modifier.code
-										}
-									>
-										💬
-									</label>
-									<Tooltip id={"modifier" + modifier.code}>
-										{modifier.desc}
-									</Tooltip>
-								</label>
-							))}
+						<label data-tooltip-id={"default map"}>💬</label>
+						<Tooltip id={"default map"}>
+							Default map, without any obstacle
+						</Tooltip>
 					</label>
+					{modifiers
+						.filter((mod) => mod.code.startsWith("map_"))
+						.map((modifier, i) => (
+							<label
+								className={style.gameselect}
+								key={i}
+								style={
+									selectedMap === modifier.id
+										? selectedStyle
+										: unselectedStyle
+								}
+							>
+								<label>
+									<input
+										type='radio'
+										name='map'
+										checked={selectedMap === modifier.id}
+										onChange={(e: any) => {
+											if (e.target.checked)
+												setSelectedMap(modifier.id);
+										}}
+									/>
+									{modifier.name}
+								</label>
+								<label
+									data-tooltip-id={"modifier" + modifier.code}
+								>
+									💬
+								</label>
+								<Tooltip id={"modifier" + modifier.code}>
+									{modifier.desc}
+								</Tooltip>
+							</label>
+						))}
 				</>
 			)}
 
