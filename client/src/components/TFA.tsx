@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const TFA = () => {
 	const [form, setForm] = useState({
@@ -24,7 +24,7 @@ const TFA = () => {
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 

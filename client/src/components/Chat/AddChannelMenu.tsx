@@ -27,7 +27,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 				);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, []);
 
@@ -51,7 +51,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 					} else setCanIBebouPlz(true);
 				})
 				.catch((err) => {
-					console.log(err);
+					// console.log(err);
 				});
 		} else setCanIBebouPlz(true);
 	}, [joinChannel, setChannel, user.login]);
@@ -77,7 +77,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 				});
 			})
 			.catch((error) => {
-				console.log(error);
+				// console.log(error);
 			});
 	}, [canIBebouPlz]);
 

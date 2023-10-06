@@ -65,7 +65,7 @@ const ChannelUser = ({
 					setIsToggleBox(!isToggleBox);
 				})
 				.catch((err) => {
-					console.log(err);
+					// console.log(err);
 				});
 		} else setIsToggleBox(!isToggleBox);
 	};
@@ -90,12 +90,12 @@ const ChannelUser = ({
 							setIsToggleBox(false);
 						})
 						.catch((err) => {
-							console.log(err);
+							// console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -117,7 +117,7 @@ const ChannelUser = ({
 			)
 			.then((res) => {
 				if (res.data.length !== 0) {
-					console.log(res.data);
+					// console.log(res.data);
 					const muteToUnmute = res.data.sort((a: any, b: any) => {
 						return a.id - b.id;
 					})[0];
@@ -141,12 +141,12 @@ const ChannelUser = ({
 							});
 						})
 						.catch((err) => {
-							console.log(err);
+							// console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 

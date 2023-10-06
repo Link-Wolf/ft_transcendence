@@ -44,7 +44,7 @@ const BlockButton = ({
 				});
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -85,7 +85,7 @@ const UnblockButton = ({
 				effect && effect();
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -126,7 +126,7 @@ const BlockUnblockButton = ({
 				setIsBlocked(res.data.length !== 0);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [_isBlocked]);
 
@@ -173,7 +173,7 @@ const PromoteButton = ({
 				});
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -214,7 +214,7 @@ const DemoteButton = ({
 				});
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -256,7 +256,7 @@ const FriendButton = ({
 				setFriendhip(res.data);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 		axios
 			.get(
@@ -266,7 +266,7 @@ const FriendButton = ({
 				setIsBlocked(res.data.length !== 0);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, []);
 
@@ -292,7 +292,7 @@ const FriendButton = ({
 				});
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -314,15 +314,17 @@ const FriendButton = ({
 		<button
 			className={className}
 			type='button'
-			title={isBlocked
-				? "You can not be friend with this user"
-				: !friendship
-				? "Be Friend"
-				: !friendship.isPending
-				? "Already Friend"
-				: friendship.senderLogin === user.login
-				? "Already Sent"
-				: "Accept Friend Invitation"}
+			title={
+				isBlocked
+					? "You can not be friend with this user"
+					: !friendship
+					? "Be Friend"
+					: !friendship.isPending
+					? "Already Friend"
+					: friendship.senderLogin === user.login
+					? "Already Sent"
+					: "Accept Friend Invitation"
+			}
 			disabled={
 				!(!friendship || friendship.senderLogin !== user.login) &&
 				!isBlocked
@@ -398,7 +400,7 @@ const FriendPMButton = ({
 				setIsFriend(res.data);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [_isFriend]);
 
@@ -437,7 +439,7 @@ const UnfriendButton = ({
 					`/api/friendship/${user.login}/${login}`
 			)
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -479,10 +481,10 @@ const FriendUnfriendButton = ({
 				setIsFriend(res.data.length > 0);
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	}, [_isFriend]);
-	console.log(isFriend);
+	// console.log(isFriend);
 	if (_isFriend)
 		return (
 			<UnfriendButton
@@ -553,7 +555,7 @@ const UnbanButton = ({
 				});
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 	return (

@@ -35,7 +35,7 @@ const ChannelSettings = ({
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${channelName}`
 			)
 			.then((res) => {
-				console.log(res.data);
+				// console.log(res.data);
 				setChannel(res.data);
 				setHasPassword(!!res.data.password);
 				setUpdate(false);
@@ -147,26 +147,17 @@ const ChannelSettings = ({
 				)}
 				{hasPassword && !updatePassword ? (
 					<>
-						<button
-							type='button'
-							onClick={wannaEditPassword}
-						>
+						<button type='button' onClick={wannaEditPassword}>
 							Change password
 						</button>
-						<button
-							type='button'
-							onClick={removePassword}
-						>
+						<button type='button' onClick={removePassword}>
 							Remove password
 						</button>
 					</>
 				) : (
 					!updatePassword && (
 						<>
-							<button
-								type='button'
-								onClick={wannaEditPassword}
-							>
+							<button type='button' onClick={wannaEditPassword}>
 								Add password
 							</button>
 						</>
@@ -175,10 +166,7 @@ const ChannelSettings = ({
 				{hasPassword && updatePassword && (
 					<>
 						{passError !== "" && <p>{passError}</p>}
-						<button
-							type='button'
-							onClick={cancelChange}
-						>
+						<button type='button' onClick={cancelChange}>
 							Cancel
 						</button>
 						<button
@@ -224,16 +212,9 @@ const AdminCardIdk = ({
 }) => {
 	return (
 		<>
-			<PPDisplayer
-				login={login}
-				size={30}
-				status={true}
-			/>
+			<PPDisplayer login={login} size={30} status={true} />
 			{name}
-			<DemoteButton
-				login={login}
-				channel={channel}
-			/>
+			<DemoteButton login={login} channel={channel} />
 		</>
 	);
 };

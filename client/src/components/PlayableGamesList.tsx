@@ -25,17 +25,17 @@ const PlayableGamesList = () => {
 					`:${process.env.REACT_APP_BACKEND_PORT}/api/game/playable`
 			)
 			.then((res) => {
-				console.log(res.data);
+				// console.log(res.data);
 				setPlayableGames(res.data);
 			})
-			.catch((error) => console.log(error));
+			.catch((error) => // console.log(error));
 		setUpdate(false);
 	}, [user, update]);
 
 	return (
 		<div className={style.playablegamelist}>
 			{/* <h1> P L A Y A B L E _ G A M E _ L I S T</h1> */}
-			{playableGames.length === 0 && 
+			{playableGames.length === 0 &&
 			<div className={style.gameplayable}>
 			<p> Any game at this moments</p>
 			</div>

@@ -35,9 +35,9 @@ const Game = () => {
 					},
 					error: any
 				) => {
-					console.log(res);
+					// console.log(res);
 					if (error || res.action === "error") {
-						console.log(error || res.message);
+						// console.log(error || res.message);
 						clearInterval(joinInterval as NodeJS.Timer);
 						navigate("/");
 						return;

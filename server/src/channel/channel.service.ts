@@ -153,7 +153,7 @@ export class ChannelService {
 			await ret.$set('owner', channelDto.owner);
 			return ret;
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -173,7 +173,7 @@ export class ChannelService {
 			});
 			return await bcrypt.compare(passwd, channel.password);
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

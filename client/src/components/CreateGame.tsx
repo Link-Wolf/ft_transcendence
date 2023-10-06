@@ -36,7 +36,7 @@ const CreateGame = () => {
 					auth: Cookies.get("token"),
 				},
 				(gameId: number, error: any) => {
-					if (error) console.log(error);
+					if (error) // console.log(error);
 					else navigate(`/game/${gameId}`);
 				}
 			);
@@ -51,7 +51,7 @@ const CreateGame = () => {
 				auth: Cookies.get("token"),
 			},
 			(gameId: number, error: any) => {
-				if (error) console.log(error);
+				if (error) // console.log(error);
 				else navigate(`/game/${gameId}`);
 			}
 		);

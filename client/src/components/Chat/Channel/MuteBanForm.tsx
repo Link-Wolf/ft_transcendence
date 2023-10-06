@@ -44,7 +44,7 @@ const MuteBanForm = ({
 							new Date(mute.end) >= new Date(Date.now())
 					)
 				) {
-					console.log(
+					// console.log(
 						adminForm.duration,
 						new Date(adminForm.duration * 60 * 1000 + Date.now())
 					);
@@ -74,12 +74,12 @@ const MuteBanForm = ({
 							});
 						})
 						.catch((err) => {
-							console.log(err);
+							// console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
@@ -110,12 +110,12 @@ const MuteBanForm = ({
 							kick(login);
 						})
 						.catch((err) => {
-							console.log(err);
+							// console.log(err);
 						});
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 			});
 	};
 
