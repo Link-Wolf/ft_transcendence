@@ -314,6 +314,15 @@ const FriendButton = ({
 		<button
 			className={className}
 			type='button'
+			title={isBlocked
+				? "You can not be friend with this user"
+				: !friendship
+				? "Be Friend"
+				: !friendship.isPending
+				? "Already Friend"
+				: friendship.senderLogin === user.login
+				? "Already Sent"
+				: "Accept Friend Invitation"}
 			disabled={
 				!(!friendship || friendship.senderLogin !== user.login) &&
 				!isBlocked
@@ -324,14 +333,14 @@ const FriendButton = ({
 			}}
 		>
 			{isBlocked
-				? "👤"
+				? "🌀"
 				: !friendship
-				? "👤"
+				? "💁‍♂️"
 				: !friendship.isPending
-				? "Already Friend"
+				? "👤"
 				: friendship.senderLogin === user.login
 				? "🕐"
-				: "Accept"}
+				: "✔️"}
 		</button>
 	);
 };
@@ -436,12 +445,12 @@ const UnfriendButton = ({
 		<button
 			className={className}
 			type='button'
-			title='Block'
+			title='Remove friendship'
 			onClick={() => {
 				unfriendSomeone(login);
 			}}
 		>
-			🚮
+			Remove
 		</button>
 	);
 };

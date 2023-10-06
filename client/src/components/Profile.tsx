@@ -62,7 +62,7 @@ const Profile = () => {
 		<div>
 			<div className={style.profil}>
 				<div className={style.resume}>
-					<h1>P R O F I L E</h1>
+					<h1>P R O F I L E &nbsp; O F</h1>
 					<Resume isMe={isMe} login={profileLogin} />
 					<button
 						className={style.button}
@@ -662,14 +662,18 @@ const Friends = () => {
 											Friendship request received on{" "}
 											{friendShip.created_at}
 										</div>
+										<div className={style.acceptbutton}>
+
 										<FriendButton login={friend.login} />
 										<button
+											title="Reject Friend request"
 											onClick={() => {
 												removeFriend(friend.login);
 											}}
-										>
-											Deny request
+											>
+											✖️
 										</button>
+										</div>
 									</li>
 								);
 							})
