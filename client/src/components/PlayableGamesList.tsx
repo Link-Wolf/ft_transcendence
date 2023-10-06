@@ -56,9 +56,9 @@ const PlayableGamesList = () => {
 				(game: any, i: number) =>
 					game.status === "invitation" && (
 						<div key={i} className={style.gameplayable}>
-							{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
 							<p>
-								I N V I T A T I O N {""} B Y {game.players[0]}
+								INVITATION BY{": "}
+								{game.users[0].name}
 								<Link to={`/game/${game.id}`}>
 									<button className={style.joinbutton}>
 										J O I N
@@ -66,11 +66,15 @@ const PlayableGamesList = () => {
 								</Link>
 							</p>
 							<div className={style.modifierslist}>
-								{game.modifiers.map(
-									(modifier: any, j: number) => (
-										<p key={j}>{modifier.name}</p>
-									)
-								)}
+								{game.modifiers.length > 0 && "Modifiers: "}
+								{game.modifiers.length > 0 &&
+									game.modifiers.map(
+										(modifier: any, j: number) => (
+											<label key={j}>
+												{modifier.name}
+											</label>
+										)
+									)}
 							</div>
 						</div>
 					)
@@ -81,9 +85,8 @@ const PlayableGamesList = () => {
 						<div key={i} className={style.gameplayable}>
 							{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
 							<p>
-								G A M E - N°{i + 1} :{" "}
-								{game.isRanked ? "" : "Un"}
-								ranked
+								GAME N°{i + 1} :{" "}
+								{game.isRanked ? "Ranked" : "Unranked"}
 								<Link to={`/game/${game.id}`}>
 									<button className={style.joinbutton}>
 										J O I N
@@ -91,11 +94,15 @@ const PlayableGamesList = () => {
 								</Link>
 							</p>
 							<div className={style.modifierslist}>
-								{game.modifiers.map(
-									(modifier: any, j: number) => (
-										<p key={j}>{modifier.name}</p>
-									)
-								)}
+								{game.modifiers.length > 0 && "Modifiers :"}
+								{game.modifiers.length > 0 &&
+									game.modifiers.map(
+										(modifier: any, j: number) => (
+											<label key={j}>
+												{modifier.name}
+											</label>
+										)
+									)}
 							</div>
 						</div>
 					)
