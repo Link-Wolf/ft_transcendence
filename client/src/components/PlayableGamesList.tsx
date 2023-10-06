@@ -11,6 +11,13 @@ const PlayableGamesList = () => {
 	const user = useContext(UserContext);
 	const [playableGames, setPlayableGames] = useState<any[]>([]);
 	const [update, setUpdate] = useState(true);
+	const [isVisible, setIsVisible] = useState(false);
+
+	useEffect(() => {
+		setTimeout(() => {
+			setIsVisible(true);
+		}, 0);
+	}, []);
 
 	useEffect(() => {
 		socket.on("gameUpdate", (data: any) => {
@@ -38,54 +45,61 @@ const PlayableGamesList = () => {
 	}, [user, update]);
 
 	return (
-		<div className={style.playablegamelist}>
-			{/* <h1> P L A Y A B L E _ G A M E _ L I S T</h1> */}
+		<div className={`${style.playablegamelist} ${isVisible && style.show}`}>
+			<h1> PENDING GAMES</h1>
 			{playableGames.length === 0 && (
 				<div className={style.gameplayable}>
 					<p> No game at this moment, let's create one below !</p>
 				</div>
 			)}
-			{playableGames.map((game: any, i: number) =>
-				game.status === "invitation" ? (
-					<div key={i} className={style.gameplayable}>
-						{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
-						<p>
-							I N V I T A T I O N B Y :{" "}
-							{game.isRanked ? "" : "Un"}ranked
-							<Link to={`/game/${game.id}`}>
-								<button className={style.joinbutton}>
-									J O I N
-								</button>
-							</Link>
-						</p>
-						<div className={style.modifierslist}>
-							{game.modifiers.map((modifier: any, j: number) => (
-								<p key={j}>{modifier.name}</p>
-							))}
+			{playableGames.map(
+				(game: any, i: number) =>
+					game.status === "invitation" && (
+						<div key={i} className={style.gameplayable}>
+							{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
+							<p>
+								I N V I T A T I O N {""} B Y {game.players[0]}
+								<Link to={`/game/${game.id}`}>
+									<button className={style.joinbutton}>
+										J O I N
+									</button>
+								</Link>
+							</p>
+							<div className={style.modifierslist}>
+								{game.modifiers.map(
+									(modifier: any, j: number) => (
+										<p key={j}>{modifier.name}</p>
+									)
+								)}
+							</div>
 						</div>
-					</div>
-				) : (
-					<> </>
-				)
+					)
 			)}
-			{playableGames.map((game: any, i: number) => (
-				<div key={i} className={style.gameplayable}>
-					{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
-					<p>
-						G A M E _ N*{i + 1} : {game.isRanked ? "" : "Un"}ranked
-						<Link to={`/game/${game.id}`}>
-							<button className={style.joinbutton}>
-								J O I N
-							</button>
-						</Link>
-					</p>
-					<div className={style.modifierslist}>
-						{game.modifiers.map((modifier: any, j: number) => (
-							<p key={j}>{modifier.name}</p>
-						))}
-					</div>
-				</div>
-			))}
+			{playableGames.map(
+				(game: any, i: number) =>
+					game.status === "waiting" && (
+						<div key={i} className={style.gameplayable}>
+							{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
+							<p>
+								G A M E - N°{i + 1} :{" "}
+								{game.isRanked ? "" : "Un"}
+								ranked
+								<Link to={`/game/${game.id}`}>
+									<button className={style.joinbutton}>
+										J O I N
+									</button>
+								</Link>
+							</p>
+							<div className={style.modifierslist}>
+								{game.modifiers.map(
+									(modifier: any, j: number) => (
+										<p key={j}>{modifier.name}</p>
+									)
+								)}
+							</div>
+						</div>
+					)
+			)}
 		</div>
 	);
 };

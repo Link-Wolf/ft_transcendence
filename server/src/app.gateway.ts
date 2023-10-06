@@ -302,12 +302,10 @@ export class AppGateway
 		});
 	}
 
-	resetPaddlesPos(game: GameData, modifiers: Modifier[]) {
+	resetPaddlesSize(game: GameData, modifiers: Modifier[]) {
 		game.players.forEach((player, i) => {
-			player.paddle.position.y = 0;
-			player.paddle.velocity.dy = 0;
-			player.paddle.position.x = (game.width / 2 - 25) * (i * 2 - 1);
-			player.paddle.color = 'white';
+			player.paddle.size.w = PADDLE_WIDTH;
+			player.paddle.size.h = this.paddleSize(modifiers) * game.height;
 		});
 	}
 
@@ -885,7 +883,7 @@ export class AppGateway
 				game.playerToStart = 1 - player;
 				game.turn++;
 				this.resetBall(game);
-				this.resetPaddlesPos(game, modifiers);
+				this.resetPaddlesSize(game, modifiers);
 				return true;
 			} else {
 				game.balls = nBalls;
