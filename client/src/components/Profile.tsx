@@ -698,13 +698,13 @@ const Blocked = () => {
 
 	useEffect(() => {
 		if (!update) return;
+		setUpdate(false);
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/block/by/${user.login}`
 			)
 			.then((res) => {
 				setBlocks(res.data);
-				setUpdate(false);
 			})
 			.catch((err) => {
 				// console.log(err);
