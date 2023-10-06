@@ -285,8 +285,8 @@ export class AppGateway
 		game.players.forEach((player, i) => {
 			player.paddle.position.y = 0;
 			player.paddle.velocity.dy = 0;
-			player.paddle.position.x = (game.width / 2 - 0) * (i * 2 - 1);
-			player.paddle.size.w = 90;
+			player.paddle.position.x = (game.width / 2 - 40) * (i * 2 - 1);
+			player.paddle.size.w = 10;
 			player.paddle.size.h = this.paddleSize(modifiers) * game.height;
 			player.paddle.color = 'white';
 		});
