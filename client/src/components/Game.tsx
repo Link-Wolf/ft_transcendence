@@ -73,7 +73,7 @@ const WaitingForMatch = ({ cancelSearch }: { cancelSearch: Function }) => {
 		<>
 			<div className={style.playsearch}>
 				<img src={load} className={style.load}></img>
-				<div>Searching for opponent. . .</div>
+				<div>Search and loading</div>
 				<button
 					className={style.button}
 					onClick={() => {

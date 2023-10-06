@@ -78,7 +78,7 @@ const Profile = () => {
 						{isMe ? (
 							<>
 								<button
-									title='Friends List'
+									title='Social'
 									className={`${style.button} ${style.shape} ${style.friend}`}
 									onClick={() => {
 										setDisplayedMenu((dp) =>
