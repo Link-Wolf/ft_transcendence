@@ -302,6 +302,15 @@ export class AppGateway
 		});
 	}
 
+	resetPaddlesPos(game: GameData, modifiers: Modifier[]) {
+		game.players.forEach((player, i) => {
+			player.paddle.position.y = 0;
+			player.paddle.velocity.dy = 0;
+			player.paddle.position.x = (game.width / 2 - 25) * (i * 2 - 1);
+			player.paddle.color = 'white';
+		});
+	}
+
 	size = (modifiers: Modifier[]) => {
 		if (modifiers.length) return { width: 1600, height: 900 };
 		return { width: 800, height: 600 };
@@ -332,7 +341,7 @@ export class AppGateway
 						game.players[ball.lastUser].paddle.size.h * 1.2,
 					);
 				},
-				color: 'green',
+				color: '#4C823C',
 			},
 			{
 				name: 'Enlarge Their Paddle',
@@ -342,7 +351,7 @@ export class AppGateway
 						game.players[1 - ball.lastUser].paddle.size.h * 1.2,
 					);
 				},
-				color: 'red',
+				color: '#8C1B1B',
 			},
 			{
 				name: 'Shrink Your Paddle',
@@ -352,7 +361,7 @@ export class AppGateway
 						game.players[ball.lastUser].paddle.size.h / 1.2,
 					);
 				},
-				color: 'red',
+				color: '#8C1B1B',
 			},
 			{
 				name: 'Shrink Their Paddle',
@@ -362,42 +371,23 @@ export class AppGateway
 						game.players[1 - ball.lastUser].paddle.size.h / 1.2,
 					);
 				},
-				color: 'green',
+				color: '#4C823C',
 			},
 			{
-				name: 'Two Balls are Better than One',
+				name: 'Multi Balls',
 				effect: (ball: Ball, game: GameData) => {
-					let theta =
-						(Math.random() * Math.PI * 4) / 6 + (2 * Math.PI) / 6;
-					if (Math.random() > 0.5) theta = Math.PI * 2 - theta;
-					game.balls.push({
-						position: {
-							x: ball.position.x,
-							y: ball.position.y,
-						},
-						velocity: {
-							dx:
-								Math.cos(theta) * ball.velocity.dx -
-								Math.sin(theta) * ball.velocity.dy,
-							dy:
-								Math.cos(theta) * ball.velocity.dy +
-								Math.sin(theta) * ball.velocity.dx,
-						},
-						size: { radius: BALL_RADIUS },
-						lastUser: ball.lastUser,
-						color: 'white',
-					});
-				},
-				color: 'blue',
-			},
-			{
-				name: 'Four Balls are Better than Two',
-				effect: (ball: Ball, game: GameData) => {
-					for (let i = 0; i < 4; i++) {
+					const MAX_NEW_BALL = 4;
+					let max = 1 + Math.floor(Math.random() * MAX_NEW_BALL);
+					for (let i = 0; i < max; i++) {
 						let theta =
-							(Math.random() * Math.PI * 4) / 6 +
+							(Math.random() * Math.PI * 4) / 6 -
 							(2 * Math.PI) / 6;
-						if (Math.random() > 0.5) theta = Math.PI * 2 - theta;
+						if (Math.random() > 0.5) theta = Math.PI - theta;
+
+						const velocitydx = Math.sqrt(
+							ball.velocity.dx ** 2 + ball.velocity.dy ** 2,
+						);
+						const velocitydy = 0;
 
 						game.balls.push({
 							position: {
@@ -406,11 +396,11 @@ export class AppGateway
 							},
 							velocity: {
 								dx:
-									Math.cos(theta) * ball.velocity.dx -
-									Math.sin(theta) * ball.velocity.dy,
+									Math.cos(theta) * velocitydx -
+									Math.sin(theta) * velocitydy,
 								dy:
-									Math.cos(theta) * ball.velocity.dy +
-									Math.sin(theta) * ball.velocity.dx,
+									Math.cos(theta) * velocitydy +
+									Math.sin(theta) * velocitydx,
 							},
 							size: { radius: BALL_RADIUS },
 							lastUser: ball.lastUser,
@@ -418,7 +408,7 @@ export class AppGateway
 						});
 					}
 				},
-				color: 'blue',
+				color: '#429dbd',
 			},
 		];
 
@@ -895,7 +885,7 @@ export class AppGateway
 				game.playerToStart = 1 - player;
 				game.turn++;
 				this.resetBall(game);
-				this.resetPaddles(game, modifiers);
+				this.resetPaddlesPos(game, modifiers);
 				return true;
 			} else {
 				game.balls = nBalls;
