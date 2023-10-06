@@ -919,7 +919,7 @@ export class AppGateway
 			await game.$add('modifiers', modifier);
 		}
 		await game.save();
-
+		this.server.emit('gameUpdate', { invitee: '*' });
 		return game.id;
 	}
 
@@ -965,7 +965,7 @@ export class AppGateway
 			await game.$add('modifiers', modifier);
 		}
 		await game.save();
-
+		this.server.emit('gameUpdate', { invitee: invitee.dataValues.login });
 		return game.id;
 	}
 
@@ -1033,6 +1033,7 @@ export class AppGateway
 
 		if (game.dataValues.status === 'waiting') {
 			this.gameService.delete(game.id);
+			this.server.emit('gameUpdate', { invitee: '*' });
 		}
 	}
 	//#endregion

@@ -5,6 +5,7 @@ import { use } from "matter-js";
 import { error } from "console";
 import { Link } from "react-router-dom";
 import style from "../style/Game.module.scss";
+import socket from "../socket";
 
 const PlayableGamesList = () => {
 	const user = useContext(UserContext);
@@ -12,7 +13,11 @@ const PlayableGamesList = () => {
 	const [update, setUpdate] = useState(true);
 
 	useEffect(() => {
-		// listen to modications of the playable games list
+		socket.on("gameUpdate", (data: any) => {
+			if (data.invitee === user.login || data.invitee === "*") {
+				setUpdate(true);
+			}
+		});
 	}, []);
 
 	useEffect(() => {
