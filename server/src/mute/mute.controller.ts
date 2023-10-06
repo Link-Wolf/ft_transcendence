@@ -163,7 +163,6 @@ export class MuteController {
 		@Body('reason') reason: string,
 		@Req() req: Request,
 	): Promise<Mute> {
-		// console.log(login, channelName, end, reason);
 		if (!req.cookies.token)
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		const my_login = (await this.userService.verify(req.cookies.token))
