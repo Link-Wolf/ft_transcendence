@@ -50,19 +50,25 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	}, []);
 
 	return (
+		<>
 		<div className={`${style.gameCreationForm} ${isVisible && style.show}`}>
 			<h1>GAME CREATION</h1>
+			<div className={style.display}>
+
+			<div className={style.preview}>
 			{selectedMap === -1 ? (
 				<div className={style.gamemapDefault}></div>
 			) : selectedMap === 11 ? (
 				<div className={style.gamemapTwin}></div>
-			) : (
-				<div className={style.gamemapLine}></div>
-			)}
+				) : (
+					<div className={style.gamemapLine}></div>
+					)}
+				</div>
+				<div>
 			<label
 				className={style.gameselect}
 				style={isRanked ? selectedStyle : unselectedStyle}
-			>
+				>
 				<label>
 					<input
 						type='checkbox'
@@ -70,7 +76,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 						onChange={() => {
 							setIsRanked((isRanked) => !isRanked);
 						}}
-					/>
+						/>
 					Ranked
 				</label>
 				<label data-tooltip-id={"ranked"}>💬</label>
@@ -79,6 +85,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 					taken into account in the ranking
 				</Tooltip>
 			</label>
+
 
 			{!isRanked && (
 				<>
@@ -92,42 +99,42 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 								key={i}
 								style={
 									selectedModifiers.includes(modifier.id)
-										? selectedStyle
-										: unselectedStyle
+									? selectedStyle
+									: unselectedStyle
 								}
-							>
+								>
 								<label>
 									<input
 										type='checkbox'
 										checked={selectedModifiers.includes(
 											modifier.id
-										)}
-										onChange={() => {
+											)}
+											onChange={() => {
 											if (
 												selectedModifiers.includes(
 													modifier.id
-												)
-											)
-												setSelectedModifiers(
-													selectedModifiers.filter(
-														(e) => e !== modifier.id
 													)
-												);
-											else {
-												setSelectedModifiers(
-													(selectedModifiers) => [
-														...selectedModifiers,
-														modifier.id,
-													]
-												);
-											}
-										}}
+													)
+													setSelectedModifiers(
+														selectedModifiers.filter(
+															(e) => e !== modifier.id
+															)
+															);
+															else {
+																setSelectedModifiers(
+																	(selectedModifiers) => [
+																		...selectedModifiers,
+																		modifier.id,
+																	]
+																	);
+																}
+															}}
 									/>
 									{modifier.name}
 								</label>
 								<label
 									data-tooltip-id={"modifier" + modifier.code}
-								>
+									>
 									💬
 								</label>
 								<Tooltip id={"modifier" + modifier.code}>
@@ -143,7 +150,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 						style={
 							selectedMap === -1 ? selectedStyle : unselectedStyle
 						}
-					>
+						>
 						<label>
 							<input
 								type='radio'
@@ -152,7 +159,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 								onChange={(e: any) => {
 									if (e.target.checked) setSelectedMap(-1);
 								}}
-							/>
+								/>
 							Default Map
 						</label>
 						<label data-tooltip-id={"default map"}>💬</label>
@@ -164,13 +171,13 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 						.filter((mod) => mod.code.startsWith("map_"))
 						.map((modifier, i) => (
 							<label
-								className={style.gameselect}
-								key={i}
-								style={
-									selectedMap === modifier.id
-										? selectedStyle
-										: unselectedStyle
-								}
+							className={style.gameselect}
+							key={i}
+							style={
+								selectedMap === modifier.id
+								? selectedStyle
+								: unselectedStyle
+							}
 							>
 								<label>
 									<input
@@ -179,14 +186,14 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 										checked={selectedMap === modifier.id}
 										onChange={(e: any) => {
 											if (e.target.checked)
-												setSelectedMap(modifier.id);
-										}}
+											setSelectedMap(modifier.id);
+									}}
 									/>
 									{modifier.name}
 								</label>
 								<label
 									data-tooltip-id={"modifier" + modifier.code}
-								>
+									>
 									💬
 								</label>
 								<Tooltip id={"modifier" + modifier.code}>
@@ -201,20 +208,23 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 			<Link
 				to={`/game?${
 					isRanked
-						? "isRanked=true"
-						: `isRanked=false&modifiers=${[
-								selectedMap,
-								...selectedModifiers,
-						  ]
-								.filter((e) => e !== -1)
-								.join(",")}`
+					? "isRanked=true"
+					: `isRanked=false&modifiers=${[
+						selectedMap,
+						...selectedModifiers,
+					]
+					.filter((e) => e !== -1)
+					.join(",")}`
 				}${opponentLogin ? `&invitee=${opponentLogin}` : ""}`}
-			>
+				>
 				<button className={style.button}>
 					{opponentLogin ? "Invite" : "Create Game"}
 				</button>
 			</Link>
+			</div>
+			</div>
 		</div>
+		</>
 	);
 };
 

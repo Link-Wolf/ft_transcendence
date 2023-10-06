@@ -143,6 +143,16 @@
 	-o-transition: opacity 0.8s ease-in-out;
 	position: relative;
 	top: -100px;
+	text-align: center;
+}
+.display{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	.preview{
+		margin-right : 30px;
+	}
+	
 }
 
 .playablegamelist {
