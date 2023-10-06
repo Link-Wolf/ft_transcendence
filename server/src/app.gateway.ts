@@ -962,6 +962,7 @@ export class AppGateway
 		let game = await this.gameService.create({
 			isRanked: false,
 			status: 'invitation',
+			invitee: invitee.dataValues.login,
 		});
 
 		// Add the player to the game

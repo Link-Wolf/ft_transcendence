@@ -15,5 +15,7 @@ export class GameDto {
 
 	users?: User[];
 
+	invitee?: string;
+
 	modifiers?: Modifier[];
 }
