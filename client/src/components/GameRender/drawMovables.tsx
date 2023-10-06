@@ -6,26 +6,41 @@ export default function drawMovables(p5: p5Types, movables: Movable[]) {
 	for (let object of movables) {
 		p5.fill(object.color);
 		if (object.type === "circle") {
-			p5.stroke("#ffffff");
-			p5.strokeWeight(5);
+			if (object.color !== "white") {
+				p5.push();
+				p5.fill("white");
+				p5.rect(
+					object.position.x,
+					object.position.y,
+					object.size.radius * 2,
+					object.size.radius * 2
+				);
+				p5.pop();
+				p5.stroke("#ffffff");
+				p5.strokeWeight(5);
+			}
 			p5.circle(
 				object.position.x,
 				object.position.y,
 				object.size.radius * 2
 			);
-			p5.textSize(10);
-			p5.text(
-				object.color === "green"
-					? "↑"
-					: object.color === "red"
-					? "↓"
-					: "o",
-				object.position.x,
-				object.position.y,
-				object.size.radius * 2,
-				object.size.radius * 2
-			);
-			p5.textAlign(p5.CENTER, p5.CENTER);
+			if (object.color !== "white") {
+				p5.textSize(20);
+				p5.noStroke();
+				p5.fill("#ffffff");
+				p5.textAlign(p5.CENTER, p5.CENTER);
+				p5.text(
+					object.color === "green"
+						? "↑"
+						: object.color === "red"
+						? "↓"
+						: "0",
+					object.position.x,
+					object.position.y,
+					object.size.radius * 2,
+					object.size.radius * 2
+				);
+			}
 		} else if (object.type === "rectangle")
 			p5.rect(
 				object.position.x,
