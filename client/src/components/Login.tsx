@@ -1,6 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import style from "../style/Game.module.scss";
+import load from "../assets/load.gif";
+
 
 const Login = () => {
 	/**
@@ -64,7 +67,16 @@ const Login = () => {
 		window.location.href = "/";
 	}, [done, data]);
 
-	if (!done) return <p>Loading...</p>;
+	if (!done) 
+	return (
+		<>
+		<div className={style.playsearch}>
+			<img src={load} className={style.load}></img>
+			<p>Loading...</p>
+		</div>
+		</>
+		
+	)
 	return <></>;
 };
 

@@ -197,8 +197,8 @@ const MessagesManager = ({
 						</div>
 					))}
 			</div>
-			<form action='' onSubmit={sendMessage}>
-				<input
+			<form className={style.sendsection} action='' onSubmit={sendMessage}>
+				<input className={style.sendinput}
 					value={message}
 					type='text'
 					placeholder={
@@ -211,7 +211,7 @@ const MessagesManager = ({
 						setMessage(e.target.value);
 					}}
 				/>
-				<button disabled={!canSendMessage}>Send</button>
+				<button className={style.sendbutton} disabled={!canSendMessage}>&gt;</button>
 			</form>
 		</>
 	);

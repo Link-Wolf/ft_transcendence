@@ -56,7 +56,8 @@
 			border-radius: 30px;
 			width: 290px;
 			height: 290px;
-			border: 5px solid white;
+			border: 5px solid var(--background-button-profil);
+			transition: 1s;
 		}
 
 		.username {
@@ -74,13 +75,14 @@
 			border: 0px solid #f8f8f8;
 
 			border-radius: 25px;
-			background-color: rgba($color: #f8f8f8, $alpha: 1);
+			background-color: var(--background-button-profil);
 			padding: 5px 20px 5px 20px;
-			color: #000000;
+			color: var(--color-button-profil);
 			font-size: 20px;
 			font-weight: 600;
 			transition: 0.3s;
 			cursor: pointer;
+			transition: 1s;
 
 
 			&:hover {
@@ -122,17 +124,22 @@
 			}
 			&.alert {
 				background-color: var(--alert-color);
+				transition: 0.5s;
+
 				&:hover{
 					background-color: #861818;
 				}
 			}
 			&.settings {
+				transition: 0.5s;
+
 				background-color: var(--settings-color);
 				&:hover{
 					background-color: #979797;
 				}
 			}
 			&.friend {
+				transition: 0.5s;
 				background-color: var(--friend-color);
 				&:hover{
 					background-color: #124ba0;
