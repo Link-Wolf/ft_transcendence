@@ -30,6 +30,7 @@ const MAX_NUMBER_OF_BALLS = 10;
 const POWERUP_RADIUS = 15;
 const BALL_RADIUS = 8;
 const RANKED_BALL_RADIUS = 5;
+const PADDLE_WIDTH = 40;
 
 //#region TYPES
 type Player = {
@@ -285,8 +286,8 @@ export class AppGateway
 		game.players.forEach((player, i) => {
 			player.paddle.position.y = 0;
 			player.paddle.velocity.dy = 0;
-			player.paddle.position.x = (game.width / 2 - 40) * (i * 2 - 1);
-			player.paddle.size.w = 10;
+			player.paddle.position.x = (game.width / 2 - 25) * (i * 2 - 1);
+			player.paddle.size.w = PADDLE_WIDTH;
 			player.paddle.size.h = this.paddleSize(modifiers) * game.height;
 			player.paddle.color = 'white';
 		});
@@ -787,7 +788,7 @@ export class AppGateway
 		game.loop = setInterval(() => {
 			//update dt
 			let now = Date.now();
-			let dt = now - game.lastTimestamp;
+			let dt = now - game.lastTimestamp; // approx 16ms
 			game.lastTimestamp = now;
 
 			if (game.players[0].lastInput + 1000 * 60 < now) {
