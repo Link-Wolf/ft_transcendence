@@ -63,7 +63,7 @@ const MessagesManager = ({
 					});
 				})
 				.catch((err) => {
-					// console.log(err);
+					console.log(err);
 				});
 	};
 
@@ -81,7 +81,7 @@ const MessagesManager = ({
 				setMessages(res.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 		setUpdate(false);
 	}, [update, channel]);
@@ -113,7 +113,7 @@ const MessagesManager = ({
 					setCanSendMessage(!blocked);
 				})
 				.catch((err) => {
-					// console.log(err);
+					console.log(err);
 				});
 		} else {
 			axios
@@ -142,7 +142,7 @@ const MessagesManager = ({
 					setCanSendMessage(timeouts.length === 0);
 				})
 				.catch((err) => {
-					// console.log(err);
+					console.log(err);
 				});
 		}
 		setUpdate(false);

@@ -33,11 +33,10 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${context.login}/channel_names`
 			)
 			.then((response) => {
-				// console.log(response.data);
 				setChannels(response.data);
 			})
 			.catch((err) => {
-				// console.log(err);
+				console.log(err);
 			});
 		setUpdate(false);
 	}, [context.login, update]);
@@ -63,7 +62,7 @@ const ChannelList = ({ setChannel }: { setChannel: Function }) => {
 							</button>
 						))
 					) : (
-						<div>Tu n'as encore rejoins aucun channel bébé sel</div>
+						<div>You didn't join any channel yet</div>
 					)}
 				</>
 			)}

@@ -35,7 +35,6 @@ const ChannelSettings = ({
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${channelName}`
 			)
 			.then((res) => {
-				// console.log(res.data);
 				setChannel(res.data);
 				setHasPassword(!!res.data.password);
 				setUpdate(false);
