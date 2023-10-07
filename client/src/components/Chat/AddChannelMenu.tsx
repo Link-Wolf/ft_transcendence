@@ -90,7 +90,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 		<>
 			{channelCreation ? (
 				<>
-					<button onClick={createChannel}>Return to channel list</button>
+					<p className={style.createbutton}onClick={createChannel}>^</p>
 					<CreateChannelForm setChannel={setChannel} />
 				</>
 			) : (
@@ -101,14 +101,14 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 						key={i}
 						onClick={() => setJoinChannel(channel)}
 						>
-												<div className={style.imgChannel}> {channel.name[0]}</div>
+												<div className={style.imgChannel}> {channel.name.toUpperCase()[0]}</div>
 												<div className={style.description}>
 													<p className={style.mpname}>{channel.name} {channel.password ? "🔒" : <></>}</p>
 													<p className={style.object}>{channel.password ? "A password is requiered for this channel" : "This is an public Channel"}</p>
 												</div>
 											</div>
 						))}
-						<button onClick={createChannel}>Create channel</button>
+						<p className={style.createbutton} onClick={createChannel}>+</p>
 				</>
 			)}
 		</>
