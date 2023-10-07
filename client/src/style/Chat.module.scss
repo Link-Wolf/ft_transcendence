@@ -60,27 +60,7 @@
 		height: var(--height);
 	}
 
-	.mplist{
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		.displaylist{
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-			align-items: center;
-			text-align: center;
-			.profilmp{
-				display: flex;
-				flex-direction: column;
-				margin: 5px;
-				text-align: center;
-				align-items: center;
-				.mpname {
-					font-size: 15px;
-				}
-			}
-		}
+
 		.mpinput{
 			width: 250px;
 		}
@@ -99,7 +79,140 @@
 		margin-left: 10px;
 	}
 
-	.channelList {
+/*Here*/
+
+	.ChatHomePage {
+		align-items: start;
+		text-align: start;
+
+		.titleHome{
+			color: var(--neutral-text); ;
+		}
+
+		.search {
+			// display: flex;
+			// flex-direction: row;
+			background-color: #c4c4c4;
+			border-radius: 10px;
+			.searchbutton{
+				background-color: rgba($color: #000000, $alpha: 0);
+			}
+			input{
+				border: 0px;
+				border-radius: 0px;
+				margin: 4px;
+				width: 290px;
+				&:focus
+				{
+					outline: none;
+				}
+			}
+		}
+
+		.param{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+
+		color: rgb(0, 115, 192);
+		h1{
+			// text-align: center;
+		}
+
+		button {
+			height: 18px;
+		}
+		.mplist{
+			display: flex;
+			flex-direction: column-reverse;
+		}
+		.profilmp{
+			display: flex;
+			flex-direction: row;
+			margin: 5px;
+			text-align: center;
+			align-items: center;
+			.description{
+				color: #000000;
+				font-size: 15px;
+				margin: 0px;
+				margin-left: 10px;
+				align-items: start;
+				text-align: start;
+			}
+			
+			.mpname {
+				font-size: 20px;
+				margin: 0px;
+			}
+			.object {
+				font-size: 15px;
+				margin: 0px;
+			}
+			
+			.imgChannel{
+				display: flex;
+				background-color: #000000;
+				width: 50px;
+				height: 50px;
+				border-radius: 100%;
+				align-items: center;
+				text-align: center;
+				justify-content: center;
+				font-size: 50px;
+			}
+			
+		}
+/*Here*/
+
+	h1 {
+		color: var(--neutral-text);
+		transition: 1s ease-in;
+		// text-align: center;
+		border-radius: 25px;
+		margin: 10px 10px 0 10px;
+	}
+
+	/*button {
+		background-color: var(--background-button-tel);
+		border: 3px solid;
+		border: 0px;
+		border-radius: 25px;
+		margin-right: 5px;
+		margin-left: 5px;
+		border-color: #0000006e;
+		padding: 0 10px 0 10px;
+		color: #0066b9;
+		transition: 0.5s;
+
+		&:hover {
+			background-color: var(--background-button-tel-hover);
+			border-color: #000000;
+			color: #000000;
+			cursor: pointer;
+			transition: 0s;
+		}
+
+		&:disabled {
+			background-color: var(--background-button-tel-disabled);
+			border-color: #000000;
+			color: #cecece;
+			transition: 0.5s;
+		
+		}
+
+	}*/
+
+
+
+
+
+
+/*	.channelList {
 		.param{
 			display: flex;
 			flex-direction: row;
@@ -116,7 +229,7 @@
 		button {
 			height: 18px;
 		}
-	}
+	}*/
 
 	h1 {
 		color: var(--neutral-text);
@@ -176,6 +289,7 @@
 		transition: 1s ease-in;
 	}
 }
+
 .chat::-webkit-scrollbar {
 	display: none;
 }
