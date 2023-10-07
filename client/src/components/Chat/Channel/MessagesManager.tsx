@@ -198,29 +198,30 @@ const MessagesManager = ({
 						</div>
 					))}
 			</div>
-			<form
-				className={style.sendsection}
-				action=''
-				onSubmit={sendMessage}
-			>
-				<input
-					className={style.sendinput}
-					value={message}
-					type='text'
-					placeholder={
-						canSendMessage
+			{/* <div className={style.search}> */}
+				<form
+					className={style.sendsection}
+					action=''
+					onSubmit={sendMessage}
+					>
+					<input
+						value={message}
+						type='text'
+						placeholder={
+							canSendMessage
 							? "Type your message here..."
 							: "You cannot send messages here"
-					}
-					disabled={!canSendMessage}
-					onChange={(e) => {
-						setMessage(e.target.value);
-					}}
-				/>
-				<button className={style.sendbutton} disabled={!canSendMessage}>
-					&gt;
-				</button>
-			</form>
+						}
+						disabled={!canSendMessage}
+						onChange={(e) => {
+							setMessage(e.target.value);
+						}}
+						/>
+					<button className={style.sendbutton} disabled={!canSendMessage}>
+						&gt;
+					</button>
+				</form>
+			{/* </div> */}
 		</>
 	);
 };

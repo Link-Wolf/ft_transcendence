@@ -211,12 +211,15 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 
 		<div className={style.ChatHomePage}>
 
-			<button onClick={addChannel}>
-				{newChannelVisibility ? <>BACK</> : <>ADD</>}
-			</button>
 				{newChannelVisibility ?
 				<>
-					<h2 className={style.titleHome}>New convesation</h2>
+			<div className={style.headsection}>
+				
+				<p onClick={addChannel} className={style.actionbutton}>
+					{newChannelVisibility ? <>&lsaquo;</> : <>Modify</>}
+				</p>
+				<h2 className={style.titleNew}>New conversation</h2>
+			</div>
 					<div className={style.search}>
 						<button className={style.searchbutton} disabled={!selectedUser || selectedUser === ""}
 								onClick={openDM}
@@ -232,7 +235,12 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 					<AddChannelMenu setChannel={setChannel} />
 				</>
 				: <>
-			<h2 className={style.titleHome}>Message</h2>
+							<div className={style.headsection}>
+			<h2 className={style.titleMessage}>Message</h2>
+							<p className={style.addbutton} onClick={addChannel}>
+				{newChannelVisibility ? <>&gt;</> : <>+</>}
+			</p>
+			</div>
 			<div className={style.mplist}>
 					<div className={style.search}>
 						<button className={style.searchbutton} disabled={!selectedUser || selectedUser === ""}
@@ -253,7 +261,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 							key={i}
 							onClick={() => setChannel(channel)}
 						>
-							<div className={style.imgChannel}> {channel[0]}</div>
+							<div className={style.imgChannel}> {(channel.toUpperCase())[0]}</div>
 							<div className={style.description}>
 								<p className={style.mpname}>{channel}</p>
 								<p className={style.object}>Join the channel {channel}</p>
