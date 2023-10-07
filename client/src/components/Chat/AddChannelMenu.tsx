@@ -3,6 +3,7 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../App";
 import CreateChannelForm from "./CreateChannelForm";
 import socket from "../../socket";
+import style from "../../style/Chat.module.scss";
 
 const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -89,19 +90,25 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 		<>
 			{channelCreation ? (
 				<>
-					<button onClick={createChannel}>Cancel</button>
+					<button onClick={createChannel}>Return to channel list</button>
 					<CreateChannelForm setChannel={setChannel} />
 				</>
 			) : (
 				<>
-					<button onClick={createChannel}>Create channel</button>
 					{channels.map((channel, i) => (
-						<div key={i}>
-							<button onClick={() => setJoinChannel(channel)}>
-								{channel.name} {channel.password ? "🔒" : <></>}
-							</button>
-						</div>
-					))}
+						<div
+						className={style.profilmp}
+						key={i}
+						onClick={() => setJoinChannel(channel)}
+						>
+												<div className={style.imgChannel}> {channel.name[0]}</div>
+												<div className={style.description}>
+													<p className={style.mpname}>{channel.name} {channel.password ? "🔒" : <></>}</p>
+													<p className={style.object}>{channel.password ? "A password is requiered for this channel" : "This is an public Channel"}</p>
+												</div>
+											</div>
+						))}
+						<button onClick={createChannel}>Create channel</button>
 				</>
 			)}
 		</>
