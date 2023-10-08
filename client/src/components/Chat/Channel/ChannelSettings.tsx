@@ -131,7 +131,6 @@ const ChannelSettings = ({
 	const handleFormChange = (e: any) => {
 		setPassValue(e.target.value);
 	};
-	console.log(admins);
 
 	if (!channel) return <></>;
 	return (
@@ -184,7 +183,7 @@ const ChannelSettings = ({
 			<div>
 				{admins.length ? (
 					<>
-						<h3 className={style.titleAdmin}>Admin</h3>
+						{/* <h3 className={style.titleAdmin}>Admin</h3> */}
 						{admins.map((admin, i) => (
 							<div key={i}>
 								<AdminCardIdk

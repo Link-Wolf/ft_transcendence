@@ -232,35 +232,6 @@
 		margin: 10px 10px 0 10px;
 	}
 	
-	// button {
-	// 	background-color: var(--background-button-tel);
-	// 	border: 3px solid;
-	// 	border: 0px;
-	// 	border-radius: 25px;
-	// 	margin-right: 5px;
-	// 	margin-left: 5px;
-	// 	border-color: #0000006e;
-	// 	padding: 0 10px 0 10px;
-	// 	color: #0066b9;
-	// 	transition: 0.5s;
-		
-	// 	&:hover {
-	// 		background-color: var(--background-button-tel-hover);
-	// 		border-color: #000000;
-	// 		color: #000000;
-	// 		cursor: pointer;
-	// 		transition: 0s;
-	// 	}
-		
-	// 	&:disabled {
-	// 		background-color: var(--background-button-tel-disabled);
-	// 		border-color: #000000;
-	// 		color: #cecece;
-	// 		transition: 0.5s;
-			
-	// 	}
-	// }
-	
 	
 	// input {
 	// 	margin-top: 10px;
@@ -493,6 +464,11 @@
 	margin: 0px;
 }
 
+.headsectionList{
+	display: flex;
+	flex-direction: row;
+}
+
 .channelName{
 	// background-color: red;
 		margin: 0px;
@@ -556,4 +532,38 @@
 		font-size: 30px;
 	}
 	
+}
+
+.toggleprofil{
+
+	
+}
+
+button {
+	background-color: var(--background-button-tel);
+	border: 3px solid;
+	border: 0px;
+	border-radius: 25px;
+	margin-right: 5px;
+	// margin-left: 2px;
+	border-color: #0000006e;
+	padding: 0 10px 0 10px;
+	color: #0066b9;
+	transition: 0.5s;
+	
+	&:hover {
+		background-color: var(--background-button-tel-hover);
+		border-color: #000000;
+		color: #000000;
+		cursor: pointer;
+		transition: 0s;
+	}
+	
+	&:disabled {
+		background-color: var(--background-button-tel-disabled);
+		border-color: #000000;
+		color: #cecece;
+		transition: 0.5s;
+		
+	}
 }

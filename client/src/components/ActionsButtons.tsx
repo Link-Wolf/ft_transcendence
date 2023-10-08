@@ -16,10 +16,12 @@ export default ActionsButtons;
  ******************************************************************************/
 
 const BlockButton = ({
+	text,
 	login,
 	effect,
 	className,
 }: {
+	text?: string;
 	login: string;
 	effect?: Function;
 	className?: string;
@@ -56,7 +58,7 @@ const BlockButton = ({
 				block(login);
 			}}
 		>
-			📛
+			{text ? "Block" : "📛"}
 		</button>
 	);
 };
@@ -103,11 +105,13 @@ const UnblockButton = ({
 };
 
 const BlockUnblockButton = ({
+	text,
 	login,
 	effect,
 	isBlocked,
 	className,
 }: {
+	text?: string;
 	login: string;
 	effect?: Function;
 	isBlocked?: boolean;
@@ -140,7 +144,7 @@ const BlockUnblockButton = ({
 		);
 	else
 		return (
-			<BlockButton login={login} effect={effect} className={className} />
+			<BlockButton text={text} login={login} effect={effect} className={className} />
 		);
 };
 
@@ -235,10 +239,12 @@ const DemoteButton = ({
  ******************************************************************************/
 
 const FriendButton = ({
+	text,
 	login,
 	effect,
 	className,
 }: {
+	text?: string;
 	login: string;
 	effect?: Function;
 	className?: string;
@@ -343,14 +349,14 @@ const FriendButton = ({
 			}}
 		>
 			{isBlocked
-				? "🌀"
+				? text ? "Blocked" : "🌀"
 				: !friendship
-				? "💁‍♂️"
+				? text ? "Be Friend" :"💁‍♂️"
 				: !friendship.isPending
-				? "👤"
+				? text ? "Already Friend" :"👤"
 				: friendship.senderLogin === user.login
-				? "🕐"
-				: "✔️"}
+				? text ? "Already Sent" :"🕐"
+				: text ? "Accept Friend" :"✔️"}
 		</button>
 	);
 };
@@ -436,12 +442,14 @@ const PMButton = ({
 };
 
 const FriendPMButton = ({
+	text,
 	login,
 	effect,
 	setChannel,
 	isFriend,
 	className,
 }: {
+	text?: string;
 	login: string;
 	effect?: Function;
 	setChannel: Function;
@@ -476,7 +484,7 @@ const FriendPMButton = ({
 		);
 	else
 		return (
-			<FriendButton login={login} effect={effect} className={className} />
+			<FriendButton text={text} login={login} effect={effect} className={className} />
 		);
 };
 
@@ -563,10 +571,12 @@ const FriendUnfriendButton = ({
 };
 
 const AskForGameButton = ({
+	text,
 	login,
 	effect,
 	className,
 }: {
+	text?: string;
 	login: string;
 	effect?: Function;
 	className?: string;
@@ -587,7 +597,7 @@ const AskForGameButton = ({
 				}}
 				className={className}
 			>
-				🎮
+				{text ? "Play" : "🎮"}
 			</button>
 			{isPopUpOpen !== "" && (
 				<PopUp setPopup={setIsPopUpOpen}>
