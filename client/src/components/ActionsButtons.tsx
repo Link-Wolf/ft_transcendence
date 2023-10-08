@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../App";
 import socket from "../socket";
 import PopUp from "./PopUp";
@@ -246,8 +246,30 @@ const FriendButton = ({
 	const user = useContext(UserContext);
 	const [friendship, setFriendhip] = useState<any>({});
 	const [isBlocked, setIsBlocked] = useState<boolean>(true);
+	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
+		setUpdate(true);
+	}, [user.login, login]);
+
+	useEffect(() => {
+		socket.on("friendUpdate", (data: any) => {
+			if (
+				(data.loginA === user.login && data.loginB === login) ||
+				(data.loginA === login && data.loginB === user.login)
+			) {
+				setUpdate(true);
+			}
+		});
+
+		return () => {
+			socket.off("friendUpdate");
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!update) return;
+		setUpdate(false);
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
@@ -268,7 +290,7 @@ const FriendButton = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	}, [update, user.login, login]);
 
 	const friend = async (login: string) => {
 		let block = await axios.get(
@@ -295,20 +317,6 @@ const FriendButton = ({
 				console.log(err);
 			});
 	};
-
-	/*
-	Blocked: nop
-	Friendship exists?
-		pending?
-			mine?
-				already sent
-			not mine?
-				accept button
-		not pending?
-			already friends
-	Not exists?
-		Be friend button
-	*/
 
 	return (
 		<button
@@ -410,6 +418,9 @@ const PMButton = ({
 						)
 						.then((response) => {
 							setChannel(response.data.name);
+							socket.emit("channelUpdate", {
+								users: [user.login, login],
+							});
 						})
 						.catch((err) => {
 							console.log(err);

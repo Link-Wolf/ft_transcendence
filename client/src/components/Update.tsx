@@ -203,7 +203,13 @@ const Update = () => {
 						>
 							<h1>Two-Factor Authentication (2FA) Activation</h1>
 							<h3>Configure Google Authenticator or Authy</h3>
-							<ul>
+							<ul
+								style={{
+									textAlign: "left",
+									width: "fit-content",
+									margin: "auto",
+								}}
+							>
 								<li>
 									Install Google Authenticator or Authy (both
 									IOS - Android)
@@ -219,11 +225,20 @@ const Update = () => {
 							<h3>
 								Scan this QR code with your authenticator app
 							</h3>
-							<QRCode
-								value={`otpauth://totp/${user.login}?secret=${TFASecret}&issuer=${ISSUER}`}
-								size={256}
-								level='H'
-							/>
+							<div
+								style={{
+									padding: "10px",
+									backgroundColor: "white",
+									width: "fit-content",
+									margin: "auto",
+								}}
+							>
+								<QRCode
+									value={`otpauth://totp/${user.login}?secret=${TFASecret}&issuer=${ISSUER}`}
+									size={256}
+									level='H'
+								/>
+							</div>
 							<h4>Or enter this code manually in your app</h4>
 							<label>Secret Key: {TFASecret}</label>
 							<h3>Verifiy code</h3>
