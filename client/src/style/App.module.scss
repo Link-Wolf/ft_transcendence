@@ -39,8 +39,13 @@
 	--color-button-gameselect: #242424;
 	--background-button-profil: #ffffff;
 	--color-button-profil: #242424;
+	--error-bg-color: red;
+	--error-text-color: white;
+	--alert-bg-color: yellow;
+	--alert-text-color: black;
+	--infor-bg-color: blue;
+	--infor-text-color: white;
 	overflow: scroll;
-	
 }
 
 .light::-webkit-scrollbar {
@@ -85,6 +90,12 @@
 	--color-button-gameselect: #ffffff;
 	--background-button-profil: #181818;
 	--color-button-profil: #ffffff;
+	--error-bg-color: red;
+	--error-text-color: white;
+	--alert-bg-color: yellow;
+	--alert-text-color: black;
+	--infor-bg-color: blue;
+	--infor-text-color: white;
 }
 .dark::-webkit-scrollbar {
 	display: none;
@@ -101,7 +112,7 @@
 	background-position: center;
 }
 
-.errorpage{
+.errorpage {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -113,7 +124,7 @@
 		font-size: 20px;
 		font-weight: 900;
 	}
-	p{
+	p {
 		font-size: 70px;
 	}
 }
