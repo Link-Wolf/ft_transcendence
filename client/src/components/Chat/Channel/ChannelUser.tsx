@@ -201,16 +201,18 @@ const ChannelUser = ({
 								<button>Profile</button>
 							</Link>
 							{!members[login].isBlocked && (
-								<AskForGameButton login={login} />
+								<AskForGameButton text={"text"} login={login} />
 							)}
 							{!members[login].isBlocked && (
 								<FriendPMButton
+									text={"text"}
 									login={login}
 									isFriend={members[login].isFriend}
 									setChannel={setChannel}
 								/>
 							)}
 							<BlockUnblockButton
+								text={"text"}
 								login={login}
 								isBlocked={members[login].isBlocked}
 							/>

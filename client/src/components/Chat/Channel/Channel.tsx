@@ -294,11 +294,9 @@ const Channel = ({
 			</div>
 			{showThingsAboutChannel === "userList" ? (
 				<>
-				{!showLebany ? <h2 className={style.channelName}> User List</h2>: <h2 className={style.channelName}>Ban List</h2>}
-					{/* <h2 className={style.channelName}> UserList</h2> */}
-				<div className={style.mpscroll}>
-
-
+				
+				{!showLebany ? 
+					<h2 className={style.channelName}> User List</h2>: <h2 className={style.channelName}>Ban List</h2>}
 					{/* if usr is an admin or the owner, have a button to see ban members */}
 					{(admins.includes(user.login) ||
 						owner.login === user.login) && (
@@ -313,6 +311,9 @@ const Channel = ({
 								: "Back to user list"}
 						</button>
 					)}
+				<div className={style.mpscroll}>
+
+
 					{!showLebany
 						? Object.keys(members)
 								.map((login) => members[login])

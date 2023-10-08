@@ -62,50 +62,54 @@ const Message = ({
 				>
 					<PPDisplayer login={login} size={40} status={true} />
 				</div>
-				<div onClick={toggleBox}>
+				<div >
 					<div className={style.senderinfo}>
-						{isToggleBox && (
+						<label className={style.toggleprofil}>
+
+						{isToggleBox && user.login !== login?
 							<div>
 								<Link to={`/profile/${login}`}>
 									<button>Profile</button>
 								</Link>
 								{!relation.isBlocked && (
-									<AskForGameButton login={login} />
+									<AskForGameButton text={"text"} login={login} />
 								)}
 								{!relation.isBlocked &&
 									(relation.isFriend ? (
 										<PMButton
-											login={login}
-											setChannel={setChannel}
+										login={login}
+										setChannel={setChannel}
 										/>
-									) : (
-										<FriendButton login={login} />
-									))}
+										) : (
+											<FriendButton text={"text"} login={login} />
+											))}
 								{relation.isBlocked ? (
 									<UnblockButton login={login} />
 								) : (
-									<BlockButton login={login} />
+									<BlockButton text={"Block"} login={login} />
 								)}
 							</div>
-						)}
+						:
 
-						{user.login !== login ? (
+						user.login !== login ? (
 							<button
-								onClick={toggleBox}
-								className={style.profil}
+							// onClick={toggleBox}
+							className={style.profil}
 							>
-								{name}{" "}
-								{login === owner.login
-									? "[owner]"
-									: admins.some(
-											(admin) => admin.login === login
-									  ) && "[admin]"}
-								{relation.isBlocked ? "(bloqué)" : ""}
-							</button>
-						) : (
-							<label>{name} (you) </label>
-						)}
+							{name} {" "}
+							{login === owner.login
+								? "[owner]"
+								: admins.some(
+									(admin) => admin.login === login
+									) && "[admin]"}
+									{relation.isBlocked ? "(bloqué)" : ""}
+									</button>
+									) : (
+										<label>{name} (you) </label>
+										)
 
+									}
+						</label>
 						<p className={style.message}>
 							{relation.isBlocked
 								? "Ce message est masquée"
