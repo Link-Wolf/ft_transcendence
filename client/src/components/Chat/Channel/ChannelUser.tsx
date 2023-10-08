@@ -150,7 +150,30 @@ const ChannelUser = ({
 	};
 
 	return (
-		<div>
+
+	// 	<div
+	// 	className={style.profilmp}
+	// 	key={i}
+	// 	>
+	// 		<PPDisplayer
+	// 			size={50}
+	// 			login={login}
+	// 			status={true}
+	// 		/>
+	// 		<div className={style.description}>
+	// 			<p className={style.mpname}>{login}</p>
+	// 			<p className={style.object}>
+	// 				<UnbanButton
+	// 					login={login}
+	// 					channel={channel}
+	// 				/>
+	// 			</p>
+	// 		</div>
+	// </div>
+
+
+		
+		<div >
 			{toggleAdminBox.isActive && (
 				<MuteBanForm
 					channel={channel}
@@ -162,8 +185,16 @@ const ChannelUser = ({
 					kick={kick}
 				/>
 			)}
-			<div className={style.user}>
-				{isToggleBox && (
+							<div
+					className={style.profilmp}
+					onClick={() => {
+						toggleBox(login);
+					}}
+				>
+					<PPDisplayer login={login} size={50} status={true} />
+					<div className={style.description}>
+
+				{isToggleBox ? 
 					<div className={style.action}>
 						<div>
 							<Link to={`/profile/${login}`}>
@@ -234,26 +265,27 @@ const ChannelUser = ({
 							)}
 						</div>
 					</div>
-				)}
-				<div
-					className={style.profil}
-					onClick={() => {
-						toggleBox(login);
-					}}
-				>
-					{login === owner.login
-						? " (owner)"
-						: admins.some((admin) => admin.userLogin === login) &&
-						  " (admin)"}
-					{user.login !== login ? (
-						<label>
+				:
+				<>
+					{user.login !== login ? 
+						<label className={style.mpname}>
 							{name} {members[login].isBlocked ? "(blocked)" : ""}
 						</label>
-					) : (
-						<label>{name} (you) </label>
-					)}
-					<PPDisplayer login={login} size={50} status={true} />
-				</div>
+					: 
+					<label className={style.mpname}>{name} (you) </label>
+					}
+
+						<p className={style.object}>
+						{login === owner.login
+							? "Owner"
+							: admins.some((admin) => admin.userLogin === login) ?
+							" Admin"
+							: "User"}
+						</p>
+				</>
+				}
+
+					</div>
 			</div>
 		</div>
 	);
