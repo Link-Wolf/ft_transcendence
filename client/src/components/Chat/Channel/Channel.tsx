@@ -147,6 +147,7 @@ const Channel = ({
 		setOwner({ login: "" });
 		return <></>;
 	}
+
 	return (
 		// <div>
 		// 	<button onClick={() => setChannel(null)}>Back</button>
@@ -260,7 +261,12 @@ const Channel = ({
 				}
 				{channel[0] !== "_" && (
 					<>
-						{owner.login === user.login ? (
+						{showThingsAboutChannel === "channelSettings" ? 
+							<p className={style.listbutton}>&nbsp;&nbsp;&nbsp;&nbsp;</p>
+							:
+							<></>
+							}
+						{owner.login === user.login ? showThingsAboutChannel !== "userList" ?(
 							<p className={style.parambutton}
 								onClick={() =>
 									showThingsAboutChannel === "channelSettings"
@@ -272,23 +278,40 @@ const Channel = ({
 									>
 									{showThingsAboutChannel === "channelSettings"
 										? "↩️"
-										: "ℹ️"}
+										: "🛡️"}
 							</p>
 						)
 						:
+							
+							<p className={style.parambutton}
+								onClick={() => {
+									if (showLebany) setUpdateLebany(true);
+									setShowLebany(!showLebany);
+								}}
+								>
+								{!showLebany
+									? "👥"
+									: "📛"}
+							</p>
+
+						:
 						<p className={style.parambutton}>&nbsp;&nbsp;&nbsp;</p>
 					}
-						<p className={style.listbutton}
+						{showThingsAboutChannel === "channelSettings" ? 
+							<></>
+							:
+							<p className={style.listbutton}
 							onClick={() =>
 								showThingsAboutChannel === "userList"
 								? setShowThingsAboutChannel("")
 								: setShowThingsAboutChannel("userList")
 							}
 							>
-							{showThingsAboutChannel === "userList"
-								? "↩️"
-								: "👥"}
-						</p>
+								{showThingsAboutChannel === "userList"
+									? "↩️"
+									: "👥"}
+							</p>
+						}
 					</>
 				)}
 			</div>
@@ -298,7 +321,7 @@ const Channel = ({
 				{!showLebany ? 
 					<h2 className={style.channelName}> User List</h2>: <h2 className={style.channelName}>Ban List</h2>}
 					{/* if usr is an admin or the owner, have a button to see ban members */}
-					{(admins.includes(user.login) ||
+					{/* {(admins.includes(user.login) ||
 						owner.login === user.login) && (
 						<button
 							onClick={() => {
@@ -310,7 +333,7 @@ const Channel = ({
 								? "See the banlist"
 								: "Back to user list"}
 						</button>
-					)}
+					)} */}
 				<div className={style.mpscroll}>
 
 
