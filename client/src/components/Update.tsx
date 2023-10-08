@@ -203,7 +203,13 @@ const Update = () => {
 						>
 							<h1>Two-Factor Authentication (2FA) Activation</h1>
 							<h3>Configure Google Authenticator or Authy</h3>
-							<ul>
+							<ul
+								style={{
+									textAlign: "left",
+									width: "fit-content",
+									margin: "auto",
+								}}
+							>
 								<li>
 									Install Google Authenticator or Authy (both
 									IOS - Android)
