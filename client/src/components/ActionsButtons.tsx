@@ -418,6 +418,9 @@ const PMButton = ({
 						)
 						.then((response) => {
 							setChannel(response.data.name);
+							socket.emit("channelUpdate", {
+								users: [user.login, login],
+							});
 						})
 						.catch((err) => {
 							console.log(err);

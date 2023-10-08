@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
 import { PPDisplayer } from "../ImageDisplayer";
 import style from "../../style/Chat.module.scss";
-
+import socket from "../../socket";
 
 const MPList = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -14,6 +14,21 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 	const [selectedUser, setSelectedUser] = useState("");
 	const [newDMError, setNewDMError] = useState("");
 	const context = useContext(UserContext);
+	const [update, setUpdate] = useState(true);
+
+	useEffect(() => {
+		setUpdate(true);
+	}, [context.login]);
+
+	useEffect(() => {
+		socket.on("channelUpdate", (data) => {
+			if (data.users.includes(context.login)) setUpdate(true);
+		});
+
+		return () => {
+			socket.off("channelUpdate");
+		};
+	}, []);
 
 	useEffect(() => {
 		axios
@@ -33,7 +48,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [context.login]);
+	}, [context.login, update]);
 
 	useEffect(() => {
 		//get all friends that haven't dm yet
@@ -47,7 +62,7 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [context.login]);
+	}, [context.login, update]);
 
 	const openDM = async () => {
 		if (
@@ -81,6 +96,9 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 				)
 				.then((response) => {
 					setChannel(response.data.name);
+					socket.emit("channelUpdate", {
+						users: [context.login, selectedUser],
+					});
 				})
 				.catch((err) => {
 					console.log(err);
@@ -94,50 +112,56 @@ const MPList = ({ setChannel }: { setChannel: Function }) => {
 		<div className={style.mplist}>
 			<h1>DM List</h1>
 			{newDMError !== "" && <div>{newDMError}</div>}
-			
+
 			<div className={style.displaylist}>
-			{memberships.length ? (
-				memberships.map((membership, i) => (
-					<div
-					className={style.profilmp}
-					key={i}
-					onClick={() => setChannel(membership.channelName)}
-					>
-						<PPDisplayer
-							size={80}
-							login={membership.userLogin}
-							status={true}
-							/>
-						<button className={style.mpname}>{membership.userLogin}</button>
-					</div>
-				))
-				) : (
-				<>
-					<p>
-						You don't have any DM<br/>
-						Start one from another user's profile, from a channel or here
-					</p>
-				</>
-			)}
-			</div>
-					<div>
-						<datalist id='new_dm_list'>
-							{users.map((user, i) => (
-								<option key={i} value={user.login} />
-							))}
-						</datalist>
-						<input className={style.mpinput}
-							placeholder="Enter user's login"
-							list='new_dm_list'
-							onChange={(e) => setSelectedUser(e.target.value)}
-						/>
-						<button
-							disabled={!selectedUser || selectedUser === ""}
-							onClick={openDM}
+				{memberships.length ? (
+					memberships.map((membership, i) => (
+						<div
+							className={style.profilmp}
+							key={i}
+							onClick={() => setChannel(membership.channelName)}
 						>
-							Go to conv
-						</button>
-					</div>
+							<PPDisplayer
+								size={80}
+								login={membership.userLogin}
+								status={true}
+							/>
+							<button className={style.mpname}>
+								{membership.userLogin}
+							</button>
+						</div>
+					))
+				) : (
+					<>
+						<p>
+							You don't have any DM
+							<br />
+							Start one from another user's profile, from a
+							channel or here
+						</p>
+					</>
+				)}
+			</div>
+			<div>
+				<datalist id='new_dm_list'>
+					{users.map((user, i) => (
+						<option key={i} value={user.login} />
+					))}
+				</datalist>
+				<input
+					className={style.mpinput}
+					placeholder="Enter user's login"
+					list='new_dm_list'
+					value={selectedUser}
+					onChange={(e) => setSelectedUser(e.target.value)}
+				/>
+				<button
+					disabled={!selectedUser || selectedUser === ""}
+					onClick={openDM}
+				>
+					Go to conv
+				</button>
+			</div>
 		</div>
 	);
 };
