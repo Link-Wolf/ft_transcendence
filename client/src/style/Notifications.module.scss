@@ -1,0 +1,54 @@
+.container {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+
+	.notification {
+		width: 200px;
+		padding: 10px;
+		height: 50px;
+		margin-bottom: 10px;
+		animation: fadeIn 0.5s;
+		transition: opacity 0.5s;
+
+		h1 {
+			font-size: 1.2rem;
+			margin: 0;
+			margin-bottom: 5px;
+		}
+
+		p {
+			font-size: 0.8rem;
+			margin: 0;
+		}
+
+		&.error {
+			background-color: var(--error-bg-color);
+			color: var(--error-text-color);
+		}
+
+		&.alert {
+			background-color: var(--alert-bg-color);
+			color: var(--alert-text-color);
+		}
+
+		&.info {
+			background-color: var(--infor-bg-color);
+			color: var(--infor-text-color);
+		}
+
+		&.destroyed {
+			opacity: 0;
+		}
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
