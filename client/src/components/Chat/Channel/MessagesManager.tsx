@@ -151,7 +151,7 @@ const MessagesManager = ({
 
 	return (
 		<>
-			<h1>
+			<h2 className={style.channelName}>
 				{channel[0] !== "_" ? (
 					channel
 				) : (
@@ -162,7 +162,7 @@ const MessagesManager = ({
 						{getNameOfTheOther(channel)}
 					</Link>
 				)}
-			</h1>
+			</h2>
 			<div className={style.channelmsg} id='chat'>
 				{messages
 					.sort((m1, m2) => {

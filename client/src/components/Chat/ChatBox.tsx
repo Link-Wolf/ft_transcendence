@@ -240,7 +240,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 							<p className={style.addbutton} onClick={addChannel}>
 				{newChannelVisibility ? <>&gt;</> : <>+</>}
 			</p>
-			</div>
+			</div >
 			<div className={style.mplist}>
 					<div className={style.search}>
 						<button className={style.searchbutton} disabled={!selectedUser || selectedUser === ""}
@@ -254,13 +254,14 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 								onChange={(e) => setSelectedUser(e.target.value)}
 								/>
 					</div>
+				<div className={style.mpscroll}>
 
 				{channels.map((channel, i) => (
-						<div
+					<div
 							className={style.profilmp}
 							key={i}
 							onClick={() => setChannel(channel)}
-						>
+							>
 							<div className={style.imgChannel}> {(channel.toUpperCase())[0]}</div>
 							<div className={style.description}>
 								<p className={style.mpname}>{channel}</p>
@@ -269,10 +270,10 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 						</div>
 						))}
 				{memberships.map((membership, i) => (
-						<div
-							className={style.profilmp}
-							key={i}
-							onClick={() => setChannel(membership.channelName)}
+					<div
+					className={style.profilmp}
+					key={i}
+					onClick={() => setChannel(membership.channelName)}
 						>
 							<PPDisplayer
 								size={50}
@@ -286,6 +287,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 						</div>
 					))}
 			</div>
+				</div>
 				</>}
 		</div>
 		</>

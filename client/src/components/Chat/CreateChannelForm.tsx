@@ -110,6 +110,8 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	};
 
 	return (
+		<div className={style.mpscroll}>
+
 		<form className={style.form}>
 			<label className={style.param}>
 				<label >Channel name</label>
@@ -137,10 +139,11 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 				type='button'
 				onClick={createChannel}
 				disabled={passError !== "" || nameError !== ""}
-			>
+				>
 				Create
 			</button>
 		</form>
+		</div>
 	);
 };
 

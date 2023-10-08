@@ -90,25 +90,37 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 		<>
 			{channelCreation ? (
 				<>
-					<p className={style.createbutton}onClick={createChannel}>^</p>
+					{/* <p className={style.createbutton}onClick={createChannel}>^</p> */}
 					<CreateChannelForm setChannel={setChannel} />
 				</>
 			) : (
 				<>
+				<div className={style.mpscroll}>
+					{/* <p className={style.createbutton} onClick={createChannel}>+</p> */}
+					<div
+						className={style.profilmp}
+						onClick={createChannel}
+						>
+												{/* <div className={style.imgChannel}>+</div> */}
+												<div className={style.description}>
+													<p className={style.mpname}>Create your own channel</p>
+													<p className={style.object}>Begin a new discussion</p>
+												</div>
+						</div>
 					{channels.map((channel, i) => (
 						<div
 						className={style.profilmp}
 						key={i}
 						onClick={() => setJoinChannel(channel)}
 						>
-												<div className={style.imgChannel}> {channel.name.toUpperCase()[0]}</div>
+												<div className={style.imgChannel}>+</div>
 												<div className={style.description}>
 													<p className={style.mpname}>{channel.name} {channel.password ? "🔒" : <></>}</p>
 													<p className={style.object}>{channel.password ? "A password is requiered for this channel" : "This is an public Channel"}</p>
 												</div>
 											</div>
 						))}
-						<p className={style.createbutton} onClick={createChannel}>+</p>
+				</div>
 				</>
 			)}
 		</>

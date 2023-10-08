@@ -148,40 +148,157 @@ const Channel = ({
 		return <></>;
 	}
 	return (
+		// <div>
+		// 	<button onClick={() => setChannel(null)}>Back</button>
+		// 	{channel[0] !== "_" && (
+		// 		<>
+		// 			<button
+		// 				onClick={() =>
+		// 					showThingsAboutChannel === "userList"
+		// 						? setShowThingsAboutChannel("")
+		// 						: setShowThingsAboutChannel("userList")
+		// 				}
+		// 			>
+		// 				{showThingsAboutChannel === "userList"
+		// 					? "X"
+		// 					: "User List"}
+		// 			</button>
+		// 			{owner.login === user.login && (
+		// 				<button
+		// 					onClick={() =>
+		// 						showThingsAboutChannel === "channelSettings"
+		// 							? setShowThingsAboutChannel("")
+		// 							: setShowThingsAboutChannel(
+		// 									"channelSettings"
+		// 							  )
+		// 					}
+		// 				>
+		// 					{showThingsAboutChannel === "channelSettings"
+		// 						? "X"
+		// 						: "Channel Settings"}
+		// 				</button>
+		// 			)}
+		// 		</>
+		// 	)}
+		// 	{showThingsAboutChannel === "userList" ? (
+		// 		<>
+		// 			{/* if usr is an admin or the owner, have a button to see ban members */}
+		// 			{(admins.includes(user.login) ||
+		// 				owner.login === user.login) && (
+		// 				<button
+		// 					onClick={() => {
+		// 						if (showLebany) setUpdateLebany(true);
+		// 						setShowLebany(!showLebany);
+		// 					}}
+		// 				>
+		// 					{!showLebany
+		// 						? "See the goulagged"
+		// 						: "Back to user list"}
+		// 				</button>
+		// 			)}
+		// 			{!showLebany
+		// 				? Object.keys(members)
+		// 						.map((login) => members[login])
+		// 						.filter((member) => {
+		// 							return member.isMember;
+		// 						})
+		// 						.map((member, i) => (
+		// 							<div key={i}>
+		// 								<ChannelUser
+		// 									name={member.user.name}
+		// 									channel={channel}
+		// 									admins={admins}
+		// 									owner={owner}
+		// 									login={member.user.login}
+		// 									members={members}
+		// 									setChannel={setChannel}
+		// 								/>
+		// 							</div>
+		// 						))
+		// 				: lebany.length
+		// 				? lebany.map((login, i) => (
+		// 						<div key={i}>
+		// 							<PPDisplayer
+		// 								login={login}
+		// 								status={true}
+		// 								size={30}
+		// 							/>
+		// 							{login}
+		// 							<UnbanButton
+		// 								login={login}
+		// 								channel={channel}
+		// 							/>
+		// 						</div>
+		// 				  ))
+		// 				: "No one is goulagged yet sir"}
+		// 		</>
+		// 	) : showThingsAboutChannel === "channelSettings" &&
+		// 	  owner.login === user.login ? (
+		// 		<ChannelSettings
+		// 			channelName={channel}
+		// 			owner={owner}
+		// 			admins={admins}
+		// 		/>
+		// 	) : (
+		// 		<MessagesManager
+		// 			channel={channel}
+		// 			members={members}
+		// 			admins={admins}
+		// 			owner={owner}
+		// 			setChannel={setChannel}
+		// 		/>
+		// 	)}
+		// </div>
 		<div>
-			<button onClick={() => setChannel(null)}>Back</button>
-			{channel[0] !== "_" && (
-				<>
-					<button
-						onClick={() =>
-							showThingsAboutChannel === "userList"
-								? setShowThingsAboutChannel("")
-								: setShowThingsAboutChannel("userList")
-						}
-					>
-						{showThingsAboutChannel === "userList"
-							? "X"
-							: "User List"}
-					</button>
-					{owner.login === user.login && (
-						<button
-							onClick={() =>
-								showThingsAboutChannel === "channelSettings"
+			<div className={style.headsection}>
+				<p className={style.actionbutton} onClick={() => setChannel(null)}>&lsaquo;</p>
+				{channel[0] !== "_" ? 
+				<h2 className={style.titleChannel}>Channel</h2>
+					: 
+				<h2 className={style.titlePrivate}>Private Message</h2>
+
+				}
+				{channel[0] !== "_" && (
+					<>
+						{owner.login === user.login ? (
+							<p className={style.parambutton}
+								onClick={() =>
+									showThingsAboutChannel === "channelSettings"
 									? setShowThingsAboutChannel("")
 									: setShowThingsAboutChannel(
-											"channelSettings"
-									  )
+										"channelSettings"
+										)
+									}
+									>
+									{showThingsAboutChannel === "channelSettings"
+										? "↩️"
+										: "ℹ️"}
+							</p>
+						)
+						:
+						<p className={style.parambutton}>&nbsp;&nbsp;&nbsp;</p>
+					}
+						<p className={style.listbutton}
+							onClick={() =>
+								showThingsAboutChannel === "userList"
+								? setShowThingsAboutChannel("")
+								: setShowThingsAboutChannel("userList")
 							}
-						>
-							{showThingsAboutChannel === "channelSettings"
-								? "X"
-								: "Channel Settings"}
-						</button>
-					)}
-				</>
-			)}
+							>
+							{showThingsAboutChannel === "userList"
+								? "↩️"
+								: "👥"}
+						</p>
+					</>
+				)}
+			</div>
 			{showThingsAboutChannel === "userList" ? (
 				<>
+				{!showLebany ? <h2 className={style.channelName}> User List</h2>: <h2 className={style.channelName}>Ban List</h2>}
+					{/* <h2 className={style.channelName}> UserList</h2> */}
+				<div className={style.mpscroll}>
+
+
 					{/* if usr is an admin or the owner, have a button to see ban members */}
 					{(admins.includes(user.login) ||
 						owner.login === user.login) && (
@@ -190,9 +307,9 @@ const Channel = ({
 								if (showLebany) setUpdateLebany(true);
 								setShowLebany(!showLebany);
 							}}
-						>
+							>
 							{!showLebany
-								? "See the goulagged"
+								? "See the banlist"
 								: "Back to user list"}
 						</button>
 					)}
@@ -212,33 +329,46 @@ const Channel = ({
 											login={member.user.login}
 											members={members}
 											setChannel={setChannel}
-										/>
+											/>
 									</div>
 								))
-						: lebany.length
-						? lebany.map((login, i) => (
-								<div key={i}>
-									<PPDisplayer
-										login={login}
-										status={true}
-										size={30}
-									/>
-									{login}
-									<UnbanButton
-										login={login}
-										channel={channel}
-									/>
-								</div>
-						  ))
-						: "No one is goulagged yet sir"}
+								: lebany.length
+								? lebany.map((login, i) => (
+									<div
+										className={style.profilmp}
+										key={i}
+										>
+											<PPDisplayer
+												size={50}
+												login={login}
+												status={true}
+											/>
+											<div className={style.description}>
+												<p className={style.mpname}>{login}</p>
+												<p className={style.object}>
+													<UnbanButton
+														login={login}
+														channel={channel}
+													/>
+												</p>
+											</div>
+									</div>
+						))
+						: "No one is ban yet sir"}
+				</div>
 				</>
 			) : showThingsAboutChannel === "channelSettings" &&
-			  owner.login === user.login ? (
-				<ChannelSettings
-					channelName={channel}
-					owner={owner}
-					admins={admins}
-				/>
+			owner.login === user.login ? (
+				<>
+				<h2 className={style.channelName}> Administrator section</h2>
+				<div className={style.mpscroll}>
+					<ChannelSettings
+						channelName={channel}
+						owner={owner}
+						admins={admins}
+						/>
+					</div>
+				</>
 			) : (
 				<MessagesManager
 					channel={channel}
@@ -248,7 +378,10 @@ const Channel = ({
 					setChannel={setChannel}
 				/>
 			)}
-		</div>
+	</div>
+
+
+
 	);
 };
 

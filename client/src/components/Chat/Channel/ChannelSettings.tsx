@@ -3,6 +3,8 @@ import { UserContext } from "../../../App";
 import axios from "axios";
 import { PPDisplayer } from "../../ImageDisplayer";
 import { DemoteButton } from "../../ActionsButtons";
+import style from "../../../style/Chat.module.scss";
+
 
 const ChannelSettings = ({
 	channelName,
@@ -129,6 +131,7 @@ const ChannelSettings = ({
 	const handleFormChange = (e: any) => {
 		setPassValue(e.target.value);
 	};
+	console.log(admins);
 
 	if (!channel) return <></>;
 	return (
@@ -181,12 +184,12 @@ const ChannelSettings = ({
 			<div>
 				{admins.length ? (
 					<>
-						Ur admins sir' :
+						<h3 className={style.titleAdmin}>Admin</h3>
 						{admins.map((admin, i) => (
 							<div key={i}>
 								<AdminCardIdk
-									name={admin.name}
-									login={admin.login}
+									name={admin.user.name}
+									login={admin.userLogin}
 									channel={channelName}
 								/>
 							</div>
@@ -211,9 +214,18 @@ const AdminCardIdk = ({
 }) => {
 	return (
 		<>
-			<PPDisplayer login={login} size={30} status={true} />
-			{name}
-			<DemoteButton login={login} channel={channel} />
+			<div className={style.profilmp}>
+					<PPDisplayer
+							size={50}
+							login={login}
+							status={true}
+					/>
+					<div className={style.description}>
+						<p className={style.mpname}>{name} ({login})</p>
+						<p className={style.object}><DemoteButton login={login} channel={channel} /></p>
+					</div>
+			</div>
+			
 		</>
 	);
 };
