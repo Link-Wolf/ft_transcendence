@@ -111,6 +111,51 @@
 	}
 }
 
+.password {
+	display: flex;
+	flex-direction: row;
+	margin: 0 10px 10px 10px;
+	background-color: #c4c4c4;
+	border-radius: 10px;
+	// align-items: center;
+	// text-align: center;
+	justify-content: center;
+	.passwordbutton{
+		border: 0px;
+		// background-color: rgba($color: #000000, $alpha: 0);
+		// margin-top: 5px;
+		height: 16px;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		// &:enabled{
+		// 	background-color: var(--background-button-tel-disabled);
+		// 	border-color: #000000;
+		// 	color: #cecece;
+		// 	transition: 0.5s;
+
+		// }
+	}
+	input{
+		border: 0px;
+		border-radius: 0px;
+		background-color: rgba($color: #000000, $alpha: 0);
+		margin: 4px;
+		width: 150px;
+		&:focus
+		{
+			outline: none;
+		}
+	}
+}
+.passError{
+	font-size: 10px;
+	text-align: center;
+	padding-left: 8px;
+	padding-right: 8px;
+	// margin: 0;
+}
+
+
 .sendsection {
 	display: flex;
 	flex-direction: row;
@@ -145,7 +190,11 @@
 	.ChatHomePage {
 		align-items: start;
 		text-align: start;
-
+		text-align: center;
+		.imgChat{
+			margin-top: 20px;
+			height: 300px;
+		}
 		.titleHome{
 			color: var(--neutral-text); ;
 		}
@@ -162,9 +211,6 @@
 		}
 
 		color: rgb(0, 115, 192);
-		h1{
-			// text-align: center;
-		}
 
 		button {
 			height: 18px;
@@ -534,11 +580,6 @@
 	
 }
 
-.toggleprofil{
-
-	
-}
-
 button {
 	background-color: var(--background-button-tel);
 	border: 3px solid;
@@ -566,4 +607,11 @@ button {
 		transition: 0.5s;
 		
 	}
+}
+
+.empty{
+	text-align: center;
+	color: #0066b9;
+	padding-left: 10px;
+	padding-right: 10px;
 }
