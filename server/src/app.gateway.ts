@@ -800,10 +800,10 @@ export class AppGateway
 			let dt = now - game.lastTimestamp; // approx 16ms
 			game.lastTimestamp = now;
 
-			if (game.players[0].lastInput + 1000 * 60 < now) {
+			if (game.players[0].lastInput + 1000 * 30 < now) {
 				this.abortGame(game, 0);
 			}
-			if (game.players[1].lastInput + 1000 * 60 < now) {
+			if (game.players[1].lastInput + 1000 * 30 < now) {
 				this.abortGame(game, 1);
 			}
 
