@@ -286,6 +286,11 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 							</div>
 						</div>
 					))}
+			{(channels.length === 0 && memberships.length === 0) && 
+			<>
+				<p className={style.empty} > Any conversation yet, you can create add and create channel with "+"</p>
+				{/* <img className={style.imgChat} src="https://temtem.wiki.gg/images/b/bb/Platox_idle_animation.gif"></img> */}
+			</>}
 			</div>
 				</div>
 				</>}
