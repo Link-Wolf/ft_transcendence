@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
 import socket from "../../../socket";
+import style from "../../../style/Chat.module.scss";
+
 
 const MuteBanForm = ({
 	channel,
@@ -118,7 +120,7 @@ const MuteBanForm = ({
 	return (
 		<div /*RELATIVE */>
 			<div>{/* FIXED INFINITE */}</div>
-			<div /* ignore sa petite soeur*/>
+			<div className={style.muteform}/* ignore sa petite soeur*/>
 				<form>
 					{boxType === "mute" && (
 						<select
@@ -127,7 +129,7 @@ const MuteBanForm = ({
 							name='duration'
 						>
 							<option value={0} disabled>
-								Choose the duration
+								Duration
 							</option>
 							<option value={5}>5 minutes</option>
 							<option value={10}>10 minutes</option>
@@ -153,7 +155,7 @@ const MuteBanForm = ({
 						}}
 					>
 						{boxType === "mute"
-							? "Censor him"
+							? "Censor"
 							: "Apply the banhammer"}
 					</button>
 				</form>
