@@ -4,6 +4,7 @@ import { UserContext } from "../../App";
 import CreateChannelForm from "./CreateChannelForm";
 import socket from "../../socket";
 import style from "../../style/Chat.module.scss";
+import { useNotifications } from "../Notifications";
 
 const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -14,6 +15,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	const [joinChannel, setJoinChannel] = useState<any>(null);
 	const [canIBebouPlz, setCanIBebouPlz] = useState(false);
 	const user = useContext(UserContext);
+	const notifications = useNotifications();
 
 	useEffect(() => {
 		axios
@@ -47,8 +49,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 				)
 				.then((response) => {
 					if (!response.data) {
-						//TODO: ouioui pas bon passwd
-						alert("Wrong password");
+						notifications.error("Wrong Password");
 					} else setCanIBebouPlz(true);
 				})
 				.catch((err) => {
@@ -95,32 +96,40 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 				</>
 			) : (
 				<>
-				<div className={style.mpscroll}>
-					{/* <p className={style.createbutton} onClick={createChannel}>+</p> */}
-					<div
-						className={style.profilmp}
-						onClick={createChannel}
-						>
-												{/* <div className={style.imgChannel}>+</div> */}
-												<div className={style.description}>
-													<p className={style.mpname}>Create your own channel</p>
-													<p className={style.object}>Begin a new discussion</p>
-												</div>
+					<div className={style.mpscroll}>
+						{/* <p className={style.createbutton} onClick={createChannel}>+</p> */}
+						<div className={style.profilmp} onClick={createChannel}>
+							{/* <div className={style.imgChannel}>+</div> */}
+							<div className={style.description}>
+								<p className={style.mpname}>
+									Create your own channel
+								</p>
+								<p className={style.object}>
+									Begin a new discussion
+								</p>
+							</div>
 						</div>
-					{channels.map((channel, i) => (
-						<div
-						className={style.profilmp}
-						key={i}
-						onClick={() => setJoinChannel(channel)}
-						>
-												<div className={style.imgChannel}>+</div>
-												<div className={style.description}>
-													<p className={style.mpname}>{channel.name} {channel.password ? "🔒" : <></>}</p>
-													<p className={style.object}>{channel.password ? "A password is requiered for this channel" : "This is an public Channel"}</p>
-												</div>
-											</div>
+						{channels.map((channel, i) => (
+							<div
+								className={style.profilmp}
+								key={i}
+								onClick={() => setJoinChannel(channel)}
+							>
+								<div className={style.imgChannel}>+</div>
+								<div className={style.description}>
+									<p className={style.mpname}>
+										{channel.name}{" "}
+										{channel.password ? "🔒" : <></>}
+									</p>
+									<p className={style.object}>
+										{channel.password
+											? "A password is requiered for this channel"
+											: "This is an public Channel"}
+									</p>
+								</div>
+							</div>
 						))}
-				</div>
+					</div>
 				</>
 			)}
 		</>
