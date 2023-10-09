@@ -290,8 +290,8 @@ const Channel = ({
 								}}
 								>
 								{!showLebany
-									? "👥"
-									: "📛"}
+									? "📛"
+									: "👥"}
 							</p>
 
 						:
@@ -378,7 +378,7 @@ const Channel = ({
 											</div>
 									</div>
 						))
-						: "No one is ban yet sir"}
+						: <p className={style.empty}> Anyone is ban yet, I think is a good thing</p>}
 				</div>
 				</>
 			) : showThingsAboutChannel === "channelSettings" &&

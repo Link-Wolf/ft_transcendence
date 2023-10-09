@@ -135,8 +135,8 @@ const ChannelSettings = ({
 	if (!channel) return <></>;
 	return (
 		<>
-			<div>
-				{hasPassword && (
+			<div className={style.password}>
+				{hasPassword && updatePassword && (
 					<input
 						id='password'
 						type='password'
@@ -148,17 +148,17 @@ const ChannelSettings = ({
 				)}
 				{hasPassword && !updatePassword ? (
 					<>
-						<button type='button' onClick={wannaEditPassword}>
+						<button className={style.passwordbutton} type='button' onClick={wannaEditPassword}>
 							Change password
 						</button>
-						<button type='button' onClick={removePassword}>
+						<button  className={style.passwordbutton} type='button' onClick={removePassword}>
 							Remove password
 						</button>
 					</>
 				) : (
 					!updatePassword && (
 						<>
-							<button type='button' onClick={wannaEditPassword}>
+							<button className={style.passwordbutton} type='button' onClick={wannaEditPassword}>
 								Add password
 							</button>
 						</>
@@ -166,11 +166,12 @@ const ChannelSettings = ({
 				)}
 				{hasPassword && updatePassword && (
 					<>
-						{passError !== "" && <p>{passError}</p>}
-						<button type='button' onClick={cancelChange}>
+						{/* {passError !== "" && <p>{passError}</p>} */}
+						<button  className={style.passwordbutton} type='button' onClick={cancelChange}>
 							Cancel
 						</button>
 						<button
+							className={style.passwordbutton}
 							type='button'
 							onClick={editPassword}
 							disabled={passError !== ""}
@@ -180,6 +181,8 @@ const ChannelSettings = ({
 					</>
 				)}
 			</div>
+			{hasPassword && updatePassword && (
+						passError !== "" && <p className={style.passError}>{passError}</p>)}
 			<div>
 				{admins.length ? (
 					<>
@@ -195,7 +198,7 @@ const ChannelSettings = ({
 						))}
 					</>
 				) : (
-					"There is no admin sir"
+					<p className={style.empty} >Any admin yet, You can add one no the User List</p>
 				)}
 			</div>
 		</>
