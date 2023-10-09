@@ -14,9 +14,8 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	const [isRanked, setIsRanked] = useState(false);
 	const map = useMemo(
 		() =>
-			(modifiers.filter((m) => {
-				m.id === selectedMap;
-			})[0]?.code as string) ?? "default",
+			(modifiers.filter((m) => m.id === selectedMap)[0]
+				?.code as string) ?? "default",
 		[selectedMap]
 	);
 
