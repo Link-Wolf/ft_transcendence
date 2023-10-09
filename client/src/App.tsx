@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
 import { use } from "matter-js";
 import { NotificationsProvider } from "./components/Notifications";
+import { PromptModal, PromptProvider } from "./components/Prompt";
 
 export const UserContext = createContext({
 	login: "",
@@ -187,20 +188,23 @@ const App = () => {
 					}`}
 				></div>
 				<div className={style.container}>
-					<NotificationsProvider>
-						<UserContext.Provider
-							value={{
-								...clearance,
-								toggleTheme: toggleTheme,
-								chat: chat,
-								setChat: setChat,
-								channel: channel,
-								setChannel: setChannel,
-							}}
-						>
-							<Routage />
-						</UserContext.Provider>
-					</NotificationsProvider>
+					<PromptProvider>
+						<NotificationsProvider>
+							<UserContext.Provider
+								value={{
+									...clearance,
+									toggleTheme: toggleTheme,
+									chat: chat,
+									setChat: setChat,
+									channel: channel,
+									setChannel: setChannel,
+								}}
+							>
+								<Routage />
+								<PromptModal />
+							</UserContext.Provider>
+						</NotificationsProvider>
+					</PromptProvider>
 				</div>
 			</div>
 		</>
