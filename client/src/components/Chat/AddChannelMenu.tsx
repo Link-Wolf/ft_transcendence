@@ -46,7 +46,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 			)
 			.then((response) => {
 				if (!response.data) {
-					notifications.error("Wrong Password");
+					notifications.error("Error","Wrong Password");
 					return false;
 				} else return true;
 			})
@@ -72,7 +72,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 				setChannel(joined_channel.data.channelName);
 			})
 			.then(() => {
-				notifications.info("Channel joined");
+				notifications.info("Channel joined","Please respect other player");
 				socket.emit("membershipUpdate", {
 					channel: channel.name,
 				});
