@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNotifications } from "./Notifications";
 
 const TFA = () => {
 	const [form, setForm] = useState({
 		tfacode: "",
 	});
 	const login = useParams().login;
+	const notifications = useNotifications();
 
 	const checkTFA = async () => {
 		axios
@@ -20,7 +22,7 @@ const TFA = () => {
 				if (res.data) {
 					window.location.href = "/";
 				} else {
-					alert("Wrong TFA code");
+					notifications.error("Wrong TFA code");
 				}
 			})
 			.catch((err) => {
