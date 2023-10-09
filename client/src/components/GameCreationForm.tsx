@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import style from "../style/Game.module.scss";
@@ -12,6 +12,12 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	const [selectedModifiers, setSelectedModifiers] = useState<number[]>([]);
 	const [selectedMap, setSelectedMap] = useState(-1);
 	const [isRanked, setIsRanked] = useState(false);
+	const map = useMemo(
+		() =>
+			(modifiers.filter((m) => m.id === selectedMap)[0]
+				?.code as string) ?? "default",
+		[selectedMap]
+	);
 
 	const selectedStyle = {
 		fontWeight: "bold",
@@ -51,179 +57,211 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 
 	return (
 		<>
-		<div className={`${style.gameCreationForm} ${isVisible && style.show}`}>
-			<h1>GAME CREATION</h1>
-			<div className={style.display}>
+			<div
+				className={`${style.gameCreationForm} ${
+					isVisible && style.show
+				}`}
+			>
+				<h1>GAME CREATION</h1>
+				<div className={style.display}>
+					<div className={style.preview}>
+						{selectedMap === -1 ? (
+							<div className={style.gamemapDefault}></div>
+						) : selectedMap === 11 ? (
+							<div className={style.gamemapTwin}></div>
+						) : (
+							<div className={style.gamemapLine}></div>
+						)}
+					</div>
+					<div>
+						<label
+							className={style.gameselect}
+							style={isRanked ? selectedStyle : unselectedStyle}
+						>
+							<label>
+								<input
+									type='checkbox'
+									checked={isRanked}
+									onChange={() => {
+										setIsRanked((isRanked) => !isRanked);
+									}}
+								/>
+								Ranked
+							</label>
+							<label data-tooltip-id={"ranked"}>💬</label>
+							<Tooltip id={"ranked"}>
+								A ranked game is a game without modifier whose
+								results are taken into account in the ranking
+							</Tooltip>
+						</label>
 
-			<div className={style.preview}>
-			{selectedMap === -1 ? (
-				<div className={style.gamemapDefault}></div>
-			) : selectedMap === 11 ? (
-				<div className={style.gamemapTwin}></div>
-				) : (
-					<div className={style.gamemapLine}></div>
-					)}
-				</div>
-				<div>
-			<label
-				className={style.gameselect}
-				style={isRanked ? selectedStyle : unselectedStyle}
-				>
-				<label>
-					<input
-						type='checkbox'
-						checked={isRanked}
-						onChange={() => {
-							setIsRanked((isRanked) => !isRanked);
-						}}
-						/>
-					Ranked
-				</label>
-				<label data-tooltip-id={"ranked"}>💬</label>
-				<Tooltip id={"ranked"}>
-					A ranked game is a game without modifier whose results are
-					taken into account in the ranking
-				</Tooltip>
-			</label>
+						{!isRanked && (
+							<>
+								<hr />
 
-
-			{!isRanked && (
-				<>
-					<hr />
-
-					{modifiers
-						.filter((mod) => !mod.code.startsWith("map_"))
-						.map((modifier, i) => (
-							<label
-								className={style.gameselect}
-								key={i}
-								style={
-									selectedModifiers.includes(modifier.id)
-									? selectedStyle
-									: unselectedStyle
-								}
-								>
-								<label>
-									<input
-										type='checkbox'
-										checked={selectedModifiers.includes(
-											modifier.id
-											)}
-											onChange={() => {
-											if (
+								{modifiers
+									.filter(
+										(mod) => !mod.code.startsWith("map_")
+									)
+									.map((modifier, i) => (
+										<label
+											className={style.gameselect}
+											key={i}
+											style={
 												selectedModifiers.includes(
 													modifier.id
-													)
-													)
-													setSelectedModifiers(
-														selectedModifiers.filter(
-															(e) => e !== modifier.id
+												)
+													? selectedStyle
+													: unselectedStyle
+											}
+										>
+											<label>
+												<input
+													type='checkbox'
+													checked={selectedModifiers.includes(
+														modifier.id
+													)}
+													onChange={() => {
+														if (
+															selectedModifiers.includes(
+																modifier.id
 															)
+														)
+															setSelectedModifiers(
+																selectedModifiers.filter(
+																	(e) =>
+																		e !==
+																		modifier.id
+																)
 															);
-															else {
-																setSelectedModifiers(
-																	(selectedModifiers) => [
-																		...selectedModifiers,
-																		modifier.id,
-																	]
-																	);
-																}
-															}}
-									/>
-									{modifier.name}
-								</label>
+														else {
+															setSelectedModifiers(
+																(
+																	selectedModifiers
+																) => [
+																	...selectedModifiers,
+																	modifier.id,
+																]
+															);
+														}
+													}}
+												/>
+												{modifier.name}
+											</label>
+											<label
+												data-tooltip-id={
+													"modifier" + modifier.code
+												}
+											>
+												💬
+											</label>
+											<Tooltip
+												id={"modifier" + modifier.code}
+											>
+												{modifier.desc}
+											</Tooltip>
+										</label>
+									))}
+
+								<hr />
+
 								<label
-									data-tooltip-id={"modifier" + modifier.code}
-									>
-									💬
+									className={style.gameselect}
+									style={
+										selectedMap === -1
+											? selectedStyle
+											: unselectedStyle
+									}
+								>
+									<label>
+										<input
+											type='radio'
+											name='map'
+											checked={selectedMap === -1}
+											onChange={(e: any) => {
+												if (e.target.checked)
+													setSelectedMap(-1);
+											}}
+										/>
+										Default Map
+									</label>
+									<label data-tooltip-id={"default map"}>
+										💬
+									</label>
+									<Tooltip id={"default map"}>
+										Default map, without any obstacle
+									</Tooltip>
 								</label>
-								<Tooltip id={"modifier" + modifier.code}>
-									{modifier.desc}
-								</Tooltip>
-							</label>
-						))}
+								{modifiers
+									.filter((mod) =>
+										mod.code.startsWith("map_")
+									)
+									.map((modifier, i) => (
+										<label
+											className={style.gameselect}
+											key={i}
+											style={
+												selectedMap === modifier.id
+													? selectedStyle
+													: unselectedStyle
+											}
+										>
+											<label>
+												<input
+													type='radio'
+													name='map'
+													checked={
+														selectedMap ===
+														modifier.id
+													}
+													onChange={(e: any) => {
+														if (e.target.checked)
+															setSelectedMap(
+																modifier.id
+															);
+													}}
+												/>
+												{modifier.name}
+											</label>
+											<label
+												data-tooltip-id={
+													"modifier" + modifier.code
+												}
+											>
+												💬
+											</label>
+											<Tooltip
+												id={"modifier" + modifier.code}
+											>
+												{modifier.desc}
+											</Tooltip>
+										</label>
+									))}
+							</>
+						)}
 
-					<hr />
-
-					<label
-						className={style.gameselect}
-						style={
-							selectedMap === -1 ? selectedStyle : unselectedStyle
-						}
+						{/* Depending of if there is a given login (so if it's a friendly match) do something different to manage the game */}
+						<Link
+							to={`/game?${
+								isRanked
+									? "isRanked=true"
+									: `isRanked=false&modifiers=${[
+											selectedMap,
+											...selectedModifiers,
+									  ]
+											.filter((e) => e !== -1)
+											.join(",")}`
+							}${
+								opponentLogin ? `&invitee=${opponentLogin}` : ""
+							}`}
 						>
-						<label>
-							<input
-								type='radio'
-								name='map'
-								checked={selectedMap === -1}
-								onChange={(e: any) => {
-									if (e.target.checked) setSelectedMap(-1);
-								}}
-								/>
-							Default Map
-						</label>
-						<label data-tooltip-id={"default map"}>💬</label>
-						<Tooltip id={"default map"}>
-							Default map, without any obstacle
-						</Tooltip>
-					</label>
-					{modifiers
-						.filter((mod) => mod.code.startsWith("map_"))
-						.map((modifier, i) => (
-							<label
-							className={style.gameselect}
-							key={i}
-							style={
-								selectedMap === modifier.id
-								? selectedStyle
-								: unselectedStyle
-							}
-							>
-								<label>
-									<input
-										type='radio'
-										name='map'
-										checked={selectedMap === modifier.id}
-										onChange={(e: any) => {
-											if (e.target.checked)
-											setSelectedMap(modifier.id);
-									}}
-									/>
-									{modifier.name}
-								</label>
-								<label
-									data-tooltip-id={"modifier" + modifier.code}
-									>
-									💬
-								</label>
-								<Tooltip id={"modifier" + modifier.code}>
-									{modifier.desc}
-								</Tooltip>
-							</label>
-						))}
-				</>
-			)}
-
-			{/* Depending of if there is a given login (so if it's a friendly match) do something different to manage the game */}
-			<Link
-				to={`/game?${
-					isRanked
-					? "isRanked=true"
-					: `isRanked=false&modifiers=${[
-						selectedMap,
-						...selectedModifiers,
-					]
-					.filter((e) => e !== -1)
-					.join(",")}`
-				}${opponentLogin ? `&invitee=${opponentLogin}` : ""}`}
-				>
-				<button className={style.button}>
-					{opponentLogin ? "Invite" : "Create Game"}
-				</button>
-			</Link>
+							<button className={style.button}>
+								{opponentLogin ? "Invite" : "Create Game"}
+							</button>
+						</Link>
+					</div>
+				</div>
 			</div>
-			</div>
-		</div>
 		</>
 	);
 };
