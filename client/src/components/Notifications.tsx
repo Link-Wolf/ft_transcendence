@@ -13,6 +13,7 @@ const NotificationsContext = createContext(
 
 type Notification = {
 	type: "error" | "alert" | "info";
+	title: string;
 	message: string;
 	expires: number;
 };
@@ -71,25 +72,28 @@ const useNotifications = () => {
 		);
 	}
 
-	const alert = (message: string, duration = 5) => {
+	const alert = (title: string, message: string, duration = 5) => {
 		context.addNotification({
 			type: "alert",
+			title,
 			message,
 			expires: Date.now() + 1000 * duration,
 		});
 	};
 
-	const error = (message: string, duration = 5) => {
+	const error = (title: string, message: string, duration = 5) => {
 		context.addNotification({
 			type: "error",
+			title,
 			message,
 			expires: Date.now() + 1000 * duration,
 		});
 	};
 
-	const info = (message: string, duration = 5) => {
+	const info = (title: string, message: string, duration = 5) => {
 		context.addNotification({
 			type: "info",
+			title,
 			message,
 			expires: Date.now() + 1000 * duration,
 		});
@@ -100,16 +104,20 @@ const useNotifications = () => {
 
 const NotificationInfoBox = ({
 	type,
+	title,
 	message,
 	destroy,
 }: Notification & { destroy: MouseEventHandler }) => {
 	return (
 		<div
 			onClick={destroy}
-			className={`${style.notification} ${style[type]}`}
+			className={style.notification}
 		>
-			<h1>{type}</h1>
-			<p>{message}</p>
+			<div className={`${style.ico} ${style[type]}`}>{type === "info" ? "ℹ️": type === "alert" ? "⚠️": "🚫" }</div>
+			<div className={style.notifDescrib}>
+				<pre className={style.notifTitle}>{title.toUpperCase()}</pre>
+				<pre className={style.notifMsg}>{message}</pre>
+			</div>
 		</div>
 	);
 };

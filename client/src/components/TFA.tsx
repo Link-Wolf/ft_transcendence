@@ -22,7 +22,7 @@ const TFA = () => {
 				if (res.data) {
 					window.location.href = "/";
 				} else {
-					notifications.error("Wrong TFA code");
+					notifications.error("Error","Wrong TFA code");
 				}
 			})
 			.catch((err) => {
