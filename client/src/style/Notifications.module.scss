@@ -13,16 +13,13 @@
 	.notification {
 
 		display: flex;
-		flex-direction: row;
+		flex-direction: row-reverse;
 		text-align: start;
 		width:fit-content;
-		// border-radius: 25px;
 		align-items: center;
 		padding: 0px;
 		margin: 0px;
-		// padding: 10px;
-		// background-color: rgba($color: #3d3d3d, $alpha: 0.8);
-		color: white;
+		color: rgb(252, 252, 252);
 		height: 40px;
 		margin-bottom: 10px;
 		animation: fadeIn 0.5s;
@@ -30,36 +27,45 @@
 		.notifDescrib{
 			margin: 0;
 			margin-left: 3px;
+			margin-right: 4px;
 			padding: 0;
-			background-color: #000000;
+			background-color: #353535;
 			height: 45px;
-			padding-left: 10px;
-			padding-right: 10px;
+			padding-left: 15px;
+			padding-right: 15px;
+				border-radius: 50px 0 0 50px;
 			.notifTitle{
 				margin:0;
 				padding-top: 5px;
 				font-size: 15px;
 				font-weight: 900;
+						text-align: end;
+				&.error {
+					color: var(--error-bg-color);
+				}
+		
+				&.alert {
+					color: var(--alert-bg-color);
+				}
+		
+				&.info {
+					color: var(--infor-bg-color);
+				}
 			}
 			.notifMsg{
 				margin:0;
 			}
 		}
-		// h1 {
-		// 	font-size: 1.2rem;
-		// 	margin: 0;
-		// 	margin-bottom: 5px;
-		// }
 
 		.ico {
 			display: flex;
-			background-color: #000000;
 			width: 45px;
 			height: 45px;
-			// border-radius: 100%;
 			align-items: center;
 			text-align: center;
 			justify-content: center;
+			border-radius: 0 50px 50px 0;
+
 			font-size: 20px;
 			&.error {
 				background-color: var(--error-bg-color);

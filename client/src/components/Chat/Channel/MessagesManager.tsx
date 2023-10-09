@@ -5,6 +5,7 @@ import socket from "../../../socket";
 import { UserContext } from "../../../App";
 import style from "../../../style/Chat.module.scss";
 import { Link } from "react-router-dom";
+import { useNotifications } from "../../Notifications";
 
 const MessagesManager = ({
 	channel,
@@ -24,11 +25,17 @@ const MessagesManager = ({
 	const [message, setMessage] = useState<string>("");
 	const [canSendMessage, setCanSendMessage] = useState(false);
 	const [update, setUpdate] = useState(true);
+	const notifications = useNotifications();
 
 	useEffect(() => {
 		setUpdate(true);
 		function clic(payload: any) {
-			if (payload.channel === channel) setUpdate(true);
+			if (payload.channel === channel) {
+
+				setUpdate(true);
+				if (payload.login !== user.login && payload.login)
+				notifications.info("New message on " + payload.channel, payload.login + " : " + payload.message);
+			}
 		}
 		socket.on("newMessage", clic);
 		socket.on("membershipUpdate", clic);
@@ -37,30 +44,32 @@ const MessagesManager = ({
 			socket.off("membershipUpdate", clic);
 		};
 	}, [channel]);
-
+	
 	const getNameOfTheOther = (channel: string) => {
 		let names = channel.split("_")[1].split("&");
 		return names[0] === user.login ? names[1] : names[0];
 	};
-
+	
 	const sendMessage = async (e: FormEvent) => {
 		e.preventDefault();
 		if (!canSendMessage) return;
 		let printableRegexButNoSpace = /[\S\x21-\x7E\u{A0}-\u{FFFF}]/gu; // Matches any printable characters (including Unicode) except space
 		if (printableRegexButNoSpace.test(message) && message.length < 500)
-			await axios
-				.post(
-					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
-					{
-						chanName: channel,
-						content: message,
-						userLogin: user.login,
-					}
-				)
-				.then(() => {
-					setMessage("");
-					socket.emit("newMessage", {
+		await axios
+	.post(
+		`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
+		{
+			chanName: channel,
+			content: message,
+			userLogin: user.login,
+		}
+		)
+		.then(() => {
+			setMessage("");
+				socket.emit("newMessage", {
 						channel: channel,
+						login: user.login,
+						message: message
 					});
 				})
 				.catch((err) => {

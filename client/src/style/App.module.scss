@@ -41,11 +41,11 @@
 	--color-button-gameselect: #242424;
 	--background-button-profil: #ffffff;
 	--color-button-profil: #242424;
-	--error-bg-color: red;
+	--error-bg-color: rgb(194, 49, 49);
 	--error-text-color: white;
-	--alert-bg-color: yellow;
+	--alert-bg-color: rgb(197, 153, 33);
 	--alert-text-color: black;
-	--infor-bg-color: blue;
+	--infor-bg-color: rgb(52, 104, 182);
 	--infor-text-color: white;
 	overflow: scroll;
 }
@@ -94,11 +94,11 @@
 	--color-button-gameselect: #ffffff;
 	--background-button-profil: #181818;
 	--color-button-profil: #ffffff;
-	--error-bg-color: red;
+	--error-bg-color: rgb(194, 49, 49);
 	--error-text-color: white;
-	--alert-bg-color: yellow;
+	--alert-bg-color: rgb(197, 153, 33);
 	--alert-text-color: black;
-	--infor-bg-color: blue;
+	--infor-bg-color: rgb(52, 104, 182);
 	--infor-text-color: white;
 }
 .dark::-webkit-scrollbar {
