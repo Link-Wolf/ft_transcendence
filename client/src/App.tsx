@@ -129,6 +129,47 @@ const App = () => {
 					};
 				});
 			});
+
+		const clearanceInterval = setInterval(() => {
+			axios
+				.get(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/clearance`,
+					{}
+				)
+				.then((response) => {
+					if (!response) {
+						throw new Error(
+							`This is an HTTP error: The status is : pas bien`
+						);
+					}
+					return response;
+				})
+				.then((response) => {
+					setClearance((clearance) => {
+						return {
+							...clearance,
+							login: response.data.login,
+							name: response.data.name,
+							clearance: response.data.clearance,
+						};
+					});
+					setUpdate(false);
+				})
+				.catch((err) => {
+					setClearance((clearance) => {
+						return {
+							...clearance,
+							login: "",
+							name: "",
+							clearance: 0,
+						};
+					});
+				});
+		}, 1000);
+
+		return () => {
+			clearInterval(clearanceInterval);
+		};
 	}, [update]);
 
 	return (
