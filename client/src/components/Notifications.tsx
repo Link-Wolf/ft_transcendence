@@ -113,9 +113,9 @@ const NotificationInfoBox = ({
 			onClick={destroy}
 			className={style.notification}
 		>
-			<div className={`${style.ico} ${style[type]}`}>{type === "info" ? "ℹ️": type === "alert" ? "⚠️": "🚫" }</div>
+			<div className={`${style.ico} ${style[type]}`}>{type === "info" ? "⚪": type === "alert" ? "⚪": "⚪" }</div>
 			<div className={style.notifDescrib}>
-				<pre className={style.notifTitle}>{title.toUpperCase()}</pre>
+				<pre className={`${style.notifTitle} ${style[type]}`}>{title.toUpperCase()}</pre>
 				<pre className={style.notifMsg}>{message}</pre>
 			</div>
 		</div>
