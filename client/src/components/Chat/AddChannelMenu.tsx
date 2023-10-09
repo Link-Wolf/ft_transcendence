@@ -5,6 +5,7 @@ import CreateChannelForm from "./CreateChannelForm";
 import socket from "../../socket";
 import style from "../../style/Chat.module.scss";
 import { useNotifications } from "../Notifications";
+import { usePrompt } from "../Prompt";
 
 const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -14,6 +15,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	const [channelCreation, setChannelCreation] = useState(false);
 	const user = useContext(UserContext);
 	const notifications = useNotifications();
+	const prompt = usePrompt();
 
 	useEffect(() => {
 		axios
@@ -34,7 +36,9 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 
 	const checkPassword = async (channel: any): Promise<boolean> => {
 		if (channel.password !== "yesyesno") return true;
-		const password = prompt("Password"); //TODO: replace
+		const password = await prompt.password("Password");
+		console.log(password);
+		if (!password) return false;
 
 		return await axios
 			.post(
