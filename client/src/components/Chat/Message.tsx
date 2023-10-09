@@ -62,54 +62,62 @@ const Message = ({
 				>
 					<PPDisplayer login={login} size={40} status={true} />
 				</div>
-				<div >
+				<div>
 					<div className={style.senderinfo}>
-						<label className={style.toggleprofil}>
-
-						{isToggleBox && user.login !== login?
-							<div>
-								<Link to={`/profile/${login}`}>
-									<button>Profile</button>
-								</Link>
-								{!relation.isBlocked && (
-									<AskForGameButton text={"text"} login={login} />
-								)}
-								{!relation.isBlocked &&
-									(relation.isFriend ? (
-										<PMButton
-										login={login}
-										setChannel={setChannel}
-										/>
-										) : (
-											<FriendButton text={"text"} login={login} />
-											))}
-								{relation.isBlocked ? (
-									<UnblockButton login={login} />
-								) : (
-									<BlockButton text={"Block"} login={login} />
-								)}
-							</div>
-						:
-
-						user.login !== login ? (
-							<button
-							// onClick={toggleBox}
-							className={style.profil}
-							>
-							{name} {" "}
-							{login === owner.login
-								? "[owner]"
-								: admins.some(
-									(admin) => admin.login === login
-									) && "[admin]"}
-									{relation.isBlocked ? "(bloqué)" : ""}
+						<div className={style.toggleprofil}>
+							{isToggleBox && user.login !== login ? (
+								<div>
+									<button
+										onClick={() => {
+											navigate(`/profile/${login}`);
+										}}
+									>
+										Profile
 									</button>
+									{!relation.isBlocked && (
+										<AskForGameButton
+											text={"text"}
+											login={login}
+										/>
+									)}
+									{!relation.isBlocked &&
+										(relation.isFriend ? (
+											<PMButton
+												login={login}
+												setChannel={setChannel}
+											/>
+										) : (
+											<FriendButton
+												text={"text"}
+												login={login}
+											/>
+										))}
+									{relation.isBlocked ? (
+										<UnblockButton login={login} />
 									) : (
-										<label>{name} (you) </label>
-										)
-
-									}
-						</label>
+										<BlockButton
+											text={"Block"}
+											login={login}
+										/>
+									)}
+								</div>
+							) : user.login !== login ? (
+								<button
+									// onClick={toggleBox}
+									className={style.profil}
+								>
+									{name}{" "}
+									{login === owner.login
+										? "[owner]"
+										: admins.some(
+												(admin) => admin.login === login
+										  ) && "[admin]"}
+									{relation.isBlocked ? "(bloqué)" : ""}
+								</button>
+							) : (
+								<label>{name} (you) </label>
+							)}
+						</div>
 						<p className={style.message}>
 							{relation.isBlocked
 								? "Ce message est masquée"
