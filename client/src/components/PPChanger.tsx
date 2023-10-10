@@ -4,6 +4,7 @@ import { DropEvent, useDropzone } from "react-dropzone";
 import { PPDisplayer } from "./ImageDisplayer";
 import { validateImage } from "image-validator";
 import socket from "../socket";
+import { loadImage, createCanvas } from "canvas";
 
 const baseStyle = {
 	flex: 1,
@@ -185,7 +186,10 @@ const PPChanger = ({ login }: { login: string }) => {
 	return (
 		<>
 			<PPDisplayer login={login} size={200} status={false}>
-				<img src={`data:image/*;base64,${imageSource}`} alt='avatar' />
+				<img
+					src={`data:image/*;base64,${imageSource}`}
+					alt='profile picture'
+				/>
 			</PPDisplayer>
 
 			<div className='container'>

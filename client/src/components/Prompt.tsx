@@ -27,7 +27,7 @@ export const PromptProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const usePrompt = () => {
-	const { setPrompt } = useContext(PromptContext);
+	const { prompt, setPrompt } = useContext(PromptContext);
 
 	const password = (_prompt: string) => {
 		const promise = new Promise((resolve, reject) => {

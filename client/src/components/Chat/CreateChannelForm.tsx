@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useState, useEffect, useMemo } from "react";
 import { UserContext } from "../../App";
 import style from "../../style/Chat.module.scss";
+import { use } from "matter-js";
 
 const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -24,7 +25,7 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 		if (data.name.match(/[^a-zA-Z0-9]/g))
 			return "Channel name can only contain letters and numbers";
 		return "";
-	}, [data.name, chanNames]);
+	}, [data.name]);
 
 	useEffect(() => {
 		axios

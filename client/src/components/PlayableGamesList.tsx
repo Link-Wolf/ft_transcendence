@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import axios from "axios";
+import { use } from "matter-js";
+import { error } from "console";
 import { Link } from "react-router-dom";
 import style from "../style/Game.module.scss";
 import socket from "../socket";
@@ -23,11 +25,7 @@ const PlayableGamesList = () => {
 				setUpdate(true);
 			}
 		});
-
-		return () => {
-			socket.off("gameUpdate");
-		};
-	}, [user.login]);
+	}, []);
 
 	useEffect(() => {
 		if (!update) return;

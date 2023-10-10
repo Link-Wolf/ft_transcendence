@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import style from "../style/StatusIcon.module.scss";
 import socket from "../socket";
 
@@ -35,7 +35,7 @@ const StatusIcon = ({ login, size }: { login: string; size: number }) => {
 		return () => {
 			socket.off("statusUpdate");
 		};
-	}, [login]);
+	}, []);
 
 	return <div className={style.status} style={colorTheme(status)}></div>;
 };

@@ -9,15 +9,16 @@ import Game from "./Game";
 import Update from "./Update";
 import TFA from "./TFA";
 import CreateGame from "./CreateGame";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import socket from "../socket";
 import Cookies from "js-cookie";
 
 const RouteWatcher = ({ children }: { children: JSX.Element[] }) => {
 	const location = useLocation();
-	// const [oldLocation, setOldLocation] = useState(location.pathname);
+	const [oldLocation, setOldLocation] = useState(location.pathname);
 
-	const oldLocation = useMemo(() => {
+	useEffect(() => {
+		// Check if old location is /game/:id and new location is not /game/:id
 		if (
 			oldLocation.startsWith("/game") &&
 			!location.pathname.startsWith("/game")
@@ -29,7 +30,7 @@ const RouteWatcher = ({ children }: { children: JSX.Element[] }) => {
 				],
 			});
 		}
-		return location.pathname;
+		setOldLocation(location.pathname);
 	}, [location]);
 
 	return <>{children}</>;

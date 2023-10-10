@@ -7,7 +7,9 @@ import style from "../../style/Chat.module.scss";
 import socket from "../../socket";
 import { PPDisplayer } from "../ImageDisplayer";
 
+
 const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
+	
 	const context = useContext(UserContext);
 	/**
 	 * List of channels, either display the list of channels the user is in, or the menu to join/create a channel
@@ -16,13 +18,14 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 	const [newChannelVisibility, setNewChannelVisibility] = useState(false);
 	const [update, setUpdate] = useState(true);
 
+
 	/**
 	 * List of DMs, either display the list of DMs the user is in, or the menu to create a DM
 	 */
 	const [memberships, setMemberships] = useState<any[]>([]);
 	const [users, setUsers] = useState<any[]>([]);
 	const [selectedUser, setSelectedUser] = useState("");
-	const [, setNewDMError] = useState("");
+	const [newDMError, setNewDMError] = useState("");
 
 	useEffect(() => {
 		axios
@@ -99,6 +102,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 		}
 	};
 
+
 	useEffect(() => {
 		const channelUpdate = (payload: any) => {
 			setUpdate(true);
@@ -130,9 +134,10 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 		setNewChannelVisibility(!newChannelVisibility);
 	};
 
+
 	return (
 		<>
-			{/* <div className={style.channelList}>
+		{/* <div className={style.channelList}>
 			<h1>Channel List</h1>
 
 			<button onClick={addChannel}>
@@ -158,7 +163,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 		<div className={style.mplist}>
 			<h1>DM List</h1>
 			{newDMError !== "" && <div>{newDMError}</div>}
-
+			
 			<div className={style.displaylist}>
 			{memberships.length ? (
 				memberships.map((membership, i) => (
@@ -204,134 +209,102 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 					</div>
 		</div> */}
 
-			<div className={style.ChatHomePage}>
-				{newChannelVisibility ? (
-					<>
-						<div className={style.headsection}>
-							<p
-								onClick={addChannel}
-								className={style.actionbutton}
-							>
-								{newChannelVisibility ? (
-									<>&lsaquo;</>
-								) : (
-									<>Modify</>
-								)}
-							</p>
-							<h2 className={style.titleNew}>New conversation</h2>
-						</div>
-						<div className={style.search}>
-							<button
-								className={style.searchbutton}
-								disabled={!selectedUser || selectedUser === ""}
+		<div className={style.ChatHomePage}>
+
+				{newChannelVisibility ?
+				<>
+			<div className={style.headsection}>
+				
+				<p onClick={addChannel} className={style.actionbutton}>
+					{newChannelVisibility ? <>&lsaquo;</> : <>Modify</>}
+				</p>
+				<h2 className={style.titleNew}>New conversation</h2>
+			</div>
+					<div className={style.search}>
+						<button className={style.searchbutton} disabled={!selectedUser || selectedUser === ""}
 								onClick={openDM}
-							>
-								🔎
-							</button>
-							<input
-								className={style.input}
+								>
+							🔎
+						</button>
+						<input className={style.input}
 								placeholder="Enter friend's login for start a new conversation"
 								list='new_dm_list'
-								onChange={(e) =>
-									setSelectedUser(e.target.value)
-								}
-							/>
-						</div>
-						<AddChannelMenu setChannel={setChannel} />
-					</>
-				) : (
-					<>
-						<div className={style.headsection}>
-							<h2 className={style.titleMessage}>Message</h2>
-							<p className={style.addbutton} onClick={addChannel}>
-								{newChannelVisibility ? <>&gt;</> : <>+</>}
-							</p>
-						</div>
-						<div className={style.mplist}>
-							<div className={style.search}>
-								<button
-									className={style.searchbutton}
-									disabled={
-										!selectedUser || selectedUser === ""
-									}
-									onClick={openDM}
-								>
-									🔎
-								</button>
-								<input
-									className={style.input}
-									placeholder="Enter friend's login for start a new conversation"
-									list='new_dm_list'
-									onChange={(e) =>
-										setSelectedUser(e.target.value)
-									}
+								onChange={(e) => setSelectedUser(e.target.value)}
 								/>
-							</div>
-							<div className={style.mpscroll}>
-								{channels.map((channel, i) => (
-									<div
-										className={style.profilmp}
-										key={i}
-										onClick={() => setChannel(channel)}
-									>
-										<div className={style.imgChannel}>
-											{" "}
-											{channel.toUpperCase()[0]}
-										</div>
-										<div className={style.description}>
-											<p className={style.mpname}>
-												{channel}
-											</p>
-											<p className={style.object}>
-												Join the channel {channel}
-											</p>
-										</div>
-									</div>
-								))}
-								{memberships.map((membership, i) => (
-									<div
-										className={style.profilmp}
-										key={i}
-										onClick={() =>
-											setChannel(membership.channelName)
-										}
-									>
-										<PPDisplayer
-											size={50}
-											login={membership.userLogin}
-											status={true}
-										/>
-										<div className={style.description}>
-											<p className={style.mpname}>
-												{membership.userLogin}
-											</p>
-											<p className={style.object}>
-												Talk to {membership.userLogin},
-												but DON'T PANIC !
-											</p>
-										</div>
-									</div>
-								))}
-								{channels.length === 0 &&
-									memberships.length === 0 && (
-										<>
-											<p className={style.empty}>
-												{" "}
-												Any conversation yet, you can
-												create add and create channel
-												with "+"
-											</p>
-											{/* <img className={style.imgChat} src="https://temtem.wiki.gg/images/b/bb/Platox_idle_animation.gif"></img> */}
-										</>
-									)}
+					</div>
+					<AddChannelMenu setChannel={setChannel} />
+				</>
+				: <>
+							<div className={style.headsection}>
+			<h2 className={style.titleMessage}>Message</h2>
+							<p className={style.addbutton} onClick={addChannel}>
+				{newChannelVisibility ? <>&gt;</> : <>+</>}
+			</p>
+			</div >
+			<div className={style.mplist}>
+					<div className={style.search}>
+						<button className={style.searchbutton} disabled={!selectedUser || selectedUser === ""}
+								onClick={openDM}
+								>
+							🔎
+						</button>
+						<input className={style.input}
+								placeholder="Enter friend's login for start a new conversation"
+								list='new_dm_list'
+								onChange={(e) => setSelectedUser(e.target.value)}
+								/>
+					</div>
+				<div className={style.mpscroll}>
+
+				{channels.map((channel, i) => (
+					<div
+							className={style.profilmp}
+							key={i}
+							onClick={() => setChannel(channel)}
+							>
+							<div className={style.imgChannel}> {(channel.toUpperCase())[0]}</div>
+							<div className={style.description}>
+								<p className={style.mpname}>{channel}</p>
+								<p className={style.object}>Join the channel {channel}</p>
 							</div>
 						</div>
-					</>
-				)}
+						))}
+				{memberships.map((membership, i) => (
+					<div
+					className={style.profilmp}
+					key={i}
+					onClick={() => setChannel(membership.channelName)}
+						>
+							<PPDisplayer
+								size={50}
+								login={membership.userLogin}
+								status={true}
+							/>
+							<div className={style.description}>
+								<p className={style.mpname}>{membership.userLogin}</p>
+								<p className={style.object}>Talk to {membership.userLogin}, but DON'T PANIC !</p>
+							</div>
+						</div>
+					))}
+			{(channels.length === 0 && memberships.length === 0) && 
+			<>
+				<p className={style.empty} > Any conversation yet, you can create add and create channel with "+"</p>
+				{/* <img className={style.imgChat} src="https://temtem.wiki.gg/images/b/bb/Platox_idle_animation.gif"></img> */}
+			</>}
 			</div>
+				</div>
+				</>}
+		</div>
 		</>
 	);
 };
+
+
+
+
+
+
+
 
 const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 	/**
