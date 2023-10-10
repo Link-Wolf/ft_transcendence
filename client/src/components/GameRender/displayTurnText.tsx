@@ -2,9 +2,13 @@ import p5Types from "p5";
 
 export default function displayTurnText(p5: p5Types, game: any) {
 	p5.push();
+
 	p5.textSize(32);
-	p5.textAlign(p5.CENTER, p5.CENTER);
+	p5.strokeWeight(4);
 	p5.fill(255);
+
+	p5.stroke(0);
+	p5.textAlign(p5.CENTER, p5.CENTER);
 
 	if (game.status.ended) {
 		p5.text("Game Over", 0, 0);
