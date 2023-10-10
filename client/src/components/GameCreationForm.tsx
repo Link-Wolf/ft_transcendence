@@ -4,9 +4,6 @@ import { Link } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import style from "../style/Game.module.scss";
 
-import DefaultSlowSmall from "../assets/GameSelect/Default-slow-small.gif";
-import CitySlowSmall from "../assets/GameSelect/City-slow-small.gif";
-
 const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	const [modifiers, setModifiers] = useState<any[]>([]);
 	const [selectedModifiers, setSelectedModifiers] = useState<number[]>([]);
@@ -16,7 +13,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 		() =>
 			(modifiers.filter((m) => m.id === selectedMap)[0]
 				?.code as string) ?? "default",
-		[selectedMap]
+		[selectedMap, modifiers]
 	);
 
 	const selectedStyle = {
@@ -65,7 +62,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				<h1>GAME CREATION</h1>
 				<div className={style.display}>
 					<div className={style.preview}>
-						{selectedMap === -1 ? (
+						{map === "default" ? (
 							<div className={style.gamemapDefault}></div>
 						) : selectedMap === 11 ? (
 							<div className={style.gamemapTwin}></div>

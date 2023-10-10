@@ -4,8 +4,6 @@ import { createContext, useEffect, useState } from "react";
 import style from "./style/App.module.scss";
 import socket from "./socket";
 import Cookies from "js-cookie";
-import { useLocation } from "react-router-dom";
-import { use } from "matter-js";
 import { NotificationsProvider } from "./components/Notifications";
 import { PromptModal, PromptProvider } from "./components/Prompt";
 
