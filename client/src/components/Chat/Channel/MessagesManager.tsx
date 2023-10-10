@@ -31,10 +31,12 @@ const MessagesManager = ({
 		setUpdate(true);
 		function clic(payload: any) {
 			if (payload.channel === channel) {
-
 				setUpdate(true);
 				if (payload.login !== user.login && payload.login)
-				notifications.info("New message on " + payload.channel, payload.login + " : " + payload.message);
+					notifications.info(
+						"New message on " + payload.channel,
+						payload.login + " : " + payload.message
+					);
 			}
 		}
 		socket.on("newMessage", clic);
@@ -43,33 +45,33 @@ const MessagesManager = ({
 			socket.off("newMessage", clic);
 			socket.off("membershipUpdate", clic);
 		};
-	}, [channel]);
-	
+	}, [channel, notifications, user.login]);
+
 	const getNameOfTheOther = (channel: string) => {
 		let names = channel.split("_")[1].split("&");
 		return names[0] === user.login ? names[1] : names[0];
 	};
-	
+
 	const sendMessage = async (e: FormEvent) => {
 		e.preventDefault();
 		if (!canSendMessage) return;
 		let printableRegexButNoSpace = /[\S\x21-\x7E\u{A0}-\u{FFFF}]/gu; // Matches any printable characters (including Unicode) except space
 		if (printableRegexButNoSpace.test(message) && message.length < 500)
-		await axios
-	.post(
-		`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
-		{
-			chanName: channel,
-			content: message,
-			userLogin: user.login,
-		}
-		)
-		.then(() => {
-			setMessage("");
-				socket.emit("newMessage", {
+			await axios
+				.post(
+					`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/message`,
+					{
+						chanName: channel,
+						content: message,
+						userLogin: user.login,
+					}
+				)
+				.then(() => {
+					setMessage("");
+					socket.emit("newMessage", {
 						channel: channel,
 						login: user.login,
-						message: message
+						message: message,
 					});
 				})
 				.catch((err) => {
@@ -208,28 +210,28 @@ const MessagesManager = ({
 					))}
 			</div>
 			{/* <div className={style.search}> */}
-				<form
-					className={style.sendsection}
-					action=''
-					onSubmit={sendMessage}
-					>
-					<input
-						value={message}
-						type='text'
-						placeholder={
-							canSendMessage
+			<form
+				className={style.sendsection}
+				action=''
+				onSubmit={sendMessage}
+			>
+				<input
+					value={message}
+					type='text'
+					placeholder={
+						canSendMessage
 							? "Type your message here..."
 							: "You cannot send messages here"
-						}
-						disabled={!canSendMessage}
-						onChange={(e) => {
-							setMessage(e.target.value);
-						}}
-						/>
-					<button className={style.sendbutton} disabled={!canSendMessage}>
-						&gt;
-					</button>
-				</form>
+					}
+					disabled={!canSendMessage}
+					onChange={(e) => {
+						setMessage(e.target.value);
+					}}
+				/>
+				<button className={style.sendbutton} disabled={!canSendMessage}>
+					&gt;
+				</button>
+			</form>
 			{/* </div> */}
 		</>
 	);
