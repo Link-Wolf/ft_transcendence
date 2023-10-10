@@ -4,6 +4,7 @@ import { UserContext } from "../App";
 import socket from "../socket";
 import PopUp from "./PopUp";
 import GameCreationForm from "./GameCreationForm";
+import { use } from "matter-js";
 
 const ActionsButtons = () => {
 	return <></>;
@@ -144,7 +145,12 @@ const BlockUnblockButton = ({
 		);
 	else
 		return (
-			<BlockButton text={text} login={login} effect={effect} className={className} />
+			<BlockButton
+				text={text}
+				login={login}
+				effect={effect}
+				className={className}
+			/>
 		);
 };
 
@@ -174,6 +180,7 @@ const PromoteButton = ({
 			.then(() => {
 				socket.emit("membershipUpdate", {
 					channel: channel,
+					login: login,
 				});
 			})
 			.catch((err) => {
@@ -215,6 +222,7 @@ const DemoteButton = ({
 			.then(() => {
 				socket.emit("membershipUpdate", {
 					channel: channel,
+					login: login,
 				});
 			})
 			.catch((err) => {
@@ -232,6 +240,68 @@ const DemoteButton = ({
 			Demote
 		</button>
 	);
+};
+
+const PromoteDemoteButton = ({
+	login,
+	channel,
+	effect,
+	className,
+}: {
+	login: string;
+	channel: string;
+	effect?: Function;
+	className?: string;
+}) => {
+	const [isAdmin, setIsAdmin] = useState<boolean>(false);
+	const [update, setUpdate] = useState<boolean>(true);
+
+	useEffect(() => {
+		socket.on("membershipUpdate", (data: any) => {
+			if (data.channel === channel && data.login === login) {
+				setUpdate(true);
+			}
+		});
+
+		return () => {
+			socket.off("membershipUpdate");
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!update) return;
+		setUpdate(false);
+
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/membership/user/${login}/channel/${channel}`
+			)
+			.then((res) => {
+				setIsAdmin(res.data.isAdmin);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [update]);
+
+	if (isAdmin)
+		return (
+			<DemoteButton
+				login={login}
+				channel={channel}
+				effect={effect}
+				className={className}
+			/>
+		);
+	else
+		return (
+			<PromoteButton
+				login={login}
+				channel={channel}
+				effect={effect}
+				className={className}
+			/>
+		);
 };
 
 /*******************************************************************************
@@ -349,14 +419,24 @@ const FriendButton = ({
 			}}
 		>
 			{isBlocked
-				? text ? "Blocked" : "🌀"
+				? text
+					? "Blocked"
+					: "🌀"
 				: !friendship
-				? text ? "Be Friend" :"💁‍♂️"
+				? text
+					? "Be Friend"
+					: "💁‍♂️"
 				: !friendship.isPending
-				? text ? "Already Friend" :"👤"
+				? text
+					? "Already Friend"
+					: "👤"
 				: friendship.senderLogin === user.login
-				? text ? "Already Sent" :"🕐"
-				: text ? "Accept Friend" :"✔️"}
+				? text
+					? "Already Sent"
+					: "🕐"
+				: text
+				? "Accept Friend"
+				: "✔️"}
 		</button>
 	);
 };
@@ -484,7 +564,12 @@ const FriendPMButton = ({
 		);
 	else
 		return (
-			<FriendButton text={text} login={login} effect={effect} className={className} />
+			<FriendButton
+				text={text}
+				login={login}
+				effect={effect}
+				className={className}
+			/>
 		);
 };
 
@@ -662,5 +747,6 @@ export {
 	FriendPMButton,
 	BlockUnblockButton,
 	UnbanButton,
+	PromoteDemoteButton,
 	FriendUnfriendButton,
 };
