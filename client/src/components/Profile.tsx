@@ -2,7 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PPDisplayer } from "./ImageDisplayer";
 import Update from "./Update";
 import {
@@ -168,6 +168,8 @@ const Profile = () => {
 const Resume = ({ login }: { isMe: boolean; login: string }) => {
 	const [user, setUser] = useState<any>({});
 	const [update, setUpdate] = useState<boolean>(true);
+	const [done, setDone] = useState<boolean>(false);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		socket.on("contextUpdate", (payload) => {
@@ -193,12 +195,16 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 			)
 			.then((res) => {
 				setUser(res.data);
+				setDone(true);
 			})
 			.catch((err) => {
+				setDone(true);
 				console.log(err);
 			});
 	}, [login, update]);
 
+	if (!done) return <></>;
+	if (!user) navigate("/404");
 	return (
 		<>
 			<div className={style.username}>
