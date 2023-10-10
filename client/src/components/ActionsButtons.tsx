@@ -1,10 +1,9 @@
 import axios from "axios";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 import socket from "../socket";
 import PopUp from "./PopUp";
 import GameCreationForm from "./GameCreationForm";
-import { use } from "matter-js";
 
 const ActionsButtons = () => {
 	return <></>;
@@ -133,7 +132,7 @@ const BlockUnblockButton = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [_isBlocked]);
+	}, [_isBlocked, isBlocked, login, user.login]);
 
 	if (_isBlocked)
 		return (
@@ -257,6 +256,8 @@ const PromoteDemoteButton = ({
 	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
+		setUpdate(true);
+
 		socket.on("membershipUpdate", (data: any) => {
 			if (data.channel === channel && data.login === login) {
 				setUpdate(true);
@@ -266,7 +267,7 @@ const PromoteDemoteButton = ({
 		return () => {
 			socket.off("membershipUpdate");
 		};
-	}, []);
+	}, [channel, login]);
 
 	useEffect(() => {
 		if (!update) return;
@@ -282,7 +283,7 @@ const PromoteDemoteButton = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [update]);
+	}, [update, channel, login]);
 
 	if (isAdmin)
 		return (
@@ -326,9 +327,6 @@ const FriendButton = ({
 
 	useEffect(() => {
 		setUpdate(true);
-	}, [user.login, login]);
-
-	useEffect(() => {
 		socket.on("friendUpdate", (data: any) => {
 			if (
 				(data.loginA === user.login && data.loginB === login) ||
@@ -341,7 +339,7 @@ const FriendButton = ({
 		return () => {
 			socket.off("friendUpdate");
 		};
-	}, []);
+	}, [user.login, login]);
 
 	useEffect(() => {
 		if (!update) return;
@@ -551,7 +549,7 @@ const FriendPMButton = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [_isFriend]);
+	}, [_isFriend, login, user.login]);
 
 	if (isFriend)
 		return (
@@ -643,7 +641,8 @@ const FriendUnfriendButton = ({
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [_isFriend]);
+	}, [_isFriend, user.login, login]);
+
 	if (_isFriend)
 		return (
 			<UnfriendButton
@@ -666,7 +665,6 @@ const AskForGameButton = ({
 	effect?: Function;
 	className?: string;
 }) => {
-	const user = useContext(UserContext);
 	const [isPopUpOpen, setIsPopUpOpen] = useState("");
 	const openGameCreationPopup = (login: string) => {
 		setIsPopUpOpen(isPopUpOpen === "" ? login : "");
