@@ -110,6 +110,10 @@ type GameData = {
 
 	// frame logic
 	lastTimestamp: number;
+	powerUpName: string;
+	powerUpColor: string;
+	powerUpDisplayDuration: number;
+	screenShake: number;
 
 	// game data (fixed)
 	gameId: string;
@@ -585,6 +589,10 @@ export class AppGateway
 				{ x: 0, y: -128 },
 				{ x: 0, y: -342 },
 			],
+			powerUpName: '',
+			powerUpColor: '',
+			powerUpDisplayDuration: 0,
+			screenShake: 0,
 		};
 	}
 
@@ -763,6 +771,10 @@ export class AppGateway
 				if (ball.lastUser === null) return;
 				powerUp.effect(ball, game);
 				game.powerUps = game.powerUps.filter((p) => p !== powerUp);
+				game.powerUpColor = powerUp.color;
+				game.powerUpName = powerUp.name;
+				game.powerUpDisplayDuration = 3000;
+				game.screenShake = 500;
 			}
 		});
 	}
@@ -805,6 +817,17 @@ export class AppGateway
 			}
 			if (game.players[1].lastInput + 1000 * 30 < now) {
 				this.abortGame(game, 1);
+			}
+
+			if (game.screenShake > 0) game.screenShake -= dt;
+			else game.screenShake = 0;
+
+			if (game.powerUpDisplayDuration > 0)
+				game.powerUpDisplayDuration -= dt;
+			else {
+				game.powerUpDisplayDuration = 0;
+				game.powerUpName = '';
+				game.powerUpColor = '';
 			}
 
 			// check for final score
