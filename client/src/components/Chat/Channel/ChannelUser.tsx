@@ -6,13 +6,13 @@ import { PPDisplayer } from "../../ImageDisplayer";
 import { UserContext } from "../../../App";
 import MuteBanForm from "./MuteBanForm";
 import style from "../../../style/Chat.module.scss";
-
 import {
 	AskForGameButton,
 	BlockUnblockButton,
 	DemoteButton,
 	FriendPMButton,
 	PromoteButton,
+	PromoteDemoteButton,
 } from "../../ActionsButtons";
 
 const ChannelUser = ({
@@ -150,30 +150,27 @@ const ChannelUser = ({
 	};
 
 	return (
+		// 	<div
+		// 	className={style.profilmp}
+		// 	key={i}
+		// 	>
+		// 		<PPDisplayer
+		// 			size={50}
+		// 			login={login}
+		// 			status={true}
+		// 		/>
+		// 		<div className={style.description}>
+		// 			<p className={style.mpname}>{login}</p>
+		// 			<p className={style.object}>
+		// 				<UnbanButton
+		// 					login={login}
+		// 					channel={channel}
+		// 				/>
+		// 			</p>
+		// 		</div>
+		// </div>
 
-	// 	<div
-	// 	className={style.profilmp}
-	// 	key={i}
-	// 	>
-	// 		<PPDisplayer
-	// 			size={50}
-	// 			login={login}
-	// 			status={true}
-	// 		/>
-	// 		<div className={style.description}>
-	// 			<p className={style.mpname}>{login}</p>
-	// 			<p className={style.object}>
-	// 				<UnbanButton
-	// 					login={login}
-	// 					channel={channel}
-	// 				/>
-	// 			</p>
-	// 		</div>
-	// </div>
-
-
-		
-		<div >
+		<div>
 			{toggleAdminBox.isActive && (
 				<MuteBanForm
 					channel={channel}
@@ -185,109 +182,112 @@ const ChannelUser = ({
 					kick={kick}
 				/>
 			)}
-							<div
-					className={style.profilmp}
-					onClick={() => {
-						toggleBox(login);
-					}}
-				>
-					<PPDisplayer login={login} size={50} status={true} />
-					<div className={style.description}>
-
-				{isToggleBox ? 
-					<div className={style.action}>
-						<div>
-							<Link to={`/profile/${login}`}>
-								<button>Profile</button>
-							</Link>
-							{!members[login].isBlocked && (
-								<AskForGameButton text={"text"} login={login} />
-							)}
-							{!members[login].isBlocked && (
-								<FriendPMButton
+			<div
+				className={style.profilmp}
+				onClick={() => {
+					toggleBox(login);
+				}}
+			>
+				<PPDisplayer login={login} size={50} status={true} />
+				<div className={style.description}>
+					{isToggleBox ? (
+						<div className={style.action}>
+							<div>
+								<Link to={`/profile/${login}`}>
+									<button>Profile</button>
+								</Link>
+								{!members[login].isBlocked && (
+									<AskForGameButton
+										text={"text"}
+										login={login}
+									/>
+								)}
+								{!members[login].isBlocked && (
+									<FriendPMButton
+										text={"text"}
+										login={login}
+										isFriend={members[login].isFriend}
+										setChannel={setChannel}
+									/>
+								)}
+								<BlockUnblockButton
 									text={"text"}
 									login={login}
-									isFriend={members[login].isFriend}
-									setChannel={setChannel}
+									isBlocked={members[login].isBlocked}
 								/>
-							)}
-							<BlockUnblockButton
-								text={"text"}
-								login={login}
-								isBlocked={members[login].isBlocked}
-							/>
-							{user.login === owner.login &&
-								(admins.some(
-									(admin) => admin.userLogin === login
-								) ? (
-									<DemoteButton
-										login={login}
+								{user.login === owner.login && (
+									<PromoteDemoteButton
 										channel={channel}
-									/>
-								) : (
-									<PromoteButton
 										login={login}
-										channel={channel}
 									/>
-								))}
-							{(user.login === owner.login ||
-								(admins.some(
-									(admin) => admin.userLogin === user.login
-								) &&
-									login !== owner.login &&
-									!admins.some(
-										(admin) => admin.userLogin === login
-									))) && (
-								<>
-									<button
-										onClick={() => {
-											kick(login);
-										}}
-									>
-										Kick
-									</button>
-									<button
-										onClick={() => {
-											mute(login);
-										}}
-									>
-										{userStatus.isMuted ? "Unmute" : "Mute"}
-									</button>
-									<button
-										onClick={() => {
-											setToggleAdminBox({
-												isActive: true,
-												type: "ban",
-											});
-										}}
-									>
-										Ban
-									</button>
-								</>
-							)}
+								)}
+								{(user.login === owner.login ||
+									(admins.some(
+										(admin) =>
+											admin.userLogin === user.login
+									) &&
+										login !== owner.login &&
+										!admins.some(
+											(admin) => admin.userLogin === login
+										))) && (
+									<>
+										<button
+											onClick={() => {
+												kick(login);
+											}}
+										>
+											Kick
+										</button>
+										<button
+											onClick={() => {
+												mute(login);
+											}}
+										>
+											{userStatus.isMuted
+												? "Unmute"
+												: "Mute"}
+										</button>
+										<button
+											onClick={() => {
+												setToggleAdminBox({
+													isActive: true,
+													type: "ban",
+												});
+											}}
+										>
+											Ban
+										</button>
+									</>
+								)}
+							</div>
 						</div>
-					</div>
-				:
-				<>
-					{user.login !== login ? 
-						<label className={style.mpname}>
-							{name} {members[login].isBlocked ? "(blocked)" : ""}
-						</label>
-					: 
-					<label className={style.mpname}>{name} (you) </label>
-					}
+					) : (
+						<>
+							{user.login !== login ? (
+								<label className={style.mpname}>
+									{name}{" "}
+									{members[login].isBlocked
+										? "(blocked)"
+										: ""}
+								</label>
+							) : (
+								<label className={style.mpname}>
+									{name} (you){" "}
+								</label>
+							)}
 
-						<p className={style.object}>
-						{login === owner.login
-							? "Owner"
-							: admins.some((admin) => admin.userLogin === login) ?
-							" Admin"
-							: "User"}
-						</p>
-				</>
-				}
-
-					</div>
+							<p className={style.object}>
+								{login === owner.login
+									? "Owner"
+									: admins.some(
+											(admin) => admin.userLogin === login
+									  )
+									? " Admin"
+									: "User"}
+							</p>
+						</>
+					)}
+				</div>
 			</div>
 		</div>
 	);
