@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import StatusIcon from "./StatusIcon";
 import style from "../style/PPDisplayer.module.scss";
@@ -30,9 +30,9 @@ const PPDisplayer = ({
 		return () => {
 			socket.off("contextUpdate");
 		};
-	}, []);
+	}, [login]);
 
-	useMemo(() => {
+	useEffect(() => {
 		setUpdate(true);
 	}, [login]);
 
@@ -64,7 +64,9 @@ const PPDisplayer = ({
 					}}
 					className={style.PPDisplayer}
 				>
-					{children ?? <img src={`data:image/*;base64,${image}`} />}
+					{children ?? (
+						<img alt='' src={`data:image/*;base64,${image}`} />
+					)}
 					{status && <StatusIcon login={login} size={size} />}
 				</div>
 			) : (

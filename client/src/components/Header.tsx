@@ -4,14 +4,11 @@ import logo from "../assets/placeholder_logo.png";
 import brand from "../assets/brandname.png";
 import style from "../style/Header.module.scss";
 import ThemeSwitcher from "./ThemeSwitcher";
-import { useContext } from "react";
-import { UserContext } from "../App";
 
 const Header = () => {
 	/**
 	 * Header component, display the logo, the name of the app and the auth component
 	 */
-	const user = useContext(UserContext);
 
 	return (
 		<ul className={style.banner} id='header'>

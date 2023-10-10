@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { redirect, Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
 import {
 	AskForGameButton,
@@ -38,14 +38,6 @@ const Message = ({
 	const [isToggleBox, setIsToggleBox] = useState(false);
 	const user = useContext(UserContext);
 	const navigate = useNavigate();
-
-	const toggleBox = async () => {
-		if (login === user.login) {
-			// navigate(`/profile/${user.login}`);
-			return;
-		}
-		setIsToggleBox(true);
-	};
 
 	if (!relation) return <>loading... {login}</>;
 	return (

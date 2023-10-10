@@ -1,15 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import style from "../style/Game.module.scss";
 import load from "../assets/load.gif";
-
 
 const Login = () => {
 	/**
 	 * Login component
 	 */
-	const navigate = useNavigate();
 	const code = new URLSearchParams(window.location.search).get("code");
 
 	const [done, setDone] = useState(false);
@@ -67,16 +64,15 @@ const Login = () => {
 		window.location.href = "/";
 	}, [done, data]);
 
-	if (!done) 
-	return (
-		<>
-		<div className={style.playsearch}>
-			<img src={load} className={style.load}></img>
-			<p>Loading...</p>
-		</div>
-		</>
-		
-	)
+	if (!done)
+		return (
+			<>
+				<div className={style.playsearch}>
+					<img alt='' src={load} className={style.load}></img>
+					<p>Loading...</p>
+				</div>
+			</>
+		);
 	return <></>;
 };
 

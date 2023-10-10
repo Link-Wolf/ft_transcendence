@@ -19,7 +19,7 @@ const PopUp = ({
 				setPopup("");
 			}
 		});
-	}, []);
+	}, [setPopup]);
 
 	return (
 		<div className={style.popupContainer}>
