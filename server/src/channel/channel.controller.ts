@@ -60,6 +60,24 @@ export class ChannelController {
 	}
 
 	/**
+	 * @brief Get all the names of the channels
+	 * @returns {string[]} All channel names
+	 * @security Clearance user
+	 * @response 200 - OK
+	 * @response 401 - Unauthorized
+	 * @response 500 - Internal Server Error
+	 */
+	@Get('all/names')
+	@UseGuards(UserClearanceGuard)
+	async getAllNames(): Promise<string[]> {
+		return await this.channelService.findAll().then((channels) => {
+			return channels.map((channel) => {
+				return channel.name;
+			});
+		});
+	}
+
+	/**
 	 * @brief Get a channel by name
 	 * @param {string} name The channel name
 	 * @returns {Channel} The channel
