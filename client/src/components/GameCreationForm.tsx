@@ -9,12 +9,13 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 	const [selectedModifiers, setSelectedModifiers] = useState<number[]>([]);
 	const [selectedMap, setSelectedMap] = useState(-1);
 	const [isRanked, setIsRanked] = useState(false);
-	const map = useMemo(
-		() =>
+	const map = useMemo(() => {
+		if (modifiers.length || isRanked) return "ranked";
+		return (
 			(modifiers.filter((m) => m.id === selectedMap)[0]
-				?.code as string) ?? "default",
-		[selectedMap, modifiers]
-	);
+				?.code as string) ?? "default"
+		);
+	}, [selectedMap, modifiers]);
 
 	const selectedStyle = {
 		fontWeight: "bold",
