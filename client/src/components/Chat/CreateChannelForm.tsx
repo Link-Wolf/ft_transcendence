@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { UserContext } from "../../App";
 import style from "../../style/Chat.module.scss";
-
+import { use } from "matter-js";
 
 const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	/**
@@ -10,20 +10,35 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 	 */
 	const user = useContext(UserContext);
 	const [data, setData] = useState({ name: "", pass: "" });
-	const [nameError, setNameError] = useState("");
+	// const [nameError, setNameError] = useState("");
 	const [passError, setPassError] = useState("");
+	const [chanNames, setChanNames] = useState<string[]>([]);
 
 	const tutors = JSON.parse(
 		process.env.REACT_APP_TUTORS ?? '["yoyostud"]'
 	) as string[];
 
-	useEffect(() => {
-		//check if channel name contains any special characters
-		if (data.name.match(/[^a-zA-Z0-9]/g)) {
-			setNameError("Channel name can only contain letters and numbers");
-			return;
-		} else setNameError("");
+	const nameError = useMemo(() => {
+		if (data.name === "") return "";
+		if (chanNames.includes(data.name))
+			return "Channel name is already taken";
+		if (data.name.match(/[^a-zA-Z0-9]/g))
+			return "Channel name can only contain letters and numbers";
+		return "";
 	}, [data.name]);
+
+	useEffect(() => {
+		axios
+			.get(
+				`${process.env.REACT_APP_PROTOCOL}` +
+					`://${process.env.REACT_APP_HOSTNAME}` +
+					`:${process.env.REACT_APP_BACKEND_PORT}` +
+					`/api/channel/all/names`
+			)
+			.then((response) => {
+				setChanNames(response.data);
+			});
+	}, []);
 
 	useEffect(() => {
 		if (data.pass === "") {
@@ -66,20 +81,6 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 
 	const createChannel = async () => {
 		if (nameError !== "" || passError !== "") return;
-		const isChannelName = await axios
-			.get(
-				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel/${data.name}`
-			)
-			.then((response) => {
-				return response.data;
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-		if (isChannelName && isChannelName.name === data.name) {
-			setNameError("Channel name is already taken");
-			return;
-		}
 		await axios
 			.post(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/channel`,
@@ -111,38 +112,39 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 
 	return (
 		<div className={style.mpscroll}>
-
-		<form className={style.form}>
-			<label className={style.param}>
-				<label >Channel name</label>
-				<input className={style.inputchannelform}
-					id='name'
-					type='text'
-					value={data.name}
-					onChange={handleFormChange}
-					placeholder='myAwesomeChannel'
+			<form className={style.form}>
+				<label className={style.param}>
+					<label>Channel name</label>
+					<input
+						className={style.inputchannelform}
+						id='name'
+						type='text'
+						value={data.name}
+						onChange={handleFormChange}
+						placeholder='myAwesomeChannel'
 					/>
-			</label>
-			{nameError !== "" && <pre>{nameError}</pre>}
+				</label>
+				{nameError !== "" && <pre>{nameError}</pre>}
 				{/* <br/> */}
-			<label className={style.param}>
-				<label>Password (optional)</label>
-				<input className={style.inputchannelform}
-					id='pass'
-					type='password'
-					value={data.pass}
-					onChange={handleFormChange}
+				<label className={style.param}>
+					<label>Password (optional)</label>
+					<input
+						className={style.inputchannelform}
+						id='pass'
+						type='password'
+						value={data.pass}
+						onChange={handleFormChange}
 					/>
-			</label>
-			{passError !== "" && <pre>{passError}</pre>}
-			<button
-				type='button'
-				onClick={createChannel}
-				disabled={passError !== "" || nameError !== ""}
+				</label>
+				{passError !== "" && <pre>{passError}</pre>}
+				<button
+					type='button'
+					onClick={createChannel}
+					disabled={passError !== "" || nameError !== ""}
 				>
-				Create
-			</button>
-		</form>
+					Create
+				</button>
+			</form>
 		</div>
 	);
 };
