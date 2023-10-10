@@ -24,13 +24,16 @@
 	--accent-background: #ffffff;
 	--accent-text: #002136;
 	--background-tel: #eeeeee;
-	--background-tel-div: #ffffff;
+	--background-tel-scroll: #ffffff;
+	--background-tel-div: #c42d2d;
+	--background-img-chan: #303030;
+
 	--border-tel-div: #9c9c9c;
-	--background-button-tel: rgb(212, 212, 212);
+	--background-button-tel: rgb(192, 192, 192);
 	--background-button-tel-hover: rgb(54, 101, 141);
 	--background-button-tel-active: green;
 	--background-button-tel-disabled: rgb(245, 245, 245);
-	--neutral-input: #414141;
+	--neutral-input: #c4c4c4;
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(197, 197, 197);
 	--msg-text: #000000;
@@ -41,12 +44,14 @@
 	--color-button-gameselect: #242424;
 	--background-button-profil: #ffffff;
 	--color-button-profil: #242424;
-	--error-bg-color: rgb(194, 49, 49);
+	--error-bg-color: rgb(224, 95, 95);
 	--error-text-color: white;
-	--alert-bg-color: rgb(197, 153, 33);
+	--alert-bg-color: rgb(238, 200, 96);
 	--alert-text-color: black;
-	--infor-bg-color: rgb(52, 104, 182);
+	--infor-bg-color: rgb(96, 146, 221);
 	--infor-text-color: white;
+	--notif-text-color: rgb(29, 29, 29);
+	--notif-background-color: #ebebeb;
 	overflow: scroll;
 }
 
@@ -78,12 +83,15 @@
 	--accent-text: #ffffff;
 	--background-tel: #131313;
 	--background-tel-div: #ffffff;
-	--border-tel-div: #9c9c9c;
-	--background-button-tel: rgb(45, 45, 45);
-	--background-button-tel-hover: rgb(31, 31, 31);
+	--background-tel-scroll: #252525;
+	--background-img-chan: #c4c4c4;
+
+	--border-tel-div: #494949;
+	--background-button-tel: rgb(71, 71, 71);
+	--background-button-tel-hover: rgb(88, 88, 88);
 	--background-button-tel-active: green;
 	--background-button-tel-disabled: rgb(34, 34, 34);
-	--neutral-input: #aaaaaa;
+	--neutral-input: rgb(71,71,71);
 	--msg-sender: rgb(32, 128, 218);
 	--msg-recv: rgb(66, 66, 66);
 	--msg-text: #c5c5c5;
@@ -100,6 +108,8 @@
 	--alert-text-color: black;
 	--infor-bg-color: rgb(52, 104, 182);
 	--infor-text-color: white;
+	--notif-text-color: white;
+	--notif-background-color: #353535;
 }
 .dark::-webkit-scrollbar {
 	display: none;

@@ -19,7 +19,7 @@
 		align-items: center;
 		padding: 0px;
 		margin: 0px;
-		color: rgb(252, 252, 252);
+		color: var(--notif-text-color);
 		height: 40px;
 		margin-bottom: 10px;
 		animation: fadeIn 0.5s;
@@ -29,7 +29,7 @@
 			margin-left: 3px;
 			margin-right: 4px;
 			padding: 0;
-			background-color: #353535;
+			background-color: var(--notif-background-color);
 			height: 45px;
 			padding-left: 15px;
 			padding-right: 15px;
