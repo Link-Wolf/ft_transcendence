@@ -9,28 +9,29 @@ import Game from "./Game";
 import Update from "./Update";
 import TFA from "./TFA";
 import CreateGame from "./CreateGame";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import socket from "../socket";
 import Cookies from "js-cookie";
 
 const RouteWatcher = ({ children }: { children: JSX.Element[] }) => {
 	const location = useLocation();
-	// const [oldLocation, setOldLocation] = useState(location.pathname);
+	const [oldLocation, setOldLocation] = useState(location.pathname);
 
-	const oldLocation = useMemo(() => {
-		if (
-			oldLocation.startsWith("/game") &&
-			!location.pathname.startsWith("/game")
-		) {
-			socket.emit("leaveGame", {
-				auth: Cookies.get("token"),
-				gameId: oldLocation.split("/")[
-					oldLocation.split("/").length - 1
-				],
-			});
-		}
-		return location.pathname;
-	}, [location]);
+	useEffect(() => {
+		if (location.pathname === oldLocation)
+			if (
+				oldLocation.startsWith("/game") &&
+				!location.pathname.startsWith("/game")
+			) {
+				socket.emit("leaveGame", {
+					auth: Cookies.get("token"),
+					gameId: oldLocation.split("/")[
+						oldLocation.split("/").length - 1
+					],
+				});
+			}
+		setOldLocation(location.pathname);
+	}, [location.pathname, oldLocation]);
 
 	return <>{children}</>;
 };
