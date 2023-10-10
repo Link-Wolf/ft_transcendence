@@ -8,6 +8,8 @@ import displayTurnText from "./displayTurnText";
 import { useContext } from "react";
 import { UserContext } from "../../App";
 import socket from "../../socket";
+import { screenShake } from "./screenShake";
+import { drawPowerUpsName } from "./drawPowerUpsName";
 
 let playerKeys = new Set<number>();
 
@@ -65,6 +67,10 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 		},
 		loop: null,
 		myIndex: -1,
+		powerUpName: "",
+		powerUpColor: "",
+		powerUpDisplayDuration: 0,
+		screenShake: 0,
 	};
 	let scale = 1;
 
@@ -123,6 +129,7 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 		}
 		p5.scale(scale);
 		p5.translate(game.width / 2, game.height / 2);
+		screenShake(p5, game);
 		p5.background(0);
 		p5.rectMode(p5.CENTER);
 
@@ -167,6 +174,7 @@ const GameRender = ({ gameId }: { gameId: string }) => {
 			game.width,
 			game.height
 		);
+		drawPowerUpsName(p5, game);
 		displayTurnText(p5, game);
 	};
 
