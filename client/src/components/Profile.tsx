@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../App";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
 import { useNavigate, useParams } from "react-router-dom";
@@ -138,7 +138,6 @@ const Profile = () => {
 							{displayedMenu === "friends" ? (
 								<div className={style.friends}>
 									<img
-										alt=''
 										src={friends}
 										className={style.img}
 									></img>
@@ -152,10 +151,7 @@ const Profile = () => {
 							)}
 							{displayedMenu === "settings" ? (
 								<div className={style.settings}>
-									<img
-										alt=''
-										src='https://primedepartamentos.com/images/icons/settings-icon-white.png'
-									></img>
+									<img src='https://primedepartamentos.com/images/icons/settings-icon-white.png'></img>
 									<Update />
 								</div>
 							) : (
@@ -184,9 +180,9 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 		return () => {
 			socket.off("contextUpdate");
 		};
-	}, [login]);
+	}, []);
 
-	useEffect(() => {
+	useMemo(() => {
 		setUpdate(true);
 	}, [login]);
 
@@ -223,6 +219,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 	/**
 	 * History of games played
 	 */
+	const user = useContext(UserContext);
 	const [rankedGames, setRankedGames] = useState<any[]>([]);
 	const [normalGames, setNormalGames] = useState<any[]>([]);
 
@@ -262,15 +259,14 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				/>
 			</div>
 			<div>
-				<img alt='' src={history}></img>
+				<img src={history}></img>
 				<div className={style.statshistory}>
 					<h2>M A T C H _ H I S T O R Y</h2>
 					<h3>R A N K E D</h3>
 					<div className={style.class}>
 						{rankedGames.length > 0 ? (
 							rankedGames.map((game, i) => {
-								if (game.game.status === "waiting")
-									return <></>;
+								if (game.game.status === "waiting") return;
 								return (
 									<div className={style.match} key={i}>
 										<div>
@@ -341,8 +337,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 					<div className={style.class}>
 						{normalGames.length > 0 ? (
 							normalGames.map((game, i) => {
-								if (game.game.status === "waiting")
-									return <></>;
+								if (game.game.status === "waiting") return;
 								return (
 									<div className={style.match}>
 										<div>
@@ -416,6 +411,8 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 };
 
 const MatchStats = ({
+	isMe,
+	login,
 	rankedGames,
 	normalGames,
 }: {
@@ -424,6 +421,7 @@ const MatchStats = ({
 	rankedGames: any[];
 	normalGames: any[];
 }) => {
+	const user = useContext(UserContext);
 	const [gameResults, setGameResults] = useState({
 		wins: 0,
 		losses: 0,
@@ -468,7 +466,7 @@ const MatchStats = ({
 
 	return (
 		<>
-			<img alt='' src={stats}></img>
+			<img src={stats}></img>
 			<div className={style.statsbanner}>
 				<h2>
 					{gameResults.losses + gameResults.wins} <br />
@@ -518,20 +516,12 @@ const Friends = () => {
 	const [friendShips, setFriendShips] = useState<any[]>([]);
 	const [update, setUpdate] = useState<boolean>(true);
 
-	useEffect(() => {
+	useEffect(() => {}, [
 		socket.on("friendUpdate", (payload) => {
 			if (payload.loginA === user.login || payload.loginB === user.login)
 				setUpdate(true);
-		});
-
-		return () => {
-			socket.off("friendUpdate");
-		};
-	}, [user.login]);
-
-	useEffect(() => {
-		setUpdate(true);
-	}, [user.login]);
+		}),
+	]);
 
 	useEffect(() => {
 		if (!update) return;
@@ -546,7 +536,7 @@ const Friends = () => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [update, user.login]);
+	}, [update]);
 
 	const removeFriend = async (friendLogin: string) => {
 		axios
@@ -591,7 +581,7 @@ const Friends = () => {
 							(friendShip) => !friendShip.isPending
 						) ? (
 							friendShips.map((friendShip, i) => {
-								if (friendShip.isPending) return <> </>;
+								if (friendShip.isPending) return;
 								let friend: any;
 								if (friendShip.sender.login === user.login)
 									friend = friendShip.receiver;
@@ -636,7 +626,7 @@ const Friends = () => {
 									!friendShip.isPending ||
 									friendShip.sender.login !== user.login
 								)
-									return <></>;
+									return;
 								let friend = friendShip.receiver;
 								return (
 									<li key={i} className={style.requestUser}>
@@ -672,7 +662,7 @@ const Friends = () => {
 									!friendShip.isPending ||
 									friendShip.receiver.login !== user.login
 								)
-									return <></>;
+									return;
 								let friend = friendShip.sender;
 								return (
 									<li key={i} className={style.requestUser}>
@@ -722,21 +712,6 @@ const Blocked = () => {
 	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
-		socket.on("blockUpdate", (payload) => {
-			if (payload.loginA === user.login || payload.loginB === user.login)
-				setUpdate(true);
-		});
-
-		return () => {
-			socket.off("blockUpdate");
-		};
-	}, [user.login]);
-
-	useEffect(() => {
-		setUpdate(true);
-	}, [user.login]);
-
-	useEffect(() => {
 		if (!update) return;
 		setUpdate(false);
 		axios
@@ -749,7 +724,7 @@ const Blocked = () => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [update, user.login]);
+	}, [update]);
 
 	const touchTheUpdate = () => {
 		setUpdate(true);

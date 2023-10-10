@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../App";
 import GameSelection from "./GameSelection";
@@ -16,33 +16,12 @@ const Home = () => {
 
 	return (
 		<div className={style.home}>
-			<button
-				onClick={() => {
-					notification.alert("Alert", "Karen was eating the manager");
-				}}
-			>
-				Alert
-			</button>
-			<button
-				onClick={() => {
-					notification.info(
-						"Info",
-						"Caroline fart in th bocal,but ... SShhhh, She believe who anyone know"
-					);
-				}}
-			>
-				Info
-			</button>
-			<button
-				onClick={() => {
-					notification.error("Error", " BURN OUT");
-				}}
-			>
-				Error
-			</button>
+			<button onClick={()=>{notification.alert("Alert","Karen was eating the manager")}}>Alert</button>
+			<button onClick={()=>{notification.info("Info","Caroline fart in th bocal,but ... SShhhh, She believe who anyone know")}}>Info</button>
+			<button onClick={()=>{notification.error("Error"," BURN OUT")}}>Error</button>
 			<div id={chooseMode ? style.slide : undefined}>
 				<h1 className={style.title}>W E L C O M E</h1>
-				<img alt='' className={style.brand} src={brand}></img>
+				<img className={style.brand} src={brand}></img>
 				<h1 className={style.subtitle}>P L A T Y P O N G</h1>
 			</div>
 			{!chooseMode && <p> Ready to play ? </p>}

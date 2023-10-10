@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../App";
 import ChatBox from "./Chat/ChatBox";
 import style from "../style/Chat.module.scss";

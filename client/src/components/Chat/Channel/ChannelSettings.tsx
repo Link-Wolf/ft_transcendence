@@ -5,6 +5,7 @@ import { PPDisplayer } from "../../ImageDisplayer";
 import { DemoteButton } from "../../ActionsButtons";
 import style from "../../../style/Chat.module.scss";
 
+
 const ChannelSettings = ({
 	channelName,
 	owner,
@@ -43,7 +44,7 @@ const ChannelSettings = ({
 			.catch((err) => {
 				console.error(err);
 			});
-	}, [update, channelName]);
+	}, [update]);
 
 	useEffect(() => {
 		if (passValue === "" || !hasPassword) {
@@ -78,7 +79,7 @@ const ChannelSettings = ({
 		} else {
 			setPassError("");
 		}
-	}, [passValue, tutors, user.login, hasPassword]);
+	}, [passValue, tutors, user.login]);
 
 	const removePassword = () => {
 		axios
@@ -147,29 +148,17 @@ const ChannelSettings = ({
 				)}
 				{hasPassword && !updatePassword ? (
 					<>
-						<button
-							className={style.passwordbutton}
-							type='button'
-							onClick={wannaEditPassword}
-						>
+						<button className={style.passwordbutton} type='button' onClick={wannaEditPassword}>
 							Change password
 						</button>
-						<button
-							className={style.passwordbutton}
-							type='button'
-							onClick={removePassword}
-						>
+						<button  className={style.passwordbutton} type='button' onClick={removePassword}>
 							Remove password
 						</button>
 					</>
 				) : (
 					!updatePassword && (
 						<>
-							<button
-								className={style.passwordbutton}
-								type='button'
-								onClick={wannaEditPassword}
-							>
+							<button className={style.passwordbutton} type='button' onClick={wannaEditPassword}>
 								Add password
 							</button>
 						</>
@@ -178,11 +167,7 @@ const ChannelSettings = ({
 				{hasPassword && updatePassword && (
 					<>
 						{/* {passError !== "" && <p>{passError}</p>} */}
-						<button
-							className={style.passwordbutton}
-							type='button'
-							onClick={cancelChange}
-						>
+						<button  className={style.passwordbutton} type='button' onClick={cancelChange}>
 							Cancel
 						</button>
 						<button
@@ -196,9 +181,8 @@ const ChannelSettings = ({
 					</>
 				)}
 			</div>
-			{hasPassword && updatePassword && passError !== "" && (
-				<p className={style.passError}>{passError}</p>
-			)}
+			{hasPassword && updatePassword && (
+						passError !== "" && <p className={style.passError}>{passError}</p>)}
 			<div>
 				{admins.length ? (
 					<>
@@ -214,9 +198,7 @@ const ChannelSettings = ({
 						))}
 					</>
 				) : (
-					<p className={style.empty}>
-						Any admin yet, You can add one no the User List
-					</p>
+					<p className={style.empty} >Any admin yet, You can add one no the User List</p>
 				)}
 			</div>
 		</>
@@ -235,16 +217,17 @@ const AdminCardIdk = ({
 	return (
 		<>
 			<div className={style.profilmp}>
-				<PPDisplayer size={50} login={login} status={true} />
-				<div className={style.description}>
-					<p className={style.mpname}>
-						{name} ({login})
-					</p>
-					<p className={style.object}>
-						<DemoteButton login={login} channel={channel} />
-					</p>
-				</div>
+					<PPDisplayer
+							size={50}
+							login={login}
+							status={true}
+					/>
+					<div className={style.description}>
+						<p className={style.mpname}>{name} ({login})</p>
+						<p className={style.object}><DemoteButton login={login} channel={channel} /></p>
+					</div>
 			</div>
+			
 		</>
 	);
 };

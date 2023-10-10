@@ -1,8 +1,10 @@
 import axios from "axios";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { UserContext } from "../App";
+import { PPDisplayer } from "./ImageDisplayer";
 import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
+import Dropzone, { useDropzone } from "react-dropzone";
 import socket from "../socket";
 import PPChanger from "./PPChanger";
 import style from "../style/Profile.module.scss";
@@ -38,7 +40,7 @@ const Update = () => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [context.login]);
+	}, []);
 
 	if (!context.clearance || context.clearance === 0)
 		return <ThereIsNotEnoughPermsBro />;

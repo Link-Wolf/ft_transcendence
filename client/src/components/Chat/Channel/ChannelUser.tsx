@@ -9,7 +9,9 @@ import style from "../../../style/Chat.module.scss";
 import {
 	AskForGameButton,
 	BlockUnblockButton,
+	DemoteButton,
 	FriendPMButton,
+	PromoteButton,
 	PromoteDemoteButton,
 } from "../../ActionsButtons";
 

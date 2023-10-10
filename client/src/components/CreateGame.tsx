@@ -57,7 +57,7 @@ const CreateGame = () => {
 				} else navigate(`/game/${gameId}`);
 			}
 		);
-	}, [searchParam, navigate]);
+	}, [searchParam]);
 
 	return <Loading />;
 };
