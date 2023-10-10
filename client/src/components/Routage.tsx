@@ -9,7 +9,7 @@ import Game from "./Game";
 import Update from "./Update";
 import TFA from "./TFA";
 import CreateGame from "./CreateGame";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import socket from "../socket";
 import Cookies from "js-cookie";
 
