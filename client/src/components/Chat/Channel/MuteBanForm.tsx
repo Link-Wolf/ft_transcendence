@@ -3,7 +3,6 @@ import { useState } from "react";
 import socket from "../../../socket";
 import style from "../../../style/Chat.module.scss";
 
-
 const MuteBanForm = ({
 	channel,
 	login,
@@ -35,6 +34,9 @@ const MuteBanForm = ({
 	};
 
 	const muteSomeone = async (login: string) => {
+		if (login === "") return;
+		if (adminForm.duration === 0) return;
+		if (adminForm.reason === "") return;
 		await axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/mute/user/${login}/channel/${channel}`
@@ -82,6 +84,8 @@ const MuteBanForm = ({
 	};
 
 	const ban = async (login: string) => {
+		if (login === "") return;
+		if (adminForm.reason === "") return;
 		await axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/user/${login}/channel/${channel}`
@@ -120,7 +124,7 @@ const MuteBanForm = ({
 	return (
 		<div /*RELATIVE */>
 			<div>{/* FIXED INFINITE */}</div>
-			<div className={style.muteform}/* ignore sa petite soeur*/>
+			<div className={style.muteform} /* ignore sa petite soeur*/>
 				<form>
 					{boxType === "mute" && (
 						<select
@@ -153,10 +157,11 @@ const MuteBanForm = ({
 								? muteSomeone(login)
 								: ban(login);
 						}}
+						disabled={
+							adminForm.reason === "" || adminForm.duration === 0
+						}
 					>
-						{boxType === "mute"
-							? "Censor"
-							: "Apply the banhammer"}
+						{boxType === "mute" ? "Censor" : "Apply the banhammer"}
 					</button>
 				</form>
 			</div>
