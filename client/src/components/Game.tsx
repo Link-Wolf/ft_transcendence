@@ -2,14 +2,18 @@ import { useEffect, useState } from "react";
 import socket from "../socket";
 import Cookies from "js-cookie";
 import GameRender from "./GameRender/GameRender";
-import { useNavigate, useParams } from "react-router-dom";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import style from "../style/Game.module.scss";
 import load from "../assets/load.gif";
+import { join } from "path";
+import { clear } from "console";
 
 const Game = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const gameId = useParams().id;
 	const navigate = useNavigate();
+
+	let joinInterval: NodeJS.Timer;
 
 	const cancelSearch = () => {
 		navigate("/");
@@ -52,14 +56,13 @@ const Game = () => {
 		};
 
 		joinGame();
-		const joinInterval = setInterval(() => {
-			joinGame();
-		});
+		clearInterval(joinInterval as NodeJS.Timer);
+		joinInterval = setInterval(joinGame, 1000);
 
 		return () => {
 			clearInterval(joinInterval as NodeJS.Timer);
 		};
-	}, [gameId, navigate]);
+	}, []);
 
 	if (loading) return <WaitingForMatch cancelSearch={cancelSearch} />;
 	return <GameRender gameId={gameId as string} />;
@@ -69,7 +72,7 @@ const WaitingForMatch = ({ cancelSearch }: { cancelSearch: Function }) => {
 	return (
 		<>
 			<div className={style.playsearch}>
-				<img alt='' src={load} className={style.load}></img>
+				<img src={load} className={style.load}></img>
 				<div>Search and loading</div>
 				<button
 					className={style.button}
