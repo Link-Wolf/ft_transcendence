@@ -52,6 +52,14 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				console.log(err);
 			});
 	}, []);
+	
+
+	var selecMap = "default";
+	modifiers.filter((mod) => mod.code.startsWith("map_")).map((modifier, i) => {
+		console.log(modifier);
+		if (selectedMap === modifier.id)
+			selecMap = modifier.code;
+	});
 
 	return (
 		<>
@@ -63,13 +71,15 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				<h1>GAME CREATION</h1>
 				<div className={style.display}>
 					<div className={style.preview}>
-						{map === "default" ? (
+						{selecMap === "default" ? (
 							<div className={style.gamemapDefault}></div>
-						) : selectedMap === 11 ? (
-							<div className={style.gamemapTwin}></div>
-						) : (
+						) : selecMap === "map_1" ? (
+							<div className={style.gamemapCube}></div>
+						) : selecMap === "map_2" ?(
 							<div className={style.gamemapLine}></div>
-						)}
+						) :
+							<div className={style.gamemapTwin}></div>
+						}
 					</div>
 					<div>
 						<label

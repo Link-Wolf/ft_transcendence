@@ -7,11 +7,23 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	text-align: center;
 	background-color: #00000055;
 	backdrop-filter: blur(10px);
 
 	.popup {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+
 		background-color: #00000055;
 		backdrop-filter: blur(10px);
+		padding: 200px;
+		border-radius: 50px;
+		label{
+			width: auto;
+		}
 	}
 }
+

@@ -1,11 +1,31 @@
+@keyframes slide {
+	0% {
+		height: 0px;
+	}
+	100% {
+		height: 620px;
+	}
+}
+
+@keyframes mask {
+	0% {
+		height: 620px;
+	}
+	100% {
+		height: 0px;
+	}
+}
+
 .chat {
+	animation: fade-in 1s;
+
+	// animation: 1s fade-in;
 	// overflow: scroll;
 	border-radius: 50px 50px 0 0px;
 	border: 10px black solid;
 	border-bottom: 0px;
 	color: rgb(146, 146, 146);
 	background-color: var(--background-tel);
-	transition: 0.5s ease-in;
 	// padding: 0 10px 0 10px;
 	--height: 620px;
 
@@ -43,8 +63,9 @@
 		
 		color: var(--neutral-text);
 		background-color: rgba($color: #ffffff, $alpha: 0);
-
-		// dimensions of the button to open/close chat
+		transition: 1s;
+	// animation: 1s fade-in;
+	// dimensions of the button to open/close chat
 		width: 60px;
 		height: 60px;
 		&:hover{
@@ -53,8 +74,10 @@
 	}
 
 	.chatbox {
+		animation: slide 1s;
 		// border: olive 1px solid;
-		color: var(--neutral-text);
+	// animation: 1s fade-in;
+	color: var(--neutral-text);
 		transition: 1s ease-in;
 
 		// dimensions of the main chatbox
@@ -196,9 +219,10 @@
 	.ChatHomePage {
 		transition: 0.5s ease-in;
 
-		align-items: start;
+		align-items: end;
 		text-align: start;
 		text-align: center;
+		justify-content: center;
 		.imgChat{
 			margin-top: 20px;
 			height: 300px;
@@ -307,6 +331,7 @@
 
 
 .channelmsg {
+
 	transition: 0.5s ease-in;
 
 		overflow: scroll;
@@ -687,4 +712,19 @@ button {
 			outline: none;
 		}
 	}
+}
+
+.buttonstart{
+	border-radius: 25px 0 0 25px;
+}
+.buttoncenter{
+	border-radius: 0px 0 0 0px;
+}
+.buttonend{
+	border-radius: 0 25px 25px 0;
+}
+
+.animationtel{
+	background-color: #000000;
+	animation: fade-in 1s;
 }
