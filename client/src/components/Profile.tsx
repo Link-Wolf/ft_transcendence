@@ -262,15 +262,17 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				/>
 			</div>
 			<div>
-				<img alt='' src={history}></img>
+				{/* <img alt='' src={history}></img> */}
 				<div className={style.statshistory}>
-					<h2>M A T C H _ H I S T O R Y</h2>
+					{/* <h2>M A T C H _ H I S T O R Y</h2> */}
+					<div className={style.divi}>
+					
 					<h3>R A N K E D</h3>
 					<div className={style.class}>
 						{rankedGames.length > 0 ? (
 							rankedGames.map((game, i) => {
 								if (game.game.status === "waiting")
-									return <></>;
+								return <></>;
 								return (
 									<div className={style.match} key={i}>
 										<div>
@@ -289,11 +291,11 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 											<div className={style.usermatch}>
 												{
 													<PPDisplayer
-														login={login}
+													login={login}
 														size={60}
 														status={false}
-													/>
-												}
+														/>
+													}
 											</div>
 											{game.game.status !== "ongoing" ? (
 												<div className={style.result}>
@@ -301,7 +303,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 													[ {game.score} ] vs [ 
 													{
 														game.opponentUserGame
-															.score
+														.score
 													}{" "}
 													]{" "}
 												</div>
@@ -314,16 +316,16 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 											<div className={style.usermatch}>
 												<Link
 													to={`/profile/${game.opponentUserGame.userLogin}`}
-												>
+													>
 													{
 														<PPDisplayer
-															login={
-																game
-																	.opponentUserGame
-																	.userLogin
-															}
-															size={60}
-															status={false}
+														login={
+															game
+															.opponentUserGame
+															.userLogin
+														}
+														size={60}
+														status={false}
 														/>
 													}
 												</Link>
@@ -333,18 +335,21 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 									</div>
 								);
 							})
-						) : (
-							<p>No ranked games played</p>
-						)}
+							) : (
+								<p>No ranked games played</p>
+								)}
+						</div>
 					</div>
+					<div className={style.divi}>
+					
 					<h3>N O T _ R A N K E D</h3>
 					<div className={style.class}>
 						{normalGames.length > 0 ? (
 							normalGames.map((game, i) => {
 								if (game.game.status === "waiting")
 									return <></>;
-								return (
-									<div className={style.match}>
+									return (
+										<div className={style.match}>
 										<div>
 											{game.game.status === "ongoing" &&
 												"Ongoing"}
@@ -361,9 +366,9 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 											<div className={style.usermatch}>
 												{
 													<PPDisplayer
-														login={login}
-														size={60}
-														status={false}
+													login={login}
+													size={60}
+													status={false}
 													/>
 												}
 											</div>
@@ -374,7 +379,7 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 													{
 														game.opponentUserGame
 															.score
-													}{" "}
+														}{" "}
 													]{" "}
 												</div>
 											) : (
@@ -386,16 +391,16 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 											<div className={style.usermatch}>
 												<Link
 													to={`/profile/${game.opponentUserGame.userLogin}`}
-												>
+													>
 													{
 														<PPDisplayer
-															login={
-																game
-																	.opponentUserGame
-																	.userLogin
-															}
-															size={60}
-															status={false}
+														login={
+															game
+															.opponentUserGame
+															.userLogin
+														}
+														size={60}
+														status={false}
 														/>
 													}
 												</Link>
@@ -407,7 +412,8 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 							})
 						) : (
 							<p>No friendly games played</p>
-						)}
+							)}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -470,41 +476,40 @@ const MatchStats = ({
 		<>
 			<img alt='' src={stats}></img>
 			<div className={style.statsbanner}>
-				<h2>
-					{gameResults.losses + gameResults.wins} <br />
-					games played
-				</h2>
-				<p>
-					Wins : {gameResults.wins}
-					<br />
-					Losses : {gameResults.losses}
-				</p>
+				<div className={style.categoryRanked}>
+					<h3>
+						{" "}
+						{rankedGameResults.losses + rankedGameResults.wins} <br />
+						Ranked Games<br />
+					</h3>
+					<div className={style.scores}>
+						<pre className={style.win}>✅ : {rankedGameResults.wins}</pre>
+						<pre className={style.looses}>{rankedGameResults.losses} : 🛑</pre>
+					</div>
+				</div>
 
-				<h3>
-					{" "}
-					{rankedGameResults.losses + rankedGameResults.wins} <br />
-					ranked <br />
-					games played
-				</h3>
+				<div className={style.categoryAll}>
+					<h3>
+						{gameResults.losses + gameResults.wins} <br />
+						Games Played
+					</h3>
+					<div className={style.scores}>
+						<pre className={style.win}>✅ : {gameResults.wins}</pre>
+						<pre className={style.looses}>{gameResults.losses} : 🛑</pre>
+					</div>
+				</div>
 
-				<p>
-					Wins : {rankedGameResults.wins}
-					<br />
-					Losses : {rankedGameResults.losses}
-				</p>
-
-				<h3>
-					{" "}
-					{normalGameResults.losses +
-						normalGameResults.wins} <br /> friendly <br />
-					games played
-				</h3>
-
-				<p>
-					Wins : {normalGameResults.wins}
-					<br />
-					Losses : {normalGameResults.losses}
-				</p>
+				<div className={style.categoryFriends}>
+					<h3>
+						{" "}
+						{normalGameResults.losses +
+							normalGameResults.wins} <br /> Friendly Games<br />
+					</h3>
+					<div className={style.scores}>
+						<pre className={style.win}>✅ : {normalGameResults.wins}</pre>
+						<pre className={style.looses}>{normalGameResults.losses} : 🛑</pre>
+					</div>
+				</div>
 			</div>
 		</>
 	);

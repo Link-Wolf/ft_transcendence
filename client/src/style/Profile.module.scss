@@ -33,6 +33,9 @@
 	
 	.resume {
 		animation: fade-in 0.5s;
+		// background-color: #000000;
+		height: 1100px;
+		justify-content: center;
 	
 
 		animation: ease-in 0.5s;
@@ -132,7 +135,6 @@
 			}
 			&.settings {
 				transition: 0.5s;
-
 				background-color: var(--settings-color);
 				&:hover{
 					background-color: #979797;
@@ -149,14 +151,15 @@
 	}
 
 	.menu {
-
+		// background-color: #000000;
+		border-radius: 100px;
 		.stats {
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			color: white;
 			align-items: center;
 			width: 1000px;
-			height: 800px;
+			height: 1100px;
 
 
 			img {
@@ -165,30 +168,156 @@
 				margin-bottom: 15px;
 			}
 			.statsbanner {
+				display: flex;
+				flex-direction: row;
 				margin-left: 100px;
-				width: 200px;
-				border: 4px solid white;
-				border-radius: 300px 300px 300px 300px;
-				border-left: 0px;
-				border-right: 0px;
-				background-color: rgba($color: #000000, $alpha: 0.4);
+				width: 800px;
+				height: 150px;
+				align-items: center;
+				text-align: center;
+				justify-content: center;
+				// border: 4px solid white;
+				// border-radius: 100px 100px 100px 100px;
+				// border-left: 0px;
+				// border-right: 0px;
+				// background-color:s rgba($color: #000000, $alpha: 0.4);
+				// background-color: #f8f8f8;
+				.categoryAll{
+					color: var(--neutral-text);
+					background-color: #ffffff;
+					background: linear-gradient(to right, var(--linear-gradient-two), var(--linear-gradient-three));
+					margin-left: 5px;
+					margin-right: 5px;
+					h3{
+						margin: 0px;
+						font-size: 23px;
+					}
+					.scores
+					{	
+						margin: 0px;
+						margin-left: 20px;
+						margin-right: 20px;
+						display: flex;
+						flex-direction: row;
+						pre{
+							color: #f8f8f8;
+							font-size: 20px;
+							padding: 5px 10px 5px 10px;
+						}
+						.win{
+							background-color: green;
+							border-radius: 25px 0 0 25px;
+							margin-right: 5px;
+						}
+						.looses{
+							background-color: red;
+							border-radius: 0 25px 25px 0;
+							margin-left: 5px;
+						}	
+					
+					}
+				}
+				.categoryRanked{
+					color: var(--neutral-text);
+					// background-color: #ffffff;
+					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
+					border-radius: 100px 0 0 100px;
+					margin-left: 5px;
+					margin-right: 5px;
+					padding-right: 40px;
+					padding-left: 60px;
+					h3{
+						margin: 0px;
+						font-size: 23px;
+					}
+					.scores
+					{	
+						margin: 0px;
+						margin-left: 20px;
+						margin-right: 20px;
+						display: flex;
+						flex-direction: row;
+						pre{
+							color: #f8f8f8;
+							font-size: 20px;
+							padding: 5px 10px 5px 10px;
+						}
+						.win{
+							background-color: green;
+							border-radius: 25px 0 0 25px;
+							margin-right: 5px;
+						}
+						.looses{
+							background-color: red;
+							border-radius: 0 25px 25px 0;
+							margin-left: 5px;
+						}	
+					
+					}
+				}
+				.categoryFriends{
+					color: var(--neutral-text);
+					background-color: #ffffff;
+					background: linear-gradient(to right, var(--linear-gradient-three), var(--linear-gradient-four));
+					border-radius: 0 100px 100px 0;
+					margin-left: 5px;
+					margin-right: 5px;
+					padding-right: 60px;
+					padding-left: 40px;
+					h3{
+						margin: 0px;
+						font-size: 23px;
+					}
+					.scores
+					{	
+						margin: 0px;
+						margin-left: 20px;
+						margin-right: 20px;
+						display: flex;
+						flex-direction: row;
+						pre{
+							color: #f8f8f8;
+							font-size: 20px;
+							padding: 5px 10px 5px 10px;
+						}
+						.win{
+							background-color: green;
+							border-radius: 25px 0 0 25px;
+							margin-right: 5px;
+						}
+						.looses{
+							background-color: red;
+							border-radius: 0 25px 25px 0;
+							margin-left: 5px;
+						}	
+					
+					}
+				}
 			}
 			.statshistory {
-				background-color: rgba($color: #000000, $alpha: 0.4);
-				margin: 20px;
+				// background-color: rgba($color: #000000, $alpha: 0.4);
+				// margin: 20px;
 				margin-top: 0px;
 				margin-left: 100px;
-
-				border: 4px solid white;
-				border-left: 0px;
-				border-right: 0px;
+				display: flex;
+				width: 1100px;
+				justify-content:space-around;
+				// background-color: #000000;
+				// border: 4px solid white;
+				// border-left: 0px;
+				// border-right: 0px;
 				height: 700px;
-				padding-left: 40px;
-				padding-right: 40px;
+				// padding-left: 40px;
+				// padding-right: 40px;
 				border-radius: 30px 30px 30px 30px;
 				overflow: scroll;
+				.divi{
+					padding: 0px;
+					margin: 0px;
+				}
 
 				.class {
+					padding-top: 15px;
 					.match {
 						display: flex;
 						flex-direction: column;
@@ -214,12 +343,14 @@
 					}
 
 					overflow: scroll;
-					border: 4px solid #f8f8f8;
-					border-left: 10px solid #f8f8f8;
-					border-right: 10px solid #f8f8f8;
+					width: 285px;
 					border-radius: 25px;
-					padding-top: 20px;
-					height: 230px;
+					// padding-top: 20px;
+					height: 500px;
+					// margin-left: 50px;
+					// margin-right: 50px;
+					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
+					color: var(--neutral-text);
 				}
 				.class::-webkit-scrollbar {
 					display: none;
@@ -231,7 +362,7 @@
 		}
 		.friends {
 			width: 1000px;
-			height: 800px;
+			height: 1100px;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -245,25 +376,29 @@
 				flex-direction: row;
 				align-items: center;
 				div {
+					transition: 0.5s;
 					display: flex;
 					flex-direction: column;
 					align-items: center;
-					color: white;
+					color: rgb(5, 0, 0);
+					color: var(--neutral-text);
 					margin: 20px;
 					margin-top: 0px;
-					border: 4px solid white;
+					// border: 4px solid rgb(24, 8, 8);
 					border-left: 0px;
 					border-right: 0px;
-					height: 600px;
+					height: 800px;
 					padding-left: 40px;
 					padding-right: 40px;
 					border-radius: 30px 30px 30px 30px;
-					background-color: rgba($color: #000000, $alpha: 0.4);
+					// background-color: rgba($color: #000000, $alpha: 0.4);
+					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
 					overflow: scroll;
 				}
 				div::-webkit-scrollbar {
 					display: none;
 				}
+
 			}
 
 			.friendsUser {
@@ -290,6 +425,8 @@
 					color: #f8f8f8;
 					font-size: 15px;
 					transition: 0.3s;
+					color: var(--color-button-profil);
+					border-color: var(--color-button-profil);
 				}
 			}
 
@@ -318,6 +455,8 @@
 					color: #f8f8f8;
 					font-size: 15px;
 					transition: 0.3s;
+					color: var(--color-button-profil);
+					border-color: var(--color-button-profil);
 				}
 				.acceptbutton {
 					display: flex;
@@ -327,15 +466,17 @@
 						background-color: #f8f8f8;
 						margin-left: 10px;
 						margin-right: 10px;
+						color: var(--color-button-profil);
+						border-color: var(--color-button-profil);
 					}
 				}
 			}
 
 			.FriendsList {
 				overflow: scroll;
-				border: 4px solid #f8f8f8;
-				border-left: 0px solid #f8f8f8;
-				border-right: 0px solid #f8f8f8;
+				border: 4px solid #070707;
+				border-left: 0px solid #0e0d0d;
+				border-right: 0px solid #0c0c0c;
 				border-radius: 25px;
 				width: 250px;
 				margin: 0px;
@@ -343,7 +484,7 @@
 				margin-bottom: 10px;
 
 				padding: 0px;
-				height: 300px;
+				height: 400px;
 				background-color: rgba($color: #000000, $alpha: 0);
 			}
 			.FriendsList::-webkit-scrollbar {
@@ -353,7 +494,7 @@
 
 		.settings {
 			width: 1000px;
-			height: 800px;
+			height: 1100px;
 			img {
 				margin-top: 50px;
 				margin-bottom: 20px;
@@ -365,19 +506,19 @@
 				flex-direction: column;
 				align-items: center;
 				text-align: center;
-				color: white;
+				color: var(--neutral-text);
 				margin: 20px;
 				margin-top: 0px;
 
-				border: 4px solid white;
+				// border: 4px solid white;
 				border-left: 0px;
 				border-right: 0px;
 
 				padding-left: 40px;
 				padding-right: 40px;
 				border-radius: 30px 30px 30px 30px;
-				background-color: rgba($color: #000000, $alpha: 0.4);
-				overflow: scroll;
+					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
+					overflow: scroll;
 				img {
 					margin: 0;
 					margin-left: 110px;
@@ -396,7 +537,8 @@
 					border-radius: 25px;
 					background-color: rgba($color: #000000, $alpha: 0);
 					padding: 5px 10px 5px 10px;
-					color: #f8f8f8;
+					color: var(--color-button-profil);
+					border-color: var(--color-button-profil);
 					font-size: 13px;
 					transition: 0.3s;
 					margin-bottom: 10px;

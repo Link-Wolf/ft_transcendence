@@ -26,7 +26,11 @@
 	--background-tel: #eeeeee;
 	--background-tel-scroll: #ffffff;
 	--background-tel-div: #c42d2d;
-	--background-img-chan: #303030;
+	--background-img-chan-zero: #5cd166;
+	--background-img-chan-one: #c56666;
+	--background-img-chan-two: #5a81d4;
+	--background-img-chan-three: #c5be58;
+	--background-img-chan-four: #2c282b;
 
 	--border-tel-div: #9c9c9c;
 	--background-button-tel: rgb(192, 192, 192);
@@ -53,6 +57,11 @@
 	--notif-text-color: rgb(29, 29, 29);
 	--notif-background-color: #ebebeb;
 	overflow: scroll;
+
+	--linear-gradient-one: #fafafa;
+	--linear-gradient-two: #bbbbbb;
+	--linear-gradient-three: #ffffff;
+	--linear-gradient-four: #cacacad5;
 }
 
 .light::-webkit-scrollbar {
@@ -85,6 +94,11 @@
 	--background-tel-div: #ffffff;
 	--background-tel-scroll: #252525;
 	--background-img-chan: #c4c4c4;
+	--background-img-chan-zero: #5cd1669d;
+	--background-img-chan-one: #c56666a4;
+	--background-img-chan-two: #5a81d49c;
+	--background-img-chan-three: #c5be58a1;
+	--background-img-chan-four: #414040;
 
 	--border-tel-div: #494949;
 	--background-button-tel: rgb(71, 71, 71);
@@ -110,6 +124,11 @@
 	--infor-text-color: white;
 	--notif-text-color: white;
 	--notif-background-color: #353535;
+
+	--linear-gradient-one: #333333;
+	--linear-gradient-two: #1a1a1a;
+	--linear-gradient-three: #333333;
+	--linear-gradient-four: #1a1a1a;
 }
 .dark::-webkit-scrollbar {
 	display: none;

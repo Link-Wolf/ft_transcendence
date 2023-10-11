@@ -273,8 +273,11 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 										className={style.profilmp}
 										key={i}
 										onClick={() => setChannel(channel)}
-									>
-										<div className={style.imgChannel}>
+										>
+										<div 
+										// className={style.imgChannel}
+										className={`${style.imgChannel} ${style[i % 5 == 1 ? "one" : i % 5 == 2 ? "two" : i % 5 == 3 ? "three" : i % 5 == 4 ? "four" : "zero"]}`}
+										>
 											{" "}
 											{channel.toUpperCase()[0]}
 										</div>
