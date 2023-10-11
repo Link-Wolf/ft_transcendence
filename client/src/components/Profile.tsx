@@ -19,7 +19,7 @@ import { Link } from "react-router-dom";
 import stats from "../assets/stats.png";
 import history from "../assets/history.png";
 import friends from "../assets/friends.png";
-import { log } from "console";
+import settingss from "../assets/settings.png";
 
 const Profile = () => {
 	/**
@@ -153,10 +153,7 @@ const Profile = () => {
 							)}
 							{displayedMenu === "settings" ? (
 								<div className={style.settings}>
-									<img
-										alt=''
-										src='https://primedepartamentos.com/images/icons/settings-icon-white.png'
-									></img>
+									<img alt='' src={settingss}></img>
 									<Update />
 								</div>
 							) : (
