@@ -18,18 +18,18 @@ const RouteWatcher = ({ children }: { children: JSX.Element[] }) => {
 	const [oldLocation, setOldLocation] = useState(location.pathname);
 
 	useEffect(() => {
-		if (location.pathname === oldLocation)
-			if (
-				oldLocation.startsWith("/game") &&
-				!location.pathname.startsWith("/game")
-			) {
-				socket.emit("leaveGame", {
-					auth: Cookies.get("token"),
-					gameId: oldLocation.split("/")[
-						oldLocation.split("/").length - 1
-					],
-				});
-			}
+		if (location.pathname === oldLocation) return;
+		if (
+			oldLocation.startsWith("/game") &&
+			!location.pathname.startsWith("/game")
+		) {
+			socket.emit("leaveGame", {
+				auth: Cookies.get("token"),
+				gameId: oldLocation.split("/")[
+					oldLocation.split("/").length - 1
+				],
+			});
+		}
 		setOldLocation(location.pathname);
 	}, [location.pathname, oldLocation]);
 
