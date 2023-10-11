@@ -70,7 +70,7 @@
 		width: 60px;
 		height: 60px;
 		margin: 0px;
-		&:hover{
+		&:hover {
 			background-color: rgba($color: #000000, $alpha: 0);
 		}
 	}
@@ -87,10 +87,9 @@
 		height: var(--height);
 	}
 
-		.mpinput{
-			width: 250px;
-		}
-	
+	.mpinput {
+		width: 250px;
+	}
 }
 .form {
 	display: flex;
@@ -461,6 +460,7 @@
 	padding-left: 10px;
 	font-weight: 900;
 	margin: 0px;
+	cursor: pointer;
 	color: #0066b9;
 }
 .listbutton {
@@ -702,8 +702,7 @@ button {
 	border-radius: 0 25px 25px 0;
 }
 
-
-.toggleup{
+.toggleup {
 	height: 60px;
 	animation: maski 1s;
 }
