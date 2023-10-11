@@ -27,25 +27,33 @@ const Chat = () => {
 	}
 
 	return (
-		<div className={style.animationtel}>
-			{user.chat ? (
-				<div className={style.chat}>
-					<ChatBox toggleChat={toggleChat} />
-				</div>
-			) : (
-				<div className={style.chat}>
-					<ChatButton onClick={toggleChat} />
-				</div>
-			)}
-		</div>
+		// <div className={style.animationtel}>
+		// 	{user.chat ? (
+		// 		<div className={style.chat}>
+		// 			<ChatBox toggleChat={toggleChat} />
+		// 		</div>
+		// 	) : (
+		// 		<div className={style.chat}>
+		// 			<ChatButton onClick={toggleChat} />
+		// 		</div>
+		// 	)}
+		// </div>
+			<div className={`${style.chat} ${user.chat && style.toggleup}`}>
+				<ChatBox toggleChat={toggleChat} />
+			</div>
 	);
 };
 
 const ChatButton = (props: any) => {
 	return (
-		<button className={style.toggleChat} onClick={props.onClick}>
-			Toggle Chat
-		</button>
+		// <button className={style.toggleChat} onClick={props.onClick}>
+		// 	Toggle Chat
+		// </button>
+		<div className={style.top} onClick={props.onClick}>
+		<p className={style.cam}>O o</p>
+		<button className={style.toggleChat} >&nbsp;</button>
+	</div>
+
 	);
 };
 

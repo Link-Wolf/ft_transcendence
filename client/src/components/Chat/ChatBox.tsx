@@ -344,14 +344,11 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 
 	return (
 		<div className={style.chatbox}>
-			<div className={style.top}>
+			<div className={style.top} onClick={() => toggleChat()}>
 				<p className={style.cam}>O o</p>
 				<button
 					className={style.toggleChat}
-					onClick={() => toggleChat()}
-				>
-					X
-				</button>
+				>&nbsp;</button>
 			</div>
 			{!user.channel ? (
 				<>
