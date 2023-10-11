@@ -1,9 +1,10 @@
 import { createContext, useContext, useState } from "react";
 import PopUp from "./PopUp";
+import lock from "../assets/lock.png";
 
 const PromptContext = createContext({
 	prompt: {
-		prompt: "t",
+		prompt: "",
 		isOpen: false,
 		proceed: null as Function | null,
 		cancel: null as Function | null,
@@ -13,7 +14,7 @@ const PromptContext = createContext({
 
 export const PromptProvider = ({ children }: { children: React.ReactNode }) => {
 	const [prompt, setPrompt] = useState({
-		prompt: "tt",
+		prompt: "",
 		isOpen: false,
 		proceed: null,
 		cancel: null,
@@ -40,7 +41,6 @@ export const usePrompt = () => {
 			});
 		});
 		const reset = () => {
-			console.log("reset");
 			setPrompt({
 				prompt: "",
 				isOpen: false,
@@ -81,6 +81,15 @@ export const PromptModal = () => {
 					}}
 				>
 					<form
+						style={{
+							backgroundImage: `url(${lock})`,
+							backgroundSize: "contain",
+							backgroundPosition: "center",
+							backgroundRepeat: "no-repeat",
+							width: "100%",
+							paddingTop: "200px",
+							paddingBottom: "100px",
+						}}
 						onSubmit={(e) => {
 							e.preventDefault();
 							(context.prompt.proceed as Function)(pwd);
@@ -88,7 +97,9 @@ export const PromptModal = () => {
 						}}
 					>
 						<input
+							placeholder='Password'
 							type='password'
+							autoFocus={true}
 							value={pwd}
 							onChange={(e) => {
 								setPwd(e.target.value);

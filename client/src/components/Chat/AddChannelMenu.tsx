@@ -37,7 +37,6 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 	const checkPassword = async (channel: any): Promise<boolean> => {
 		if (channel.password !== "yesyesno") return true;
 		const password = await prompt.password("Password");
-		console.log(password);
 		if (!password) return false;
 
 		return await axios
@@ -50,7 +49,7 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 			)
 			.then((response) => {
 				if (!response.data) {
-					notifications.error("Error","Wrong Password");
+					notifications.error("Error", "Wrong Password");
 					return false;
 				} else return true;
 			})
@@ -76,7 +75,10 @@ const AddChannelMenu = ({ setChannel }: { setChannel: Function }) => {
 				setChannel(joined_channel.data.channelName);
 			})
 			.then(() => {
-				notifications.info("Channel joined","Please respect other player");
+				notifications.info(
+					"Channel joined",
+					"Please respect other player"
+				);
 				socket.emit("membershipUpdate", {
 					channel: channel.name,
 				});
