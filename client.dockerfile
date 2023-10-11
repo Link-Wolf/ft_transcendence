@@ -10,9 +10,8 @@ COPY client/tsconfig.json ./
 
 COPY .env ./
 
-RUN npm i sharp
 RUN npm i
+RUN npm i sharp
 
 CMD ["npm", "start"]
-# CMD ["sleep", "infinity"]
 

@@ -35,7 +35,7 @@ const StatusIcon = ({ login, size }: { login: string; size: number }) => {
 		return () => {
 			socket.off("statusUpdate");
 		};
-	}, [login]);
+	}, []);
 
 	return <div className={style.status} style={colorTheme(status)}></div>;
 };

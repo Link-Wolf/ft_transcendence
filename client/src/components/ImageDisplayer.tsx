@@ -30,7 +30,7 @@ const PPDisplayer = ({
 		return () => {
 			socket.off("contextUpdate");
 		};
-	}, [login]);
+	}, []);
 
 	useEffect(() => {
 		setUpdate(true);
