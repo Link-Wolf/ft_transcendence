@@ -18,6 +18,7 @@
 
 .chat {
 	animation: fade-in 1s;
+	transition: 0.5s ease-in;
 
 	// animation: 1s fade-in;
 	// overflow: scroll;
@@ -63,7 +64,7 @@
 		
 		color: var(--neutral-text);
 		background-color: rgba($color: #ffffff, $alpha: 0);
-		transition: 1s;
+		transition: 0.5s ease-in;
 	// animation: 1s fade-in;
 	// dimensions of the button to open/close chat
 		width: 60px;
@@ -78,7 +79,7 @@
 		// border: olive 1px solid;
 	// animation: 1s fade-in;
 	color: var(--neutral-text);
-		transition: 1s ease-in;
+		transition: 0.5s ease-in;
 
 		// dimensions of the main chatbox
 		width: calc(var(--height) / 1.618);
@@ -380,7 +381,7 @@
 			margin-right: 5px;
 		}
 		.message {
-			transition: 1s ease-in;
+			transition: 0.5s ease-in;
 			background-color: var(--msg-sender);
 			margin: 0px;
 			width: fit-content;
@@ -722,9 +723,4 @@ button {
 }
 .buttonend{
 	border-radius: 0 25px 25px 0;
-}
-
-.animationtel{
-	background-color: #000000;
-	animation: fade-in 1s;
 }
