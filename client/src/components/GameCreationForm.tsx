@@ -56,7 +56,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 
 	var selecMap = "default";
 	modifiers.filter((mod) => mod.code.startsWith("map_")).map((modifier, i) => {
-		console.log(modifier);
+		// console.log(modifier);
 		if (selectedMap === modifier.id)
 			selecMap = modifier.code;
 	});
