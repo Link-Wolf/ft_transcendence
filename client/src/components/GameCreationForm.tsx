@@ -70,8 +70,9 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 			>
 				<h1>GAME CREATION</h1>
 				<div className={style.display}>
+					
 					<div className={style.preview}>
-						{selecMap === "default" ? (
+						{selecMap === "default" || isRanked ? (
 							<div className={style.gamemapDefault}></div>
 						) : selecMap === "map_1" ? (
 							<div className={style.gamemapCube}></div>
