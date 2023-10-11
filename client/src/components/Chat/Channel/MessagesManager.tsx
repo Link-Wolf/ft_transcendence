@@ -220,6 +220,7 @@ const MessagesManager = ({
 			>
 				<input
 					value={message}
+					autoFocus={true}
 					type='text'
 					placeholder={
 						canSendMessage
