@@ -59,7 +59,7 @@ const Message = ({
 						<div className={style.toggleprofil}>
 							{isToggleBox && user.login !== login ? (
 								<div>
-									<button
+									<button className={style.buttonstart}
 										onClick={() => {
 											navigate(`/profile/${login}`);
 										}}
@@ -68,6 +68,7 @@ const Message = ({
 									</button>
 									{!relation.isBlocked && (
 										<AskForGameButton
+											className={style.buttoncenter}
 											text={"text"}
 											login={login}
 										/>
@@ -75,20 +76,25 @@ const Message = ({
 									{!relation.isBlocked &&
 										(relation.isFriend ? (
 											<PMButton
-												login={login}
+											className={style.buttoncenter}
+											login={login}
 												setChannel={setChannel}
 											/>
 										) : (
 											<FriendButton
-												text={"text"}
+											className={style.buttoncenter}
+											text={"text"}
 												login={login}
 											/>
 										))}
 									{relation.isBlocked ? (
-										<UnblockButton login={login} />
+										<UnblockButton 
+										className={style.buttonend}
+										login={login} />
 									) : (
 										<BlockButton
-											text={"Block"}
+										className={style.buttonend}
+										text={"Block"}
 											login={login}
 										/>
 									)}

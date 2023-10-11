@@ -27,11 +27,15 @@ const Chat = () => {
 	}
 
 	return (
-		<div className={style.chat}>
+		<div className={style.animationtel}>
 			{user.chat ? (
-				<ChatBox toggleChat={toggleChat} />
+				<div className={style.chat}>
+					<ChatBox toggleChat={toggleChat} />
+				</div>
 			) : (
-				<ChatButton onClick={toggleChat} />
+				<div className={style.chat}>
+					<ChatButton onClick={toggleChat} />
+				</div>
 			)}
 		</div>
 	);
