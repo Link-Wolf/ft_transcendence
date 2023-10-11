@@ -68,7 +68,7 @@ const Update = () => {
 	};
 
 	const updateUsername = async () => {
-		if (nameError !== "") return;
+		if (nameError !== "" || form.name === "") return;
 		await axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/user/name/${form.name}`

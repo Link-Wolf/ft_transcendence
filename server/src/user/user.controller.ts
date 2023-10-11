@@ -151,6 +151,12 @@ export class UserController {
 		if (!user) {
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		}
+		if (name && name === '') {
+			throw new HttpException(
+				'Name cannot be empty',
+				HttpStatus.BAD_REQUEST,
+			);
+		}
 		if (name && (await this.userService.findByName(name))) {
 			throw new HttpException(
 				'Name is already taken',

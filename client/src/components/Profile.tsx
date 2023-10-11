@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import stats from "../assets/stats.png";
 import history from "../assets/history.png";
 import friends from "../assets/friends.png";
+import { log } from "console";
 
 const Profile = () => {
 	/**
@@ -176,18 +177,16 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
+		setUpdate(true);
+		console.log("test");
 		socket.on("contextUpdate", (payload) => {
-			if (payload.login !== login) return;
-			setUpdate(true);
+			console.log(payload, login);
+			if (payload.login === login) setUpdate(true);
 		});
 
 		return () => {
 			socket.off("contextUpdate");
 		};
-	}, [login]);
-
-	useEffect(() => {
-		setUpdate(true);
 	}, [login]);
 
 	useEffect(() => {
@@ -266,152 +265,178 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 				<div className={style.statshistory}>
 					{/* <h2>M A T C H _ H I S T O R Y</h2> */}
 					<div className={style.divi}>
-					
-					<h3>R A N K E D</h3>
-					<div className={style.class}>
-						{rankedGames.length > 0 ? (
-							rankedGames.map((game, i) => {
-								if (game.game.status === "waiting")
-								return <></>;
-								return (
-									<div className={style.match} key={i}>
-										<div>
-											{game.game.status === "ongoing" &&
-												"Ongoing"}
-											{game.game.status === "abandoned" &&
-												(game.score === 11
-													? "Victory (by abandonment)"
-													: "Defeat (by abandonment)")}
-											{game.game.status === "finished" &&
-												(game.score === 11
-													? "Victory"
-													: "Defeat")}
-										</div>
-										<div className={style.score}>
-											<div className={style.usermatch}>
-												{
-													<PPDisplayer
-													login={login}
-														size={60}
-														status={false}
-														/>
-													}
+						<h3>R A N K E D</h3>
+						<div className={style.class}>
+							{rankedGames.length > 0 ? (
+								rankedGames.map((game, i) => {
+									if (game.game.status === "waiting")
+										return <></>;
+									return (
+										<div className={style.match} key={i}>
+											<div>
+												{game.game.status ===
+													"ongoing" && "Ongoing"}
+												{game.game.status ===
+													"abandoned" &&
+													(game.score === 11
+														? "Victory (by abandonment)"
+														: "Defeat (by abandonment)")}
+												{game.game.status ===
+													"finished" &&
+													(game.score === 11
+														? "Victory"
+														: "Defeat")}
 											</div>
-											{game.game.status !== "ongoing" ? (
-												<div className={style.result}>
-													{" "}
-													[ {game.score} ] vs [ 
-													{
-														game.opponentUserGame
-														.score
-													}{" "}
-													]{" "}
-												</div>
-											) : (
-												<div className={style.result}>
-													{" "}
-													[ 0 ] vs [ 0 ]{" "}
-												</div>
-											)}
-											<div className={style.usermatch}>
-												<Link
-													to={`/profile/${game.opponentUserGame.userLogin}`}
-													>
+											<div className={style.score}>
+												<div
+													className={style.usermatch}
+												>
 													{
 														<PPDisplayer
-														login={
-															game
-															.opponentUserGame
-															.userLogin
-														}
-														size={60}
-														status={false}
+															login={login}
+															size={60}
+															status={false}
 														/>
 													}
-												</Link>
+												</div>
+												{game.game.status !==
+												"ongoing" ? (
+													<div
+														className={style.result}
+													>
+														{" "}
+														[ {game.score} ] vs [ 
+														{
+															game
+																.opponentUserGame
+																.score
+														}{" "}
+														]{" "}
+													</div>
+												) : (
+													<div
+														className={style.result}
+													>
+														{" "}
+														[ 0 ] vs [ 0 ]{" "}
+													</div>
+												)}
+												<div
+													className={style.usermatch}
+												>
+													<Link
+														to={`/profile/${game.opponentUserGame.userLogin}`}
+													>
+														{
+															<PPDisplayer
+																login={
+																	game
+																		.opponentUserGame
+																		.userLogin
+																}
+																size={60}
+																status={false}
+															/>
+														}
+													</Link>
+												</div>
 											</div>
+											<p>
+												--------------------------------
+											</p>
 										</div>
-										<p>--------------------------------</p>
-									</div>
-								);
-							})
+									);
+								})
 							) : (
 								<p>No ranked games played</p>
-								)}
+							)}
 						</div>
 					</div>
 					<div className={style.divi}>
-					
-					<h3>N O T _ R A N K E D</h3>
-					<div className={style.class}>
-						{normalGames.length > 0 ? (
-							normalGames.map((game, i) => {
-								if (game.game.status === "waiting")
-									return <></>;
+						<h3>N O T _ R A N K E D</h3>
+						<div className={style.class}>
+							{normalGames.length > 0 ? (
+								normalGames.map((game, i) => {
+									if (game.game.status === "waiting")
+										return <></>;
 									return (
 										<div className={style.match}>
-										<div>
-											{game.game.status === "ongoing" &&
-												"Ongoing"}
-											{game.game.status === "abandoned" &&
-												(game.score === 11
-													? "Victory (by abandonment)"
-													: "Defeat (by abandonment)")}
-											{game.game.status === "finished" &&
-												(game.score === 11
-													? "Victory"
-													: "Defeat")}
-										</div>
-										<div className={style.score}>
-											<div className={style.usermatch}>
-												{
-													<PPDisplayer
-													login={login}
-													size={60}
-													status={false}
-													/>
-												}
+											<div>
+												{game.game.status ===
+													"ongoing" && "Ongoing"}
+												{game.game.status ===
+													"abandoned" &&
+													(game.score === 11
+														? "Victory (by abandonment)"
+														: "Defeat (by abandonment)")}
+												{game.game.status ===
+													"finished" &&
+													(game.score === 11
+														? "Victory"
+														: "Defeat")}
 											</div>
-											{game.game.status !== "ongoing" ? (
-												<div className={style.result}>
-													{" "}
-													[ {game.score} ] vs [ 
-													{
-														game.opponentUserGame
-															.score
-														}{" "}
-													]{" "}
-												</div>
-											) : (
-												<div className={style.result}>
-													{" "}
-													[ 0 ] vs [ 0 ]{" "}
-												</div>
-											)}
-											<div className={style.usermatch}>
-												<Link
-													to={`/profile/${game.opponentUserGame.userLogin}`}
-													>
+											<div className={style.score}>
+												<div
+													className={style.usermatch}
+												>
 													{
 														<PPDisplayer
-														login={
-															game
-															.opponentUserGame
-															.userLogin
-														}
-														size={60}
-														status={false}
+															login={login}
+															size={60}
+															status={false}
 														/>
 													}
-												</Link>
+												</div>
+												{game.game.status !==
+												"ongoing" ? (
+													<div
+														className={style.result}
+													>
+														{" "}
+														[ {game.score} ] vs [ 
+														{
+															game
+																.opponentUserGame
+																.score
+														}{" "}
+														]{" "}
+													</div>
+												) : (
+													<div
+														className={style.result}
+													>
+														{" "}
+														[ 0 ] vs [ 0 ]{" "}
+													</div>
+												)}
+												<div
+													className={style.usermatch}
+												>
+													<Link
+														to={`/profile/${game.opponentUserGame.userLogin}`}
+													>
+														{
+															<PPDisplayer
+																login={
+																	game
+																		.opponentUserGame
+																		.userLogin
+																}
+																size={60}
+																status={false}
+															/>
+														}
+													</Link>
+												</div>
 											</div>
+											<p>
+												--------------------------------
+											</p>
 										</div>
-										<p>--------------------------------</p>
-									</div>
-								);
-							})
-						) : (
-							<p>No friendly games played</p>
+									);
+								})
+							) : (
+								<p>No friendly games played</p>
 							)}
 						</div>
 					</div>
@@ -479,12 +504,18 @@ const MatchStats = ({
 				<div className={style.categoryRanked}>
 					<h3>
 						{" "}
-						{rankedGameResults.losses + rankedGameResults.wins} <br />
-						Ranked Games<br />
+						{rankedGameResults.losses + rankedGameResults.wins}{" "}
+						<br />
+						Ranked Games
+						<br />
 					</h3>
 					<div className={style.scores}>
-						<pre className={style.win}>✅ : {rankedGameResults.wins}</pre>
-						<pre className={style.looses}>{rankedGameResults.losses} : 🛑</pre>
+						<pre className={style.win}>
+							✅ : {rankedGameResults.wins}
+						</pre>
+						<pre className={style.looses}>
+							{rankedGameResults.losses} : 🛑
+						</pre>
 					</div>
 				</div>
 
@@ -495,19 +526,26 @@ const MatchStats = ({
 					</h3>
 					<div className={style.scores}>
 						<pre className={style.win}>✅ : {gameResults.wins}</pre>
-						<pre className={style.looses}>{gameResults.losses} : 🛑</pre>
+						<pre className={style.looses}>
+							{gameResults.losses} : 🛑
+						</pre>
 					</div>
 				</div>
 
 				<div className={style.categoryFriends}>
 					<h3>
 						{" "}
-						{normalGameResults.losses +
-							normalGameResults.wins} <br /> Friendly Games<br />
+						{normalGameResults.losses + normalGameResults.wins}{" "}
+						<br /> Friendly Games
+						<br />
 					</h3>
 					<div className={style.scores}>
-						<pre className={style.win}>✅ : {normalGameResults.wins}</pre>
-						<pre className={style.looses}>{normalGameResults.losses} : 🛑</pre>
+						<pre className={style.win}>
+							✅ : {normalGameResults.wins}
+						</pre>
+						<pre className={style.looses}>
+							{normalGameResults.losses} : 🛑
+						</pre>
 					</div>
 				</div>
 			</div>

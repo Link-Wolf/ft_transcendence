@@ -175,12 +175,12 @@ export class AppGateway
 
 	@SubscribeMessage('contextUpdate')
 	async handleContextUpdate(client: Socket, payload: any) {
-		client.emit('contextUpdate', payload);
+		this.server.emit('contextUpdate', payload);
 	}
 
 	@SubscribeMessage('askForGame')
 	async handleAskForGame(client: Socket, payload: any) {
-		client.emit('askForGame', payload);
+		this.server.emit('askForGame', payload);
 	}
 	//#endregion
 
