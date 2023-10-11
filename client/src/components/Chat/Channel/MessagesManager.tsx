@@ -28,7 +28,6 @@ const MessagesManager = ({
 	const notifications = useNotifications();
 
 	useEffect(() => {
-		setUpdate(true);
 		function clic(payload: any) {
 			if (payload.channel === channel) {
 				setUpdate(true);
@@ -51,6 +50,10 @@ const MessagesManager = ({
 		let names = channel.split("_")[1].split("&");
 		return names[0] === user.login ? names[1] : names[0];
 	};
+
+	useEffect(() => {
+		setUpdate(true);
+	}, [channel, user.login]);
 
 	const sendMessage = async (e: FormEvent) => {
 		e.preventDefault();

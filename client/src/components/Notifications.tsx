@@ -15,28 +15,33 @@ type Notification = {
 	type: "error" | "alert" | "info";
 	title: string;
 	message: string;
-	expires: number;
+	duration: number;
 };
 
 const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 
-	useEffect(() => {
-		const updateInterval = setInterval(() => {
-			setNotifications((notifications) => {
-				return notifications.filter((notification) => {
-					return notification.expires > Date.now();
-				});
-			});
-		}, 100);
+	// useEffect(() => {
+	// 	const updateInterval = setInterval(() => {
+	// 		setNotifications((notifications) => {
+	// 			return notifications.filter((notification) => {
+	// 				return notification.expires > Date.now();
+	// 			});
+	// 		});
+	// 	}, 100);
 
-		return () => {
-			clearInterval(updateInterval);
-		};
-	}, []);
+	// 	return () => {
+	// 		clearInterval(updateInterval);
+	// 	};
+	// }, []);
 
 	const addNotifications = (notification: Notification) => {
 		setNotifications((notifications) => [...notifications, notification]);
+		setTimeout(() => {
+			setNotifications((notifications) => {
+				return notifications.filter((n) => n !== notification);
+			});
+		}, 1000 * notification.duration);
 	};
 
 	const destroyNotification = (notification: Notification) => () => {
@@ -77,7 +82,7 @@ const useNotifications = () => {
 			type: "alert",
 			title,
 			message,
-			expires: Date.now() + 1000 * duration,
+			duration: duration,
 		});
 	};
 
@@ -86,7 +91,7 @@ const useNotifications = () => {
 			type: "error",
 			title,
 			message,
-			expires: Date.now() + 1000 * duration,
+			duration: duration,
 		});
 	};
 
@@ -95,7 +100,7 @@ const useNotifications = () => {
 			type: "info",
 			title,
 			message,
-			expires: Date.now() + 1000 * duration,
+			duration: duration,
 		});
 	};
 
@@ -109,13 +114,14 @@ const NotificationInfoBox = ({
 	destroy,
 }: Notification & { destroy: MouseEventHandler }) => {
 	return (
-		<div
-			onClick={destroy}
-			className={style.notification}
-		>
-			<div className={`${style.ico} ${style[type]}`}>{type === "info" ? "⚪": type === "alert" ? "⚪": "⚪" }</div>
+		<div onClick={destroy} className={style.notification}>
+			<div className={`${style.ico} ${style[type]}`}>
+				{type === "info" ? "⚪" : type === "alert" ? "⚪" : "⚪"}
+			</div>
 			<div className={style.notifDescrib}>
-				<pre className={`${style.notifTitle} ${style[type]}`}>{title.toUpperCase()}</pre>
+				<pre className={`${style.notifTitle} ${style[type]}`}>
+					{title.toUpperCase()}
+				</pre>
 				<pre className={style.notifMsg}>{message}</pre>
 			</div>
 		</div>
