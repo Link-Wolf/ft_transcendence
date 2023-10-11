@@ -414,7 +414,7 @@ export class AppGateway
 			},
 		];
 
-		if (Math.random()) {
+		if (Math.random() < 0.2) {
 			const spawnPoint =
 				game.powerUpSpawnPoints[
 					Math.floor(Math.random() * game.powerUpSpawnPoints.length)
@@ -894,6 +894,10 @@ export class AppGateway
 
 	score(player: number, modifiers: Modifier[]) {
 		return (game: GameData) => {
+			game.screenShake = 0;
+			game.powerUpDisplayDuration = 0;
+			game.powerUpName = '';
+			game.powerUpColor = '';
 			let nBalls = game.balls.filter((b) =>
 				game.players[1 - player].paddle.position.x > 0
 					? b.position.x < game.width / 2
