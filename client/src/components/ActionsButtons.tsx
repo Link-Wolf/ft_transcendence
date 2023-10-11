@@ -712,7 +712,6 @@ const UnbanButton = ({
 			)
 			.then(() => {
 				socket.emit("membershipUpdate", {
-					//TODO: better here plz
 					channel: channel,
 					who: login,
 					what: "ban",

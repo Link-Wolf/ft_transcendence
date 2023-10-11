@@ -701,7 +701,6 @@ export class AppGateway
 		game: GameData,
 	) {
 		paddles.forEach((paddle, i) => {
-			console.log('\n\n\n\n' + (i === 0 ? 'player 1' : 'player 0'));
 			const paddleSign = Math.sign(paddle.position.x);
 			const ballSign = Math.sign(ball.position.x);
 
@@ -709,23 +708,12 @@ export class AppGateway
 
 			const ballX = Math.abs(ball.position.x);
 			const pBallX = Math.abs(ball.position.px || ball.position.x);
-			console.log('ballX, pBallX', ballX, pBallX);
 			if (ballX <= pBallX) return; // The ball is not moving towards the paddle
 			const paddleX = Math.abs(paddle.position.x);
 
-			console.log(
-				'ballX, treshhold',
-				ballX,
-				paddleX - ball.size.radius / 2 - paddle.size.w / 2,
-			);
 			if (ballX < paddleX - ball.size.radius / 2 - paddle.size.w / 2)
 				return; // The ball is not in the paddle's area
 
-			console.log(
-				'pballX, treshhold',
-				pBallX,
-				paddleX - ball.size.radius / 2 - paddle.size.w / 2,
-			);
 			if (pBallX >= paddleX - ball.size.radius / 2 - paddle.size.w / 2)
 				return; // The ball was already in the paddle's area
 
@@ -735,7 +723,6 @@ export class AppGateway
 				Math.abs(ballY - paddleY) <
 				paddle.size.h / 2 + ball.size.radius;
 
-			console.log('ballY, paddleY', ballY, paddleY, isBallInPaddle);
 			if (!isBallInPaddle) return;
 			ball.velocity.dx = (1 - 2 * i) * Math.abs(ball.velocity.dx);
 			ball.position.y +=
@@ -1021,7 +1008,7 @@ export class AppGateway
 		const user = await this.userService.verify(payload.auth);
 
 		if (!user) return { action: 'error', message: 'user not recognised' };
-		if (!game) return { action: 'error', message: 'game not recognised' }; //NOTE: might change that to a redirect to create a game with the same modifiers, but need to have the modifiers in the payload
+		if (!game) return { action: 'error', message: 'game not recognised' };
 
 		if (game.dataValues.status === 'ongoing') {
 			if (
