@@ -12,11 +12,15 @@
 	backdrop-filter: blur(10px);
 
 	.popup {
-		display: flex;
+		// display: flex;
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-
+		color: azure;
+		button{
+			border-color: azure;
+			color: azure;
+		}
 		background-color: #00000055;
 		backdrop-filter: blur(10px);
 		padding: 200px;
