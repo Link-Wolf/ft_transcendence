@@ -68,7 +68,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 					isVisible && style.show
 				}`}
 			>
-				<h1>GAME CREATION</h1>
+				<h1>GAME CREATION </h1>
 				<div className={style.display}>
 					
 					<div className={style.preview}>
