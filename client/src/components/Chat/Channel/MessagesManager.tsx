@@ -44,7 +44,7 @@ const MessagesManager = ({
 			socket.off("newMessage", clic);
 			socket.off("membershipUpdate", clic);
 		};
-	}, [channel, notifications, user.login]);
+	}, []);
 
 	const getNameOfTheOther = (channel: string) => {
 		let names = channel.split("_")[1].split("&");

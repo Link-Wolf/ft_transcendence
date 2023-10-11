@@ -64,7 +64,7 @@ const Channel = ({
 			socket.off("relationUpdate", relationUpdate);
 			socket.off("membershipUpdate", membershipUpdate);
 		};
-	}, [channel, setChannel, user.login]);
+	}, []);
 
 	useEffect(() => {
 		if (

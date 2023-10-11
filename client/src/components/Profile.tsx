@@ -174,16 +174,17 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		setUpdate(true);
-		console.log("test");
 		socket.on("contextUpdate", (payload) => {
-			console.log(payload, login);
 			if (payload.login === login) setUpdate(true);
 		});
 
 		return () => {
 			socket.off("contextUpdate");
 		};
+	}, []);
+
+	useEffect(() => {
+		setUpdate(true);
 	}, [login]);
 
 	useEffect(() => {
@@ -567,7 +568,7 @@ const Friends = () => {
 		return () => {
 			socket.off("friendUpdate");
 		};
-	}, [user.login]);
+	}, []);
 
 	useEffect(() => {
 		setUpdate(true);
@@ -770,7 +771,7 @@ const Blocked = () => {
 		return () => {
 			socket.off("blockUpdate");
 		};
-	}, [user.login]);
+	}, []);
 
 	useEffect(() => {
 		setUpdate(true);

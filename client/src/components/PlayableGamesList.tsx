@@ -27,7 +27,7 @@ const PlayableGamesList = () => {
 		return () => {
 			socket.off("gameUpdate");
 		};
-	}, [user.login]);
+	}, []);
 
 	useEffect(() => {
 		if (!update) return;

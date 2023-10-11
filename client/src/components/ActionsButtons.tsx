@@ -267,7 +267,7 @@ const PromoteDemoteButton = ({
 		return () => {
 			socket.off("membershipUpdate");
 		};
-	}, [channel, login]);
+	}, []);
 
 	useEffect(() => {
 		if (!update) return;
@@ -326,7 +326,6 @@ const FriendButton = ({
 	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
-		setUpdate(true);
 		socket.on("friendUpdate", (data: any) => {
 			if (
 				(data.loginA === user.login && data.loginB === login) ||
@@ -339,6 +338,10 @@ const FriendButton = ({
 		return () => {
 			socket.off("friendUpdate");
 		};
+	}, []);
+
+	useEffect(() => {
+		setUpdate(true);
 	}, [user.login, login]);
 
 	useEffect(() => {
