@@ -58,10 +58,10 @@
 	--notif-background-color: #ebebeb;
 	overflow: scroll;
 
-	--linear-gradient-one: #dddddd;
-	--linear-gradient-two: #b4b4b4;
-	--linear-gradient-three: #ffffff;
-	--linear-gradient-four: #c8c8c8;
+	--linear-gradient-one: rgba(161, 161, 161, 0.5);
+	--linear-gradient-two: rgba(161, 161, 161, 0.9);
+	--linear-gradient-three: rgba(161, 161, 161, 0.9);
+	--linear-gradient-four: rgba(161, 161, 161, 0.5);
 }
 
 .light::-webkit-scrollbar {
@@ -125,10 +125,10 @@
 	--notif-text-color: white;
 	--notif-background-color: #353535;
 
-	--linear-gradient-one: #333333;
-	--linear-gradient-two: #1a1a1a;
-	--linear-gradient-three: #333333;
-	--linear-gradient-four: #1a1a1a;
+	--linear-gradient-one: rgba(14, 14, 14, 0.5);
+	--linear-gradient-two: rgba(20, 20, 20, 0.9);
+	--linear-gradient-three: rgba(15, 15, 15, 0.9);
+	--linear-gradient-four: rgba(17, 17, 17, 0.5);
 }
 .dark::-webkit-scrollbar {
 	display: none;
