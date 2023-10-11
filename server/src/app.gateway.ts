@@ -414,7 +414,7 @@ export class AppGateway
 			},
 		];
 
-		if (Math.random()) {
+		if (Math.random() < 0.2) {
 			const spawnPoint =
 				game.powerUpSpawnPoints[
 					Math.floor(Math.random() * game.powerUpSpawnPoints.length)
