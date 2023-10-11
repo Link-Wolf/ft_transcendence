@@ -52,14 +52,14 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 				console.log(err);
 			});
 	}, []);
-	
 
 	var selecMap = "default";
-	modifiers.filter((mod) => mod.code.startsWith("map_")).map((modifier, i) => {
-		// console.log(modifier);
-		if (selectedMap === modifier.id)
-			selecMap = modifier.code;
-	});
+	modifiers
+		.filter((mod) => mod.code.startsWith("map_"))
+		.map((modifier, i) => {
+			// console.log(modifier);
+			if (selectedMap === modifier.id) selecMap = modifier.code;
+		});
 
 	return (
 		<>
@@ -70,17 +70,16 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 			>
 				<h1>GAME CREATION </h1>
 				<div className={style.display}>
-					
 					<div className={style.preview}>
 						{selecMap === "default" || isRanked ? (
 							<div className={style.gamemapDefault}></div>
 						) : selecMap === "map_1" ? (
 							<div className={style.gamemapCube}></div>
-						) : selecMap === "map_2" ?(
+						) : selecMap === "map_2" ? (
 							<div className={style.gamemapLine}></div>
-						) :
+						) : (
 							<div className={style.gamemapTwin}></div>
-						}
+						)}
 					</div>
 					<div>
 						<label
@@ -97,7 +96,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 								/>
 								Ranked
 							</label>
-							<label data-tooltip-id={"ranked"}>💬</label>
+							<label data-tooltip-id={"ranked"}>❔</label>
 							<Tooltip id={"ranked"}>
 								A ranked game is a game without modifier whose
 								results are taken into account in the ranking
@@ -162,7 +161,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 													"modifier" + modifier.code
 												}
 											>
-												💬
+												❔
 											</label>
 											<Tooltip
 												id={"modifier" + modifier.code}
@@ -195,7 +194,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 										Default Map
 									</label>
 									<label data-tooltip-id={"default map"}>
-										💬
+										❔
 									</label>
 									<Tooltip id={"default map"}>
 										Default map, without any obstacle
@@ -237,7 +236,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 													"modifier" + modifier.code
 												}
 											>
-												💬
+												❔
 											</label>
 											<Tooltip
 												id={"modifier" + modifier.code}
