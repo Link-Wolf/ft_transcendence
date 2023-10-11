@@ -177,7 +177,6 @@ const ChannelSettings = ({
 				)}
 				{hasPassword && updatePassword && (
 					<>
-						{/* {passError !== "" && <p>{passError}</p>} */}
 						<button
 							className={style.passwordbutton}
 							type='button'
@@ -202,7 +201,6 @@ const ChannelSettings = ({
 			<div>
 				{admins.length ? (
 					<>
-						{/* <h3 className={style.titleAdmin}>Admin</h3> */}
 						{admins.map((admin, i) => (
 							<div key={i}>
 								<AdminCardIdk
@@ -215,7 +213,7 @@ const ChannelSettings = ({
 					</>
 				) : (
 					<p className={style.empty}>
-						Any admin yet, You can add one no the User List
+						No admin yet, you can add them from the User List
 					</p>
 				)}
 			</div>
