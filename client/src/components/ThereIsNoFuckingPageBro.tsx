@@ -11,7 +11,7 @@ const ThereIsNoFuckingPageBro = () => {
 					alt=''
 					src='https://globalonlinepay.com/assets/images/feature/404.png'
 				></img>
-				<pre>P I N G ... B U T ... W H E R E I S P O N G ?</pre>
+				<pre>P I N G ... B U T ... W H E R E   I S   P O N G ?</pre>
 			</div>
 		</>
 	);
