@@ -34,7 +34,11 @@
 			padding-left: 15px;
 			padding-right: 15px;
 				border-radius: 50px 0 0 50px;
+				transition: 0.5s;
+
 			.notifTitle{
+				transition: 0.5s;
+
 				margin:0;
 				padding-top: 5px;
 				font-size: 15px;
@@ -58,6 +62,8 @@
 		}
 
 		.ico {
+			transition: 0.5s;
+
 			display: flex;
 			width: 45px;
 			height: 45px;

@@ -604,6 +604,22 @@
 		text-align: center;
 		justify-content: center;
 		font-size: 30px;
+		color: #ffffff;
+		&.zero{
+			background-color: var(--background-img-chan-zero);
+		}
+		&.one{
+			background-color: var(--background-img-chan-one);
+		}
+		&.two{
+			background-color: var(--background-img-chan-two);
+		}
+		&.three{
+			background-color: var(--background-img-chan-three);
+		}
+		&.four{
+			background-color: var(--background-img-chan-four);
+		}
 	}
 	
 }
