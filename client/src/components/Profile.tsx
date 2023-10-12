@@ -36,8 +36,7 @@ const Profile = () => {
 		setDisplayedMenu("");
 	}, [profileLogin]);
 
-	if (!user.clearance || user.clearance === 0)
-		return <ThereIsNotEnoughPermsBro />;
+	if (user.clearance === 0) return <ThereIsNotEnoughPermsBro />;
 
 	const logout = () => {
 		axios
