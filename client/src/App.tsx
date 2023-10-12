@@ -9,7 +9,7 @@ import { PromptModal, PromptProvider } from "./components/Prompt";
 
 export const UserContext = createContext({
 	login: "",
-	clearance: 0,
+	clearance: undefined as number | undefined,
 	theme: "light",
 	toggleTheme: () => {},
 	chat: false,
@@ -26,7 +26,7 @@ const App = () => {
 	const [clearance, setClearance] = useState({
 		login: "",
 		name: "",
-		clearance: 0,
+		clearance: undefined as number | undefined,
 		theme: localStorage.getItem("theme") || "light",
 	});
 

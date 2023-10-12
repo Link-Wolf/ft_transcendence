@@ -22,7 +22,7 @@ const Home = () => {
 				<h1 className={style.subtitle}>P L A T Y P O N G</h1>
 			</div>
 			{!chooseMode && <p> Ready to play ? </p>}
-			{user.clearance > 0 ? (
+			{user.clearance !== 0 ? (
 				<>
 					{!chooseMode ? (
 						<button
