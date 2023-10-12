@@ -630,22 +630,40 @@ const FriendUnfriendButton = ({
 	className?: string;
 }) => {
 	const [_isFriend, setIsFriend] = useState(isFriend);
+	const [update, setUpdate] = useState<boolean>(true);
 	const user = useContext(UserContext);
 
 	useEffect(() => {
-		if (_isFriend === undefined) return;
+		socket.on("friendUpdate", (data: any) => {
+			if (
+				(data.loginA === user.login && data.loginB === login) ||
+				(data.loginA === login && data.loginB === user.login)
+			) {
+				setUpdate(true);
+			}
+		});
+
+		return () => {
+			socket.off("friendUpdate");
+		};
+	}, []);
+
+	useEffect(() => {
+		if (_isFriend !== undefined) return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/friendship/${user.login}/${login}`
 			)
 			.then((res) => {
-				setIsFriend(res.data.length > 0);
+				setIsFriend(res.data);
+				setUpdate(false);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [_isFriend, user.login, login]);
+	}, [_isFriend, user.login, login, update]);
 
+	if (_isFriend === undefined) return <></>;
 	if (_isFriend)
 		return (
 			<UnfriendButton
