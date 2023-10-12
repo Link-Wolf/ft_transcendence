@@ -173,7 +173,7 @@ export class MembershipController {
 				'Membership not found',
 				HttpStatus.NOT_FOUND,
 			);
-		return this.membershipService.update({
+		return await this.membershipService.update({
 			user: user,
 			channel: channel,
 			isAdmin: isAdmin,

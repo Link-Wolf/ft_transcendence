@@ -152,14 +152,16 @@ export class MembershipService {
 	 */
 	async update(membershipDto: MembershipDto): Promise<number> {
 		try {
-			return await this.membershipRepository.update<Membership>(
-				membershipDto,
-				{
-					where: {
-						userLogin: membershipDto.user.dataValues.login,
-						channelName: membershipDto.channel.dataValues.name,
+			return (
+				await this.membershipRepository.update<Membership>(
+					membershipDto,
+					{
+						where: {
+							userLogin: membershipDto.user.dataValues.login,
+							channelName: membershipDto.channel.dataValues.name,
+						},
 					},
-				},
+				)
 			)[0];
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
