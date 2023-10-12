@@ -182,6 +182,12 @@ export class AppGateway
 	async handleAskForGame(client: Socket, payload: any) {
 		this.server.emit('askForGame', payload);
 	}
+
+	@SubscribeMessage('channelUpdate')
+	async handleChannelUpdate(client: Socket, payload: any) {
+		console.log('channelUpdate');
+		this.server.emit('channelUpdate', payload);
+	}
 	//#endregion
 
 	/*********************************************************
