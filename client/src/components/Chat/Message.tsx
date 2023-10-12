@@ -47,11 +47,7 @@ const Message = ({
 					user.login === login ? style.sendmessage : style.recvmessage
 				}
 			>
-				<div
-					onClick={() => {
-						setIsToggleBox((t) => !t);
-					}}
-				>
+				<div>
 					<PPDisplayer login={login} size={40} status={true} />
 				</div>
 				<div>
@@ -59,7 +55,8 @@ const Message = ({
 						<div className={style.toggleprofil}>
 							{isToggleBox && user.login !== login ? (
 								<div>
-									<button className={style.buttonstart}
+									<button
+										className={style.buttonstart}
 										onClick={() => {
 											navigate(`/profile/${login}`);
 										}}
@@ -76,25 +73,26 @@ const Message = ({
 									{!relation.isBlocked &&
 										(relation.isFriend ? (
 											<PMButton
-											className={style.buttoncenter}
-											login={login}
+												className={style.buttoncenter}
+												login={login}
 												setChannel={setChannel}
 											/>
 										) : (
 											<FriendButton
-											className={style.buttoncenter}
-											text={"text"}
+												className={style.buttoncenter}
+												text={"text"}
 												login={login}
 											/>
 										))}
 									{relation.isBlocked ? (
-										<UnblockButton 
-										className={style.buttonend}
-										login={login} />
+										<UnblockButton
+											className={style.buttonend}
+											login={login}
+										/>
 									) : (
 										<BlockButton
-										className={style.buttonend}
-										text={"Block"}
+											className={style.buttonend}
+											text={"Block"}
 											login={login}
 										/>
 									)}
