@@ -8,6 +8,7 @@ import ChannelUser from "./ChannelUser";
 import ChannelSettings from "./ChannelSettings";
 import { UnbanButton } from "../../ActionsButtons";
 import style from "../../../style/Chat.module.scss";
+import Update from "../../Update";
 
 const Channel = ({
 	channel,
@@ -33,13 +34,14 @@ const Channel = ({
 
 	const [showThingsAboutChannel, setShowThingsAboutChannel] = useState("");
 	const [showLebany, setShowLebany] = useState(false);
-
 	//	Listen to the server for new messages
 	useEffect(() => {
+
 		const relationUpdate = (payload: any) => {
 			if (payload.userA === user.login || payload.userB === user.login)
 				setMembersUpdate(true);
 		};
+
 
 		const membershipUpdate = (payload: any) => {
 			if (payload.channel === channel) {
@@ -67,13 +69,16 @@ const Channel = ({
 	}, []);
 
 	useEffect(() => {
+		if (channel[0] === "_") {
+			setShowThingsAboutChannel("");
+			return;
+		}
 		if (
 			!updateLebany ||
 			(owner.login !== user.login &&
 				!admins.some((admin) => admin.login === user.login))
 		)
 			return;
-		if (channel[0] === "_") return;
 		axios
 			.get(
 				`${process.env.REACT_APP_PROTOCOL}://${process.env.REACT_APP_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}/api/ban/channel/${channel}`
@@ -148,108 +153,8 @@ const Channel = ({
 		return <></>;
 	}
 
+
 	return (
-		// <div>
-		// 	<button onClick={() => setChannel(null)}>Back</button>
-		// 	{channel[0] !== "_" && (
-		// 		<>
-		// 			<button
-		// 				onClick={() =>
-		// 					showThingsAboutChannel === "userList"
-		// 						? setShowThingsAboutChannel("")
-		// 						: setShowThingsAboutChannel("userList")
-		// 				}
-		// 			>
-		// 				{showThingsAboutChannel === "userList"
-		// 					? "X"
-		// 					: "User List"}
-		// 			</button>
-		// 			{owner.login === user.login && (
-		// 				<button
-		// 					onClick={() =>
-		// 						showThingsAboutChannel === "channelSettings"
-		// 							? setShowThingsAboutChannel("")
-		// 							: setShowThingsAboutChannel(
-		// 									"channelSettings"
-		// 							  )
-		// 					}
-		// 				>
-		// 					{showThingsAboutChannel === "channelSettings"
-		// 						? "X"
-		// 						: "Channel Settings"}
-		// 				</button>
-		// 			)}
-		// 		</>
-		// 	)}
-		// 	{showThingsAboutChannel === "userList" ? (
-		// 		<>
-		// 			{/* if usr is an admin or the owner, have a button to see ban members */}
-		// 			{(admins.includes(user.login) ||
-		// 				owner.login === user.login) && (
-		// 				<button
-		// 					onClick={() => {
-		// 						if (showLebany) setUpdateLebany(true);
-		// 						setShowLebany(!showLebany);
-		// 					}}
-		// 				>
-		// 					{!showLebany
-		// 						? "See the goulagged"
-		// 						: "Back to user list"}
-		// 				</button>
-		// 			)}
-		// 			{!showLebany
-		// 				? Object.keys(members)
-		// 						.map((login) => members[login])
-		// 						.filter((member) => {
-		// 							return member.isMember;
-		// 						})
-		// 						.map((member, i) => (
-		// 							<div key={i}>
-		// 								<ChannelUser
-		// 									name={member.user.name}
-		// 									channel={channel}
-		// 									admins={admins}
-		// 									owner={owner}
-		// 									login={member.user.login}
-		// 									members={members}
-		// 									setChannel={setChannel}
-		// 								/>
-		// 							</div>
-		// 						))
-		// 				: lebany.length
-		// 				? lebany.map((login, i) => (
-		// 						<div key={i}>
-		// 							<PPDisplayer
-		// 								login={login}
-		// 								status={true}
-		// 								size={30}
-		// 							/>
-		// 							{login}
-		// 							<UnbanButton
-		// 								login={login}
-		// 								channel={channel}
-		// 							/>
-		// 						</div>
-		// 				  ))
-		// 				: "No one is goulagged yet sir"}
-		// 		</>
-		// 	) : showThingsAboutChannel === "channelSettings" &&
-		// 	  owner.login === user.login ? (
-		// 		<ChannelSettings
-		// 			channelName={channel}
-		// 			owner={owner}
-		// 			admins={admins}
-		// 		/>
-		// 	) : (
-		// 		<MessagesManager
-		// 			channel={channel}
-		// 			members={members}
-		// 			admins={admins}
-		// 			owner={owner}
-		// 			setChannel={setChannel}
-		// 		/>
-		// 	)}
-		// </div>
 		<div>
 			<div className={style.headsection}>
 				<p
