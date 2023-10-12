@@ -37,6 +37,7 @@ const Profile = () => {
 	}, [profileLogin]);
 
 	if (user.clearance === 0) return <ThereIsNotEnoughPermsBro />;
+	if (user.clearance === undefined) return <></>;
 
 	const logout = () => {
 		axios
