@@ -163,11 +163,12 @@ export class UserController {
 				HttpStatus.CONFLICT,
 			);
 		}
-		return this.userService.update({
+		const ret = await this.userService.update({
 			login: login,
 			name: name,
 			hasTFA: hasTFA,
 		});
+		return ret;
 	}
 
 	/**
