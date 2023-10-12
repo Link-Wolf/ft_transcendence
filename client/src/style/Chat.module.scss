@@ -544,6 +544,8 @@
 }
 
 .channelName {
+	// word-wrap: break-word;
+	overflow: hidden;
 	// background-color: red;
 	transition: 0.5s ease-in;
 	margin: 0px;
@@ -578,6 +580,9 @@
 	text-align: center;
 	align-items: center;
 	transition: 0.5s ease-in;
+	// width: 280px;
+
+
 	cursor: pointer;
 	.description {
 		color: var(--neutral-text);
@@ -593,6 +598,8 @@
 	.mpname {
 		font-size: 20px;
 		margin: 0px;
+		width: 280px;
+		word-wrap: break-word;
 	}
 	.object {
 		font-size: 15px;
