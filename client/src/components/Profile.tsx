@@ -63,7 +63,10 @@ const Profile = () => {
 			<div className={style.profil}>
 				<div className={style.resume}>
 					<h1>PROFIL</h1>
-					<Resume isMe={isMe} login={profileLogin} />
+					<Resume
+						isMe={isMe}
+						login={profileLogin}
+					/>
 					<button
 						className={style.button}
 						onClick={() => {
@@ -128,7 +131,10 @@ const Profile = () => {
 				<div className={style.menu}>
 					{displayedMenu === "stats" ? (
 						<div className={style.stats}>
-							<MatchHistory isMe={isMe} login={profileLogin} />
+							<MatchHistory
+								isMe={isMe}
+								login={profileLogin}
+							/>
 						</div>
 					) : (
 						<></>
@@ -152,7 +158,10 @@ const Profile = () => {
 							)}
 							{displayedMenu === "settings" ? (
 								<div className={style.settings}>
-									<img alt='' src={settingss}></img>
+									<img
+										alt=''
+										src={settingss}
+									></img>
 									<Update />
 								</div>
 							) : (
@@ -210,8 +219,7 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({login})
 			</div>
-			<PPDisplayer login={login} size={300} status={true} />
-		</>
+			<PPDisplayer login={login} size={300} status={true} /></>
 	);
 };
 
@@ -269,7 +277,10 @@ const MatchHistory = ({ isMe, login }: { isMe: boolean; login: string }) => {
 									if (game.game.status === "waiting")
 										return <></>;
 									return (
-										<div className={style.match} key={i}>
+										<div
+											className={style.match}
+											key={i}
+										>
 											<div>
 												{game.game.status ===
 													"ongoing" && "Ongoing"}
@@ -496,7 +507,10 @@ const MatchStats = ({
 
 	return (
 		<>
-			<img alt='' src={stats}></img>
+			<img
+				alt=''
+				src={stats}
+			></img>
 			<div className={style.statsbanner}>
 				<div className={style.categoryRanked}>
 					<h3>
@@ -622,7 +636,7 @@ const Friends = () => {
 		<div>
 			<h2>F R I E N D S</h2>
 			<span>
-				F R I E N D S _ L I S T
+				<pre>F R I E N D S{"   "}L I S T</pre>
 				<div className={style.FriendsList}>
 					<span>
 						{/* If friendShips is not empty AND at least one of them has pending set to false */}
@@ -637,7 +651,10 @@ const Friends = () => {
 									friend = friendShip.receiver;
 								else friend = friendShip.sender;
 								return (
-									<li key={i} className={style.friendsUser}>
+									<li
+										key={i}
+										className={style.friendsUser}
+									>
 										<Link to={`/profile/${friend.login}`}>
 											<PPDisplayer
 												login={friend.login}
@@ -679,7 +696,10 @@ const Friends = () => {
 									return <></>;
 								let friend = friendShip.receiver;
 								return (
-									<li key={i} className={style.requestUser}>
+									<li
+										key={i}
+										className={style.requestUser}
+									>
 										<PPDisplayer
 											login={friend.login}
 											size={69}
@@ -715,7 +735,10 @@ const Friends = () => {
 									return <></>;
 								let friend = friendShip.sender;
 								return (
-									<li key={i} className={style.requestUser}>
+									<li
+										key={i}
+										className={style.requestUser}
+									>
 										<PPDisplayer
 											login={friend.login}
 											size={69}
@@ -794,16 +817,21 @@ const Blocked = () => {
 
 	return (
 		<div>
-			<h2>B L O C K E D _ U S E R S</h2>
+			<h2>
+				<pre>B L O C K E D{"   "}U S E R S</pre>
+			</h2>
 			<span>
-				B L O C K _ L I S T
+				<pre>B L O C K{"   "}L I S T</pre>
 				<div className={style.FriendsList}>
 					<span>
 						{blocks.length > 0 ? (
 							blocks.map((block, i) => {
 								let blocked = block.blocked;
 								return (
-									<li key={i} className={style.friendsUser}>
+									<li
+										key={i}
+										className={style.friendsUser}
+									>
 										<PPDisplayer
 											login={blocked.login}
 											size={69}

@@ -67,7 +67,7 @@ const GameCreationForm = ({ opponentLogin }: { opponentLogin?: string }) => {
 					isVisible && style.show
 				}`}
 			>
-				<h1>GAME CREATION </h1>
+				<h1><pre>G A M E   C R E A T I O N</pre></h1>
 				<div className={style.display}>
 					<div className={style.preview}>
 						{selecMap === "default" || isRanked ? (

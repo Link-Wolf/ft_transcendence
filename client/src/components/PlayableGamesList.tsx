@@ -48,7 +48,7 @@ const PlayableGamesList = () => {
 
 	return (
 		<div className={`${style.playablegamelist} ${isVisible && style.show}`}>
-			<h1> PENDING GAMES</h1>
+			<h1><pre>P E N D I N G   G A M E S</pre></h1>
 			{playableGames.length === 0 && (
 				<div className={style.gameplayable}>
 					<p> No game at this moment, let's create one below !</p>
@@ -59,7 +59,7 @@ const PlayableGamesList = () => {
 					game.status === "invitation" && (
 						<div key={i} className={style.gameplayable}>
 							<p>
-								INVITATION BY{": "}
+								<pre>I N V I T A T I O N   B Y {": "}</pre>
 								{game.users[0].name}
 								<Link to={`/game/${game.id}`}>
 									<button className={style.joinbutton}>
@@ -87,7 +87,7 @@ const PlayableGamesList = () => {
 						<div key={i} className={style.gameplayable}>
 							{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
 							<p>
-								GAME N°{i + 1} :{" "}
+								<pre>G A M E   N°{i + 1} :{" "}</pre>
 								{game.isRanked ? "Ranked" : "Unranked"}
 								<Link to={`/game/${game.id}`}>
 									<button className={style.joinbutton}>

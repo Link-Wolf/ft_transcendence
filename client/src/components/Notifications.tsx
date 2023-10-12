@@ -21,20 +21,6 @@ type Notification = {
 const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 
-	// useEffect(() => {
-	// 	const updateInterval = setInterval(() => {
-	// 		setNotifications((notifications) => {
-	// 			return notifications.filter((notification) => {
-	// 				return notification.expires > Date.now();
-	// 			});
-	// 		});
-	// 	}, 100);
-
-	// 	return () => {
-	// 		clearInterval(updateInterval);
-	// 	};
-	// }, []);
-
 	const addNotifications = (notification: Notification) => {
 		setNotifications((notifications) => [...notifications, notification]);
 		setTimeout(() => {
