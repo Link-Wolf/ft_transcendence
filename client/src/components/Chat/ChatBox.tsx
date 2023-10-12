@@ -44,7 +44,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [context.login]);
+	}, [context.login, update]);
 
 	useEffect(() => {
 		//get all friends that haven't dm yet
@@ -58,7 +58,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, [context.login]);
+	}, [context.login, update]);
 
 	const openDM = async () => {
 		if (
@@ -90,6 +90,9 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 				)
 				.then((response) => {
 					setChannel(response.data.name);
+					socket.emit("channelUpdate", {
+						users: [context.login, selectedUser],
+					});
 				})
 				.catch((err) => {
 					console.log(err);
@@ -110,6 +113,27 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 			socket.off("membershipUpdate", channelUpdate);
 		};
 	}, []);
+
+	useEffect(() => {
+		socket.on("channelUpdate", (payload: any) => {
+			if ((payload.users as string[]).includes(context.login)) {
+				console.log(
+					payload,
+					context.login,
+					(payload.users as string[]).includes(context.login)
+				);
+				setUpdate(true);
+			}
+		});
+
+		return () => {
+			socket.off("channelUpdate");
+		};
+	}, []);
+
+	// useEffect(() => {
+	// 	setUpdate(true);
+	// }, [context.login]);
 
 	useEffect(() => {
 		if (!update) return;
@@ -273,10 +297,22 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 										className={style.profilmp}
 										key={i}
 										onClick={() => setChannel(channel)}
-										>
-										<div 
-										// className={style.imgChannel}
-										className={`${style.imgChannel} ${style[i % 5 == 1 ? "one" : i % 5 == 2 ? "two" : i % 5 == 3 ? "three" : i % 5 == 4 ? "four" : "zero"]}`}
+									>
+										<div
+											// className={style.imgChannel}
+											className={`${style.imgChannel} ${
+												style[
+													i % 5 == 1
+														? "one"
+														: i % 5 == 2
+														? "two"
+														: i % 5 == 3
+														? "three"
+														: i % 5 == 4
+														? "four"
+														: "zero"
+												]
+											}`}
 										>
 											{" "}
 											{channel.toUpperCase()[0]}
@@ -346,9 +382,7 @@ const ChatBox = ({ toggleChat }: { toggleChat: Function }) => {
 		<div className={style.chatbox}>
 			<div className={style.top} onClick={() => toggleChat()}>
 				<p className={style.cam}>O o</p>
-				<button
-					className={style.toggleChat}
-				>&nbsp;</button>
+				<button className={style.toggleChat}>&nbsp;</button>
 			</div>
 			{!user.channel ? (
 				<>
