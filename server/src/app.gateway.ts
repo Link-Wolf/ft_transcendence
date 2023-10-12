@@ -488,15 +488,15 @@ export class AppGateway
 			return [
 				{
 					shape: 'rectangle',
-					position: { x: -300, y: 300 },
-					size: { w: 100, h: 300 },
+					position: { x: -250, y: 250 },
+					size: { w: 100, h: 250 },
 					effect: (game: GameData) => {},
 					color: 'white',
 				},
 				{
 					shape: 'rectangle',
-					position: { x: 300, y: -300 },
-					size: { w: 100, h: 300 },
+					position: { x: 250, y: -250 },
+					size: { w: 100, h: 250 },
 					effect: (game: GameData) => {},
 					color: 'white',
 				},
@@ -609,6 +609,7 @@ export class AppGateway
 	ballObstaclesCollision(ball: Ball, obstacles: Obstacle[], game: GameData) {
 		obstacles.forEach((obstacle) => {
 			if (obstacle.shape === 'rectangle') {
+				// Calculate the horizontal distance between the center of the ball and the edge of the obstacle
 				const distBallobstacleX =
 					ball.position.x -
 					Math.max(
@@ -618,6 +619,7 @@ export class AppGateway
 							obstacle.position.x + obstacle.size.w / 2,
 						),
 					);
+				// Calculate the vertical distance between the center of the ball and the edge of the obstacle
 				const distBallobstacleY =
 					ball.position.y -
 					Math.max(
@@ -627,11 +629,14 @@ export class AppGateway
 							obstacle.position.y + obstacle.size.h / 2,
 						),
 					);
+				// Calculate the square of the distance between the center of the ball and the corner/edge of the obstacle
 				const distanceBallobstacleSquared =
 					distBallobstacleX ** 2 + distBallobstacleY ** 2;
+				// Calculate if the ball is in the obstacle (if the square of the distance is smaller than the square of the radius of the ball)
 				const isBallInobstacle =
 					distanceBallobstacleSquared < ball.size.radius ** 2;
 				if (!isBallInobstacle) return;
+				console.log('collision', distanceBallobstacleSquared, ball);
 				if (
 					ball.position.x >=
 						obstacle.position.x - obstacle.size.w / 2 &&
@@ -734,7 +739,10 @@ export class AppGateway
 			const paddleY = paddle.position.y;
 			const isBallInPaddle =
 				Math.abs(ballY - paddleY) <
-				paddle.size.h / 2 + ball.size.radius;
+				paddle.size.h / 2 +
+					ball.size.radius +
+					Math.abs(ball.velocity.dy) +
+					Math.abs(paddle.velocity.dy);
 
 			if (!isBallInPaddle) return;
 			ball.velocity.dx = (1 - 2 * i) * Math.abs(ball.velocity.dx);
@@ -837,8 +845,8 @@ export class AppGateway
 			this.handleInputs(game);
 			this.movePaddles(dt, game);
 			if (game.isTurnStarted) {
-				this.checkCollisions(game, modifiers);
 				this.moveBalls(dt, game);
+				this.checkCollisions(game, modifiers);
 			} else this.handleStartTurn(game);
 			this.server.to(`game-${gameId}`).emit('gameUpdate', game);
 		}, 16 /* 60 fps */);
