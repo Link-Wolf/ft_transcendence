@@ -58,15 +58,15 @@ const PlayableGamesList = () => {
 				(game: any, i: number) =>
 					game.status === "invitation" && (
 						<div key={i} className={style.gameplayable}>
-							<p>
-								<pre>I N V I T A T I O N   B Y {": "}</pre>
+							<pre>
+								I N V I T A T I O N   B Y {": "}
 								{game.users[0].name}
 								<Link to={`/game/${game.id}`}>
 									<button className={style.joinbutton}>
 										J O I N
 									</button>
 								</Link>
-							</p>
+							</pre >
 							<div className={style.modifierslist}>
 								{game.modifiers.length > 0 && "Modifiers: "}
 								{game.modifiers.length > 0 &&
@@ -86,15 +86,15 @@ const PlayableGamesList = () => {
 					game.status === "waiting" && (
 						<div key={i} className={style.gameplayable}>
 							{/* {game.id} : {game.isRanked ? "" : "Un"}ranked */}
-							<p>
-								<pre>G A M E   N°{i + 1} :{" "}</pre>
+							<pre>
+								G A M E   N°{i + 1} :{" "}
 								{game.isRanked ? "Ranked" : "Unranked"}
 								<Link to={`/game/${game.id}`}>
 									<button className={style.joinbutton}>
 										J O I N
 									</button>
 								</Link>
-							</p>
+							</pre>
 							<div className={style.modifierslist}>
 								{game.modifiers.length > 0 && "Modifiers :"}
 								{game.modifiers.length > 0 &&
