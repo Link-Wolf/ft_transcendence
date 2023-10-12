@@ -186,7 +186,7 @@ const ChannelUser = ({
 					toggleBox(login);
 				}}
 			>
-				<PPDisplayer login={login} size={50} status={true} />
+					<PPDisplayer login={login} size={50} status={true} />
 				<div className={style.description}>
 					{isToggleBox ? (
 						<div className={style.action}>
