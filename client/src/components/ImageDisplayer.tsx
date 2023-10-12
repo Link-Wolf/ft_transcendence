@@ -56,7 +56,7 @@ const PPDisplayer = ({
 
 	return (
 		<>
-			{image || children ? (
+			{image !== null || children ? (
 				<div
 					style={{
 						width: size,
