@@ -185,7 +185,6 @@ export class AppGateway
 
 	@SubscribeMessage('channelUpdate')
 	async handleChannelUpdate(client: Socket, payload: any) {
-		console.log('channelUpdate');
 		this.server.emit('channelUpdate', payload);
 	}
 	//#endregion
@@ -636,7 +635,6 @@ export class AppGateway
 				const isBallInobstacle =
 					distanceBallobstacleSquared < ball.size.radius ** 2;
 				if (!isBallInobstacle) return;
-				console.log('collision', distanceBallobstacleSquared, ball);
 				if (
 					ball.position.x >=
 						obstacle.position.x - obstacle.size.w / 2 &&
