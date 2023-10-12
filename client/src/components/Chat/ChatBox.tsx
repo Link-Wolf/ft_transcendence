@@ -66,7 +66,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 			selectedUser === undefined ||
 			!users.some((user) => user.login === selectedUser)
 		) {
-			notifications.error("Error", "User does not exist")
+			notifications.error("Error", "User does not exist");
 			return;
 		}
 
@@ -245,16 +245,23 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 							<h2 className={style.titleNew}>New conversation</h2>
 						</div>
 						<div className={style.search}>
-							<form 
+							<form
 								onSubmit={(e) => {
 									e.preventDefault();
 									openDM();
 								}}
 							>
+								<datalist id='new_dm_list'>
+									{users.map((user, i) => (
+										<option key={i} value={user.login} />
+									))}
+								</datalist>
 								<button
 									type='submit'
 									className={style.searchbutton}
-									disabled={!selectedUser || selectedUser === ""}
+									disabled={
+										!selectedUser || selectedUser === ""
+									}
 								>
 									🔎
 								</button>
@@ -280,13 +287,22 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 						</div>
 						<div className={style.mplist}>
 							<div className={style.search}>
-								<form onSubmit={(e) => {
-									e.preventDefault();
-									openDM();
-								}}
+								<form
+									onSubmit={(e) => {
+										e.preventDefault();
+										openDM();
+									}}
 								>
+									<datalist id='new_dm_list'>
+										{users.map((user, i) => (
+											<option
+												key={i}
+												value={user.login}
+											/>
+										))}
+									</datalist>
 									<button
-										type="submit"
+										type='submit'
 										className={style.searchbutton}
 										disabled={
 											!selectedUser || selectedUser === ""
