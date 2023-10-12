@@ -108,7 +108,12 @@ export class AuthController {
 	async intraLogout(
 		@Res({ passthrough: true }) res: Response,
 	): Promise<void> {
-		res.clearCookie('token');
+		res.cookie('token', '', {
+			maxAge: 42 * 60 * 1000, // 42 minutes
+			httpOnly: false,
+			secure: false,
+			sameSite: 'lax',
+		});
 	}
 
 	@Get('clearance')
