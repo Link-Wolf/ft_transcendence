@@ -42,7 +42,6 @@ const Channel = ({
 		};
 
 		const membershipUpdate = (payload: any) => {
-			console.log(payload, channel);
 			if (payload.channel === channel) {
 				if (payload.what === "kick" && payload.who === user.login) {
 					setChannel(null);
@@ -118,7 +117,6 @@ const Channel = ({
 			)
 			.then((res) => {
 				setAdmins(res.data);
-				console.log("adminsUpdate", res.data);
 			})
 			.catch((err) => {
 				console.log(err);
