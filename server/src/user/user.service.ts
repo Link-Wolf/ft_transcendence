@@ -113,9 +113,10 @@ export class UserService {
 	 */
 	async update(userDto: UserDto): Promise<number> {
 		try {
-			return await this.userRepository.update<User>(userDto, {
+			let ret = await this.userRepository.update<User>(userDto, {
 				where: { login: userDto.login },
-			})[0];
+			});
+			return ret[0];
 		} catch (error) {
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

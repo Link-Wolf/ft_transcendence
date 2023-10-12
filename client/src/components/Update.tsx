@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, FormEvent } from "react";
 import { UserContext } from "../App";
 import QRCode from "react-qr-code";
 import ThereIsNotEnoughPermsBro from "./ThereIsNotEnoughPermsBro";
@@ -67,7 +67,8 @@ const Update = () => {
 		setForm({ ...form, [e.target.id]: e.target.value });
 	};
 
-	const updateUsername = async () => {
+	const updateUsername = async (e: FormEvent) => {
+		e.preventDefault();
 		if (nameError !== "" || form.name === "") return;
 		await axios
 			.get(
@@ -164,7 +165,7 @@ const Update = () => {
 		<>
 			<div className={style.setting}>
 				<h2>Settings</h2>
-				<form>
+				<form onSubmit={updateUsername}>
 					<div>
 						<label>Username</label>
 						{nameError !== "" && <div>{nameError}</div>}
@@ -175,11 +176,7 @@ const Update = () => {
 							onChange={handleFormChange}
 							placeholder='myAwesomeNewUsername'
 						/>
-						<button
-							type='button'
-							onClick={updateUsername}
-							disabled={nameError !== ""}
-						>
+						<button type='submit' disabled={nameError !== ""}>
 							Change username
 						</button>
 					</div>
