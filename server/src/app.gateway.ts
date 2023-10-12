@@ -871,6 +871,10 @@ export class AppGateway
 			id: game.gameId,
 			status: abandoned ? 'abandoned' : 'finished',
 		});
+		
+		this.server
+			.in(`game-${game.gameId}`)
+			.socketsLeave(`game-${game.gameId}`);
 
 		this.saveScore(game);
 	}
