@@ -15,9 +15,7 @@
 	}
 }
 
-
 .profil {
-	
 	--size_unit: 40px;
 	display: flex;
 	flex-direction: row;
@@ -27,16 +25,15 @@
 	text-align: center;
 	align-items: center;
 	animation: fade-in 0.5s;
-	&:has(button:active){
+	&:has(button:active) {
 		animation: fade-out 0.5s;
 	}
-	
+
 	.resume {
 		animation: fade-in 0.5s;
 		// background-color: #000000;
 		height: 1100px;
 		justify-content: center;
-	
 
 		animation: ease-in 0.5s;
 		display: flex;
@@ -46,7 +43,6 @@
 		text-align: center;
 		align-items: center;
 		font-size: 20px;
-		
 
 		h1 {
 			color: white;
@@ -68,7 +64,7 @@
 			margin-bottom: calc(0.5 * var(--size_unit));
 
 			// &::before {
-				// content: "O F";
+			// content: "O F";
 			// }
 		}
 
@@ -87,12 +83,10 @@
 			cursor: pointer;
 			transition: 1s;
 
-
 			&:hover {
 				background-color: #c5c5c5;
 				color: #000000;
 				transition: 0.3s;
-
 			}
 
 			&:nth-of-type(1) {
@@ -114,7 +108,7 @@
 				--sizebutton: 60px;
 				font-size: 30px;
 				padding: 0px;
-				color:#000000;
+				color: #000000;
 				padding: 0px;
 				margin: 0px;
 				width: 86px;
@@ -123,27 +117,26 @@
 				border-radius: 50px;
 				margin: 10px;
 				margin-top: 30px;
-
 			}
 			&.alert {
 				background-color: var(--alert-color);
 				transition: 0.5s;
 
-				&:hover{
+				&:hover {
 					background-color: #861818;
 				}
 			}
 			&.settings {
 				transition: 0.5s;
 				background-color: var(--settings-color);
-				&:hover{
+				&:hover {
 					background-color: #979797;
 				}
 			}
 			&.friend {
 				transition: 0.5s;
 				background-color: var(--friend-color);
-				&:hover{
+				&:hover {
 					background-color: #124ba0;
 				}
 			}
@@ -160,7 +153,6 @@
 			align-items: center;
 			width: 1000px;
 			height: 1100px;
-
 
 			img {
 				width: 200px;
@@ -182,115 +174,121 @@
 				// border-right: 0px;
 				// background-color:s rgba($color: #000000, $alpha: 0.4);
 				// background-color: #f8f8f8;
-				.categoryAll{
+				.categoryAll {
 					color: var(--neutral-text);
 					background-color: #ffffff;
-					background: linear-gradient(to right, var(--linear-gradient-two), var(--linear-gradient-three));
+					background: linear-gradient(
+						to right,
+						var(--linear-gradient-two),
+						var(--linear-gradient-three)
+					);
 					margin-left: 5px;
 					margin-right: 5px;
-					h3{
+					h3 {
 						margin: 0px;
 						font-size: 23px;
 					}
-					.scores
-					{	
+					.scores {
 						margin: 0px;
 						margin-left: 20px;
 						margin-right: 20px;
 						display: flex;
 						flex-direction: row;
-						pre{
+						pre {
 							color: #f8f8f8;
 							font-size: 20px;
 							padding: 5px 10px 5px 10px;
 						}
-						.win{
+						.win {
 							background-color: rgb(92, 168, 92);
 							border-radius: 25px 0 0 25px;
 							margin-right: 5px;
 						}
-						.looses{
+						.looses {
 							background-color: rgb(190, 65, 65);
 							border-radius: 0 25px 25px 0;
 							margin-left: 5px;
-						}	
-					
+						}
 					}
 				}
-				.categoryRanked{
+				.categoryRanked {
 					color: var(--neutral-text);
 					// background-color: #ffffff;
-					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
+					background: linear-gradient(
+						to right,
+						var(--linear-gradient-one),
+						var(--linear-gradient-two)
+					);
 					border-radius: 100px 0 0 100px;
 					margin-left: 5px;
 					margin-right: 5px;
 					padding-right: 40px;
 					padding-left: 60px;
-					h3{
+					h3 {
 						margin: 0px;
 						font-size: 23px;
 					}
-					.scores
-					{	
+					.scores {
 						margin: 0px;
 						margin-left: 20px;
 						margin-right: 20px;
 						display: flex;
 						flex-direction: row;
-						pre{
+						pre {
 							color: #f8f8f8;
 							font-size: 20px;
 							padding: 5px 10px 5px 10px;
 						}
-						.win{
+						.win {
 							background-color: rgb(92, 168, 92);
 							border-radius: 25px 0 0 25px;
 							margin-right: 5px;
 						}
-						.looses{
+						.looses {
 							background-color: rgb(190, 65, 65);
 							border-radius: 0 25px 25px 0;
 							margin-left: 5px;
-						}	
-					
+						}
 					}
 				}
-				.categoryFriends{
+				.categoryFriends {
 					color: var(--neutral-text);
 					background-color: #ffffff;
-					background: linear-gradient(to right, var(--linear-gradient-three), var(--linear-gradient-four));
+					background: linear-gradient(
+						to right,
+						var(--linear-gradient-three),
+						var(--linear-gradient-four)
+					);
 					border-radius: 0 100px 100px 0;
 					margin-left: 5px;
 					margin-right: 5px;
 					padding-right: 60px;
 					padding-left: 40px;
-					h3{
+					h3 {
 						margin: 0px;
 						font-size: 23px;
 					}
-					.scores
-					{	
+					.scores {
 						margin: 0px;
 						margin-left: 20px;
 						margin-right: 20px;
 						display: flex;
 						flex-direction: row;
-						pre{
+						pre {
 							color: #f8f8f8;
 							font-size: 20px;
 							padding: 5px 10px 5px 10px;
 						}
-						.win{
+						.win {
 							background-color: rgb(92, 168, 92);
 							border-radius: 25px 0 0 25px;
 							margin-right: 5px;
 						}
-						.looses{
+						.looses {
 							background-color: rgb(190, 65, 65);
 							border-radius: 0 25px 25px 0;
 							margin-left: 5px;
-						}	
-					
+						}
 					}
 				}
 			}
@@ -301,7 +299,7 @@
 				margin-left: 100px;
 				display: flex;
 				width: 1100px;
-				justify-content:space-around;
+				justify-content: space-around;
 				// background-color: #000000;
 				// border: 4px solid white;
 				// border-left: 0px;
@@ -311,7 +309,7 @@
 				// padding-right: 40px;
 				border-radius: 30px 30px 30px 30px;
 				overflow: scroll;
-				.divi{
+				.divi {
 					padding: 0px;
 					margin: 0px;
 				}
@@ -349,7 +347,11 @@
 					height: 500px;
 					// margin-left: 50px;
 					// margin-right: 50px;
-					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
+					background: linear-gradient(
+						to right,
+						var(--linear-gradient-one),
+						var(--linear-gradient-two)
+					);
 					color: var(--neutral-text);
 				}
 				.class::-webkit-scrollbar {
@@ -392,13 +394,16 @@
 					padding-right: 40px;
 					border-radius: 30px 30px 30px 30px;
 					// background-color: rgba($color: #000000, $alpha: 0.4);
-					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
+					background: linear-gradient(
+						to right,
+						var(--linear-gradient-one),
+						var(--linear-gradient-two)
+					);
 					overflow: scroll;
 				}
 				div::-webkit-scrollbar {
 					display: none;
 				}
-
 			}
 
 			.friendsUser {
@@ -415,7 +420,6 @@
 					background-color: rgba($color: #000000, $alpha: 0);
 				}
 				button {
-					width: 120px;
 					height: 25px;
 					border: 1px solid #f8f8f8;
 					border-left: 5px solid #f8f8f8;
@@ -517,8 +521,12 @@
 				padding-left: 40px;
 				padding-right: 40px;
 				border-radius: 30px 30px 30px 30px;
-					background: linear-gradient(to right, var(--linear-gradient-one), var(--linear-gradient-two));
-					overflow: scroll;
+				background: linear-gradient(
+					to right,
+					var(--linear-gradient-one),
+					var(--linear-gradient-two)
+				);
+				overflow: scroll;
 				img {
 					margin: 0;
 					margin-left: 110px;
