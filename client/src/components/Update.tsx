@@ -34,6 +34,10 @@ const Update = () => {
 			)
 			.then((res) => {
 				setUser(res.data);
+				setForm({
+					...form, 
+					hasTFA: res.data.hasTFA,
+				});
 			})
 			.catch((err) => {
 				console.log(err);

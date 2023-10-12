@@ -210,7 +210,7 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({login})
 			</div>
-			<PPDisplayer login={login} size={300} status={false} />
+			<PPDisplayer login={login} size={300} status={true} />
 		</>
 	);
 };

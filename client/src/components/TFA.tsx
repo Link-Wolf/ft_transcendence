@@ -2,6 +2,8 @@ import axios from "axios";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNotifications } from "./Notifications";
+import PopUp from "./PopUp";
+
 
 const TFA = () => {
 	const [form, setForm] = useState({
@@ -31,23 +33,38 @@ const TFA = () => {
 	};
 
 	const handleFormChange = (e: any) => {
+		if (!/^\d+$/.test(e.target.value) && e.target.value !== "") return;
 		setForm({ ...form, [e.target.id]: e.target.value });
 	};
 
 	return (
-		<form>
-			<input
-				id='tfacode'
-				type='text'
-				onChange={handleFormChange}
-				value={form.tfacode}
-				placeholder='ur tfa number'
-			/>
-			<button type='button' onClick={checkTFA}>
-				Submit
-			</button>
-		</form>
+		<PopUp
+			setPopup={() => {}}
+		>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					checkTFA();
+				}}>
+				<input
+					value={form.tfacode}
+					id='tfacode'
+					type='text'
+					autoFocus={true}
+					maxLength={6}
+					placeholder='Authentication code'
+					onChange={(e) =>
+						handleFormChange(e)
+					}
+				/>
+				<button type='submit'>
+					Submit
+				</button>
+			</form>
+		</PopUp>
 	);
 };
 
 export default TFA;
+
+
