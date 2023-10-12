@@ -31,7 +31,12 @@ const MessagesManager = ({
 		function clic(payload: any) {
 			if (payload.channel === channel) {
 				setUpdate(true);
-				if (payload.login !== user.login && payload.login)
+				if (
+					payload.login !== user.login &&
+					payload.login &&
+					payload.message &&
+					payload.channel
+				)
 					notifications.info(
 						"New message on " + payload.channel,
 						payload.login + " : " + payload.message
@@ -70,12 +75,12 @@ const MessagesManager = ({
 					}
 				)
 				.then(() => {
-					setMessage("");
 					socket.emit("newMessage", {
 						channel: channel,
 						login: user.login,
 						message: message,
 					});
+					setMessage("");
 				})
 				.catch((err) => {
 					console.log(err);
