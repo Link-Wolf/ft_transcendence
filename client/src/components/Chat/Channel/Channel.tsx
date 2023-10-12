@@ -36,14 +36,13 @@ const Channel = ({
 	const [showLebany, setShowLebany] = useState(false);
 	//	Listen to the server for new messages
 	useEffect(() => {
-
 		const relationUpdate = (payload: any) => {
 			if (payload.userA === user.login || payload.userB === user.login)
 				setMembersUpdate(true);
 		};
 
-
 		const membershipUpdate = (payload: any) => {
+			console.log(payload, channel);
 			if (payload.channel === channel) {
 				if (payload.what === "kick" && payload.who === user.login) {
 					setChannel(null);
@@ -119,6 +118,7 @@ const Channel = ({
 			)
 			.then((res) => {
 				setAdmins(res.data);
+				console.log("adminsUpdate", res.data);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -152,7 +152,6 @@ const Channel = ({
 		setOwner({ login: "" });
 		return <></>;
 	}
-
 
 	return (
 		<div>

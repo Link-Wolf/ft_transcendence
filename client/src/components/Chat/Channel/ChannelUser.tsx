@@ -60,12 +60,12 @@ const ChannelUser = ({
 					});
 				})
 				.then(() => {
-					setIsToggleBox(true);
+					setIsToggleBox((i) => !i);
 				})
 				.catch((err) => {
 					console.log(err);
 				});
-		} else setIsToggleBox(true);
+		} else setIsToggleBox((i) => !i);
 	};
 
 	const kick = async (login: string) => {
@@ -180,13 +180,14 @@ const ChannelUser = ({
 					kick={kick}
 				/>
 			)}
-			<div
-				className={style.profilmp}
-				onClick={() => {
-					toggleBox(login);
-				}}
-			>
-				<PPDisplayer login={login} size={50} status={true} />
+			<div className={style.profilmp}>
+				<div
+					onClick={() => {
+						toggleBox(login);
+					}}
+				>
+					<PPDisplayer login={login} size={50} status={true} />
+				</div>
 				<div className={style.description}>
 					{isToggleBox ? (
 						<div className={style.action}>
@@ -198,7 +199,7 @@ const ChannelUser = ({
 									<AskForGameButton
 										text={"text"}
 										login={login}
-										/>
+									/>
 								)}
 								{!members[login].isBlocked && (
 									<FriendPMButton

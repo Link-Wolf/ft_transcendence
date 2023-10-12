@@ -252,7 +252,7 @@ const PromoteDemoteButton = ({
 	effect?: Function;
 	className?: string;
 }) => {
-	const [isAdmin, setIsAdmin] = useState<boolean>(false);
+	const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
 	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
@@ -285,6 +285,7 @@ const PromoteDemoteButton = ({
 			});
 	}, [update, channel, login]);
 
+	if (isAdmin === undefined) return <></>;
 	if (isAdmin)
 		return (
 			<DemoteButton
