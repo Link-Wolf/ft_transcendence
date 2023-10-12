@@ -420,7 +420,7 @@ export class AppGateway
 			},
 		];
 
-		if (Math.random() < 0.2) {
+		if (Math.random() < 0.25) {
 			const spawnPoint =
 				game.powerUpSpawnPoints[
 					Math.floor(Math.random() * game.powerUpSpawnPoints.length)
@@ -837,8 +837,8 @@ export class AppGateway
 			this.handleInputs(game);
 			this.movePaddles(dt, game);
 			if (game.isTurnStarted) {
-				this.moveBalls(dt, game);
 				this.checkCollisions(game, modifiers);
+				this.moveBalls(dt, game);
 			} else this.handleStartTurn(game);
 			this.server.to(`game-${gameId}`).emit('gameUpdate', game);
 		}, 16 /* 60 fps */);

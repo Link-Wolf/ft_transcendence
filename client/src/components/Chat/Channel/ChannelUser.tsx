@@ -60,12 +60,12 @@ const ChannelUser = ({
 					});
 				})
 				.then(() => {
-					setIsToggleBox(!isToggleBox);
+					setIsToggleBox(true);
 				})
 				.catch((err) => {
 					console.log(err);
 				});
-		} else setIsToggleBox(!isToggleBox);
+		} else setIsToggleBox(true);
 	};
 
 	const kick = async (login: string) => {
