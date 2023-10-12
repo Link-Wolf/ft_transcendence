@@ -12,7 +12,7 @@ const Auth = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 	useEffect(() => {
-		setIsLoggedIn(user.clearance !== 0);
+		setIsLoggedIn((user.clearance ?? 0) > 0);
 	}, [user]);
 	return (
 		<>
