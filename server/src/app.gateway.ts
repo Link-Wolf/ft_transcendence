@@ -717,7 +717,14 @@ export class AppGateway
 			if (pBallX >= paddleX - ball.size.radius / 2 - paddle.size.w / 2)
 				return; // The ball was already in the paddle's area
 
-			const ballY = ball.position.y;
+			const ballY =
+				ball.position.y +
+				(ball.velocity.dy *
+					(paddle.position.x +
+						(paddle.size.w / 2 + ball.size.radius / 2 + 1) *
+							Math.sign(ball.velocity.dx) -
+						ball.position.x)) /
+					ball.velocity.dx;
 			const paddleY = paddle.position.y;
 			const isBallInPaddle =
 				Math.abs(ballY - paddleY) <
@@ -725,13 +732,7 @@ export class AppGateway
 
 			if (!isBallInPaddle) return;
 			ball.velocity.dx = (1 - 2 * i) * Math.abs(ball.velocity.dx);
-			ball.position.y +=
-				(ball.velocity.dy *
-					(paddle.position.x +
-						(paddle.size.w / 2 + ball.size.radius / 2 + 1) *
-							Math.sign(ball.velocity.dx) -
-						ball.position.x)) /
-				ball.velocity.dx;
+			ball.position.y - ballY;
 			ball.position.x =
 				paddle.position.x +
 				(paddle.size.w / 2 + ball.size.radius / 2) *
