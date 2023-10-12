@@ -6,6 +6,7 @@ import AddChannelMenu from "./AddChannelMenu";
 import style from "../../style/Chat.module.scss";
 import socket from "../../socket";
 import { PPDisplayer } from "../ImageDisplayer";
+import { useNotifications } from "../Notifications";
 
 const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 	const context = useContext(UserContext);
@@ -23,6 +24,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 	const [users, setUsers] = useState<any[]>([]);
 	const [selectedUser, setSelectedUser] = useState("");
 	const [, setNewDMError] = useState("");
+	const notifications = useNotifications();
 
 	useEffect(() => {
 		axios
@@ -64,9 +66,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 			selectedUser === undefined ||
 			!users.some((user) => user.login === selectedUser)
 		) {
-			setNewDMError(
-				"Not a valid user, login not existing or user blocked you"
-			);
+			notifications.error("Error", "User does not exist")
 			return;
 		}
 
@@ -245,21 +245,28 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 							<h2 className={style.titleNew}>New conversation</h2>
 						</div>
 						<div className={style.search}>
-							<button
-								className={style.searchbutton}
-								disabled={!selectedUser || selectedUser === ""}
-								onClick={openDM}
+							<form 
+								onSubmit={(e) => {
+									e.preventDefault();
+									openDM();
+								}}
 							>
-								🔎
-							</button>
-							<input
-								className={style.input}
-								placeholder="Enter friend's login for start a new conversation"
-								list='new_dm_list'
-								onChange={(e) =>
-									setSelectedUser(e.target.value)
-								}
-							/>
+								<button
+									type='submit'
+									className={style.searchbutton}
+									disabled={!selectedUser || selectedUser === ""}
+								>
+									🔎
+								</button>
+								<input
+									className={style.input}
+									placeholder="Enter friend's login for start a new conversation"
+									list='new_dm_list'
+									onChange={(e) =>
+										setSelectedUser(e.target.value)
+									}
+								/>
+							</form>
 						</div>
 						<AddChannelMenu setChannel={setChannel} />
 					</>
@@ -273,23 +280,29 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 						</div>
 						<div className={style.mplist}>
 							<div className={style.search}>
-								<button
-									className={style.searchbutton}
-									disabled={
-										!selectedUser || selectedUser === ""
-									}
-									onClick={openDM}
+								<form onSubmit={(e) => {
+									e.preventDefault();
+									openDM();
+								}}
 								>
-									🔎
-								</button>
-								<input
-									className={style.input}
-									placeholder="Enter friend's login for start a new conversation"
-									list='new_dm_list'
-									onChange={(e) =>
-										setSelectedUser(e.target.value)
-									}
-								/>
+									<button
+										type="submit"
+										className={style.searchbutton}
+										disabled={
+											!selectedUser || selectedUser === ""
+										}
+									>
+										🔎
+									</button>
+									<input
+										className={style.input}
+										placeholder="Enter friend's login for start a new conversation"
+										list='new_dm_list'
+										onChange={(e) =>
+											setSelectedUser(e.target.value)
+										}
+									/>
+								</form>
 							</div>
 							<div className={style.mpscroll}>
 								{channels.map((channel, i) => (

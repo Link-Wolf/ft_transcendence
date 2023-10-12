@@ -23,6 +23,8 @@ const CreateChannelForm = ({ setChannel }: { setChannel: Function }) => {
 			return "Channel name is already taken";
 		if (data.name.match(/[^a-zA-Z0-9]/g))
 			return "Channel name can only contain letters and numbers";
+		if (data.name.length > 15)
+			return "Channel name must be less than 15 characters long";
 		return "";
 	}, [data.name, chanNames]);
 

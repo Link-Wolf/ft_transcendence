@@ -365,6 +365,8 @@
 			transition: 0.5s ease-in;
 			background-color: var(--msg-sender);
 			margin: 0px;
+			max-width: 270px;
+			word-wrap: break-word;
 			width: fit-content;
 			color: rgb(236, 236, 236);
 			border-radius: 15px 0px 15px 15px;
@@ -411,7 +413,9 @@
 			background-color: var(--msg-recv);
 			transition: 0.5s ease-in;
 			margin: 0px;
-			width: fit-content;
+			// width: fit-content;
+			max-width: 270px;
+			word-wrap: break-word;
 			color: var(--msg-text);
 			border-radius: 0px 15px 15px 15px;
 			margin: 2px 0 0 0;

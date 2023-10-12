@@ -219,12 +219,7 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 			<div className={style.username}>
 				{user.name} ({login})
 			</div>
-			<PPDisplayer
-				login={login}
-				size={300}
-				status={false}
-			/>
-		</>
+			<PPDisplayer login={login} size={300} status={true} /></>
 	);
 };
 
@@ -650,7 +645,7 @@ const Friends = () => {
 							(friendShip) => !friendShip.isPending
 						) ? (
 							friendShips.map((friendShip, i) => {
-								if (friendShip.isPending) return <> </>;
+								if (friendShip.isPending) return <li key={i}></li>;
 								let friend: any;
 								if (friendShip.sender.login === user.login)
 									friend = friendShip.receiver;
@@ -698,7 +693,7 @@ const Friends = () => {
 									!friendShip.isPending ||
 									friendShip.sender.login !== user.login
 								)
-									return <></>;
+									return <li key={i}></li>;
 								let friend = friendShip.receiver;
 								return (
 									<li
@@ -737,7 +732,7 @@ const Friends = () => {
 									!friendShip.isPending ||
 									friendShip.receiver.login !== user.login
 								)
-									return <></>;
+									return <li key={i}></li>;
 								let friend = friendShip.sender;
 								return (
 									<li
