@@ -17,7 +17,6 @@ import socket from "../socket";
 import style from "../style/Profile.module.scss";
 import { Link } from "react-router-dom";
 import stats from "../assets/stats.png";
-import history from "../assets/history.png";
 import friends from "../assets/friends.png";
 import settingss from "../assets/settings.png";
 
@@ -181,7 +180,7 @@ const Resume = ({ login }: { isMe: boolean; login: string }) => {
 		return () => {
 			socket.off("contextUpdate");
 		};
-	}, []);
+	}, [login]);
 
 	useEffect(() => {
 		setUpdate(true);
@@ -568,7 +567,7 @@ const Friends = () => {
 		return () => {
 			socket.off("friendUpdate");
 		};
-	}, []);
+	}, [user.login]);
 
 	useEffect(() => {
 		setUpdate(true);
@@ -763,6 +762,7 @@ const Blocked = () => {
 	const [update, setUpdate] = useState<boolean>(true);
 
 	useEffect(() => {
+		setUpdate(true);
 		socket.on("blockUpdate", (payload) => {
 			if (payload.loginA === user.login || payload.loginB === user.login)
 				setUpdate(true);
@@ -771,10 +771,6 @@ const Blocked = () => {
 		return () => {
 			socket.off("blockUpdate");
 		};
-	}, []);
-
-	useEffect(() => {
-		setUpdate(true);
 	}, [user.login]);
 
 	useEffect(() => {
