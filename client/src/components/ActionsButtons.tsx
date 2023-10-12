@@ -575,10 +575,12 @@ const FriendPMButton = ({
 };
 
 const UnfriendButton = ({
+	text,
 	login,
 	effect,
 	className,
 }: {
+	text?: string;
 	login: string;
 	effect?: Function;
 	className?: string;
@@ -613,7 +615,7 @@ const UnfriendButton = ({
 				unfriendSomeone(login);
 			}}
 		>
-			Remove friend
+			{text ? "Remove Friends" : "🚮"}
 		</button>
 	);
 };

@@ -6,6 +6,7 @@ import AddChannelMenu from "./AddChannelMenu";
 import style from "../../style/Chat.module.scss";
 import socket from "../../socket";
 import { PPDisplayer } from "../ImageDisplayer";
+import { useNotifications } from "../Notifications";
 
 const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 	const context = useContext(UserContext);
@@ -23,6 +24,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 	const [users, setUsers] = useState<any[]>([]);
 	const [selectedUser, setSelectedUser] = useState("");
 	const [, setNewDMError] = useState("");
+	const notifications = useNotifications();
 
 	useEffect(() => {
 		axios
@@ -64,9 +66,7 @@ const ChatHomePage = ({ setChannel }: { setChannel: Function }) => {
 			selectedUser === undefined ||
 			!users.some((user) => user.login === selectedUser)
 		) {
-			setNewDMError(
-				"Not a valid user, login not existing or user blocked you"
-			);
+			notifications.error("Error", "User does not exist")
 			return;
 		}
 

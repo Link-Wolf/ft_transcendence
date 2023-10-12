@@ -198,7 +198,7 @@ const ChannelUser = ({
 									<AskForGameButton
 										text={"text"}
 										login={login}
-									/>
+										/>
 								)}
 								{!members[login].isBlocked && (
 									<FriendPMButton
