@@ -710,41 +710,38 @@ export class AppGateway
 		game: GameData,
 	) {
 		paddles.forEach((paddle, i) => {
-			const paddleSign = Math.sign(paddle.position.x);
-			const ballSign = Math.sign(ball.position.x);
+			const distBallPaddleX =
+				ball.position.x -
+				Math.max(
+					paddle.position.x - paddle.size.w / 2,
+					Math.min(
+						ball.position.x,
+						paddle.position.x + paddle.size.w / 2,
+					),
+				);
+			const distBallPaddleY =
+				ball.position.y -
+				Math.max(
+					paddle.position.y - paddle.size.h / 2,
+					Math.min(
+						ball.position.y,
+						paddle.position.y + paddle.size.h / 2,
+					),
+				);
+			const distanceBallPaddleSquared =
+				distBallPaddleX ** 2 + distBallPaddleY ** 2;
+			const isBallInPaddle =
+				distanceBallPaddleSquared < ball.size.radius ** 2;
 
-			if (paddleSign !== ballSign) return;
-
-			const ballX = Math.abs(ball.position.x);
-			const pBallX = Math.abs(ball.position.px || ball.position.x);
-			if (ballX <= pBallX) return; // The ball is not moving towards the paddle
-			const paddleX = Math.abs(paddle.position.x);
-
-			if (ballX < paddleX - ball.size.radius / 2 - paddle.size.w / 2)
-				return; // The ball is not in the paddle's area
-
-			if (pBallX >= paddleX - ball.size.radius / 2 - paddle.size.w / 2)
-				return; // The ball was already in the paddle's area
-
-			const ballY =
-				ball.position.y +
+			if (!isBallInPaddle) return;
+			ball.velocity.dx = (1 - 2 * i) * Math.abs(ball.velocity.dx);
+			ball.position.y +=
 				(ball.velocity.dy *
 					(paddle.position.x +
 						(paddle.size.w / 2 + ball.size.radius / 2 + 1) *
 							Math.sign(ball.velocity.dx) -
 						ball.position.x)) /
-					ball.velocity.dx;
-			const paddleY = paddle.position.y;
-			const isBallInPaddle =
-				Math.abs(ballY - paddleY) <
-				paddle.size.h / 2 +
-					ball.size.radius +
-					Math.abs(ball.velocity.dy) +
-					Math.abs(paddle.velocity.dy);
-
-			if (!isBallInPaddle) return;
-			ball.velocity.dx = (1 - 2 * i) * Math.abs(ball.velocity.dx);
-			ball.position.y - ballY;
+				ball.velocity.dx;
 			ball.position.x =
 				paddle.position.x +
 				(paddle.size.w / 2 + ball.size.radius / 2) *
@@ -871,7 +868,7 @@ export class AppGateway
 			id: game.gameId,
 			status: abandoned ? 'abandoned' : 'finished',
 		});
-		
+
 		this.server
 			.in(`game-${game.gameId}`)
 			.socketsLeave(`game-${game.gameId}`);
