@@ -2,7 +2,7 @@
 
 <div align="center">
  <a href="https://github.com/Link-Wolf/ft_transcendence" title="Go to GitHub repo"><img src="https://img.shields.io/static/v1?label=Link-Wolf&message=ft_transcendence&color=blue&logo=github&style=for-the-badge" alt="Link-Wolf - ft_transcendence"></a>
- <a href="https://"><img src="https://img.shields.io/badge/42_grade-125_%2F_100-brightgreen?style=for-the-badge" alt="42 grade - 125 / 100"></a>
+ <a href="https://"><img src="https://img.shields.io/badge/42_grade-100_%2F_100-brightgreen?style=for-the-badge" alt="42 grade - 100 / 100"></a>
  <a href="https://"><img src="https://img.shields.io/badge/Year-2022-ffad9b?style=for-the-badge" alt="Year - 2022"></a>
  <a href="https://github.com/Link-Wolf/ft_transcendence/stargazers"><img src="https://img.shields.io/github/stars/Link-Wolf/ft_transcendence?style=for-the-badge&color=yellow" alt="stars - ft_transcendence"></a>
  <a href="https://github.com/Link-Wolf/ft_transcendence/network/members"><img src="https://img.shields.io/github/forks/Link-Wolf/ft_transcendence?style=for-the-badge&color=lightgray" alt="forks - ft_transcendence"></a>
@@ -55,7 +55,7 @@ that you thought you didn’t</em><br/>
 
 <div align="center">
   <a>
-    <img src="docs/assets/preview.gif" alt="our irc starting">
+    <img src="docs/assets/preview.gif" alt="preview of our website">
   </a>
 </div>
 </br>
