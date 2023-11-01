@@ -3,11 +3,14 @@
 <div align="center">
  <a href="https://github.com/Link-Wolf/ft_transcendence" title="Go to GitHub repo"><img src="https://img.shields.io/static/v1?label=Link-Wolf&message=ft_transcendence&color=blue&logo=github&style=for-the-badge" alt="Link-Wolf - ft_transcendence"></a>
  <a href="https://"><img src="https://img.shields.io/badge/42_grade-100_%2F_100-brightgreen?style=for-the-badge" alt="42 grade - 100 / 100"></a>
- <a href="https://"><img src="https://img.shields.io/badge/Year-2022-ffad9b?style=for-the-badge" alt="Year - 2022"></a>
+ <a href="https://"><img src="https://img.shields.io/badge/Year-2023-ffad9b?style=for-the-badge" alt="Year - 2023"></a>
  <a href="https://github.com/Link-Wolf/ft_transcendence/stargazers"><img src="https://img.shields.io/github/stars/Link-Wolf/ft_transcendence?style=for-the-badge&color=yellow" alt="stars - ft_transcendence"></a>
  <a href="https://github.com/Link-Wolf/ft_transcendence/network/members"><img src="https://img.shields.io/github/forks/Link-Wolf/ft_transcendence?style=for-the-badge&color=lightgray" alt="forks - ft_transcendence"></a>
  <a href="https://github.com/Link-Wolf/ft_transcendence/issues"><img src="https://img.shields.io/github/issues/Link-Wolf/ft_transcendence?style=for-the-badge&color=orange" alt="issues - ft_transcendence"></a>
- <a href="https://www.linux.org/" title="Go to Linux homepage"><img src="https://img.shields.io/badge/OS-linux-blue?logo=linux&logoColor=white&style=for-the-badge&color=9cf" alt="OS - linux"></a>
+ <a href="https://nodejs.org/en" title="Go to NodeJS homepage"><img src="https://img.shields.io/badge/Node.js-^20.2.0-blue?logo=node.js&logoColor=white&style=for-the-badge&color=719960" alt="Package - NodeJS"></a>
+ <a href="https://react.dev/" title="Go to React homepage"><img src="https://img.shields.io/badge/React-^18.2.0-blue?logo=react&logoColor=white&style=for-the-badge&color=80D1EF" alt="Package - React"></a>
+  <a href="https://www.postgresql.org/" title="Go to Postgresql homepage"><img src="https://img.shields.io/badge/PostgreSQL-^14.8-blue?logo=postgresql&logoColor=white&style=for-the-badge&color=3F6388" alt="DB - PostgreSQL"></a>
+ <a href="https://www.linux.org/" title="Go to Linux homepage"><img src="https://img.shields.io/badge/OS-linux-blue?logo=linux&logoColor=white&style=for-the-badge&color=9E59B4" alt="OS - linux"></a>
 </div>
 
 <!-- PROJECT LOGO -->
