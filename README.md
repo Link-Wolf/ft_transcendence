@@ -54,6 +54,7 @@ that you thought you didn’t</em><br/>
 </details>
 
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 <div align="center">
@@ -65,16 +66,16 @@ that you thought you didn’t</em><br/>
 This project aims to create a website to play Pong. It's a group project i made with <a href="https://github.com/sur4c1">iCARUS</a> and <a href="https://github.com/Firencio">Firencio</a>.
 It requires us to develop a full web app complaining with the following technicals constraints:
 
-- Write the back-end of the website in NestJS
-- Write the front-end of the website in a typescript framework (we chose React)
-- Use the latest stable version of any library or framework used
-- Use a PostgreSQL database and no other database
-- The website must be a single page application
-- The website must be compatible with the latest version of Chrome and one other browser of our choice
-- Users should not encounter any error or warning when browsing the website
-- Everything has to be launched by a single call to ```docker-compose up --build```
-- Any password must be **hashed** in the database
-- The website must be protected against SQL injections
+-   Write the back-end of the website in NestJS
+-   Write the front-end of the website in a typescript framework (we chose React)
+-   Use the latest stable version of any library or framework used
+-   Use a PostgreSQL database and no other database
+-   The website must be a single page application
+-   The website must be compatible with the latest version of Chrome and one other browser of our choice
+-   Users should not encounter any error or warning when browsing the website
+-   Everything has to be launched by a single call to `docker-compose up --build`
+-   Any password must be **hashed** in the database
+-   The website must be protected against SQL injections
 
 As for the features, we had to implement a Chat in addition to the Pong game. It includes channels management (bans, mutes, kick, admins), private messages, a list of users and other classics chat features.
 
@@ -85,10 +86,10 @@ For the game itself a player is able to create a game and wait in a queue for an
 Or it can also see which games are available and join one of them, only by seeing the game specifications without knowing who is the other player.
 We implemented a classic and faithful Pong game, but also add differents maps and modifiers such as an increased or decreased paddle size, a ball that accelerate over time, or a fun mode where bonuses are randomly spawned on the map that can be picked up by the players to get a random effect (from a bonus to a malus or even a ball multiplication).
 
-
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 You shouldn't need a lot of things to run the project but be sure to follow the instructions below.
@@ -101,29 +102,30 @@ Having docker and docker-compose installed on your machine is the only requireme
 
 1. Clone the repo
 
-   ```sh
-   git clone https://github.com/Link-Wolf/ft_transcendence.git
-   ```
+    ```sh
+    git clone https://github.com/Link-Wolf/ft_transcendence.git
+    ```
 
 2. Duplicate and fill the .env file
 
-   ```sh
-   cd ft_transcendence
-   cp .template.env .env
-   [vim/nano/code] .env
-   ``` 
+    ```sh
+    cd ft_transcendence
+    cp .template.env .env
+    [vim/nano/code] .env
+    ```
 
 3. Then launch the project
 
-   ```sh
-   cd ft_transcendence; make
-   ```
+    ```sh
+    cd ft_transcendence; make
+    ```
 
 4. Now you could access the website at the address and port you specified in the .env file
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
 The website is pretty intuitive and easy to use.
@@ -133,6 +135,7 @@ Use our Pong website to play with your friends, chat with them, and have fun tes
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
